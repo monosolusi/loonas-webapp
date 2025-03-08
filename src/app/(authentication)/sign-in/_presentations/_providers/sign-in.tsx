@@ -9,6 +9,10 @@ import { AuthServiceImpl } from "@/app/(authentication)/_data/_sources/auth";
 import { SaveSessionUseCase, SaveSessionUseCaseParams } from "@/app/(authentication)/_domain/_usecases/save-session";
 import { SessionRepositoryImpl } from "@/app/(authentication)/_data/_repositories/session";
 import { LocalStorageSessionService } from "@/app/(authentication)/_data/_sources/local-storage-session";
+import { RetrieveSessionUseCase } from "@/app/(authentication)/_domain/_usecases/retrieve-session";
+import { RetrieveMeUseCase } from "@/app/(user)/_domain/_usecases/retrieve-me";
+import { UserRepositoryImpl } from "@/app/(user)/_data/_repositories/user";
+import { UserServiceImpl } from "@/app/(user)/_data/_data/user";
 
 type SignInContextProps = {
   email: string;
@@ -36,11 +40,16 @@ export function SignInProvider({ children }: { children: any }) {
 
   useEffect(() => {
     if (error) {
-      if (error instanceof ServerError && error.code === ErrorCodes.FORBIDDEN.code) {
-        setShowInvalidCred(true);
+      if (error instanceof ServerError) {
+        if (error.code === ErrorCodes.FORBIDDEN.code) setShowInvalidCred(true);
+        else if (error.code === ErrorCodes.NO_VALID_SESSION.code) console.log("No valid session");
       } else throw error;
     }
   }, [error]);
+
+  useEffect(() => {
+    checkSession();
+  }, []);
 
   function checkCleanInput() {
     if (email === "") return false;
@@ -50,6 +59,27 @@ export function SignInProvider({ children }: { children: any }) {
     // Lastly check the email format using regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  }
+
+  async function checkSession(): Promise<void> {
+    try {
+      const sessionService = new LocalStorageSessionService();
+      const sessionRepository = new SessionRepositoryImpl(sessionService);
+      const retrieveSession = new RetrieveSessionUseCase(sessionRepository);
+      const session = await retrieveSession.execute();
+      if (session instanceof DataFailed) throw session.error;
+
+      // Now we need to check if the access token still valid or not
+      const userService = new UserServiceImpl();
+      const userRepository = new UserRepositoryImpl(userService);
+      const retrieveMe = new RetrieveMeUseCase(userRepository, sessionRepository);
+      const me = await retrieveMe.execute();
+      if (me instanceof DataFailed) throw me.error;
+
+      console.log("Session is valid, redirect to home");
+    } catch (err: any) {
+      setError(err);
+    }
   }
 
   async function login() {

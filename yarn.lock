@@ -623,6 +623,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/luxon@npm:^3":
+  version: 3.4.2
+  resolution: "@types/luxon@npm:3.4.2"
+  checksum: 10c0/d835467de3daf7e17ba78b50bb5a14efd94272439ca067990d71332a54b311544459c69623eddd243b511b28d70194c9591a9ee8cf9c038962c965f991affd7e
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^20":
   version: 20.17.23
   resolution: "@types/node@npm:20.17.23"
@@ -2544,6 +2551,7 @@ __metadata:
     "@heroicons/react": "npm:^2.2.0"
     "@next/eslint-plugin-next": "npm:^15.2.1"
     "@tailwindcss/postcss": "npm:^4"
+    "@types/luxon": "npm:^3"
     "@types/node": "npm:^20"
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"
@@ -2551,6 +2559,7 @@ __metadata:
     eslint-config-next: "npm:15.2.1"
     eslint-plugin-react: "npm:^7.37.4"
     globals: "npm:^16.0.0"
+    luxon: "npm:^3.5.0"
     next: "npm:15.2.1"
     prettier: "npm:^3.5.3"
     prettier-plugin-tailwindcss: "npm:^0.6.11"
@@ -2570,6 +2579,13 @@ __metadata:
   bin:
     loose-envify: cli.js
   checksum: 10c0/655d110220983c1a4b9c0c679a2e8016d4b67f6e9c7b5435ff5979ecdb20d0813f4dec0a08674fcbdd4846a3f07edbb50a36811fd37930b94aaa0d9daceb017e
+  languageName: node
+  linkType: hard
+
+"luxon@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "luxon@npm:3.5.0"
+  checksum: 10c0/335789bba95077db831ef99894edadeb23023b3eb2137a1b56acd0d290082b691cf793143d69e30bc069ec95f0b49f36419f48e951c68014f19ffe12045e3494
   languageName: node
   linkType: hard
 
