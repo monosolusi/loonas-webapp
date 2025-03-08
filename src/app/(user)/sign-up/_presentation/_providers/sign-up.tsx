@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { UserSignUpUseCase, UserSignUpUseCaseParams } from "@/app/(user)/_domain/_usecases/sign-up";
 import { UserServiceImpl } from "@/app/(user)/_data/_data/user";
 import { UserRepositoryImpl } from "@/app/(user)/_data/_repositories/user";
+import { UserSignOutUseCase } from "@/app/(authentication)/_domain/_usecases/user-sign-out";
 
 type SignUpContextProps = {
   email: string;
@@ -31,7 +32,7 @@ const SignUpContext = React.createContext<SignUpContextProps>({
   email: "",
   password: "",
   rePassword: "",
-  loading: false,
+  loading: true,
   showInvalidCred: false
 });
 
@@ -39,7 +40,7 @@ export function SignUpProvider({ children }: { children: any }) {
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [rePassword, setRePassword] = React.useState<string>("");
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<Error>();
   const [showInvalidCred, setShowInvalidCred] = React.useState<boolean>(false);
   const router = useRouter();
@@ -54,6 +55,25 @@ export function SignUpProvider({ children }: { children: any }) {
       } else throw error;
     }
   }, [error]);
+
+  useEffect(() => {
+    forceLogOut();
+  }, []);
+
+  async function forceLogOut() {
+    try {
+      setLoading(true);
+      const sessionService = new LocalStorageSessionService();
+      const sessionRepository = new SessionRepositoryImpl(sessionService);
+      const logOut = new UserSignOutUseCase(sessionRepository);
+      const result = await logOut.execute();
+      if (result instanceof DataFailed) throw result.error;
+    } catch (err: any) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function signUp() {
     try {
