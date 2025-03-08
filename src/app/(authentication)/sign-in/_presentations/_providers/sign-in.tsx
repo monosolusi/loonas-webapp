@@ -13,6 +13,7 @@ import { RetrieveSessionUseCase } from "@/app/(authentication)/_domain/_usecases
 import { RetrieveMeUseCase } from "@/app/(user)/_domain/_usecases/retrieve-me";
 import { UserRepositoryImpl } from "@/app/(user)/_data/_repositories/user";
 import { UserServiceImpl } from "@/app/(user)/_data/_data/user";
+import { useRouter } from "next/navigation";
 
 type SignInContextProps = {
   email: string;
@@ -37,6 +38,7 @@ export function SignInProvider({ children }: { children: any }) {
   const [loading, setLoading] = useState<boolean>(true);
   const [showInvalidCred, setShowInvalidCred] = useState<boolean>(false);
   const [error, setError] = useState<Error>();
+  const router = useRouter();
 
   useEffect(() => {
     if (error) {
@@ -77,7 +79,8 @@ export function SignInProvider({ children }: { children: any }) {
       const me = await retrieveMe.execute();
       if (me instanceof DataFailed) throw me.error;
 
-      console.log("Session is valid, redirect to home");
+      // We have a valid access token and session, we can redirect to protected page
+      router.replace("/invoices");
     } catch (err: any) {
       setError(err);
     } finally {
@@ -107,7 +110,7 @@ export function SignInProvider({ children }: { children: any }) {
       const savedSession = await saveSession.execute(saveSessionParams);
       if (savedSession instanceof DataFailed) throw savedSession.error;
 
-      console.log("Saved! and login success");
+      router.replace("/invoices");
     } catch (err: any) {
       setError(err);
     } finally {
