@@ -1,7 +1,7 @@
 "use client";
 
 import { XCircleIcon } from "@heroicons/react/20/solid";
-import { useSignInProvider } from "@/app/(authentication)/sign-in/_presentations/_providers/sign-in";
+import { useSignInProvider } from "@/app/(authentication)/sign-in/_presentation/_providers/sign-in";
 
 export function InvalidCredAlert() {
   const { showInvalidCred } = useSignInProvider();

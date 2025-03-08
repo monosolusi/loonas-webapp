@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { EmailInput } from "@/app/(authentication)/sign-in/_presentations/_components/email-input";
-import { PasswordInput } from "@/app/(authentication)/sign-in/_presentations/_components/password-input";
-import { useSignInProvider } from "@/app/(authentication)/sign-in/_presentations/_providers/sign-in";
+import { EmailInput } from "@/app/(authentication)/sign-in/_presentation/_components/email-input";
+import { PasswordInput } from "@/app/(authentication)/sign-in/_presentation/_components/password-input";
+import { useSignInProvider } from "@/app/(authentication)/sign-in/_presentation/_providers/sign-in";
 
 export function CredentialForm() {
   const { email, password, setEmail, setPassword, login, loading } = useSignInProvider();
