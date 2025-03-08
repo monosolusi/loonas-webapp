@@ -9,11 +9,10 @@ import { AuthServiceImpl } from "@/app/(authentication)/_data/_sources/auth";
 import { SaveSessionUseCase, SaveSessionUseCaseParams } from "@/app/(authentication)/_domain/_usecases/save-session";
 import { SessionRepositoryImpl } from "@/app/(authentication)/_data/_repositories/session";
 import { LocalStorageSessionService } from "@/app/(authentication)/_data/_sources/local-storage-session";
-import { RetrieveSessionUseCase } from "@/app/(authentication)/_domain/_usecases/retrieve-session";
-import { RetrieveMeUseCase } from "@/app/(user)/_domain/_usecases/retrieve-me";
 import { UserRepositoryImpl } from "@/app/(user)/_data/_repositories/user";
 import { UserServiceImpl } from "@/app/(user)/_data/_data/user";
 import { useRouter } from "next/navigation";
+import { CheckSessionUseCase } from "@/app/(authentication)/_domain/_usecases/check-session";
 
 type SignInContextProps = {
   email: string;
@@ -66,17 +65,13 @@ export function SignInProvider({ children }: { children: any }) {
   async function checkSession(): Promise<void> {
     try {
       setLoading(true);
+
       const sessionService = new LocalStorageSessionService();
       const sessionRepository = new SessionRepositoryImpl(sessionService);
-      const retrieveSession = new RetrieveSessionUseCase(sessionRepository);
-      const session = await retrieveSession.execute();
-      if (session instanceof DataFailed) throw session.error;
-
-      // Now we need to check if the access token still valid or not
       const userService = new UserServiceImpl();
       const userRepository = new UserRepositoryImpl(userService);
-      const retrieveMe = new RetrieveMeUseCase(userRepository, sessionRepository);
-      const me = await retrieveMe.execute();
+      const checkSession = new CheckSessionUseCase(sessionRepository, userRepository);
+      const me = await checkSession.execute();
       if (me instanceof DataFailed) throw me.error;
 
       // We have a valid access token and session, we can redirect to protected page
