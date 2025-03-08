@@ -110,7 +110,7 @@ export function SignUpProvider({ children }: { children: any }) {
       const savedSession = await saveSession.execute(saveSessionParams);
       if (savedSession instanceof DataFailed) throw savedSession.error;
 
-      router.replace("/invoices");
+      router.replace("/home");
     } catch (err: any) {
       setError(err);
     } finally {

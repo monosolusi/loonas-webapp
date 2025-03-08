@@ -75,7 +75,7 @@ export function SignInProvider({ children }: { children: any }) {
       if (me instanceof DataFailed) throw me.error;
 
       // We have a valid access token and session, we can redirect to protected page
-      router.replace("/invoices");
+      router.replace("/home");
     } catch (err: any) {
       setError(err);
     } finally {
@@ -105,7 +105,7 @@ export function SignInProvider({ children }: { children: any }) {
       const savedSession = await saveSession.execute(saveSessionParams);
       if (savedSession instanceof DataFailed) throw savedSession.error;
 
-      router.replace("/invoices");
+      router.replace("/home");
     } catch (err: any) {
       setError(err);
     } finally {
