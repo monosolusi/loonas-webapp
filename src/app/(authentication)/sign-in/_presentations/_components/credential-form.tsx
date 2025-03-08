@@ -10,7 +10,7 @@ export function CredentialForm() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    login?.();
+    if (!loading) login?.();
   }
 
   return (

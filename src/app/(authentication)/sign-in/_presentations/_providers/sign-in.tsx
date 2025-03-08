@@ -27,14 +27,14 @@ type SignInContextProps = {
 const SignInContext = createContext<SignInContextProps>({
   email: "",
   password: "",
-  loading: false,
+  loading: true,
   showInvalidCred: false
 });
 
 export function SignInProvider({ children }: { children: any }) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [showInvalidCred, setShowInvalidCred] = useState<boolean>(false);
   const [error, setError] = useState<Error>();
 
@@ -63,6 +63,7 @@ export function SignInProvider({ children }: { children: any }) {
 
   async function checkSession(): Promise<void> {
     try {
+      setLoading(true);
       const sessionService = new LocalStorageSessionService();
       const sessionRepository = new SessionRepositoryImpl(sessionService);
       const retrieveSession = new RetrieveSessionUseCase(sessionRepository);
@@ -79,6 +80,8 @@ export function SignInProvider({ children }: { children: any }) {
       console.log("Session is valid, redirect to home");
     } catch (err: any) {
       setError(err);
+    } finally {
+      setLoading(false);
     }
   }
 
