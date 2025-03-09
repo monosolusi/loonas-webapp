@@ -8,14 +8,16 @@ import { Clients } from "@/app/(home)/home/_components/clients";
 export default function InvoiceHomePage() {
   return (
     <ProtectedPage>
-      <Header />
-      <main className="bg-white-pure">
-        <InvoiceSummary />
-        <div className="space-y-16 py-16 xl:space-y-20">
-          <RecentInvoices />
-          <Clients />
-        </div>
-      </main>
+      <div className="min-h-full">
+        <Header />
+        <main>
+          <InvoiceSummary />
+          <div className="space-y-16 py-16 xl:space-y-20">
+            <RecentInvoices />
+            <Clients />
+          </div>
+        </main>
+      </div>
     </ProtectedPage>
   )
     ;

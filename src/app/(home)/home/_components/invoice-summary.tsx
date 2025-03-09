@@ -1,4 +1,5 @@
 import { PlusIcon } from "@heroicons/react/20/solid";
+import Link from "next/link";
 
 const stats = [
   { name: "Total Faktur Masukan", value: "Rp 0", change: "0%", changeType: "positive" },
@@ -16,13 +17,13 @@ export function InvoiceSummary() {
       <header className="pt-6 pb-4 sm:pb-6">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-6 px-4 sm:flex-nowrap sm:px-6 lg:px-8">
           <h1 className="text-base/7 font-semibold text-gray-900">Arus Kas</h1>
-          <a
-            href="#"
+          <Link
+            href="/invoices/create"
             className="ml-auto flex items-center gap-x-1 rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
           >
             <PlusIcon aria-hidden="true" className="-ml-1.5 size-5" />
             Faktur Baru
-          </a>
+          </Link>
         </div>
       </header>
 
