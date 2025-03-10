@@ -6,21 +6,21 @@ import { Select } from "@/app/(account)/accounts/create/personal/_presentations/
 import {
   useCreatePersonalAccount
 } from "@/app/(account)/accounts/create/personal/_presentations/_providers/create-personal-account";
-import { DistrictProvider, useDistrict } from "@/core/utilities/address/presentation/providers/district";
+import { SubdistrictProvider, useSubdistrict } from "@/core/utilities/address/presentation/providers/subdistrict";
 
-export function DistrictSelect() {
-  const { city } = useCreatePersonalAccount();
+export function SubdistrictSelect() {
+  const { district } = useCreatePersonalAccount();
 
   return (
-    <DistrictProvider cityId={city?.id}>
-      <DistrictSelectComponent />
-    </DistrictProvider>
+    <SubdistrictProvider districtId={district?.id}>
+      <SubdistrictSelectComponent />
+    </SubdistrictProvider>
   );
 }
 
-function DistrictSelectComponent() {
-  const [districts] = useDistrict();
-  const { district, setDistrict } = useCreatePersonalAccount();
+function SubdistrictSelectComponent() {
+  const [subdistricts] = useSubdistrict();
+  const { subdistrict, setSubdistrict } = useCreatePersonalAccount();
 
 
   function transformData(data: any[]) {
@@ -29,24 +29,24 @@ function DistrictSelectComponent() {
       label: d.label
     }));
 
-    return [{ value: "", label: "Pilih Kecamatan" }, ...newData];
+    return [{ value: "", label: "Pilih Kelurahan" }, ...newData];
   }
 
   function handleChange(data: { value: string; label: string }) {
     // Search for a province based on the id and value
-    const selected = districts.find((p) => p.id === data.value);
-    setDistrict?.(selected);
+    const selected = subdistricts.find((p) => p.id === data.value);
+    setSubdistrict?.(selected);
   }
 
   return (
     <>
-      <Label title="Kecamatan" htmlFor="district" />
+      <Label title="Kelurahan" htmlFor="subdistrict" />
       <div className="mt-2">
         <Select
           id="city"
           onChange={handleChange}
-          value={district?.id || ""}
-          data={transformData(districts)}
+          value={subdistrict?.id || ""}
+          data={transformData(subdistricts)}
           disableFirstOption
         />
       </div>

@@ -6,13 +6,25 @@ import { CityEntity } from "../../domain/entities/city";
 import { CityService } from "@/core/utilities/address/data/sources/city";
 import { DistrictEntity } from "../../domain/entities/district";
 import { DistrictService } from "@/core/utilities/address/data/sources/district";
+import { SubdistrictEntity } from "../../domain/entities/subdistrict";
+import { SubdistrictService } from "@/core/utilities/address/data/sources/subdistrict";
 
 export class AddressRepositoryImpl implements AddressRepository {
   constructor(
     private provinceService: ProvinceService,
     private cityService: CityService,
-    private districtService: DistrictService
+    private districtService: DistrictService,
+    private subdistrictService: SubdistrictService
   ) {
+  }
+
+  public async listSubdistrict(districtId: string): Promise<DataState<SubdistrictEntity[]>> {
+    try {
+      const subdistricts = await this.subdistrictService.list(districtId);
+      return new DataSuccess(subdistricts.map((c) => c.toEntity()));
+    } catch (err: any) {
+      return new DataFailed(err);
+    }
   }
 
   public async listDistrict(cityId: string): Promise<DataState<DistrictEntity[]>> {

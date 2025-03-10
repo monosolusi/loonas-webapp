@@ -1,9 +1,11 @@
 import React from "react";
 import { Label } from "@/app/(account)/accounts/create/personal/_presentations/_components/label";
-import { Select } from "./select";
 import { ProvinceSelect } from "@/app/(account)/accounts/create/personal/_presentations/_components/province-select";
 import { CitySelect } from "@/app/(account)/accounts/create/personal/_presentations/_components/city-select";
 import { DistrictSelect } from "@/app/(account)/accounts/create/personal/_presentations/_components/district-select";
+import {
+  SubdistrictSelect
+} from "@/app/(account)/accounts/create/personal/_presentations/_components/subdistrict-select";
 
 export function CompleteAddress() {
   return (
@@ -21,17 +23,7 @@ export function CompleteAddress() {
       </div>
 
       <div className="col-start-2">
-        <Label title="Kelurahan" htmlFor="subdistrict" />
-        <div className="mt-2">
-          <Select
-            id="city"
-            data={[
-              { value: "surabaya", label: "Surabaya" },
-              { value: "malang", label: "Malang" },
-              { value: "sidoarjo", label: "Sidoarjo" }
-            ]}
-          />
-        </div>
+        <SubdistrictSelect />
       </div>
 
       <div className="col-span-full">
