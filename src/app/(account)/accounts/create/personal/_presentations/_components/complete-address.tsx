@@ -1,7 +1,8 @@
 import React from "react";
-import { Label } from "@/app/(account)/accounts/create/personal/_components/label";
+import { Label } from "@/app/(account)/accounts/create/personal/_presentations/_components/label";
 import { Select } from "./select";
-import { ProvinceSelect } from "@/app/(account)/accounts/create/personal/_components/province-select";
+import { ProvinceSelect } from "@/app/(account)/accounts/create/personal/_presentations/_components/province-select";
+import { CitySelect } from "@/app/(account)/accounts/create/personal/_presentations/_components/city-select";
 
 export function CompleteAddress() {
   return (
@@ -11,17 +12,7 @@ export function CompleteAddress() {
       </div>
 
       <div className="col-start-2">
-        <Label title="Kota / Kabupaten" htmlFor="city" />
-        <div className="mt-2">
-          <Select
-            id="city"
-            data={[
-              { value: "surabaya", label: "Surabaya" },
-              { value: "malang", label: "Malang" },
-              { value: "sidoarjo", label: "Sidoarjo" }
-            ]}
-          />
-        </div>
+        <CitySelect />
       </div>
 
       <div className="col-start-1">

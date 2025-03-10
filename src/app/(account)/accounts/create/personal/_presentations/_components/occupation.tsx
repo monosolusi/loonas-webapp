@@ -1,5 +1,5 @@
-import { Label } from "@/app/(account)/accounts/create/personal/_components/label";
-import { Select } from "@/app/(account)/accounts/create/personal/_components/select";
+import { Label } from "@/app/(account)/accounts/create/personal/_presentations/_components/label";
+import { Select } from "@/app/(account)/accounts/create/personal/_presentations/_components/select";
 
 export function Occupation() {
   return (

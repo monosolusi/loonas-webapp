@@ -1,6 +1,6 @@
 import React from "react";
 import { PhotoIcon } from "@heroicons/react/24/solid";
-import { Label } from "@/app/(account)/accounts/create/personal/_components/label";
+import { Label } from "@/app/(account)/accounts/create/personal/_presentations/_components/label";
 
 export function UploadKtp() {
   return (

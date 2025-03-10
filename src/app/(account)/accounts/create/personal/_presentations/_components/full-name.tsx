@@ -1,5 +1,5 @@
 import React from "react";
-import { Label } from "@/app/(account)/accounts/create/personal/_components/label";
+import { Label } from "@/app/(account)/accounts/create/personal/_presentations/_components/label";
 
 export function FullName() {
   return (

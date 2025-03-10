@@ -1,7 +1,7 @@
 import React from "react";
-import { Label } from "@/app/(account)/accounts/create/personal/_components/label";
+import { Label } from "@/app/(account)/accounts/create/personal/_presentations/_components/label";
 import { DateTime } from "luxon";
-import { Select } from "@/app/(account)/accounts/create/personal/_components/select";
+import { Select } from "@/app/(account)/accounts/create/personal/_presentations/_components/select";
 
 export function PlaceDateOfBirth() {
   return (

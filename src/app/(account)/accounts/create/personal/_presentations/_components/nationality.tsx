@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Radio, RadioGroup } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
-import { Label } from "@/app/(account)/accounts/create/personal/_components/label";
+import { Label } from "@/app/(account)/accounts/create/personal/_presentations/_components/label";
 
 export function NationalitySelect() {
   const [selectedNationality, setSelectedNationality] = useState("WNI");
