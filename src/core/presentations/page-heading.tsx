@@ -3,8 +3,8 @@ export function PageHeading({ children }: { children: any }) {
     <header className="relative">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="relative text-3xl font-bold tracking-tight text-gray-900 inline-block">
-          Buat Akun Baru
-          <span className="absolute left-0 bottom-0 w-3/4 h-1 bg-[#007bff]"></span>
+          {children}
+          <span className="absolute left-0 -bottom-2 w-3/4 h-1 bg-primary-default"></span>
         </h1>
       </div>
 
