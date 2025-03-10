@@ -4,12 +4,24 @@ import { ProvinceEntity } from "@/core/utilities/address/domain/entities/provinc
 import { ProvinceService } from "@/core/utilities/address/data/sources/province";
 import { CityEntity } from "../../domain/entities/city";
 import { CityService } from "@/core/utilities/address/data/sources/city";
+import { DistrictEntity } from "../../domain/entities/district";
+import { DistrictService } from "@/core/utilities/address/data/sources/district";
 
 export class AddressRepositoryImpl implements AddressRepository {
   constructor(
     private provinceService: ProvinceService,
-    private cityService: CityService
+    private cityService: CityService,
+    private districtService: DistrictService
   ) {
+  }
+
+  public async listDistrict(cityId: string): Promise<DataState<DistrictEntity[]>> {
+    try {
+      const districts = await this.districtService.list(cityId);
+      return new DataSuccess(districts.map((c) => c.toEntity()));
+    } catch (err: any) {
+      return new DataFailed(err);
+    }
   }
 
   public async listCity(provinceId: string): Promise<DataState<CityEntity[]>> {

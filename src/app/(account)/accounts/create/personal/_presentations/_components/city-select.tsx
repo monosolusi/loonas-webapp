@@ -20,6 +20,7 @@ export function CitySelect() {
 
 function CitySelectComponent() {
   const [cities] = useCity();
+  const { city, setCity } = useCreatePersonalAccount();
 
   function transformData(data: any[]) {
     const newData = data.map((d) => ({
@@ -30,12 +31,20 @@ function CitySelectComponent() {
     return [{ value: "", label: "Pilih Kota / Kabupaten" }, ...newData];
   }
 
+  function handleChange(data: { value: string; label: string }) {
+    // Search for a province based on the id and value
+    const selected = cities.find((p) => p.id === data.value);
+    setCity?.(selected);
+  }
+
   return (
     <>
       <Label title="Kota / Kabupaten" htmlFor="city" />
       <div className="mt-2">
         <Select
           id="city"
+          onChange={handleChange}
+          value={city?.id || ""}
           data={transformData(cities)}
           disableFirstOption
         />

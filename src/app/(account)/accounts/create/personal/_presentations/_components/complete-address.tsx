@@ -3,6 +3,7 @@ import { Label } from "@/app/(account)/accounts/create/personal/_presentations/_
 import { Select } from "./select";
 import { ProvinceSelect } from "@/app/(account)/accounts/create/personal/_presentations/_components/province-select";
 import { CitySelect } from "@/app/(account)/accounts/create/personal/_presentations/_components/city-select";
+import { DistrictSelect } from "@/app/(account)/accounts/create/personal/_presentations/_components/district-select";
 
 export function CompleteAddress() {
   return (
@@ -16,17 +17,7 @@ export function CompleteAddress() {
       </div>
 
       <div className="col-start-1">
-        <Label title="Kecamatan" htmlFor="district" />
-        <div className="mt-2">
-          <Select
-            id="state"
-            data={[
-              { value: "jawa-timur", label: "Jawa Timur" },
-              { value: "jawa-tengah", label: "Jawa Tengah" },
-              { value: "jawa-barat", label: "Jawa Barat" }
-            ]}
-          />
-        </div>
+        <DistrictSelect />
       </div>
 
       <div className="col-start-2">
