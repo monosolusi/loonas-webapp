@@ -1,11 +1,14 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Radio, RadioGroup } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { Label } from "@/app/(account)/accounts/create/personal/_presentations/_components/label";
+import {
+  useCreatePersonalAccount
+} from "@/app/(account)/accounts/create/personal/_presentations/_providers/create-personal-account";
 
 export function NationalitySelect() {
-  const [selectedNationality, setSelectedNationality] = useState("WNI");
+  const { nationality } = useCreatePersonalAccount();
 
   return (
     <fieldset className="col-span-full">
@@ -14,8 +17,7 @@ export function NationalitySelect() {
         description="Yuk, pilih status kewarganegaraan yang sesuai dengankondisi kamu sekarang ya."
       />
       <RadioGroup
-        value={selectedNationality}
-        onChange={setSelectedNationality}
+        value={nationality}
         className="mt-2 grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-4"
       >
         <Radio

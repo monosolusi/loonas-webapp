@@ -1,7 +1,18 @@
+"use client";
+
 import React from "react";
 import { Label } from "@/app/(account)/accounts/create/personal/_presentations/_components/label";
+import {
+  useCreatePersonalAccount
+} from "@/app/(account)/accounts/create/personal/_presentations/_providers/create-personal-account";
 
 export function FullName() {
+  const { fullName, setFullName } = useCreatePersonalAccount();
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setFullName?.(e.target.value.slice(0, 255));
+  }
+
   return (
     <div className="sm:col-span-full grid grid-cols-1 sm:grid-cols-6">
       <div className="sm:col-span-4">
@@ -17,6 +28,10 @@ export function FullName() {
             type="text"
             autoComplete="name"
             className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-default sm:text-sm/6"
+            maxLength={255}
+            value={fullName}
+            onChange={handleChange}
+            required
           />
         </div>
       </div>

@@ -10,10 +10,12 @@ import {
 
 export function PlaceDateOfBirth() {
   const {
+    pob,
     dobDay,
     dobMonth,
     dobYear,
     dobError,
+    setPob,
     setDobDay,
     setDobMonth,
     setDobYear
@@ -31,6 +33,10 @@ export function PlaceDateOfBirth() {
     setDobYear?.(value);
   }
 
+  function handlePobChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setPob?.(e.target.value.slice(0, 255));
+  }
+
   return (
     <>
       <div className="sm:col-span-full grid grid-cols-1 sm:grid-cols-6">
@@ -46,6 +52,10 @@ export function PlaceDateOfBirth() {
               name="place-of-birth"
               type="text"
               className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-default sm:text-sm/6"
+              maxLength={255}
+              value={pob}
+              onChange={handlePobChange}
+              required
             />
           </div>
         </div>
@@ -67,6 +77,7 @@ export function PlaceDateOfBirth() {
                 return { value: day, label: day };
               })]}
               disableFirstOption
+              required
             />
           </div>
 
@@ -94,6 +105,7 @@ export function PlaceDateOfBirth() {
                 return { value: monthIndex.toString().padStart(2, "0"), label: month };
               })]}
               disableFirstOption
+              required
             />
           </div>
 
@@ -122,6 +134,7 @@ export function PlaceDateOfBirth() {
                 });
               })()]}
               disableFirstOption
+              required
             />
           </div>
         </div>

@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { KtpNumber } from "@/app/(account)/accounts/create/personal/_presentations/_components/ktp-number";
 import { FullName } from "@/app/(account)/accounts/create/personal/_presentations/_components/full-name";
@@ -8,8 +10,12 @@ import { UploadKtp } from "@/app/(account)/accounts/create/personal/_presentatio
 import { NationalitySelect } from "@/app/(account)/accounts/create/personal/_presentations/_components/nationality";
 
 export function PersonalAccountForm() {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+  }
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div className="space-y-12">
         <div className="border-b border-gray-900/10 pb-12">
           <h2 className="text-base/7 font-semibold text-gray-900">Informasi Pribadi</h2>

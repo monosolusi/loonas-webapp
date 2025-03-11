@@ -47,6 +47,7 @@ function OccupationSelectComponent() {
           onChange={handleChange}
           value={occupation?.id || ""}
           disableFirstOption
+          required
         />
       </div>
     </div>

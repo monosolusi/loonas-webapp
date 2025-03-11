@@ -46,6 +46,7 @@ function ProvinceSelectComponent() {
           value={province?.id || ""}
           data={transformData(provinces)}
           disableFirstOption
+          required
         />
       </div>
     </>

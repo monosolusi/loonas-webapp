@@ -48,6 +48,7 @@ function SubdistrictSelectComponent() {
           value={subdistrict?.id || ""}
           data={transformData(subdistricts)}
           disableFirstOption
+          required
         />
       </div>
     </>

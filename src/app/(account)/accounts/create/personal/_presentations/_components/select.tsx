@@ -8,13 +8,14 @@ interface SelectData {
   label: string;
 }
 
-export function Select({ id, data, value, onChange, disableFirstOption, isError }: {
+export function Select({ id, data, value, onChange, disableFirstOption, isError, required }: {
   id?: string;
   value?: string,
   onChange?: (data: SelectData) => void;
   data: SelectData[];
   disableFirstOption?: boolean;
   isError?: boolean;
+  required?: boolean;
 }) {
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -32,6 +33,7 @@ export function Select({ id, data, value, onChange, disableFirstOption, isError 
         onChange={handleChange}
         data-error={isError}
         className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-default sm:text-sm/6 data-[error=true]:outline-red-400 group-data[error=true]:outline-red-400"
+        required={required}
       >
         {data.map((item, index) => (
           <option
