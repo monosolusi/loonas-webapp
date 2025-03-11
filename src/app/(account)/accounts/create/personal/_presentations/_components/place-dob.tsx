@@ -1,9 +1,36 @@
+"use client";
+
 import React from "react";
 import { Label } from "@/app/(account)/accounts/create/personal/_presentations/_components/label";
 import { DateTime } from "luxon";
 import { Select } from "@/app/(account)/accounts/create/personal/_presentations/_components/select";
+import {
+  useCreatePersonalAccount
+} from "@/app/(account)/accounts/create/personal/_presentations/_providers/create-personal-account";
 
 export function PlaceDateOfBirth() {
+  const {
+    dobDay,
+    dobMonth,
+    dobYear,
+    dobError,
+    setDobDay,
+    setDobMonth,
+    setDobYear
+  } = useCreatePersonalAccount();
+
+  function handleDobDayChange({ value, label }: { value: string, label: string }) {
+    setDobDay?.(value);
+  }
+
+  function handleDobMonthChange({ value, label }: { value: string, label: string }) {
+    setDobMonth?.(value);
+  }
+
+  function handleDobYearChange({ value, label }: { value: string, label: string }) {
+    setDobYear?.(value);
+  }
+
   return (
     <>
       <div className="sm:col-span-full grid grid-cols-1 sm:grid-cols-6">
@@ -23,7 +50,7 @@ export function PlaceDateOfBirth() {
           </div>
         </div>
       </div>
-      <div className="sm:col-span-full">
+      <div className="group sm:col-span-full" data-error={dobError}>
         <Label
           title="Tanggal Lahir"
           description="Berikutnya, tolong isi tanggal lahirmu."
@@ -32,17 +59,24 @@ export function PlaceDateOfBirth() {
           <div className="col-start-1">
             <Select
               id="day"
-              data={Array.from({ length: 31 }, (_, i) => {
+              value={dobDay}
+              onChange={handleDobDayChange}
+              isError={dobError}
+              data={[{ value: "", label: "--" }, ...Array.from({ length: 31 }, (_, i) => {
                 const day = String(i + 1).padStart(2, "0");
-                return { value: (i + 1).toString(), label: day };
-              })}
+                return { value: day, label: day };
+              })]}
+              disableFirstOption
             />
           </div>
 
           <div className="col-start-2 col-span-2 grid grid-cols-1">
             <Select
               id="month"
-              data={[
+              value={dobMonth}
+              onChange={handleDobMonthChange}
+              isError={dobError}
+              data={[{ value: "", label: "--" }, ...[
                 "Januari",
                 "Februari",
                 "Maret",
@@ -57,15 +91,19 @@ export function PlaceDateOfBirth() {
                 "Desember"
               ].map((month, index) => {
                 const monthIndex = index + 1;
-                return { value: monthIndex.toString(), label: month };
-              })}
+                return { value: monthIndex.toString().padStart(2, "0"), label: month };
+              })]}
+              disableFirstOption
             />
           </div>
 
           <div className="col-start-4 grid grid-cols-1">
             <Select
               id="year"
-              data={(() => {
+              value={dobYear}
+              onChange={handleDobYearChange}
+              isError={dobError}
+              data={[{ value: "", label: "--" }, ...(() => {
                 const currentYear = DateTime.now().year;
 
                 // Batas usia: minimal 17 tahun, maksimal 90 tahun
@@ -79,12 +117,18 @@ export function PlaceDateOfBirth() {
                 }
 
                 // Return pilihan tahun
-                return years.map((year) => {
+                return years.reverse().map((year) => {
                   return { value: year.toString(), label: year.toString() };
                 });
-              })()}
+              })()]}
+              disableFirstOption
             />
           </div>
+        </div>
+        <div className="hidden group-data-[error=true]:block mt-2">
+          <span className="text-red-400 text-sm/6">
+            Sepertinya tanggal yang kamu masukkan kurang tepat. Coba dicek lagi, ya?
+          </span>
         </div>
       </div>
     </>
