@@ -5,12 +5,15 @@ import { ProvinceEntity } from "@/core/utilities/address/domain/entities/provinc
 import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
+import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 
 interface CreatePersonalAccountContextProps {
+  occupation?: OccupationEntity;
   province?: ProvinceEntity;
   city?: CityEntity;
   district?: DistrictEntity;
   subdistrict?: SubdistrictEntity;
+  setOccupation?: React.Dispatch<React.SetStateAction<OccupationEntity | undefined>>;
   setProvince?: React.Dispatch<React.SetStateAction<ProvinceEntity | undefined>>;
   setCity?: React.Dispatch<React.SetStateAction<CityEntity | undefined>>;
   setDistrict?: React.Dispatch<React.SetStateAction<DistrictEntity | undefined>>;
@@ -20,6 +23,7 @@ interface CreatePersonalAccountContextProps {
 const CreatePersonalAccountContext = createContext<CreatePersonalAccountContextProps>({});
 
 export function CreatePersonalAccountProvider({ children }: { children: any }) {
+  const [occupation, setOccupation] = useState<OccupationEntity>();
   const [province, setProvince] = useState<ProvinceEntity>();
   const [city, setCity] = useState<CityEntity>();
   const [district, setDistrict] = useState<DistrictEntity>();
@@ -28,10 +32,12 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
   return (
     <CreatePersonalAccountContext.Provider
       value={{
+        occupation,
         province,
         city,
         district,
         subdistrict,
+        setOccupation,
         setProvince,
         setCity,
         setDistrict,

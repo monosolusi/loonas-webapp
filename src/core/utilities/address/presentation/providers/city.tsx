@@ -6,6 +6,8 @@ import { ProvinceServiceImpl } from "@/core/utilities/address/data/sources/provi
 import { CityEntity } from "../../domain/entities/city";
 import { ListCityUseCase, ListCityUseCaseParams } from "../../domain/usecases/list-city";
 import { CityServiceImpl } from "@/core/utilities/address/data/sources/city";
+import { SubdistrictServiceImpl } from "@/core/utilities/address/data/sources/subdistrict";
+import { DistrictServiceImpl } from "../../data/sources/district";
 
 // data, loading
 type CityContextProps = [CityEntity[], boolean]
@@ -31,10 +33,17 @@ export function CityProvider({ provinceId, children }: { provinceId?: string, ch
 
       setLoading(true);
 
+      const subdistrictService = new SubdistrictServiceImpl();
+      const districtService = new DistrictServiceImpl();
       const provinceService = new ProvinceServiceImpl();
       const cityService = new CityServiceImpl();
-      const addressRepository = new AddressRepositoryImpl(provinceService, cityService);
-      
+      const addressRepository = new AddressRepositoryImpl(
+        provinceService,
+        cityService,
+        districtService,
+        subdistrictService
+      );
+
       const lCity = new ListCityUseCase(addressRepository);
       const lCityParams = new ListCityUseCaseParams(provinceId);
       const cities = await lCity.execute(lCityParams);
