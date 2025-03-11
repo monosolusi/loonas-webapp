@@ -9,20 +9,20 @@ import {
 
 export function CompleteAddress() {
   return (
-    <div className="sm:col-span-full grid grid-cols-2 gap-x-6 gap-y-8">
-      <div className="col-start-1">
+    <div className="sm:col-span-full grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
+      <div className="sm:col-start-1">
         <ProvinceSelect />
       </div>
 
-      <div className="col-start-2">
+      <div className="sm:col-start-2">
         <CitySelect />
       </div>
 
-      <div className="col-start-1">
+      <div className="sm:col-start-1">
         <DistrictSelect />
       </div>
 
-      <div className="col-start-2">
+      <div className="sm:col-start-2">
         <SubdistrictSelect />
       </div>
 

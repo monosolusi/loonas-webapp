@@ -1,11 +1,11 @@
 import React from "react";
-import { NationalitySelect } from "@/app/(account)/accounts/create/personal/_presentations/_components/nationality";
-import { UploadKtp } from "@/app/(account)/accounts/create/personal/_presentations/_components/upload-ktp";
 import { KtpNumber } from "@/app/(account)/accounts/create/personal/_presentations/_components/ktp-number";
 import { FullName } from "@/app/(account)/accounts/create/personal/_presentations/_components/full-name";
-import { Occupation } from "@/app/(account)/accounts/create/personal/_presentations/_components/occupation";
 import { PlaceDateOfBirth } from "@/app/(account)/accounts/create/personal/_presentations/_components/place-dob";
 import { CompleteAddress } from "@/app/(account)/accounts/create/personal/_presentations/_components/complete-address";
+import { Occupation } from "./occupation";
+import { UploadKtp } from "@/app/(account)/accounts/create/personal/_presentations/_components/upload-ktp";
+import { NationalitySelect } from "@/app/(account)/accounts/create/personal/_presentations/_components/nationality";
 
 export function PersonalAccountForm() {
   return (

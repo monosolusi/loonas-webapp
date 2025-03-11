@@ -6,7 +6,7 @@ import { Select } from "@/app/(account)/accounts/create/personal/_presentations/
 export function PlaceDateOfBirth() {
   return (
     <>
-      <div className="sm:col-span-full grid grid-cols-6">
+      <div className="sm:col-span-full grid grid-cols-1 sm:grid-cols-6">
         <div className="sm:col-span-4">
           <Label
             htmlFor="place-of-birth"

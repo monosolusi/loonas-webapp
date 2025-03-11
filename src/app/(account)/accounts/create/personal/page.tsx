@@ -20,7 +20,7 @@ export default function CreatePersonalAccount() {
         <PageMain>
           <PageHeading>Pembuatan Akun Personal</PageHeading>
           <PageContent>
-            <div className="mx-auto w-3xl">
+            <div className="mx-auto md:max-w-3xl">
               <CreatePersonalAccountProvider>
                 <PersonalAccountForm />
               </CreatePersonalAccountProvider>

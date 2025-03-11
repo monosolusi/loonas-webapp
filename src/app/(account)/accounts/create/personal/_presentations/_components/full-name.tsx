@@ -3,7 +3,7 @@ import { Label } from "@/app/(account)/accounts/create/personal/_presentations/_
 
 export function FullName() {
   return (
-    <div className="sm:col-span-full grid grid-cols-6">
+    <div className="sm:col-span-full grid grid-cols-1 sm:grid-cols-6">
       <div className="sm:col-span-4">
         <Label
           htmlFor="full-name"

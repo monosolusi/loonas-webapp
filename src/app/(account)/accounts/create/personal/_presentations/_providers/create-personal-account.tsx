@@ -8,11 +8,13 @@ import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subd
 import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 
 interface CreatePersonalAccountContextProps {
+  identityDocument?: File | null;
   occupation?: OccupationEntity;
   province?: ProvinceEntity;
   city?: CityEntity;
   district?: DistrictEntity;
   subdistrict?: SubdistrictEntity;
+  setIdentityDocument?: React.Dispatch<React.SetStateAction<File | null>>;
   setOccupation?: React.Dispatch<React.SetStateAction<OccupationEntity | undefined>>;
   setProvince?: React.Dispatch<React.SetStateAction<ProvinceEntity | undefined>>;
   setCity?: React.Dispatch<React.SetStateAction<CityEntity | undefined>>;
@@ -23,6 +25,7 @@ interface CreatePersonalAccountContextProps {
 const CreatePersonalAccountContext = createContext<CreatePersonalAccountContextProps>({});
 
 export function CreatePersonalAccountProvider({ children }: { children: any }) {
+  const [identityDocument, setIdentityDocument] = useState<File | null>(null);
   const [occupation, setOccupation] = useState<OccupationEntity>();
   const [province, setProvince] = useState<ProvinceEntity>();
   const [city, setCity] = useState<CityEntity>();
@@ -32,11 +35,13 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
   return (
     <CreatePersonalAccountContext.Provider
       value={{
+        identityDocument,
         occupation,
         province,
         city,
         district,
         subdistrict,
+        setIdentityDocument,
         setOccupation,
         setProvince,
         setCity,

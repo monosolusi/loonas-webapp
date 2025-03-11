@@ -27,7 +27,9 @@ export function NationalitySelect() {
           <span className="flex flex-1">
             <span className="flex flex-col">
               <span className="block text-sm font-medium text-gray-900">WNI</span>
-              <span className="mt-1 flex items-center text-sm text-gray-500">Kamu sudah memegang KTP dan berstatus sebagai Warga Negara Indonesia.</span>
+              <span className="mt-1 flex items-center text-sm text-gray-500 whitespace-normal break-words">
+                Kamu sudah memegang KTP dan berstatus sebagai Warga Negara Indonesia.
+              </span>
             </span>
           </span>
           <CheckCircleIcon
@@ -49,9 +51,11 @@ export function NationalitySelect() {
         >
           <span className="flex flex-1">
             <span className="flex flex-col">
+              <span className="block text-sm font-medium text-gray-900 group-data-disabled:text-gray-300">WNA</span>
               <span
-                className="block text-sm font-medium text-gray-900 group-data-disabled:text-gray-300">WNA</span>
-              <span className="mt-1 flex items-center text-sm text-gray-500 group-data-disabled:text-gray-300">Kamu memegang paspor WNA dan memiliki dokumen KITAS, KITAP, atau izin tinggal resmi.</span>
+                className="mt-1 flex items-center text-sm text-gray-500 group-data-disabled:text-gray-300 whitespace-normal break-words">
+                Kamu memegang paspor WNA dan memiliki dokumen KITAS, KITAP, atau izin tinggal resmi.
+              </span>
             </span>
           </span>
           <CheckCircleIcon
@@ -63,7 +67,6 @@ export function NationalitySelect() {
             className="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent group-data-checked:border-primary-default group-data-focus:border"
           />
         </Radio>
-
       </RadioGroup>
     </fieldset>
   );
