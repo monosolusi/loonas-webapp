@@ -11,14 +11,22 @@ import { NationalitySelect } from "@/app/(account)/accounts/create/personal/_pre
 import {
   InvalidFormAlert
 } from "@/app/(account)/accounts/create/personal/_presentations/_components/invalid-form-alert";
+import {
+  ConfirmationDialog
+} from "@/app/(account)/accounts/create/personal/_presentations/_components/confirmation-dialog";
+import { useCreatePersonalAccount } from "../_providers/create-personal-account";
 
 export function PersonalAccountForm() {
+  const { setOpenConfirmationDialog } = useCreatePersonalAccount();
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setOpenConfirmationDialog?.(true);
   }
 
   return (
     <>
+      <ConfirmationDialog />
       <div className="my-6 sm:mx-auto w-full">
         <InvalidFormAlert />
       </div>

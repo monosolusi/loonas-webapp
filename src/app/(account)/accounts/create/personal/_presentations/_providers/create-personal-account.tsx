@@ -26,6 +26,7 @@ interface CreatePersonalAccountContextProps {
   subdistrict?: SubdistrictEntity;
   address?: string;
   errorList: string[];
+  openConfirmationDialog: boolean;
   setPob?: React.Dispatch<React.SetStateAction<string>>;
   setDobDay?: React.Dispatch<React.SetStateAction<string>>;
   setDobMonth?: React.Dispatch<React.SetStateAction<string>>;
@@ -39,6 +40,7 @@ interface CreatePersonalAccountContextProps {
   setDistrict?: React.Dispatch<React.SetStateAction<DistrictEntity | undefined>>;
   setSubdistrict?: React.Dispatch<React.SetStateAction<SubdistrictEntity | undefined>>;
   setAddress?: React.Dispatch<React.SetStateAction<string>>;
+  setOpenConfirmationDialog?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const CreatePersonalAccountContext = createContext<CreatePersonalAccountContextProps>({
@@ -47,7 +49,8 @@ const CreatePersonalAccountContext = createContext<CreatePersonalAccountContextP
   dobMonth: "",
   dobYear: "",
   dobError: false,
-  errorList: []
+  errorList: [],
+  openConfirmationDialog: false
 });
 
 export function CreatePersonalAccountProvider({ children }: { children: any }) {
@@ -73,6 +76,7 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [errorList, setErrorList] = useState<string[]>([]);
+  const [openConfirmationDialog, setOpenConfirmationDialog] = useState<boolean>(false);
 
   useEffect(() => {
     try {
@@ -109,6 +113,7 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
         subdistrict,
         address,
         errorList,
+        openConfirmationDialog,
         setPob,
         setDobDay,
         setDobMonth,
@@ -121,7 +126,8 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
         setCity,
         setDistrict,
         setSubdistrict,
-        setAddress
+        setAddress,
+        setOpenConfirmationDialog
       }}
     >
       {children}
