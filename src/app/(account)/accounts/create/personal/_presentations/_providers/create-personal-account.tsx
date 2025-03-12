@@ -27,6 +27,7 @@ interface CreatePersonalAccountContextProps {
   address?: string;
   errorList: string[];
   openConfirmationDialog: boolean;
+  loading: boolean;
   setPob?: React.Dispatch<React.SetStateAction<string>>;
   setDobDay?: React.Dispatch<React.SetStateAction<string>>;
   setDobMonth?: React.Dispatch<React.SetStateAction<string>>;
@@ -50,7 +51,8 @@ const CreatePersonalAccountContext = createContext<CreatePersonalAccountContextP
   dobYear: "",
   dobError: false,
   errorList: [],
-  openConfirmationDialog: false
+  openConfirmationDialog: false,
+  loading: false
 });
 
 export function CreatePersonalAccountProvider({ children }: { children: any }) {
@@ -114,6 +116,7 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
         address,
         errorList,
         openConfirmationDialog,
+        loading,
         setPob,
         setDobDay,
         setDobMonth,

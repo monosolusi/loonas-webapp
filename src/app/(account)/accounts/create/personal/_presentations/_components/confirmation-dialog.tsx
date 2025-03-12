@@ -6,12 +6,17 @@ import { SparklesIcon } from "@heroicons/react/24/outline";
 import {
   useCreatePersonalAccount
 } from "@/app/(account)/accounts/create/personal/_presentations/_providers/create-personal-account";
+import { SubmitButton } from "@/core/presentations/submit-button";
 
 export function ConfirmationDialog() {
-  const { openConfirmationDialog, setOpenConfirmationDialog } = useCreatePersonalAccount();
+  const { openConfirmationDialog, setOpenConfirmationDialog, loading } = useCreatePersonalAccount();
 
   function handleClose(value: boolean) {
     setOpenConfirmationDialog?.(value);
+  }
+
+  function handleContinue() {
+    console.log("OK!");
   }
 
   return (
@@ -67,13 +72,15 @@ export function ConfirmationDialog() {
               </div>
             </div>
             <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-              <button
-                type="button"
-                data-autofocus
-                className="inline-flex w-full justify-center rounded-md bg-primary-default px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-default sm:col-start-2"
-              >
-                Setuju & Lanjutkan
-              </button>
+              <div className="sm:col-start-2">
+                <SubmitButton
+                  type="button"
+                  loading={loading}
+                  onClick={handleContinue}
+                >
+                  Setuju & Lanjutkan
+                </SubmitButton>
+              </div>
               <button
                 type="button"
                 onClick={() => setOpenConfirmationDialog?.(false)}
