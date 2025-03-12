@@ -17,6 +17,7 @@ import { LocalStorageSessionService } from "@/app/(authentication)/_data/_source
 import { SessionRepositoryImpl } from "@/app/(authentication)/_data/_repositories/session";
 import { AccountRepositoryImpl } from "@/app/(account)/_data/_repositories/account";
 import { AccountServiceImpl } from "@/app/(account)/_data/_sources/account";
+import { useRouter } from "next/navigation";
 
 interface CreatePersonalAccountContextProps {
   nationality: string;
@@ -66,6 +67,8 @@ const CreatePersonalAccountContext = createContext<CreatePersonalAccountContextP
 });
 
 export function CreatePersonalAccountProvider({ children }: { children: any }) {
+  const router = useRouter();
+
   const [nationality] = useState<string>("WNI");
 
   const [pob, setPob] = useState<string>("");
@@ -173,7 +176,7 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
       if (!account.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       // It is a success!
-      console.log("Account has been created!");
+      router.replace(`/accounts/${account.data.id}`);
     } catch (err: any) {
       setError(err);
     } finally {

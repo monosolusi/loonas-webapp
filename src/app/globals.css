@@ -38,7 +38,7 @@
 }
 
 :root {
-    --background: var(--color-white-default);
+    --background: var(--color-white-50);
     --foreground: #171717;
 }
 
