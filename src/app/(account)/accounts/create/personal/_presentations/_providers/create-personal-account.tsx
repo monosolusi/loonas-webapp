@@ -8,6 +8,15 @@ import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subd
 import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 import { DateTime } from "luxon";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { DataFailed } from "@/core/resources/data-state";
+import {
+  CreatePersonalAccountUseCase,
+  CreatePersonalAccountUseCaseParams
+} from "@/app/(account)/_domain/_usecases/create-personal-account";
+import { LocalStorageSessionService } from "@/app/(authentication)/_data/_sources/local-storage-session";
+import { SessionRepositoryImpl } from "@/app/(authentication)/_data/_repositories/session";
+import { AccountRepositoryImpl } from "@/app/(account)/_data/_repositories/account";
+import { AccountServiceImpl } from "@/app/(account)/_data/_sources/account";
 
 interface CreatePersonalAccountContextProps {
   nationality: string;
@@ -42,6 +51,7 @@ interface CreatePersonalAccountContextProps {
   setSubdistrict?: React.Dispatch<React.SetStateAction<SubdistrictEntity | undefined>>;
   setAddress?: React.Dispatch<React.SetStateAction<string>>;
   setOpenConfirmationDialog?: React.Dispatch<React.SetStateAction<boolean>>;
+  createAccount?: () => Promise<void>;
 }
 
 const CreatePersonalAccountContext = createContext<CreatePersonalAccountContextProps>({
@@ -76,9 +86,17 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
   const [subdistrict, setSubdistrict] = useState<SubdistrictEntity>();
   const [address, setAddress] = useState<string>("");
 
+  const [error, setError] = useState<Error>();
   const [loading, setLoading] = useState<boolean>(false);
   const [errorList, setErrorList] = useState<string[]>([]);
   const [openConfirmationDialog, setOpenConfirmationDialog] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (error) {
+      if (error instanceof ServerError && error.code === ErrorCodes.INCOMPLETE_FORM.code) return;
+      else throw error;
+    }
+  }, [error]);
 
   useEffect(() => {
     try {
@@ -95,6 +113,73 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
     }
 
   }, [dobDay, dobMonth, dobYear]);
+
+  async function createAccount() {
+    try {
+      setLoading(true);
+
+      // Making sure that all the data has been filled in.
+      const errorList = [];
+      if (!pob) errorList.push("Tempat lahir tidak boleh kosong");
+      if (!dob) errorList.push("Tanggal lahir tidak boleh kosong");
+      if (!identityDocument) errorList.push("Foto KTP tidak boleh kosong");
+      if (!idNumber) errorList.push("Nomor KTP tidak boleh kosong");
+      if (!fullName) errorList.push("Nama lengkap tidak boleh kosong");
+      if (!occupation) errorList.push("Pekerjaan tidak boleh kosong");
+      if (!province) errorList.push("Provinsi tidak boleh kosong");
+      if (!city) errorList.push("Kota tidak boleh kosong");
+      if (!district) errorList.push("Kecamatan tidak boleh kosong");
+      if (!subdistrict) errorList.push("Kelurahan tidak boleh kosong");
+      if (!address) errorList.push("Alamat tidak boleh kosong");
+
+      if (errorList.length > 0) {
+        setErrorList(errorList);
+        throw new ServerError(ErrorCodes.INCOMPLETE_FORM);
+      }
+
+      // Re-check again for the sake of typescript because typescript cannot detect the above check.
+      if (!identityDocument) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      if (!occupation) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      if (!dob) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      if (!province) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      if (!city) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      if (!district) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      if (!subdistrict) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      // We are sure we don't have any error, so we can proceed to create the account
+      const accountService = new AccountServiceImpl();
+      const sessionService = new LocalStorageSessionService();
+      const sessionRepository = new SessionRepositoryImpl(sessionService);
+      const accountRepository = new AccountRepositoryImpl(accountService);
+      const createAccount = new CreatePersonalAccountUseCase(accountRepository, sessionRepository);
+      const createAccountParams = new CreatePersonalAccountUseCaseParams(
+        nationality,
+        idNumber,
+        identityDocument,
+        fullName,
+        occupation,
+        pob,
+        dob,
+        province,
+        city,
+        district,
+        subdistrict,
+        address
+      );
+
+
+      const account = await createAccount.execute(createAccountParams);
+      if (account instanceof DataFailed) throw account.error;
+      if (!account.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      // It is a success!
+      console.log("Account has been created!");
+    } catch (err: any) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <CreatePersonalAccountContext.Provider
@@ -130,7 +215,8 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
         setDistrict,
         setSubdistrict,
         setAddress,
-        setOpenConfirmationDialog
+        setOpenConfirmationDialog,
+        createAccount
       }}
     >
       {children}

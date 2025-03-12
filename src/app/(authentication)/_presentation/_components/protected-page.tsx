@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { LocalStorageSessionService } from "@/app/(authentication)/_data/_sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/app/(authentication)/_data/_repositories/session";
-import { UserServiceImpl } from "@/app/(user)/_data/_data/user";
+import { UserServiceImpl } from "@/app/(user)/_data/_sources/user";
 import { UserRepositoryImpl } from "@/app/(user)/_data/_repositories/user";
 import { CheckSessionUseCase } from "@/app/(authentication)/_domain/_usecases/check-session";
 import { DataFailed } from "@/core/resources/data-state";

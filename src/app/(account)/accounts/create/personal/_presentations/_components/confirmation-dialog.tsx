@@ -9,14 +9,14 @@ import {
 import { SubmitButton } from "@/core/presentations/submit-button";
 
 export function ConfirmationDialog() {
-  const { openConfirmationDialog, setOpenConfirmationDialog, loading } = useCreatePersonalAccount();
+  const { openConfirmationDialog, setOpenConfirmationDialog, loading, createAccount } = useCreatePersonalAccount();
 
   function handleClose(value: boolean) {
     setOpenConfirmationDialog?.(value);
   }
 
   function handleContinue() {
-    console.log("OK!");
+    createAccount?.();
   }
 
   return (

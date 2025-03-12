@@ -10,7 +10,7 @@ import { SaveSessionUseCase, SaveSessionUseCaseParams } from "@/app/(authenticat
 import { SessionRepositoryImpl } from "@/app/(authentication)/_data/_repositories/session";
 import { LocalStorageSessionService } from "@/app/(authentication)/_data/_sources/local-storage-session";
 import { UserRepositoryImpl } from "@/app/(user)/_data/_repositories/user";
-import { UserServiceImpl } from "@/app/(user)/_data/_data/user";
+import { UserServiceImpl } from "@/app/(user)/_data/_sources/user";
 import { useRouter } from "next/navigation";
 import { CheckSessionUseCase } from "@/app/(authentication)/_domain/_usecases/check-session";
 

@@ -2,7 +2,7 @@ import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/oc
 
 interface OccupationModelConstructor {
   id: string;
-  label: string;
+  label?: string;
 }
 
 export class OccupationModel {
@@ -11,7 +11,7 @@ export class OccupationModel {
 
   constructor({ id, label }: OccupationModelConstructor) {
     this.id = id;
-    this.label = label;
+    this.label = label || id;
   }
 
   public static fromJson(json: Record<string, any>): OccupationModel {

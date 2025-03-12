@@ -1,6 +1,7 @@
 type ErrorStructureType = { code: string; httpCode: number; message: string };
 
 export class ErrorCodes {
+  public static readonly INCOMPLETE_FORM = { code: "INCOMPLETE_FORM", httpCode: 400, message: "Incomplete form" };
   public static readonly INVALID_PASSWORD = {
     code: "INVALID_PASSWORD",
     httpCode: 400,

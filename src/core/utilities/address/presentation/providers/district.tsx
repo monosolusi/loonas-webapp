@@ -32,13 +32,15 @@ export function DistrictProvider({ cityId, children }: { cityId?: string, childr
 
       setLoading(true);
 
-      const districtService = new DistrictServiceImpl();
       const provinceService = new ProvinceServiceImpl();
       const cityService = new CityServiceImpl();
+      const districtService = new DistrictServiceImpl();
+      const subdistrictService = new DistrictServiceImpl();
       const addressRepository = new AddressRepositoryImpl(
         provinceService,
         cityService,
-        districtService
+        districtService,
+        subdistrictService
       );
 
       const lDistrict = new ListDistrictUseCase(addressRepository);

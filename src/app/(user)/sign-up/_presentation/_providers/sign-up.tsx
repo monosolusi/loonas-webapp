@@ -11,7 +11,7 @@ import { SessionRepositoryImpl } from "@/app/(authentication)/_data/_repositorie
 import { SaveSessionUseCase, SaveSessionUseCaseParams } from "@/app/(authentication)/_domain/_usecases/save-session";
 import { useRouter } from "next/navigation";
 import { UserSignUpUseCase, UserSignUpUseCaseParams } from "@/app/(user)/_domain/_usecases/sign-up";
-import { UserServiceImpl } from "@/app/(user)/_data/_data/user";
+import { UserServiceImpl } from "@/app/(user)/_data/_sources/user";
 import { UserRepositoryImpl } from "@/app/(user)/_data/_repositories/user";
 import { UserSignOutUseCase } from "@/app/(authentication)/_domain/_usecases/user-sign-out";
 
