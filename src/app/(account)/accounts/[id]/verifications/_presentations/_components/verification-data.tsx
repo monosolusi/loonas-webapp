@@ -58,8 +58,8 @@ export function VerificationData() {
           <div>
             <h2 className="text-base/7 font-semibold text-gray-900">Berkas yang Sudah Dikirim</h2>
             <p className="mt-1 text-sm/6 text-gray-500">
-              Ini adalah berkas akun yang sudah kamu kirim. Verifikasi sedang diproses, estimasi selesai pada 15 Maret
-              2025. Mohon ditunggu ya!
+              Ini adalah berkas akun yang sudah kamu kirim. Verifikasi sedang diproses, estimasi selesai
+              pada {accountVerificationWork?.estimatedVerificationComplete.toFormat("dd MMMM yyyy")} Mohon ditunggu ya!
             </p>
 
             <dl className="mt-6 divide-y divide-gray-100 border-t border-gray-200 text-sm/6">
