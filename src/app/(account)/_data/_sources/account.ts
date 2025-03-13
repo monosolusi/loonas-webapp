@@ -27,11 +27,36 @@ export abstract class AccountService {
   ): Promise<PersonalAccountModel>;
 
   public abstract retrieveVerificationWork(accountId: string, session: SessionEntity): Promise<AccountVerificationWorkModel> ;
+
+  public abstract list(session: SessionEntity): Promise<PersonalAccountModel[]>;
 }
 
 export class AccountServiceImpl implements AccountService {
 
   constructor() {
+  }
+
+  public async list(session: SessionEntity): Promise<PersonalAccountModel[]> {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
+      if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const url = `${baseUrl}/accounts`;
+      const headers = { Authorization: `Bearer ${session.accessToken}` };
+      const response = await fetch(url, { headers });
+
+      if (!response.ok) {
+        const data = await response.json();
+        if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
+        throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
+      }
+
+      const data = await response.json();
+      return data.map(PersonalAccountModel.fromJson);
+    } catch (err: any) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
   }
 
   public async retrieveVerificationWork(accountId: string, session: SessionEntity): Promise<AccountVerificationWorkModel> {

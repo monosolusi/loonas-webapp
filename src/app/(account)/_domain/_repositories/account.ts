@@ -27,4 +27,6 @@ export abstract class AccountRepository {
   ): Promise<DataState<PersonalAccountEntity>>
 
   public abstract retrieveVerificationWork(accountId: string, session: SessionEntity): Promise<DataState<AccountVerificationWorkEntity>>
+
+  public abstract list(session: SessionEntity): Promise<DataState<PersonalAccountEntity[]>>
 }

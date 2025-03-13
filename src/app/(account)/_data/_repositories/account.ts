@@ -18,6 +18,15 @@ export class AccountRepositoryImpl implements AccountRepository {
   ) {
   }
 
+  public async list(session: SessionEntity): Promise<DataState<PersonalAccountEntity[]>> {
+    try {
+      const accounts = await this.accountService.list(session);
+      return new DataSuccess(accounts.map(account => account.toEntity()));
+    } catch (err: any) {
+      return new DataFailed(err);
+    }
+  }
+
   public async retrieveVerificationWork(accountId: string, session: SessionEntity): Promise<DataState<AccountVerificationWorkEntity>> {
     try {
       const work = await this.accountService.retrieveVerificationWork(accountId, session);
