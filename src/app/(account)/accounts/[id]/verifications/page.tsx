@@ -6,6 +6,9 @@ import {
   VerificationProgress
 } from "@/app/(account)/accounts/[id]/verifications/_presentations/_components/verification-progress";
 import { VerificationData } from "./_presentations/_components/verification-data";
+import {
+  AccountVerificationWorkProvider
+} from "@/app/(account)/accounts/[id]/verifications/_presentations/_providers/account-verification-works";
 
 
 export default async function AccountDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -18,11 +21,13 @@ export default async function AccountDetailPage({ params }: { params: Promise<{ 
         <PageMain>
           {/*<PageHeading withBackground={false}>Sedang Verifikasi</PageHeading>*/}
           <PageContent>
-            {/* Make a minus margin, to compensate the margin from PageContent because of Progress*/}
-            <div className="-my-4 -mx-4 sm:-mx-6 lg:-mx-8">
-              <VerificationProgress />
-            </div>
-            <VerificationData />
+            <AccountVerificationWorkProvider id={id}>
+              {/* Make a minus margin, to compensate the margin from PageContent because of Progress*/}
+              <div className="-my-4 -mx-4 sm:-mx-6 lg:-mx-8">
+                <VerificationProgress />
+              </div>
+              <VerificationData />
+            </AccountVerificationWorkProvider>
           </PageContent>
         </PageMain>
       </div>

@@ -7,6 +7,7 @@ import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subd
 import { DateTime } from "luxon";
 import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 import { SessionEntity } from "@/app/(authentication)/_domain/_entities/session";
+import { AccountVerificationWorkEntity } from "@/app/(account)/_domain/_entities/account-verification-work";
 
 export abstract class AccountRepository {
   public abstract createPersonal(
@@ -24,4 +25,6 @@ export abstract class AccountRepository {
     address: string,
     session: SessionEntity
   ): Promise<DataState<PersonalAccountEntity>>
+
+  public abstract retrieveVerificationWork(accountId: string, session: SessionEntity): Promise<DataState<AccountVerificationWorkEntity>>
 }

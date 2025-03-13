@@ -1,33 +1,56 @@
-import React from "react";
+"use client";
 
-const data = [
-  {
-    label: "Kewarganegaraan",
-    value: "Warga Negara Indonesia"
-  },
-  {
-    label: "Nomor Kartu Identitas",
-    value: "KTP - 1234567812345678"
-  },
-  {
-    label: "Nama Lengkap",
-    value: "Frans Siswanto"
-  },
-  {
-    label: "Pekerjaan",
-    value: "Pegawai Swasta"
-  },
-  {
-    label: "Tempat & Tanggal Lahir",
-    value: "Surabaya, 01 Januari 2008"
-  },
-  {
-    label: "Alamat",
-    value: "Graha Natura AC59, Lontar, Sambikerep, Kota Surabaya, Jawa Timur"
-  }
-];
+import React, { useEffect, useState } from "react";
+import {
+  useAccountVerificationWork
+} from "@/app/(account)/accounts/[id]/verifications/_presentations/_providers/account-verification-works";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+
 
 export function VerificationData() {
+  const [data, setData] = useState<Record<string, any>[]>([]);
+  const [accountVerificationWork] = useAccountVerificationWork();
+
+  function inferNationality(nationality: string) {
+    if (nationality === "WNI") return "Warga Negara Indonesia";
+    else if (nationality === "WNA") return "Warga Negara Asing";
+    else throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+  }
+
+  useEffect(() => {
+    if (!accountVerificationWork) return;
+
+    const { account } = accountVerificationWork;
+    const data = [
+      {
+        label: "Kewarganegaraan",
+        value: inferNationality(account.nationality)
+      },
+      {
+        label: "Nomor Kartu Identitas",
+        value: `KTP - ${account.idNumber}`
+      },
+      {
+        label: "Nama Lengkap",
+        value: account.fullName
+      },
+      {
+        label: "Pekerjaan",
+        value: account.occupation.label
+      },
+      {
+        label: "Tempat & Tanggal Lahir",
+        value: `${account.pob}, ${account.dob.toFormat("dd MMMM yyyy")}`
+      },
+      {
+        label: "Alamat",
+        value: `${account.address}, ${account.subdistrict.label}, ${account.district.label}, ${account.city.label}, ${account.province.label}`
+      }
+    ];
+
+    setData(data);
+  }, [accountVerificationWork]);
+
   return (
     <>
       <main className="px-4 py-16 sm:px-6 lg:flex-auto lg:px-0 lg:py-20">

@@ -66,7 +66,7 @@ export class PersonalAccountModel implements AbstractModel {
       nationality: data["nationality"],
       idNumber: data["id_number"],
       fullName: data["full_name"],
-      occupation: new OccupationModel({ id: data["occupation_id"] }),
+      occupation: new OccupationModel({ id: data["occupation"] }),
       pob: data["place_of_birth"],
       dob: DateTime.fromISO(data["date_of_birth"]),
       province: new ProvinceModel({ id: data["province_id"], label: data["province"] }),

@@ -1,28 +1,32 @@
+"use client";
+
 import React from "react";
 import { CheckIcon } from "@heroicons/react/24/solid";
+import {
+  useAccountVerificationWork
+} from "@/app/(account)/accounts/[id]/verifications/_presentations/_providers/account-verification-works";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { VerificationStatus } from "@/app/(account)/_presentation/_enums/verification-status";
 
 
 const steps = [
   {
-    id: "01",
+    orderNumber: "01",
+    id: "NEW",
     name: "Berkas Diterima",
-    description: "Berkasmu sudah diterima.",
-    href: "#",
-    status: "current"
+    description: "Berkasmu sudah diterima."
   },
   {
-    id: "02",
+    orderNumber: "02",
+    id: "PROCESSING",
     name: "Verifikasi Berlangsung",
-    description: "Tim Loonas sedang memverifikasi akunmu.",
-    href: "#",
-    status: "upcoming"
+    description: "Tim Loonas sedang memverifikasi akunmu."
   },
   {
-    id: "03",
+    orderNumber: "03",
+    id: "COMPLETED",
     name: "Selesai",
-    description: "Diperkirakan selesai 15 Maret 2025.",
-    href: "#",
-    status: "upcoming"
+    description: "Diperkirakan selesai."
   }
 ];
 
@@ -32,6 +36,33 @@ function classNames(...classes: any) {
 }
 
 export function VerificationProgress() {
+  const [accountVerificationWork] = useAccountVerificationWork();
+
+  function generateDescription(stepId: string) {
+    const step = steps.find((step) => step.id === stepId);
+    if (!step) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+    if (!accountVerificationWork) return step.description;
+    if (stepId === "COMPLETED") {
+      const formattedCompleteDate = accountVerificationWork.estimatedVerificationComplete.toFormat("dd MMMM yyyy");
+      return `${step.description} ${formattedCompleteDate}`;
+    }
+
+    return step.description;
+  }
+
+  function inferStepStatus(stepId: string) {
+    const step = steps.find((step) => step.id === stepId);
+    if (!step) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+    if (!accountVerificationWork) return "upcoming";
+    const latestStatus = accountVerificationWork.latestStatus;
+
+    if (stepId === latestStatus) return "current";
+    if (stepId === VerificationStatus.NEW && latestStatus !== VerificationStatus.NEW) return "completed";
+    return "upcoming"; // All other cases: "upcoming"
+  }
+
   return (
     <div className="lg:border-t lg:border-b lg:border-gray-200">
       <nav aria-label="Progress" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -48,8 +79,8 @@ export function VerificationProgress() {
                   "overflow-hidden border border-gray-200 lg:border-0"
                 )}
               >
-                {step.status === "complete" ? (
-                  <a href={step.href} className="group">
+                {inferStepStatus(step.id) === "completed" ? (
+                  <div className="group">
                     <span
                       aria-hidden="true"
                       className="absolute top-0 left-0 h-full w-1 bg-transparent group-hover:bg-gray-200 lg:top-auto lg:bottom-0 lg:h-1 lg:w-full"
@@ -67,12 +98,12 @@ export function VerificationProgress() {
                       </span>
                       <span className="mt-0.5 ml-4 flex min-w-0 flex-col">
                         <span className="text-sm font-medium">{step.name}</span>
-                        <span className="text-sm font-medium text-gray-500">{step.description}</span>
+                        <span className="text-sm font-medium text-gray-500">{generateDescription(step.id)}</span>
                       </span>
                     </span>
-                  </a>
-                ) : step.status === "current" ? (
-                  <a href={step.href} aria-current="step">
+                  </div>
+                ) : inferStepStatus(step.id) === "current" ? (
+                  <div aria-current="step">
                     <span
                       aria-hidden="true"
                       className="absolute top-0 left-0 h-full w-1 bg-primary-default lg:top-auto lg:bottom-0 lg:h-1 lg:w-full"
@@ -86,17 +117,17 @@ export function VerificationProgress() {
                       <span className="shrink-0">
                         <span
                           className="flex size-10 items-center justify-center rounded-full border-2 border-primary-default">
-                          <span className="text-primary-default">{step.id}</span>
+                          <span className="text-primary-default">{step.orderNumber}</span>
                         </span>
                       </span>
                       <span className="mt-0.5 ml-4 flex min-w-0 flex-col">
                         <span className="text-sm font-medium text-primary-default">{step.name}</span>
-                        <span className="text-sm font-medium text-gray-500">{step.description}</span>
+                        <span className="text-sm font-medium text-gray-500">{generateDescription(step.id)}</span>
                       </span>
                     </span>
-                  </a>
+                  </div>
                 ) : (
-                  <a href={step.href} className="group">
+                  <div className="group">
                     <span
                       aria-hidden="true"
                       className="absolute top-0 left-0 h-full w-1 bg-transparent group-hover:bg-gray-200 lg:top-auto lg:bottom-0 lg:h-1 lg:w-full"
@@ -110,15 +141,15 @@ export function VerificationProgress() {
                       <span className="shrink-0">
                         <span
                           className="flex size-10 items-center justify-center rounded-full border-2 border-gray-300">
-                          <span className="text-gray-500">{step.id}</span>
+                          <span className="text-gray-500">{step.orderNumber}</span>
                         </span>
                       </span>
                       <span className="mt-0.5 ml-4 flex min-w-0 flex-col">
                         <span className="text-sm font-medium text-gray-500">{step.name}</span>
-                        <span className="text-sm font-medium text-gray-500">{step.description}</span>
+                        <span className="text-sm font-medium text-gray-500">{generateDescription(step.id)}</span>
                       </span>
                     </span>
-                  </a>
+                  </div>
                 )}
 
                 {stepIdx !== 0 ? (

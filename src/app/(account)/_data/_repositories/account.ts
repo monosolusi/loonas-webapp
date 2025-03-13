@@ -9,12 +9,22 @@ import { DateTime } from "luxon";
 import { PersonalAccountEntity } from "../../_domain/_entities/personal-account";
 import { AccountService } from "../_sources/account";
 import { SessionEntity } from "@/app/(authentication)/_domain/_entities/session";
+import { AccountVerificationWorkEntity } from "../../_domain/_entities/account-verification-work";
 
 export class AccountRepositoryImpl implements AccountRepository {
 
   constructor(
     private readonly accountService: AccountService
   ) {
+  }
+
+  public async retrieveVerificationWork(accountId: string, session: SessionEntity): Promise<DataState<AccountVerificationWorkEntity>> {
+    try {
+      const work = await this.accountService.retrieveVerificationWork(accountId, session);
+      return new DataSuccess(work.toEntity());
+    } catch (err: any) {
+      return new DataFailed(err);
+    }
   }
 
   public async createPersonal(

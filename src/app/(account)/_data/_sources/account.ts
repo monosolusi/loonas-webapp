@@ -7,6 +7,7 @@ import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subd
 import { PersonalAccountModel } from "../_models/personal-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/app/(authentication)/_domain/_entities/session";
+import { AccountVerificationWorkModel } from "../_models/account-verification-work";
 
 export abstract class AccountService {
   public abstract createPersonal(
@@ -24,11 +25,36 @@ export abstract class AccountService {
     address: string,
     session: SessionEntity
   ): Promise<PersonalAccountModel>;
+
+  public abstract retrieveVerificationWork(accountId: string, session: SessionEntity): Promise<AccountVerificationWorkModel> ;
 }
 
 export class AccountServiceImpl implements AccountService {
 
   constructor() {
+  }
+
+  public async retrieveVerificationWork(accountId: string, session: SessionEntity): Promise<AccountVerificationWorkModel> {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
+      if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const url = `${baseUrl}/accounts/${accountId}/verification-works`;
+      const headers = { Authorization: `Bearer ${session.accessToken}` };
+      const response = await fetch(url, { headers });
+
+      if (!response.ok) {
+        const data = await response.json();
+        if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
+        throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
+      }
+
+      const data = await response.json();
+      return AccountVerificationWorkModel.fromJson(data);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
   }
 
   public async createPersonal(
