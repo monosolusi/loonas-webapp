@@ -176,7 +176,7 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
       if (!account.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       // It is a success!
-      router.replace(`/accounts/${account.data.id}`);
+      router.replace(`/accounts/${account.data.id}/verifications`);
     } catch (err: any) {
       setError(err);
     } finally {

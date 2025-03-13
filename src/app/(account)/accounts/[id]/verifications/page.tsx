@@ -2,7 +2,9 @@ import { ProtectedPage } from "@/app/(authentication)/_presentation/_components/
 import { Header } from "@/app/(home)/home/_components/header";
 import { PageMain } from "@/core/presentations/page-main";
 import { PageContent } from "@/core/presentations/page-content";
-import { VerificationProgress } from "@/app/(account)/accounts/[id]/_presentations/_components/verification-progress";
+import {
+  VerificationProgress
+} from "@/app/(account)/accounts/[id]/verifications/_presentations/_components/verification-progress";
 import { VerificationData } from "./_presentations/_components/verification-data";
 
 
