@@ -16,7 +16,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html className="h-full" lang="id">
+    <html className="h-full scrollbar-hide" lang="id">
     <body className="h-full">
     {children}
     </body>

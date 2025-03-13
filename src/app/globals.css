@@ -37,6 +37,19 @@
     --color-white-pure: #ffffff;
 }
 
+@utility scrollbar-hide {
+    /* Hide scrollbar for Chrome, Safari, and Edge */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* For Firefox */
+    scrollbar-width: none;
+
+    /* For IE and Edge (older versions) - consider if you still need this */
+    -ms-overflow-style: none;
+}
+
 :root {
     --background: var(--color-white-50);
     --foreground: #171717;

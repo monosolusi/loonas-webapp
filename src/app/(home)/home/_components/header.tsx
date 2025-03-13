@@ -4,7 +4,8 @@ import { Bars3Icon } from "@heroicons/react/20/solid";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
+import { HeaderAccountList } from "@/app/(home)/home/_components/header-account-list";
 
 const navigation = [
   { name: "Home", href: "/home" },
@@ -36,19 +37,8 @@ export function Header() {
             </a>
           ))}
         </nav>
-        <div className="flex flex-1 items-center justify-end gap-x-8">
-          {/*<button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">*/}
-          {/*  <span className="sr-only">View notifications</span>*/}
-          {/*  <BellIcon aria-hidden="true" className="size-6" />*/}
-          {/*</button>*/}
-          <a href="#" className="-m-1.5 p-1.5">
-            <span className="sr-only">Your profile</span>
-            <img
-              alt=""
-              src="https://res.cloudinary.com/monosolusi/image/upload/v1741438832/loonas/web-assets/user-icon_l5lndy.svg"
-              className="size-10 rounded-full bg-white"
-            />
-          </a>
+        <div className="hidden sm:flex flex-1 items-center justify-end gap-x-8">
+          <HeaderAccountList />
         </div>
       </div>
       <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
@@ -62,7 +52,7 @@ export function Header() {
             </button>
             <div className="-ml-0.5">
               <a href="#" className="-m-1.5 block p-1.5">
-                <span className="sr-only">Your Company</span>
+                <span className="sr-only">Loonas</span>
                 <img
                   alt="Loonas"
                   src="https://res.cloudinary.com/monosolusi/image/upload/v1740993366/loonas/web-assets/loonas-logo_rspb5c.svg"
@@ -70,6 +60,9 @@ export function Header() {
                 />
               </a>
             </div>
+          </div>
+          <div className="mt-2">
+            <HeaderAccountList />
           </div>
           <div className="mt-2 space-y-2">
             {navigation.map((item) => (
