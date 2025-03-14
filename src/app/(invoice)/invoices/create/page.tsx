@@ -7,8 +7,8 @@ import {
   useSelectedAccountProvider
 } from "@/app/(authentication)/_presentation/_components/protected-page";
 import { Header } from "@/app/(home)/home/_components/header";
-import { PageContent } from "@/core/presentations/page-content";
-import { PageMain } from "@/core/presentations/page-main";
+import { PageContent } from "@/core/presentations/components/page-content";
+import { PageMain } from "@/core/presentations/components/page-main";
 import { LocalStorageSessionService } from "@/app/(authentication)/_data/_sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/app/(authentication)/_data/_repositories/session";
 import { AccountServiceImpl } from "@/app/(account)/_data/_sources/account";

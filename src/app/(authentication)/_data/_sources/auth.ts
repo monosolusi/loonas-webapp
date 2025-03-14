@@ -2,10 +2,35 @@ import { SessionModel } from "@/app/(authentication)/_data/_models/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 export abstract class AuthService {
-  abstract signIn(email: string, password: string): Promise<SessionModel>;
+  public abstract signIn(email: string, password: string): Promise<SessionModel>;
+
+  public abstract sendPasswordResetEmail(email: string): Promise<boolean>;
 }
 
 export class AuthServiceImpl implements AuthService {
+  public async sendPasswordResetEmail(email: string): Promise<boolean> {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
+      if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const url = `${baseUrl}/auth/user-credentials/reset-password`;
+      const body = { email };
+      const headers = { "Content-Type": "application/json" };
+      const response = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
+
+      if (!response.ok) {
+        const data = await response.json();
+        if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
+        throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
+      }
+
+      return true;
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
   public async signIn(email: string, password: string): Promise<SessionModel> {
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;

@@ -1,7 +1,7 @@
 import { ProtectedPage } from "@/app/(authentication)/_presentation/_components/protected-page";
 import { Header } from "@/app/(home)/home/_components/header";
-import { PageMain } from "@/core/presentations/page-main";
-import { PageContent } from "@/core/presentations/page-content";
+import { PageMain } from "@/core/presentations/components/page-main";
+import { PageContent } from "@/core/presentations/components/page-content";
 import {
   VerificationProgress
 } from "@/app/(account)/accounts/[id]/verifications/_presentations/_components/verification-progress";

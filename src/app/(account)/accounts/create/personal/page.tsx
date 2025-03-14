@@ -1,9 +1,9 @@
 import React from "react";
 import { ProtectedPage } from "@/app/(authentication)/_presentation/_components/protected-page";
-import { PageHeading } from "@/core/presentations/page-heading";
-import { PageMain } from "@/core/presentations/page-main";
+import { PageHeading } from "@/core/presentations/components/page-heading";
+import { PageMain } from "@/core/presentations/components/page-main";
 import { Header } from "@/app/(home)/home/_components/header";
-import { PageContent } from "@/core/presentations/page-content";
+import { PageContent } from "@/core/presentations/components/page-content";
 import {
   CreatePersonalAccountProvider
 } from "@/app/(account)/accounts/create/personal/_presentations/_providers/create-personal-account";

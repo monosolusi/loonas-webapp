@@ -1,12 +1,12 @@
 import React from "react";
 import { ProtectedPage } from "@/app/(authentication)/_presentation/_components/protected-page";
 import { Header } from "@/app/(home)/home/_components/header";
-import { PageHeading } from "@/core/presentations/page-heading";
-import { PageMain } from "@/core/presentations/page-main";
-import { Card } from "@/core/presentations/card";
+import { PageHeading } from "@/core/presentations/components/page-heading";
+import { PageMain } from "@/core/presentations/components/page-main";
+import { Card } from "@/core/presentations/components/card";
 import { AccountSelector } from "@/app/(account)/accounts/create/_presentations/_coomponents/account-selector";
 import { CreateAccountQuestions } from "@/app/(account)/accounts/create/_presentations/_coomponents/create-account-faq";
-import { PageContent } from "@/core/presentations/page-content";
+import { PageContent } from "@/core/presentations/components/page-content";
 
 export default function CreateAccountPage() {
   return (

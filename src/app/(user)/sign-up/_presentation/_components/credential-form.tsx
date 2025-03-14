@@ -2,8 +2,8 @@
 
 import React from "react";
 import { PasswordInput } from "./password-input";
-import { EmailInput } from "./email-input";
 import { useSignUpProvider } from "@/app/(user)/sign-up/_presentation/_providers/sign-up";
+import { EmailInput } from "@/core/presentations/components/email-input";
 
 export function CredentialForm() {
   const {

@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { EmailInput } from "@/app/(authentication)/sign-in/_presentation/_components/email-input";
+import { EmailInput } from "@/core/presentations/components/email-input";
 import { PasswordInput } from "@/app/(authentication)/sign-in/_presentation/_components/password-input";
 import { useSignInProvider } from "@/app/(authentication)/sign-in/_presentation/_providers/sign-in";
-import { SubmitButton } from "@/core/presentations/submit-button";
+import { SubmitButton } from "@/core/presentations/components/submit-button";
+import Link from "next/link";
 
 export function CredentialForm() {
   const { email, password, setEmail, setPassword, login, loading } = useSignInProvider();
@@ -21,9 +22,9 @@ export function CredentialForm() {
 
       <div className="flex items-center justify-between">
         <div className="text-sm/6">
-          <a href="#" className="font-semibold text-primary-600 hover:text-primary-500">
+          <Link href="/reset-password" className="font-semibold text-primary-600 hover:text-primary-500">
             Lupa Kata Sandi?
-          </a>
+          </Link>
         </div>
       </div>
 

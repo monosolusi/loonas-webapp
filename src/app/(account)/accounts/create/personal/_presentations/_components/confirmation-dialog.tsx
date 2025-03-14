@@ -6,7 +6,7 @@ import { SparklesIcon } from "@heroicons/react/24/outline";
 import {
   useCreatePersonalAccount
 } from "@/app/(account)/accounts/create/personal/_presentations/_providers/create-personal-account";
-import { SubmitButton } from "@/core/presentations/submit-button";
+import { SubmitButton } from "@/core/presentations/components/submit-button";
 
 export function ConfirmationDialog() {
   const { openConfirmationDialog, setOpenConfirmationDialog, loading, createAccount } = useCreatePersonalAccount();
