@@ -31,6 +31,11 @@ function HeaderAccountListComponent() {
     if (error) throw error;
   }, [error]);
 
+  useEffect(() => {
+    // Only for the first render, it will select the first account if there is no selected account
+    if (!selectedAccount && accounts?.length) changeAccount?.(accounts[0]);
+  }, [selectedAccount, accounts]);
+
   function generateShortAccountId(id: string) {
     return id.substring(0, 6).toUpperCase();
   }
