@@ -39,6 +39,7 @@ export default function CreateAccountPage() {
                       title="Akun Bisnis"
                       description="Akun untuk transaksi atas nama perusahaan yang memerlukan verifikasi dengan dokumen bisnis."
                       img="https://res.cloudinary.com/monosolusi/image/upload/v1741490456/loonas/web-assets/business-account_aok71v.svg"
+                      disabled
                     />
                   </div>
                 </Card>
