@@ -1,20 +1,25 @@
-'use client';
+"use client";
 
 import React from "react";
 
-export function PasswordInput({value, onChange}: { value?: string, onChange?: (value: string) => void }) {
+export function PasswordInput({ id, value, onChange, label }: {
+  value?: string,
+  onChange?: (value: string) => void,
+  label?: string
+  id?: string
+}) {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (onChange) onChange(e.target.value);
   }
 
   return (
     <div>
-      <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
-        Kata Sandi
+      <label htmlFor={id || "password"} className="block text-sm/6 font-medium text-gray-900">
+        {label || "Kata Sandi"}
       </label>
       <div className="mt-2">
         <input
-          id="password"
+          id={id || "password"}
           name="password"
           type="password"
           autoComplete="current-password"
@@ -25,5 +30,5 @@ export function PasswordInput({value, onChange}: { value?: string, onChange?: (v
         />
       </div>
     </div>
-  )
+  );
 }

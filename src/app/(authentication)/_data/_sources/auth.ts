@@ -5,9 +5,36 @@ export abstract class AuthService {
   public abstract signIn(email: string, password: string): Promise<SessionModel>;
 
   public abstract sendPasswordResetEmail(email: string): Promise<boolean>;
+
+  public abstract submitNewPassword(resetToken: string, password: string): Promise<boolean>;
 }
 
 export class AuthServiceImpl implements AuthService {
+  public async submitNewPassword(resetToken: string, password: string): Promise<boolean> {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
+      if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const url = `${baseUrl}/auth/user-credentials/change-password`;
+      const headers = {
+        "X-Reset-Token": resetToken,
+        "X-New-Credential": btoa(password)
+      };
+
+      const response = await fetch(url, { method: "PATCH", headers });
+      if (!response.ok) {
+        const data = await response.json();
+        if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
+        throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
+      }
+
+      return true;
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
   public async sendPasswordResetEmail(email: string): Promise<boolean> {
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
