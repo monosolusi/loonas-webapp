@@ -24,6 +24,9 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Place .env file
+        run: echo "NEXT_PUBLIC_BASE_API_URL=https://api.loonas.id" > .env
+
       - name: Build the Docker image
         run: docker build -t ${{ vars.DOCKERHUB_USERNAME }}/loonas-webapp:${{ steps.random-tag.outputs.random-tag }} .
 
@@ -44,4 +47,4 @@ jobs:
             docker pull ${{ vars.DOCKERHUB_USERNAME }}/loonas-webapp:${{ needs.build-and-push.outputs.random-tag  }}
             docker stop loonas_webapp || true  
             docker rm loonas_webapp || true   
-            docker run -d --name loonas_webapp --network sancaka --env-file .loonas_webapp.env ${{ vars.DOCKERHUB_USERNAME }}/loonas-webapp:${{ needs.build-and-push.outputs.random-tag  }}
+            docker run -d --name loonas_webapp --network sancaka ${{ vars.DOCKERHUB_USERNAME }}/loonas-webapp:${{ needs.build-and-push.outputs.random-tag  }}
