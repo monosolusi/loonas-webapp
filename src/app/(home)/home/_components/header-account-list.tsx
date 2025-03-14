@@ -1,8 +1,12 @@
+"use client";
+
 import React from "react";
+import Link from "next/link";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon, PlusIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import { AccountListProvider, useAccountListProvider } from "@/app/(account)/_presentation/_providers/account-list";
+import { useSelectedAccountProvider } from "@/app/(authentication)/_presentation/_components/protected-page";
+import { PersonalAccountEntity } from "@/app/(account)/_domain/_entities/personal-account";
 
 export function HeaderAccountList() {
   return (
@@ -14,13 +18,23 @@ export function HeaderAccountList() {
 
 function HeaderAccountListComponent() {
   const [accounts] = useAccountListProvider();
+  const { selectedAccount, changeAccount } = useSelectedAccountProvider();
+
+  function generateShortAccountId(id: string) {
+    return id.substring(0, 6).toUpperCase();
+  }
+
+  function generateSelectedAccountLabel(selectedAccount?: PersonalAccountEntity) {
+    if (!selectedAccount) return "Pilih Akun";
+    else return `${selectedAccount.fullName} (ID: ${generateShortAccountId(selectedAccount.id)})`;
+  }
 
   return (
     <Menu as="div" className="relative sm:inline-block text-left">
       <div>
         <MenuButton
           className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">
-          Frans Siswanto
+          {generateSelectedAccountLabel(selectedAccount)}
           <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-gray-400" />
         </MenuButton>
       </div>
@@ -31,11 +45,13 @@ function HeaderAccountListComponent() {
       >
         <div className="py-1">
           {accounts?.slice(0, 3).map((account) => (
-            <MenuItem>
+            <MenuItem disabled={account.id === selectedAccount?.id} key={account.id}>
               <div
-                className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden">
+                onClick={() => changeAccount?.(account)}
+                className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed"
+              >
                 <p>{account.fullName}</p>
-                <p className="text-xs/5 text-gray-500">ID: JF84QF</p>
+                <p className="text-xs/5 text-gray-500">ID: {generateShortAccountId(account.id)}</p>
               </div>
             </MenuItem>
           ))}
