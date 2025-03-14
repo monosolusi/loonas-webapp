@@ -87,7 +87,7 @@ export function Main({ resetToken }: { resetToken: string }) {
               label={"Ulangi Sandi"}
             />
 
-            <SubmitButton>Ubah Password</SubmitButton>
+            <SubmitButton loading={loading}>Ubah Password</SubmitButton>
           </form>
         </div>
       </div>
