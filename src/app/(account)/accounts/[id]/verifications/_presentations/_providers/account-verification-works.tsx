@@ -43,7 +43,7 @@ export function AccountVerificationWorkProvider({ children, id }: { children: an
       const accountVerificationWork = await retrieve.execute(retrieveParams);
       if (accountVerificationWork instanceof DataFailed) throw accountVerificationWork.error;
       if (!accountVerificationWork.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      
+
       setAccountVerificationWork(accountVerificationWork.data);
     } catch (err: any) {
       setError(err);

@@ -1,3 +1,8 @@
+/**
+ * I created this under the assumption that the account feature should have verification functionality as well
+ * However, I later found out that, it should be better to separate the account features with verification features.
+ * TODO: Move this to verification folder
+ */
 import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { AccountVerificationWorkEntity } from "@/app/(account)/_domain/_entities/account-verification-work";
