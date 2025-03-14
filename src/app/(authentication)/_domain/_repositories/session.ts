@@ -10,4 +10,6 @@ export abstract class SessionRepository {
   public abstract saveSession(accessToken: string): Promise<DataState<SessionEntity>>
 
   public abstract selectAccount(account: PersonalAccountEntity): Promise<DataState<PersonalAccountEntity>>;
+
+  public abstract retrieveAccount(): Promise<DataState<PersonalAccountEntity>>;
 }

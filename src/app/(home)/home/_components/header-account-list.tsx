@@ -25,16 +25,18 @@ function HeaderAccountListComponent() {
   const router = useRouter();
   const [accounts] = useAccountListProvider();
   const [error, setError] = useState<Error>();
-  const { selectedAccount, changeAccount } = useSelectedAccountProvider();
+  const { selectedAccount, changeAccount, states: [selectAccountLoading] } = useSelectedAccountProvider();
 
   useEffect(() => {
     if (error) throw error;
   }, [error]);
 
   useEffect(() => {
+    if (selectAccountLoading) return;
+
     // Only for the first render, it will select the first account if there is no selected account
     if (!selectedAccount && accounts?.length) changeAccount?.(accounts[0]);
-  }, [selectedAccount, accounts]);
+  }, [selectAccountLoading, selectedAccount, accounts]);
 
   function generateShortAccountId(id: string) {
     return id.substring(0, 6).toUpperCase();

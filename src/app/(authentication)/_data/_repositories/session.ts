@@ -9,6 +9,16 @@ export class SessionRepositoryImpl implements SessionRepository {
   constructor(private sessionService: SessionService) {
   }
 
+  public async retrieveAccount(): Promise<DataState<PersonalAccountEntity>> {
+    try {
+      const selectedAccount = await this.sessionService.retrieveSelectedAccount();
+      return new DataSuccess(selectedAccount.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
   public async selectAccount(account: PersonalAccountEntity): Promise<DataState<PersonalAccountEntity>> {
     try {
       const newAccount = await this.sessionService.selectAccount(account);

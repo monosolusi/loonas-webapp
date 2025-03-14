@@ -18,32 +18,60 @@ import {
   SelectSessionAccountUseCase,
   SelectSessionAccountUseCaseParams
 } from "../../_domain/_usecases/select-session-account";
+import { RetrieveSessionAccountUseCase } from "../../_domain/_usecases/retrieve-session-account";
 
 interface SelectedAccountContextProps {
+  states: [boolean, boolean]; // selectLoading, sessionLoading
   selectedAccount?: PersonalAccountEntity;
   changeAccount?: (account: PersonalAccountEntity) => (void | Promise<void>);
 }
 
-const SelectedAccountContext = createContext<SelectedAccountContextProps>({});
+const SelectedAccountContext = createContext<SelectedAccountContextProps>({
+  states: [true, true]
+});
 
 export function ProtectedPage({ children }: { children: any }) {
-  const [loading, setLoading] = useState<boolean>(true);
+  const [sessionLoading, setSessionLoading] = useState<boolean>(true);
+  const [selectLoading, setSelectLoading] = useState<boolean>(true);
   const [selectedAccount, setSelectedAccount] = useState<PersonalAccountEntity>();
   const [error, setError] = useState<Error>();
   const router = useRouter();
 
   useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
+  useEffect(() => {
     const sessionService = new LocalStorageSessionService();
     const sessionRepository = new SessionRepositoryImpl(sessionService);
+
+    setSelectLoading(true);
+    setSessionLoading(true);
+
+    // Also, retrieve the session account if any
+    const retrieveAccount = new RetrieveSessionAccountUseCase(sessionRepository);
+    retrieveAccount
+      .execute()
+      .then((account) => {
+        if (account instanceof DataFailed) throw account.error;
+        if (!account.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+        setSelectedAccount(account.data);
+      })
+      .catch((err: any) => {
+        // Ignore if the account is not found
+        if (err instanceof ServerError && err.code === ErrorCodes.NOT_FOUND.code) return;
+        else setError(err);
+      })
+      .finally(() => setSelectLoading(false));
+
+
     const userService = new UserServiceImpl();
     const userRepository = new UserRepositoryImpl(userService);
     const checkSession = new CheckSessionUseCase(sessionRepository, userRepository);
     checkSession.execute().then((me) => {
       if (me instanceof DataFailed) router.replace("/sign-in");
       else if (!me.data) router.replace("/sign-in");
-      else setLoading(false);
-    });
-
+    }).finally(() => setSessionLoading(false));
   }, []);
 
   /**
@@ -67,9 +95,10 @@ export function ProtectedPage({ children }: { children: any }) {
     }
   }
 
-  if (loading) return <></>;
+  if (sessionLoading) return <></>;
   return (
-    <SelectedAccountContext.Provider value={{ selectedAccount, changeAccount }}>
+    <SelectedAccountContext.Provider
+      value={{ selectedAccount, changeAccount, states: [selectLoading, sessionLoading] }}>
       {children}
     </SelectedAccountContext.Provider>
   );

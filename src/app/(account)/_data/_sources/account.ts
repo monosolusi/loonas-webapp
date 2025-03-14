@@ -48,6 +48,7 @@ export class AccountServiceImpl implements AccountService {
       if (!response.ok) {
         const data = await response.json();
         if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
+        else if (data.code === ErrorCodes.NOT_FOUND.code) throw new ServerError(ErrorCodes.NOT_FOUND, { message: data.message });
         throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
       }
 

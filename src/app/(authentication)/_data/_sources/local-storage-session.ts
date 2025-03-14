@@ -23,7 +23,7 @@ export abstract class SessionService {
 export class LocalStorageSessionService implements SessionService {
   public async retrieveSelectedAccount(): Promise<PersonalAccountModel> {
     const encodedAccount = localStorage.getItem("selectedAccount");
-    if (!encodedAccount) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+    if (!encodedAccount) throw new ServerError(ErrorCodes.NOT_FOUND);
 
     const jsonAccount = atob(encodedAccount);
     const account = JSON.parse(jsonAccount);
@@ -77,6 +77,7 @@ export class LocalStorageSessionService implements SessionService {
 
   public async signOut(): Promise<void> {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("selectedAccount");
   }
 
   public async retrieve(): Promise<SessionModel> {
