@@ -49,7 +49,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <>
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <img
           alt="Loonas"
@@ -62,7 +62,6 @@ export default function ResetPasswordPage() {
       </div>
 
       <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-[480px]">
-
         <div className="bg-white px-6 py-12 shadow-sm sm:rounded-lg sm:px-12">
           <form onSubmit={handleSubmit} className="space-y-6">
             <EmailInput value={email} onChange={setEmail} />
@@ -77,6 +76,6 @@ export default function ResetPasswordPage() {
           </Link>
         </p>
       </div>
-    </div>
+    </>
   );
 }
