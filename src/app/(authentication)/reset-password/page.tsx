@@ -15,9 +15,9 @@ import { useRouter } from "next/navigation";
 import {
   SendPasswordResetEmailUseCase,
   SendPasswordResetEmailUseCaseParams
-} from "../_domain/_usecases/send-password-reset-email";
-import { AuthServiceImpl } from "@/app/(authentication)/_data/_sources/auth";
-import { AuthRepositoryImpl } from "@/app/(authentication)/_data/_repositories/auth";
+} from "../../../features/authentication/domain/usecases/send-password-reset-email";
+import { AuthServiceImpl } from "@/features/authentication/data/sources/auth";
+import { AuthRepositoryImpl } from "@/features/authentication/data/repositories/auth";
 
 export default function ResetPasswordPage() {
   const router = useRouter();

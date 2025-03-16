@@ -1,5 +1,5 @@
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { SubdistrictModel } from "@/core/utilities/address/data/model/subdistrict.ts";
+import { SubdistrictModel } from "@/core/utilities/address/data/model/subdistrict";
 
 export abstract class SubdistrictService {
   public abstract list(cityId: string): Promise<SubdistrictModel[]>;

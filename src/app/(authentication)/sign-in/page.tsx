@@ -1,7 +1,7 @@
 import React from "react";
-import { SignInProvider } from "@/app/(authentication)/sign-in/_presentation/_providers/sign-in";
-import { CredentialForm } from "@/app/(authentication)/sign-in/_presentation/_components/credential-form";
-import { InvalidCredAlert } from "@/app/(authentication)/sign-in/_presentation/_components/invalid-cred-alert";
+import { SignInProvider } from "@/features/authentication/presentation/providers/sign-in";
+import { CredentialForm } from "@/app/(authentication)/sign-in/_components/credential-form";
+import { InvalidCredAlert } from "@/app/(authentication)/sign-in/_components/invalid-cred-alert";
 import Link from "next/link";
 
 export default function SignInPage() {

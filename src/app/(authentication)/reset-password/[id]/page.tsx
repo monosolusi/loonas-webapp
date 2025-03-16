@@ -4,7 +4,7 @@
  * pages such as sign-in or sign-up
  */
 import React from "react";
-import { Main } from "@/app/(authentication)/reset-password/[id]/_presentation/_components/main";
+import { Main } from "@/app/(authentication)/reset-password/[id]/_components/main";
 
 export default async function CreateNewPasswordPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

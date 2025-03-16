@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { InvalidCredAlert } from "@/app/(user)/sign-up/_presentation/_components/invalid-cred-alert";
-import { CredentialForm } from "@/app/(user)/sign-up/_presentation/_components/credential-form";
-import { SignUpProvider } from "@/app/(user)/sign-up/_presentation/_providers/sign-up";
+import { InvalidCredAlert } from "@/app/(user)/sign-up/_components/invalid-cred-alert";
+import { CredentialForm } from "@/app/(user)/sign-up/_components/credential-form";
+import { SignUpProvider } from "@/features/user/presentation/providers/sign-up";
 
 export default function SignUpPage() {
   return (
