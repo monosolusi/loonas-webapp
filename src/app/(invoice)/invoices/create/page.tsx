@@ -2,13 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ProtectedPage,
-  useSelectedAccountProvider
-} from "@/app/(authentication)/_presentation/_components/protected-page";
-import { Header } from "@/app/(home)/home/_components/header";
-import { PageContent } from "@/core/presentations/components/page-content";
-import { PageMain } from "@/core/presentations/components/page-main";
+import { useSelectedAccountProvider } from "@/app/(authentication)/_presentation/_components/protected-page";
 import { LocalStorageSessionService } from "@/app/(authentication)/_data/_sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/app/(authentication)/_data/_repositories/session";
 import { AccountServiceImpl } from "@/app/(account)/_data/_sources/account";
@@ -18,25 +12,6 @@ import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 export default function CreateInvoicePage() {
-
-  return (
-    <ProtectedPage>
-      <div className="min-h-full">
-        <Header />
-        <PageMain>
-          <PageContent>
-            <div className="w-full h-full flex items-center justify-center">
-              <Main />
-            </div>
-          </PageContent>
-        </PageMain>
-      </div>
-    </ProtectedPage>
-  );
-}
-
-function Main() {
-
   const router = useRouter();
   const { selectedAccount } = useSelectedAccountProvider();
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,10 +20,10 @@ function Main() {
   useEffect(() => {
     if (error) {
       if (error instanceof ServerError) {
-        if (error.code === ErrorCodes.NOT_FOUND.code) router.replace("/accounts/create");
+        if (error.code === ErrorCodes.NOT_FOUND.code) router.replace("/invoices/no-account");
         else if (error.code == ErrorCodes.ACCOUNT_NOT_VERIFIED.code) {
           if (!selectedAccount) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-          router.replace(`/accounts/${selectedAccount?.id}/verifications`);
+          router.replace(`/invoices/account-not-verified`);
         } else throw error;
       } else throw error;
     }
@@ -57,7 +32,7 @@ function Main() {
 
   useEffect(() => {
     setLoading(true);
-    checkIfUseHasAccount()
+    checkIfUserHasAccount()
       .catch((err) => setError(err))
       .finally(() => setLoading(false));
   }, []);
@@ -70,7 +45,7 @@ function Main() {
       .finally(() => setLoading(false));
   }, [selectedAccount]);
 
-  async function checkIfUseHasAccount() {
+  async function checkIfUserHasAccount() {
     const sessionService = new LocalStorageSessionService();
     const sessionRepository = new SessionRepositoryImpl(sessionService);
     const accountService = new AccountServiceImpl();
