@@ -20,7 +20,12 @@ export function CitySelect() {
 
 function CitySelectComponent() {
   const [cities] = useCity();
-  const { city, setCity } = useCreatePersonalAccount();
+  const {
+    city,
+    setCity,
+    setDistrict,
+    setSubdistrict
+  } = useCreatePersonalAccount();
 
   function transformData(data: any[]) {
     const newData = data.map((d) => ({
@@ -35,6 +40,8 @@ function CitySelectComponent() {
     // Search for a province based on the id and value
     const selected = cities.find((p) => p.id === data.value);
     setCity?.(selected);
+    setDistrict?.(undefined);
+    setSubdistrict?.(undefined);
   }
 
   return (

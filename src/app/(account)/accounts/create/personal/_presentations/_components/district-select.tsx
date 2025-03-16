@@ -20,7 +20,11 @@ export function DistrictSelect() {
 
 function DistrictSelectComponent() {
   const [districts] = useDistrict();
-  const { district, setDistrict } = useCreatePersonalAccount();
+  const {
+    district,
+    setDistrict,
+    setSubdistrict
+  } = useCreatePersonalAccount();
 
 
   function transformData(data: any[]) {
@@ -36,6 +40,7 @@ function DistrictSelectComponent() {
     // Search for a province based on the id and value
     const selected = districts.find((p) => p.id === data.value);
     setDistrict?.(selected);
+    setSubdistrict?.(undefined);
   }
 
   return (
