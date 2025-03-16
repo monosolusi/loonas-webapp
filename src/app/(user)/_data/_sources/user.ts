@@ -25,6 +25,10 @@ export class UserServiceImpl implements UserService {
       if (!response.ok) {
         const data = await response.json();
         if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
+
+        const ErrorCode = ErrorCodes.find(data.code);
+        if (ErrorCode) throw new ServerError(ErrorCode);
+        
         throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
       }
 

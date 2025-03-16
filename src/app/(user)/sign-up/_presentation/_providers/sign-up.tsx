@@ -51,6 +51,7 @@ export function SignUpProvider({ children }: { children: any }) {
         if (error.code === ErrorCodes.INVALID_RE_PASSWORD.code) setShowInvalidCred(true);
         else if (error.code === ErrorCodes.EMPTY_PASSWORD.code) setShowInvalidCred(true);
         else if (error.code === ErrorCodes.INVALID_PASSWORD.code) setShowInvalidCred(true);
+        else if (error.code === ErrorCodes.DUPLICATE_ENTRY.code) setShowInvalidCred(true);
         else throw error;
       } else throw error;
     }
