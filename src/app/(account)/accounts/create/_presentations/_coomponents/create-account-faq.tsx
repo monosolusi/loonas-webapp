@@ -36,7 +36,7 @@ const faqs = [
 
 export function CreateAccountQuestions() {
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto">
       <h2 className="text-lg font-semibold tracking-tight text-gray-900">
         FAQ (Frequently Asked Questions)
       </h2>
