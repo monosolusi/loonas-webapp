@@ -5,7 +5,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import Link from "next/link";
 import React, { useState } from "react";
-import { HeaderAccountList } from "@/app/(authenticated)/(home)/home/_components/header-account-list";
+import { HeaderAccountList } from "@/app/(authenticated)/home/_components/header-account-list";
 
 const navigation = [
   { name: "Home", href: "/home" },

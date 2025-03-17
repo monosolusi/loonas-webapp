@@ -1,5 +1,5 @@
 import React from "react";
-import { EmptyClientState } from "@/app/(authenticated)/(home)/home/_components/client-empty";
+import { EmptyClientState } from "@/app/(authenticated)/home/_components/client-empty";
 
 export function Clients() {
   return (

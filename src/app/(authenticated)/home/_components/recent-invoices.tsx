@@ -1,5 +1,5 @@
 import React from "react";
-import { EmptyInvoiceState } from "@/app/(authenticated)/(home)/home/_components/invoice-empty";
+import { EmptyInvoiceState } from "@/app/(authenticated)/home/_components/invoice-empty";
 
 
 export function RecentInvoices() {

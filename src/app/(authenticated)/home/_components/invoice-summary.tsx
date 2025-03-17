@@ -18,7 +18,7 @@ export function InvoiceSummary() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-6 px-4 sm:flex-nowrap sm:px-6 lg:px-8">
           <h1 className="text-base/7 font-semibold text-gray-900">Arus Kas</h1>
           <Link
-            href="/invoices/create"
+            href="/src/app/(authenticated)/invoices/create"
             className="ml-auto flex items-center gap-x-1 rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
           >
             <PlusIcon aria-hidden="true" className="-ml-1.5 size-5" />

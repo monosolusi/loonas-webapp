@@ -1,8 +1,8 @@
 import React from "react";
 import { PageContent } from "@/core/presentations/components/page-content";
-import { CreateAccountQuestions } from "@/app/(authenticated)/(account)/accounts/create/_components/create-account-faq";
+import { CreateAccountQuestions } from "@/app/(authenticated)/accounts/create/_components/create-account-faq";
 import { Card } from "@/core/presentations/components/card";
-import { AccountSelector } from "@/app/(authenticated)/(account)/accounts/create/_components/account-selector";
+import { AccountSelector } from "@/app/(authenticated)/accounts/create/_components/account-selector";
 
 export default function CreateAccountPage() {
   return (

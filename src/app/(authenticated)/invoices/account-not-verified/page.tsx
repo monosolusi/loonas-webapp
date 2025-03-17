@@ -37,7 +37,7 @@ export default function AccountNotVerifiedPage() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-sm font-medium text-gray-900 group-data-[disabled=true]:text-gray-400">
-                <Link href={`/accounts/${selectedAccount?.id}/verifications`}>
+                <Link href={`/src/app/(authenticated)/accounts/${selectedAccount?.id}/verifications`}>
                   <span aria-hidden="true" className="absolute inset-0" />
                   Cek Status Verifikasi
                 </Link>
@@ -64,7 +64,7 @@ export default function AccountNotVerifiedPage() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-sm font-medium text-gray-900 group-data-[disabled=true]:text-gray-400">
-                <Link href="/accounts/create">
+                <Link href="/src/app/(authenticated)/accounts/create">
                   <span aria-hidden="true" className="absolute inset-0" />
                   Tambah Akun Baru
                 </Link>
