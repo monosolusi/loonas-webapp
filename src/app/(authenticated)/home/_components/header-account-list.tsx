@@ -78,7 +78,7 @@ function HeaderAccountListComponent() {
         <div className="py-1">
           <MenuItem>
             <Link
-              href="/src/app/(authenticated)/accounts/create"
+              href="/accounts/create"
               className="group flex items-center px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
             >
               <PlusIcon
