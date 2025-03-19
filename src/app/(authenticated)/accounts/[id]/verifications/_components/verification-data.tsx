@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { useAccountVerificationWork } from "@/features/account/presentation/providers/account-verification-works";
+import { useAccountVerificationWork } from "@/features/account/presentation/providers/account-verification-work";
 
 
 export function VerificationData() {

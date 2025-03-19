@@ -3,8 +3,8 @@
 import React from "react";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { useAccountVerificationWork } from "@/features/account/presentation/providers/account-verification-works";
-import { VerificationStatus } from "@/features/account/presentation/enums/verification-status";
+import { useAccountVerificationWork } from "@/features/account/presentation/providers/account-verification-work";
+import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 
 
 const steps = [

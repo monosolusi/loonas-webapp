@@ -101,14 +101,7 @@ function HeaderAccountListComponent() {
               </div>
             </MenuItem>
           ))}
-          {(accounts?.length || 0) > 3 && (
-            <MenuItem>
-              <div
-                className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden">
-                <p className="text-primary-default">Lihat Semuanya</p>
-              </div>
-            </MenuItem>
-          )}
+          {(accounts?.length || 0) > 3 && <ShowAllAccountButton />}
         </div>
         <div className="py-1">
           <MenuItem>
@@ -126,5 +119,18 @@ function HeaderAccountListComponent() {
         </div>
       </MenuItems>
     </Menu>
+  );
+}
+
+function ShowAllAccountButton() {
+  return (
+    <MenuItem>
+      <Link
+        className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
+        href="/accounts/select"
+      >
+        <p className="text-primary-default">Lihat Semuanya</p>
+      </Link>
+    </MenuItem>
   );
 }

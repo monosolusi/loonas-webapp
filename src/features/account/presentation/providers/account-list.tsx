@@ -1,5 +1,7 @@
+"use client";
+
 // entity, loading
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { PersonalAccountEntity } from "../../domain/entities/personal-account";

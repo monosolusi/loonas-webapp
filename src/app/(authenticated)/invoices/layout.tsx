@@ -15,7 +15,7 @@ import {
   RetrieveAccountVerificationWorkUseCase,
   RetrieveAccountVerificationWorkUseCaseParams
 } from "@/features/account/domain/usecases/retrieve-account-verification-work";
-import { VerificationStatus } from "@/features/account/presentation/enums/verification-status";
+import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 
 export default function CreateInvoiceLayout({ children }: { children: any }) {
   const router = useRouter();

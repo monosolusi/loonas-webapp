@@ -1,5 +1,5 @@
 import { Header } from "@/app/(authenticated)/home/_components/header";
-import { ProtectedPage } from "@/app/(authentication)/_components/protected-page";
+import { ProtectedPage } from "@/core/presentations/components/protected-page";
 import { PageMain } from "@/core/presentations/components/page-main";
 
 export default function AuthenticatedLayout({ children }: { children: any }) {
