@@ -11,6 +11,11 @@ import { AccountRepositoryImpl } from "@/features/account/data/repositories/acco
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { DataFailed } from "@/core/resources/data-state";
 import { PageContent } from "@/core/presentations/components/page-content";
+import {
+  RetrieveAccountVerificationWorkUseCase,
+  RetrieveAccountVerificationWorkUseCaseParams
+} from "@/features/account/domain/usecases/retrieve-account-verification-work";
+import { VerificationStatus } from "@/features/account/presentation/enums/verification-status";
 
 export default function CreateInvoiceLayout({ children }: { children: any }) {
   const router = useRouter();
@@ -60,7 +65,17 @@ export default function CreateInvoiceLayout({ children }: { children: any }) {
   }
 
   async function checkIfASelectedAccountIsVerified() {
-    throw new ServerError(ErrorCodes.ACCOUNT_NOT_VERIFIED);
+    if (!selectedAccount) throw new ServerError(ErrorCodes.NOT_FOUND);
+    const sessionService = new LocalStorageSessionService();
+    const sessionRepository = new SessionRepositoryImpl(sessionService);
+    const accountService = new AccountServiceImpl();
+    const accountRepository = new AccountRepositoryImpl(accountService);
+    const retrieve = new RetrieveAccountVerificationWorkUseCase(accountRepository, sessionRepository);
+    const retrieveParams = new RetrieveAccountVerificationWorkUseCaseParams(selectedAccount.id);
+    const verificationWork = await retrieve.execute(retrieveParams);
+    if (verificationWork instanceof DataFailed) throw verificationWork.error;
+    if (!verificationWork.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    if (verificationWork.data.latestStatus !== VerificationStatus.COMPLETED) throw new ServerError(ErrorCodes.ACCOUNT_NOT_VERIFIED);
   }
 
   return (
