@@ -5,17 +5,23 @@ import { useAccountListProvider } from "@/features/account/presentation/provider
 import { AccountVerificationWorkProvider } from "@/features/account/presentation/providers/account-verification-work";
 import { VerificationStatusBadge } from "@/app/(authenticated)/accounts/select/_components/verification-status-badge";
 import { useSelectedAccountProvider } from "@/features/authentication/presentation/providers/selected-account";
+import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
 
-export function Accounts() {
+export function Accounts({ onAccountChanged }: { onAccountChanged?: () => void }) {
   const [accounts] = useAccountListProvider();
   const { changeAccount } = useSelectedAccountProvider();
+
+  function handleChangeAccount(account: PersonalAccountEntity) {
+    changeAccount?.(account);
+    onAccountChanged?.();
+  }
 
   return (
     <>
       {accounts?.map((account) => (
         <AccountVerificationWorkProvider id={account.id} key={account.id}>
           <div
-            onClick={() => changeAccount?.(account)}
+            onClick={() => handleChangeAccount(account)}
             className="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-xs focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400"
           >
             <div className="min-w-0 flex-1">
