@@ -90,17 +90,31 @@ function HeaderAccountListComponent() {
           </MenuItem>
         </div>
         <div className="py-1">
-          {accounts?.slice(0, 3).map((account) => (
-            <MenuItem disabled={account.id === selectedAccount?.id} key={account.id}>
+          {/** The selected account will always be first **/}
+          {selectedAccount && (
+            <MenuItem disabled>
               <div
-                onClick={() => changeAccount?.(account)}
                 className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed"
               >
-                <p>{account.fullName}</p>
-                <p className="text-xs/5 text-gray-500">ID: {generateShortAccountId(account.id)}</p>
+                <p>{selectedAccount.fullName}</p>
+                <p className="text-xs/5 text-gray-500">ID: {generateShortAccountId(selectedAccount.id)}</p>
               </div>
             </MenuItem>
-          ))}
+          )}
+
+          {accounts?.filter((account) => account.id !== selectedAccount?.id)
+            .slice(0, 2)
+            .map((account) => (
+              <MenuItem disabled={account.id === selectedAccount?.id} key={account.id}>
+                <div
+                  onClick={() => changeAccount?.(account)}
+                  className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed"
+                >
+                  <p>{account.fullName}</p>
+                  <p className="text-xs/5 text-gray-500">ID: {generateShortAccountId(account.id)}</p>
+                </div>
+              </MenuItem>
+            ))}
           {(accounts?.length || 0) > 3 && <ShowAllAccountButton />}
         </div>
         <div className="py-1">
