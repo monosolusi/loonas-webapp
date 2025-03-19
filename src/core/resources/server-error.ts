@@ -1,6 +1,11 @@
 type ErrorStructureType = { code: string; httpCode: number; message: string };
 
 export class ErrorCodes {
+  public static readonly ACCOUNT_VERIFICATION_REJECTED = {
+    code: "ACCOUNT_VERIFICATION_REJECTED",
+    httpCode: 403,
+    message: "Account verification rejected"
+  };
   public static readonly INCOMPLETE_FORM: ErrorStructureType = {
     code: "INCOMPLETE_FORM",
     httpCode: 400,
