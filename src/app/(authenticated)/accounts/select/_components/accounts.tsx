@@ -24,7 +24,7 @@ export function Accounts({ onAccountChanged }: { onAccountChanged?: () => void }
     <>
       {accounts?.map((account) => (
         <AccountVerificationWorkProvider id={account.id} key={account.id}>
-          <AccountCard account={account} />
+          <AccountCard account={account} onAccountChanged={onAccountChanged} />
         </AccountVerificationWorkProvider>
       ))}
     </>
@@ -55,6 +55,7 @@ function AccountCard({ account, onAccountChanged }: { account: PersonalAccountEn
       data-disabled={isDisabled(verification)}
       onClick={() => handleChangeAccount(account, verification)}
       className={classNames(
+        "cursor-pointer",
         "data-[disabled=true]:bg-gray-100 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:border-transparent",
         "relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-xs focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400"
       )}
