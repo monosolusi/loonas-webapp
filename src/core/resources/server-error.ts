@@ -1,6 +1,11 @@
 type ErrorStructureType = { code: string; httpCode: number; message: string };
 
 export class ErrorCodes {
+  public static readonly NOT_AGREED = {
+    code: "NOT_AGREED",
+    httpCode: 400,
+    message: "Kamu belum menyetujui Kebijakan Privasi dan Syarat & Ketentuan."
+  };
   public static readonly ACCOUNT_VERIFICATION_REJECTED = {
     code: "ACCOUNT_VERIFICATION_REJECTED",
     httpCode: 403,

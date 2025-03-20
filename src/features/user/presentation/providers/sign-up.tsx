@@ -21,7 +21,9 @@ type SignUpContextProps = {
   rePassword: string;
   loading: boolean;
   showInvalidCred: boolean;
+  agree: boolean;
   error?: Error;
+  setAgree?: React.Dispatch<React.SetStateAction<boolean>>;
   setEmail?: React.Dispatch<React.SetStateAction<string>>;
   setPassword?: React.Dispatch<React.SetStateAction<string>>;
   setRePassword?: React.Dispatch<React.SetStateAction<string>>;
@@ -32,6 +34,7 @@ const SignUpContext = React.createContext<SignUpContextProps>({
   email: "",
   password: "",
   rePassword: "",
+  agree: false,
   loading: true,
   showInvalidCred: false
 });
@@ -40,6 +43,7 @@ export function SignUpProvider({ children }: { children: any }) {
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [rePassword, setRePassword] = React.useState<string>("");
+  const [agree, setAgree] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<Error>();
   const [showInvalidCred, setShowInvalidCred] = React.useState<boolean>(false);
@@ -52,6 +56,7 @@ export function SignUpProvider({ children }: { children: any }) {
         else if (error.code === ErrorCodes.EMPTY_PASSWORD.code) setShowInvalidCred(true);
         else if (error.code === ErrorCodes.INVALID_PASSWORD.code) setShowInvalidCred(true);
         else if (error.code === ErrorCodes.DUPLICATE_ENTRY.code) setShowInvalidCred(true);
+        else if (error.code === ErrorCodes.NOT_AGREED.code) setShowInvalidCred(true);
         else throw error;
       } else throw error;
     }
@@ -79,6 +84,8 @@ export function SignUpProvider({ children }: { children: any }) {
   async function signUp() {
     try {
       setLoading(true);
+      if (!agree) throw new ServerError(ErrorCodes.NOT_AGREED);
+
       if (password !== rePassword) throw new ServerError(ErrorCodes.INVALID_RE_PASSWORD);
       if (password.trim() === "") throw new ServerError(ErrorCodes.EMPTY_PASSWORD);
       if (password.length < 8) throw new ServerError(ErrorCodes.INVALID_PASSWORD);
@@ -126,8 +133,10 @@ export function SignUpProvider({ children }: { children: any }) {
         email,
         password,
         rePassword,
+        agree,
         loading,
         showInvalidCred,
+        setAgree,
         setEmail,
         setPassword,
         setRePassword,
