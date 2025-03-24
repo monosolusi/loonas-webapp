@@ -10,7 +10,6 @@ import { ListAccountUseCase } from "@/features/account/domain/usecases/list-acco
 import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { DataFailed } from "@/core/resources/data-state";
-import { PageContent } from "@/core/presentations/components/page-content";
 import {
   RetrieveAccountVerificationWorkUseCase,
   RetrieveAccountVerificationWorkUseCaseParams
@@ -79,10 +78,8 @@ export default function CreateInvoiceLayout({ children }: { children: any }) {
   }
 
   return (
-    <PageContent>
-      <div className="w-full h-full flex items-center justify-center">
-        {children}
-      </div>
-    </PageContent>
+    <>
+      {children}
+    </>
   );
 }
