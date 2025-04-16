@@ -4,7 +4,7 @@ import React from "react";
 import { EmailInput } from "@/core/presentations/components/email-input";
 import { PasswordInput } from "@/core/presentations/components/password-input";
 import { useSignInProvider } from "@/features/authentication/presentation/providers/sign-in";
-import { SubmitButton } from "@/core/presentations/components/submit-button";
+import { FilledButton } from "@/core/presentations/components/filled-button";
 import Link from "next/link";
 
 export function CredentialForm() {
@@ -28,7 +28,7 @@ export function CredentialForm() {
         </div>
       </div>
 
-      <SubmitButton loading={loading}>Masuk</SubmitButton>
+      <FilledButton loading={loading}>Masuk</FilledButton>
     </form>
   );
 }

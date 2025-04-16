@@ -2,7 +2,7 @@ import React from "react";
 
 type HTMLButtonType = "button" | "reset" | "submit" | undefined;
 
-export function SubmitButton({ children, loading, type, onClick }: {
+export function FilledButton({ children, loading, type, onClick }: {
   children?: any,
   loading?: boolean,
   type?: HTMLButtonType

@@ -3,7 +3,7 @@
 import { DistrictProvider, useDistrict } from "@/core/utilities/address/presentation/providers/district";
 import { useCreatePersonalAccount } from "@/features/account/presentation/providers/create-personal-account";
 import React from "react";
-import { Label } from "./label";
+import { Label } from "../../../../../../core/presentations/components/label";
 import { Select } from "./select";
 
 export function DistrictSelect() {

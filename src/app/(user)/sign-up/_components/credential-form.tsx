@@ -4,7 +4,7 @@ import React from "react";
 import { PasswordInput } from "./password-input";
 import { useSignUpProvider } from "@/features/user/presentation/providers/sign-up";
 import { EmailInput } from "@/core/presentations/components/email-input";
-import { SubmitButton } from "@/core/presentations/components/submit-button";
+import { FilledButton } from "@/core/presentations/components/filled-button";
 import { AgreementCheckbox } from "@/app/(user)/sign-up/_components/agreement-checkbox";
 
 export function CredentialForm() {
@@ -34,9 +34,9 @@ export function CredentialForm() {
 
       <AgreementCheckbox checked={agree} onChange={setAgree} />
 
-      <SubmitButton loading={loading} type="submit">
+      <FilledButton loading={loading} type="submit">
         Daftar
-      </SubmitButton>
+      </FilledButton>
     </form>
   );
 }

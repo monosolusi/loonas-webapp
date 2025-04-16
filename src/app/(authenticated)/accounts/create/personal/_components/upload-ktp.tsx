@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import { useCreatePersonalAccount } from "@/features/account/presentation/providers/create-personal-account";
-import { Label } from "./label";
+import { Label } from "../../../../../../core/presentations/components/label";
 
 export function UploadKtp() {
   const { identityDocument, setIdentityDocument } = useCreatePersonalAccount();

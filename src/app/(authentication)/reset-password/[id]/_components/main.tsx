@@ -9,12 +9,10 @@ import {
 } from "@/features/authentication/domain/usecases/submit-new-password";
 import { DataFailed } from "@/core/resources/data-state";
 import { PasswordInput } from "@/core/presentations/components/password-input";
-import { SubmitButton } from "@/core/presentations/components/submit-button";
+import { FilledButton } from "@/core/presentations/components/filled-button";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import {
-  InvalidCredAlert
-} from "@/app/(authentication)/reset-password/[id]/_components/invalid-cred-alert";
+import { InvalidCredAlert } from "@/app/(authentication)/reset-password/[id]/_components/invalid-cred-alert";
 
 export function Main({ resetToken }: { resetToken: string }) {
   const router = useRouter();
@@ -87,7 +85,7 @@ export function Main({ resetToken }: { resetToken: string }) {
               label={"Ulangi Sandi"}
             />
 
-            <SubmitButton loading={loading}>Ubah Password</SubmitButton>
+            <FilledButton loading={loading}>Ubah Password</FilledButton>
           </form>
         </div>
       </div>

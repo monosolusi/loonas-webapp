@@ -3,7 +3,7 @@
 import React from "react";
 import { CityProvider, useCity } from "@/core/utilities/address/presentation/providers/city";
 import { useCreatePersonalAccount } from "@/features/account/presentation/providers/create-personal-account";
-import { Label } from "./label";
+import { Label } from "../../../../../../core/presentations/components/label";
 import { Select } from "./select";
 
 export function CitySelect() {

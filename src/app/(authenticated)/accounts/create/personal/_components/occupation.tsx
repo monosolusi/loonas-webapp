@@ -3,7 +3,7 @@
 import React from "react";
 import { OccupationProvider, useOccupation } from "@/core/utilities/occupation/presentation/providers/occupation";
 import { useCreatePersonalAccount } from "@/features/account/presentation/providers/create-personal-account";
-import { Label } from "./label";
+import { Label } from "../../../../../../core/presentations/components/label";
 import { Select } from "./select";
 
 export function Occupation() {

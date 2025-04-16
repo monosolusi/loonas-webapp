@@ -4,7 +4,7 @@ import React from "react";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { useCreatePersonalAccount } from "@/features/account/presentation/providers/create-personal-account";
-import { SubmitButton } from "@/core/presentations/components/submit-button";
+import { FilledButton } from "@/core/presentations/components/filled-button";
 
 export function ConfirmationDialog() {
   const { openConfirmationDialog, setOpenConfirmationDialog, loading, createAccount } = useCreatePersonalAccount();
@@ -71,13 +71,13 @@ export function ConfirmationDialog() {
             </div>
             <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
               <div className="sm:col-start-2">
-                <SubmitButton
+                <FilledButton
                   type="button"
                   loading={loading}
                   onClick={handleContinue}
                 >
                   Setuju & Lanjutkan
-                </SubmitButton>
+                </FilledButton>
               </div>
               <button
                 type="button"

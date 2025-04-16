@@ -8,7 +8,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { EmailInput } from "@/core/presentations/components/email-input";
-import { SubmitButton } from "@/core/presentations/components/submit-button";
+import { FilledButton } from "@/core/presentations/components/filled-button";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { DataFailed } from "@/core/resources/data-state";
 import { useRouter } from "next/navigation";
@@ -65,7 +65,7 @@ export default function ResetPasswordPage() {
         <div className="bg-white px-6 py-12 shadow-sm sm:rounded-lg sm:px-12">
           <form onSubmit={handleSubmit} className="space-y-6">
             <EmailInput value={email} onChange={setEmail} />
-            <SubmitButton loading={loading}>Verifikasi Email</SubmitButton>
+            <FilledButton loading={loading}>Verifikasi Email</FilledButton>
           </form>
         </div>
 

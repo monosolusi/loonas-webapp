@@ -1,6 +1,6 @@
 import { PageContent } from "@/core/presentations/components/page-content";
 import { VerificationData } from "@/app/(authenticated)/accounts/[id]/verifications/_components/verification-data";
-import { BackArrow } from "@/app/(authenticated)/accounts/[id]/verifications/_components/back-arrow";
+import { BackArrow } from "@/core/presentations/components/back-arrow";
 import { AccountVerificationWorkProvider } from "@/features/account/presentation/providers/account-verification-work";
 import {
   VerificationProgress

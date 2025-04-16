@@ -4,7 +4,7 @@ import { CitySelect } from "./city-select";
 import { DistrictSelect } from "./district-select";
 import { SubdistrictSelect } from "./subdistrict-select";
 import { ProvinceSelect } from "./province-select";
-import { Label } from "./label";
+import { Label } from "../../../../../../core/presentations/components/label";
 
 export function CompleteAddress() {
   const { address, setAddress } = useCreatePersonalAccount();

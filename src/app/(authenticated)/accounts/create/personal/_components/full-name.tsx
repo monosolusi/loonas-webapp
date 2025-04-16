@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useCreatePersonalAccount } from "@/features/account/presentation/providers/create-personal-account";
-import { Label } from "./label";
+import { Label } from "../../../../../../core/presentations/components/label";
 
 export function FullName() {
   const { fullName, setFullName } = useCreatePersonalAccount();
