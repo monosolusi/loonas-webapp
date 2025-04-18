@@ -1,5 +1,7 @@
 import React from "react";
-import { FilledButton } from "@/core/presentations/components/filled-button";
+import {
+  NewClientButton
+} from "@/app/(authenticated)/invoices/incoming/create/@recipients/_components/new-client-button";
 
 const people = [
   { name: "Lindsay Walton", email: "lindsay.walton@example.com", phoneNumber: "+628123456789" }
@@ -16,7 +18,7 @@ export default function SelectRecipientPage() {
           </p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <FilledButton>Buat Klien Baru</FilledButton>
+          <NewClientButton />
         </div>
       </div>
       <div className="mt-8 flow-root">
