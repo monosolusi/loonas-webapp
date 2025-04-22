@@ -11,27 +11,39 @@ export class ErrorCodes {
     httpCode: 403,
     message: "Account verification rejected"
   };
+
   public static readonly INCOMPLETE_FORM: ErrorStructureType = {
     code: "INCOMPLETE_FORM",
     httpCode: 400,
     message: "Incomplete form"
   };
-  public static readonly INVALID_PASSWORD: ErrorStructureType = {
-    code: "INVALID_PASSWORD",
-    httpCode: 400,
-    message: "Password harus minimal 8 karakter, dengan 1 huruf besar, 1 angka, dan 1 simbol ya!"
-  };
+
   public static readonly EMPTY_PASSWORD: ErrorStructureType = {
     code: "EMPTY_PASSWORD",
     httpCode: 400,
     message: "Ups! Password-nya belum diisi"
   };
-  public static readonly INVALID_RE_PASSWORD: ErrorStructureType = {
-    code: "INVALID_RE_PASSWORD",
+
+  public static readonly EMPTY_NAME: ErrorStructureType = {
+    code: "EMPTY_NAME",
     httpCode: 400,
-    message: "Ups! Password-nya nggak cocok"
+    message: "Ups! Nama-nya belum diisi"
   };
+
+  public static readonly EMPTY_EMAIL: ErrorStructureType = {
+    code: "EMPTY_EMAIL",
+    httpCode: 400,
+    message: "Ups! Email-nya belum diisi"
+  };
+
+  public static readonly EMPTY_PHONE: ErrorStructureType = {
+    code: "EMPTY_PHONE",
+    httpCode: 400,
+    message: "Ups! Nomor telepon-nya belum diisi"
+  };
+
   public static readonly HTTP_ERROR: ErrorStructureType = { code: "HTTP_ERROR", httpCode: 500, message: "HTTP error" };
+
   public static readonly VALIDATION_FAILED: ErrorStructureType = {
     code: "VALIDATION_FAILED",
     httpCode: 400,
@@ -95,41 +107,67 @@ export class ErrorCodes {
     httpCode: 500,
     message: "Not Implemented"
   };
+
   public static readonly INVALID_OTP: ErrorStructureType = {
     code: "INVALID_OTP",
     httpCode: 400,
     message: "Invalid OTP"
   };
+
   public static readonly INVALID_INSTANCE: ErrorStructureType = {
     code: "INVALID_INSTANCE",
     httpCode: 500,
     message: "Invalid instance"
   };
+
   public static readonly INVALID_USER_PROFILE: ErrorStructureType = {
     code: "INVALID_USER_PROFILE",
     httpCode: 400,
     message: "Invalid user profile"
   };
+
+  public static readonly INVALID_RE_PASSWORD: ErrorStructureType = {
+    code: "INVALID_RE_PASSWORD",
+    httpCode: 400,
+    message: "Ups! Password-nya nggak cocok"
+  };
+
+  public static readonly INVALID_PASSWORD: ErrorStructureType = {
+    code: "INVALID_PASSWORD",
+    httpCode: 400,
+    message: "Password harus minimal 8 karakter, dengan 1 huruf besar, 1 angka, dan 1 simbol ya!"
+  };
+
+  public static readonly INVALID_PHONE_NUMBER: ErrorStructureType = {
+    code: "INVALID_PHONE_NUMBER",
+    httpCode: 400,
+    message: "Ups! Nomor telepon-nya tidak valid"
+  };
+
+  public static readonly INVALID_EMAIL: ErrorStructureType = {
+    code: "INVALID_EMAIL",
+    httpCode: 400,
+    message: "Ups! Email-nya tidak valid"
+  };
+
   public static readonly RESOURCE_EXPIRED: ErrorStructureType = {
     code: "RESOURCE_EXPIRED",
     httpCode: 400,
     message: "Resource expired"
   };
+
   public static readonly HOTP_TOKEN_CREATION_FAILED: ErrorStructureType = {
     code: "HOTP_TOKEN_CREATION_FAILED",
     httpCode: 500,
     message: "Failed to create OTP"
   };
-  public static readonly INVALID_PHONE_NUMBER: ErrorStructureType = {
-    code: "INVALID_PHONE_NUMBER",
-    httpCode: 400,
-    message: "Invalid phone number"
-  };
+
   public static readonly TRANSACTION_LIMIT_REACHED: ErrorStructureType = {
     code: "TRANSACTION_LIMIT_REACHED",
     httpCode: 400,
     message: "Transaction limit reached"
   };
+
   public static readonly NO_ASSOCIATED_ACCOUNTS: ErrorStructureType = {
     code: "NO_ASSOCIATED_ACCOUNTS",
     httpCode: 404,

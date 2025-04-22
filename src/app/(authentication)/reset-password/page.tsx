@@ -64,7 +64,7 @@ export default function ResetPasswordPage() {
       <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-[480px]">
         <div className="bg-white px-6 py-12 shadow-sm sm:rounded-lg sm:px-12">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <EmailInput value={email} onChange={setEmail} />
+            <EmailInput value={email} onChange={setEmail} required />
             <FilledButton loading={loading}>Verifikasi Email</FilledButton>
           </form>
         </div>

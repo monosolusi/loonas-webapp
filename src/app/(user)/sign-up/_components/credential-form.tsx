@@ -28,7 +28,7 @@ export function CredentialForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <EmailInput value={email} onChange={setEmail} />
+      <EmailInput value={email} onChange={setEmail} required />
       <PasswordInput value={password} onChange={setPassword} />
       <PasswordInput label="Ulangi Kata Sandi" value={rePassword} onChange={setRePassword} />
 

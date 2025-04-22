@@ -1,13 +1,14 @@
+"use client";
+
 import React from "react";
 import {
   NewClientButton
 } from "@/app/(authenticated)/invoices/incoming/create/@recipients/_components/new-client-button";
+import { ListPartnerProvider, useListPartner } from "@/features/partner/presentation/providers/list-partner";
 
-const people = [
-  { name: "Lindsay Walton", email: "lindsay.walton@example.com", phoneNumber: "+628123456789" }
-];
+function SelectRecipientContent() {
+  const { partners, loading } = useListPartner();
 
-export default function SelectRecipientPage() {
   return (
     <div>
       <div className="sm:flex sm:items-center">
@@ -43,20 +44,34 @@ export default function SelectRecipientPage() {
                 </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                {people.map((person) => (
-                  <tr key={person.email}>
-                    <td className="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">
-                      {person.name}
-                    </td>
-                    <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">{person.email}</td>
-                    <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">{person.phoneNumber}</td>
-                    <td className="relative py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6">
-                      <a href="#" className="text-primary-default hover:text-primary-900">
-                        Pilih<span className="sr-only">, {person.name}</span>
-                      </a>
+                {loading ? (
+                  <tr>
+                    <td colSpan={4} className="py-4 text-center text-sm text-gray-500">
+                      Loading...
                     </td>
                   </tr>
-                ))}
+                ) : partners.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-4 text-center text-sm text-gray-500">
+                      Tidak ada klien yang ditemukan
+                    </td>
+                  </tr>
+                ) : (
+                  partners.map((partner) => (
+                    <tr key={partner.email}>
+                      <td className="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">
+                        {partner.name}
+                      </td>
+                      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">{partner.email}</td>
+                      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">{partner.phoneNumber}</td>
+                      <td className="relative py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6">
+                        <a href="#" className="text-primary-default hover:text-primary-900">
+                          Pilih<span className="sr-only">, {partner.name}</span>
+                        </a>
+                      </td>
+                    </tr>
+                  ))
+                )}
                 </tbody>
               </table>
             </div>
@@ -64,5 +79,13 @@ export default function SelectRecipientPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SelectRecipientPage() {
+  return (
+    <ListPartnerProvider>
+      <SelectRecipientContent />
+    </ListPartnerProvider>
   );
 }
