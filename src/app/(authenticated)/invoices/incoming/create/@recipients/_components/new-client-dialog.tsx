@@ -4,7 +4,7 @@ import { TextInput } from "@/core/presentations/components/text-input";
 import { EmailInput } from "@/core/presentations/components/email-input";
 import { useCreateNewPartner } from "@/features/partner/presentation/providers/create-new-partner";
 import { FilledButton } from "@/core/presentations/components/filled-button";
-import { XCircleIcon } from "@heroicons/react/20/solid";
+import { ErrorCard } from "@/core/presentations/components/error-card";
 
 export function NewClientDialog({ open, setOpen, onCreated }: {
   open: boolean;
@@ -61,18 +61,7 @@ export function NewClientDialog({ open, setOpen, onCreated }: {
                 <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
                   Buat Klien Baru
                 </DialogTitle>
-                {error && (
-                  <div className="mt-2 rounded-md bg-red-50 p-4">
-                    <div className="flex">
-                      <div className="shrink-0">
-                        <XCircleIcon aria-hidden="true" className="size-5 text-red-400" />
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-sm text-red-800">{error.message}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                {error && <ErrorCard>{error.message}</ErrorCard>}
                 <div className="my-4">
                   <div className="flex flex-col gap-y-2">
                     <TextInput
