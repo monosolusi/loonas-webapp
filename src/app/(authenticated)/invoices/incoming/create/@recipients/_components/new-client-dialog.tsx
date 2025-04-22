@@ -1,31 +1,47 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import { TextInput } from "@/core/presentations/components/text-input";
 import { EmailInput } from "@/core/presentations/components/email-input";
 import { useCreateNewPartner } from "@/features/partner/presentation/providers/create-new-partner";
 import { FilledButton } from "@/core/presentations/components/filled-button";
+import { XCircleIcon } from "@heroicons/react/20/solid";
 
 export function NewClientDialog({ open, setOpen, onCreated }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   onCreated?: () => Promise<void>
 }) {
-  const { createPartner, name, email, phone, setName, setEmail, setPhone } = useCreateNewPartner();
-  const [error, setError] = React.useState<Error>();
-
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+  const {
+    createPartner,
+    name,
+    email,
+    phone,
+    error,
+    clearError,
+    setName,
+    setEmail,
+    setPhone
+  } = useCreateNewPartner();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    try {
-      e.preventDefault();
-      await createPartner?.();
-      await onCreated?.();
-    } catch (err: any) {
-      setError(err);
-    }
+    e.preventDefault();
+
+    // Clear any previous errors
+    if (error) clearError?.();
+
+    const isSuccess = await createPartner?.();
+    if (!isSuccess) return;
+
+    await onCreated?.();
+    setOpen(false);
   }
+
+  // Clear error when dialog is closed
+  React.useEffect(() => {
+    if (!open && error) {
+      clearError?.();
+    }
+  }, [open, error, clearError]);
 
   return (
     <Dialog as="form" open={open} onClose={setOpen} className="relative z-50" onSubmit={handleSubmit}>
@@ -45,6 +61,18 @@ export function NewClientDialog({ open, setOpen, onCreated }: {
                 <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
                   Buat Klien Baru
                 </DialogTitle>
+                {error && (
+                  <div className="mt-2 rounded-md bg-red-50 p-4">
+                    <div className="flex">
+                      <div className="shrink-0">
+                        <XCircleIcon aria-hidden="true" className="size-5 text-red-400" />
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm text-red-800">{error.message}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className="my-4">
                   <div className="flex flex-col gap-y-2">
                     <TextInput

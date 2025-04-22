@@ -15,10 +15,12 @@ interface CreateNewPartnerContextProps {
   email: string;
   phone: string;
   loading: boolean;
+  error?: Error;
   setName?: React.Dispatch<React.SetStateAction<string>>;
   setEmail?: React.Dispatch<React.SetStateAction<string>>;
   setPhone?: React.Dispatch<React.SetStateAction<string>>;
-  createPartner?: () => Promise<void>;
+  createPartner?: () => Promise<boolean>;
+  clearError?: () => void;
 }
 
 const CreateNewPartnerContext = React.createContext<CreateNewPartnerContextProps>({
@@ -35,9 +37,9 @@ export function CreateNewPartnerProvider({ children }: { children: React.ReactNo
   const [loading, setLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<Error>();
 
-  React.useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+  const clearError = React.useCallback(() => {
+    setError(undefined);
+  }, []);
 
   async function createPartner() {
     try {
@@ -77,9 +79,12 @@ export function CreateNewPartnerProvider({ children }: { children: React.ReactNo
       setEmail("");
       setPhone("");
       setLoading(false);
+
+      return true;
     } catch (err: any) {
       setLoading(false);
       setError(err);
+      return false;
     }
   }
 
@@ -90,10 +95,12 @@ export function CreateNewPartnerProvider({ children }: { children: React.ReactNo
         email,
         phone,
         loading,
+        error,
         setName,
         setEmail,
         setPhone,
-        createPartner
+        createPartner,
+        clearError
       }}
     >
       {children}
