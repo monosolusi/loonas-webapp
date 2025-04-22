@@ -21,6 +21,7 @@ interface CreateNewPartnerContextProps {
   setPhone?: React.Dispatch<React.SetStateAction<string>>;
   createPartner?: () => Promise<boolean>;
   clearError?: () => void;
+  clearInput?: () => void;
 }
 
 const CreateNewPartnerContext = React.createContext<CreateNewPartnerContextProps>({
@@ -39,6 +40,12 @@ export function CreateNewPartnerProvider({ children }: { children: React.ReactNo
 
   const clearError = React.useCallback(() => {
     setError(undefined);
+  }, []);
+
+  const clearInput = React.useCallback(() => {
+    setName("");
+    setEmail("");
+    setPhone("");
   }, []);
 
   async function createPartner() {
@@ -75,9 +82,7 @@ export function CreateNewPartnerProvider({ children }: { children: React.ReactNo
       if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       // Reset form after successful creation
-      setName("");
-      setEmail("");
-      setPhone("");
+      clearInput();
       setLoading(false);
 
       return true;
@@ -100,7 +105,8 @@ export function CreateNewPartnerProvider({ children }: { children: React.ReactNo
         setEmail,
         setPhone,
         createPartner,
-        clearError
+        clearError,
+        clearInput
       }}
     >
       {children}

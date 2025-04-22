@@ -18,6 +18,7 @@ export function NewClientDialog({ open, setOpen, onCreated }: {
     phone,
     error,
     clearError,
+    clearInput,
     setName,
     setEmail,
     setPhone
@@ -40,8 +41,9 @@ export function NewClientDialog({ open, setOpen, onCreated }: {
   React.useEffect(() => {
     if (!open && error) {
       clearError?.();
+      clearInput?.();
     }
-  }, [open, error, clearError]);
+  }, [open, error, clearError, clearInput]);
 
   return (
     <Dialog as="form" open={open} onClose={setOpen} className="relative z-50" onSubmit={handleSubmit}>
