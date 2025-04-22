@@ -27,7 +27,11 @@ export function ListPartnerProvider({ children }: { children: React.ReactNode })
   const [error, setError] = useState<Error>();
 
   useEffect(() => {
-    if (error) throw error;
+    if (error) {
+      if (error instanceof ServerError) {
+        if (error.code === ErrorCodes.NOT_FOUND.code) setPartners([]);
+      } else throw error;
+    }
   }, [error]);
 
   useEffect(() => {
