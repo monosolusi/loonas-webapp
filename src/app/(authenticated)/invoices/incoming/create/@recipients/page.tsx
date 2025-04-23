@@ -5,6 +5,10 @@ import {
   NewClientButton
 } from "@/app/(authenticated)/invoices/incoming/create/@recipients/_components/new-client-button";
 import { ListPartnerProvider, useListPartner } from "@/features/partner/presentation/providers/list-partner";
+import { RowItem } from "@/app/(authenticated)/invoices/incoming/create/@recipients/_components/row-item";
+import {
+  useCreateIncomingInvoiceSteps
+} from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 
 function SelectRecipientContent() {
   const { partners, loading } = useListPartner();
@@ -58,18 +62,7 @@ function SelectRecipientContent() {
                   </tr>
                 ) : (
                   partners.map((partner) => (
-                    <tr key={partner.email}>
-                      <td className="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">
-                        {partner.name}
-                      </td>
-                      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">{partner.email}</td>
-                      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">{partner.phoneNumber}</td>
-                      <td className="relative py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6">
-                        <a href="#" className="text-primary-default hover:text-primary-900">
-                          Pilih<span className="sr-only">, {partner.name}</span>
-                        </a>
-                      </td>
-                    </tr>
+                    <RowItem partner={partner} key={partner.id} />
                   ))
                 )}
                 </tbody>
@@ -83,6 +76,9 @@ function SelectRecipientContent() {
 }
 
 export default function SelectRecipientPage() {
+  const { currentStep } = useCreateIncomingInvoiceSteps();
+
+  if (currentStep !== 1) return null;
   return (
     <ListPartnerProvider>
       <SelectRecipientContent />

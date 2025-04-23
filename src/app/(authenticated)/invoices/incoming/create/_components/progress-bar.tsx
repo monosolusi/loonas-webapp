@@ -1,20 +1,20 @@
-import { CheckIcon } from "@heroicons/react/24/solid";
+"use client";
 
-const steps = [
-  { id: "01", name: "Pilih Penerima", href: "#", status: "current" },
-  { id: "02", name: "Pilih Rekening Tujuan", href: "#", status: "upcoming" },
-  { id: "03", name: "Upload Faktur", href: "#", status: "upcoming" },
-  { id: "04", name: "Pilih Metode Pembayaran", href: "#", status: "upcoming" }
-];
+import { CheckIcon } from "@heroicons/react/24/solid";
+import {
+  useCreateIncomingInvoiceSteps
+} from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 
 export function CreateIncomingInvoiceProgressBar() {
+  const { steps } = useCreateIncomingInvoiceSteps();
+
   return (
     <nav aria-label="Progress">
       <ol role="list" className="divide-y divide-gray-300 rounded-md border border-gray-300 md:flex md:divide-y-0">
         {steps.map((step, stepIdx) => (
           <li key={step.name} className="relative md:flex md:flex-1">
-            {step.status === "complete" ? (
-              <a href={step.href} className="group flex w-full items-center">
+            {step.status === "completed" ? (
+              <div className="group flex w-full items-center">
                 <span className="flex items-center px-6 py-4 text-sm font-medium">
                   <span
                     className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-default group-hover:bg-primary-800">
@@ -22,17 +22,17 @@ export function CreateIncomingInvoiceProgressBar() {
                   </span>
                   <span className="ml-4 text-sm font-medium text-gray-900">{step.name}</span>
                 </span>
-              </a>
+              </div>
             ) : step.status === "current" ? (
-              <a href={step.href} aria-current="step" className="flex items-center px-6 py-4 text-sm font-medium">
+              <div aria-current="step" className="flex items-center px-6 py-4 text-sm font-medium">
                 <span
                   className="flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-primary-default">
                   <span className="text-primary-default">{step.id}</span>
                 </span>
                 <span className="ml-4 text-sm font-medium text-primary-default">{step.name}</span>
-              </a>
+              </div>
             ) : (
-              <a href={step.href} className="group flex items-center">
+              <div className="group flex items-center">
                 <span className="flex items-center px-6 py-4 text-sm font-medium">
                   <span
                     className="flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-gray-300 group-hover:border-gray-400">
@@ -40,7 +40,7 @@ export function CreateIncomingInvoiceProgressBar() {
                   </span>
                   <span className="ml-4 text-sm font-medium text-gray-500 group-hover:text-gray-900">{step.name}</span>
                 </span>
-              </a>
+              </div>
             )}
 
             {stepIdx !== steps.length - 1 ? (

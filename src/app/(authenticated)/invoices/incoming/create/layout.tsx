@@ -4,20 +4,28 @@ import { BackArrow } from "@/core/presentations/components/back-arrow";
 import {
   CreateIncomingInvoiceProgressBar
 } from "@/app/(authenticated)/invoices/incoming/create/_components/progress-bar";
+import { CreateIncomingInvoiceProvider } from "@/features/invoice/presentations/providers/create-incoming-invoice";
+import {
+  CreateIncomingInvoiceStepsProvider
+} from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 
 export default function CreateIncomingInvoiceLayout({ children, recipients }: {
   children: React.ReactNode,
   recipients: React.ReactNode
 }) {
   return (
-    <PageContent>
-      <div className="flex flex-col">
-        <BackArrow />
-        <CreateIncomingInvoiceProgressBar />
-      </div>
-      <div className="mt-12">
-        {recipients}
-      </div>
-    </PageContent>
+    <CreateIncomingInvoiceProvider>
+      <CreateIncomingInvoiceStepsProvider>
+        <PageContent>
+          <div className="flex flex-col">
+            <BackArrow />
+            <CreateIncomingInvoiceProgressBar />
+          </div>
+          <div className="mt-12">
+            {recipients}
+          </div>
+        </PageContent>
+      </CreateIncomingInvoiceStepsProvider>
+    </CreateIncomingInvoiceProvider>
   );
 }
