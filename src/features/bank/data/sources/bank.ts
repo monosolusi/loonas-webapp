@@ -179,9 +179,7 @@ export class BankServiceImpl implements BankService {
       }
 
       const data = await response.json();
-      if (!data) {
-        throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      }
+      if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       return BankAccountModel.fromJson(data);
     } catch (err) {
