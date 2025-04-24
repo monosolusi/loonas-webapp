@@ -1,21 +1,27 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { BankAccountEntity } from "../../domain/entities/bank";
-import { BankRepositoryImpl } from "../../data/repositories/bank";
-import { BankServiceImpl } from "../../data/sources/bank";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
-import { ListBankAccountsUseCase, ListBankAccountsUseCaseParams } from "../../domain/usecases/list-bank-accounts";
-import {
-  VerifyAccountHolderUseCase,
-  VerifyAccountHolderUseCaseParams
-} from "../../domain/usecases/verify-account-holder";
-import { CreateBankAccountUseCase, CreateBankAccountUseCaseParams } from "../../domain/usecases/create-bank-account";
 import { DataFailed } from "@/core/resources/data-state";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { AccountInquiryResultEntity } from "@/features/bank/domain/entities/account-inquiry-result";
+import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
+import { BankServiceImpl } from "@/features/bank/data/sources/bank";
+import {
+  ListBankAccountsUseCase,
+  ListBankAccountsUseCaseParams
+} from "@/features/bank/domain/usecases/list-bank-accounts";
+import { BankRepositoryImpl } from "@/features/bank/data/repositories/bank";
+import {
+  VerifyAccountHolderUseCase,
+  VerifyAccountHolderUseCaseParams
+} from "@/features/bank/domain/usecases/verify-account-holder";
+import {
+  CreateBankAccountUseCase,
+  CreateBankAccountUseCaseParams
+} from "@/features/bank/domain/usecases/create-bank-account";
 
 interface BankAccountContextProps {
   bankAccounts: BankAccountEntity[];

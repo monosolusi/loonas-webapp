@@ -1,7 +1,8 @@
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { BankAccountModel, BankModel } from "../models/bank";
+import { BankModel } from "../models/bank";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { AccountInquiryResultModel } from "@/features/bank/data/models/account-inquiry-result";
+import { BankAccountModel } from "@/features/bank/data/models/bank-account";
 
 export abstract class BankService {
   public abstract listBanks(session: SessionEntity): Promise<BankModel[]>;

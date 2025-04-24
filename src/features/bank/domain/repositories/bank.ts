@@ -1,7 +1,8 @@
-import { BankAccountEntity, BankEntity } from "../entities/bank";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { DataState } from "@/core/resources/data-state";
 import { AccountInquiryResultEntity } from "@/features/bank/domain/entities/account-inquiry-result";
+import { BankEntity } from "@/features/bank/domain/entities/bank";
+import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
 
 export interface BankRepository {
   listBanks(session: SessionEntity): Promise<DataState<BankEntity[]>>;

@@ -1,9 +1,9 @@
-import { BankAccountEntity } from "@/features/bank/domain/entities/bank";
 import React from "react";
 import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
 import {
   useCreateIncomingInvoiceSteps
 } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
+import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
 
 export function RowItem({ bankAccount }: { bankAccount: BankAccountEntity }) {
   const { setBankAccount } = useCreateIncomingInvoice();

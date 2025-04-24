@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
-import { BankAccountEntity } from "@/features/bank/domain/entities/bank";
+import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
 
 interface CreateIncomingInvoiceContextProps {
   receiver?: PartnerEntity;

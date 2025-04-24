@@ -1,10 +1,11 @@
-import { BankRepository } from "../../domain/repositories/bank";
-import { BankAccountEntity, BankEntity } from "../../domain/entities/bank";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { BankService } from "../sources/bank";
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { AccountInquiryResultEntity } from "@/features/bank/domain/entities/account-inquiry-result";
+import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
+import { BankRepository } from "@/features/bank/domain/repositories/bank";
+import { BankService } from "@/features/bank/data/sources/bank";
+import { BankEntity } from "@/features/bank/domain/entities/bank";
 
 export class BankRepositoryImpl implements BankRepository {
   constructor(private bankService: BankService) {

@@ -2,11 +2,12 @@ import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { BankRepository } from "../repositories/bank";
-import { BankAccountEntity } from "../entities/bank";
+import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
+import { BankRepository } from "@/features/bank/domain/repositories/bank";
 
 export class ListBankAccountsUseCaseParams {
-  constructor(public readonly partnerId: string) {}
+  constructor(public readonly partnerId: string) {
+  }
 }
 
 export class ListBankAccountsUseCase implements UseCase<DataState<BankAccountEntity[]>, ListBankAccountsUseCaseParams> {
