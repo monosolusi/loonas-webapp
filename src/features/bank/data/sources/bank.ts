@@ -5,12 +5,39 @@ import { AccountInquiryResultModel } from "@/features/bank/data/models/account-i
 import { BankAccountModel } from "@/features/bank/data/models/bank-account";
 
 export abstract class BankService {
+  /**
+   * Retrieves a list of available banks
+   * @param session Current user session
+   * @returns Promise resolving to array of BankModel
+   */
   public abstract listBanks(session: SessionEntity): Promise<BankModel[]>;
 
+  /**
+   * Retrieves bank accounts for a specific partner
+   * @param partnerId ID of the partner
+   * @param session Current user session
+   * @returns Promise resolving to an array of BankAccountModel
+   */
   public abstract listBankAccounts(partnerId: string, session: SessionEntity): Promise<BankAccountModel[]>;
 
+  /**
+   * Verifies the holder of a bank account
+   * @param bankId ID of the bank
+   * @param accountNumber Account number to verify
+   * @param session Current user session
+   * @returns Promise resolving to AccountInquiryResultModel
+   */
   public abstract verifyAccountHolder(bankId: string, accountNumber: string, session: SessionEntity): Promise<AccountInquiryResultModel>;
 
+  /**
+   * Creates a new bank account for a partner
+   * @param bankId ID of the bank
+   * @param accountNumber Account number
+   * @param accountHolderName Name of the account holder
+   * @param partnerId ID of the partner
+   * @param session Current user session
+   * @returns Promise resolving to created BankAccountModel
+   */
   public abstract createBankAccount(bankId: string, accountNumber: string, accountHolderName: string, partnerId: string, session: SessionEntity): Promise<BankAccountModel>;
 }
 
@@ -50,6 +77,7 @@ export class BankServiceImpl implements BankService {
     }
   }
 
+
   public async listBankAccounts(partnerId: string, session: SessionEntity): Promise<BankAccountModel[]> {
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
@@ -74,10 +102,7 @@ export class BankServiceImpl implements BankService {
       }
 
       const data = await response.json();
-      if (!data || !Array.isArray(data)) {
-        throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      }
-
+      if (!data || !Array.isArray(data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
       return data.map(item => BankAccountModel.fromJson(item));
     } catch (err) {
       if (err instanceof ServerError) throw err;

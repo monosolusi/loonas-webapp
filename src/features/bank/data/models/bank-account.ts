@@ -40,8 +40,8 @@ export class BankAccountModel implements AbstractModel {
   public static fromJson(doc: Record<string, any>): BankAccountModel {
     return new BankAccountModel({
       id: doc["id"],
-      bankId: doc["bank_id"],
-      bankName: doc["bank_name"],
+      bankId: doc["bank"]["id"],
+      bankName: doc["bank"]["name"],
       accountNumber: doc["account_number"],
       accountHolderName: doc["account_holder_name"],
       partnerId: doc["partner_id"],
