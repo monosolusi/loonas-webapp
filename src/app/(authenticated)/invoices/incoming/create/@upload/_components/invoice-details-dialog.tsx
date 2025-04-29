@@ -6,6 +6,7 @@ import { useCreateIncomingInvoice } from "@/features/invoice/presentations/provi
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { TextInput } from "@/core/presentations/components/text-input";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { DateTime } from "luxon";
 
 interface InvoiceDetailsDialogProps {
   open: boolean;
@@ -27,7 +28,7 @@ export function InvoiceDetailsDialog({ open, setOpen, selectedFile }: InvoiceDet
       file: selectedFile,
       invoiceNumber: invoiceNumber,
       amount: IDRFormatter.toNumber(amount),
-      dueDate: dueDate
+      dueDate: DateTime.fromFormat(dueDate, "dd/mm/yyyy")
     });
 
     resetForm();

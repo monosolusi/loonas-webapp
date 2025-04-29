@@ -3,12 +3,13 @@
 import React, { useState } from "react";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
+import { DateTime } from "luxon";
 
 export interface InvoiceDocument {
   file: File;
   invoiceNumber?: string;
   amount: number;
-  dueDate: string;
+  dueDate: DateTime;
 }
 
 interface CreateIncomingInvoiceContextProps {
