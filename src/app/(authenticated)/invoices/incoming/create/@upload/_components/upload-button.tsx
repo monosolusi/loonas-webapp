@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { DocumentPlusIcon } from "@heroicons/react/24/solid";
 import {
   InvoiceDetailsDialog
 } from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/invoice-details-dialog";
+import { FilledButton } from "@/core/presentations/components/filled-button";
 
 export function UploadButton() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,14 +30,9 @@ export function UploadButton() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={handleClick}
-        className="inline-flex items-center rounded-md bg-primary-default px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-default"
-      >
-        <DocumentPlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+      <FilledButton onClick={handleClick}>
         Upload Faktur
-      </button>
+      </FilledButton>
       <input
         ref={fileInputRef}
         type="file"
