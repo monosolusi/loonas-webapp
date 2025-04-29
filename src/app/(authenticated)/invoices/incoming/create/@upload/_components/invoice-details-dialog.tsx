@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { TextInput } from "@/core/presentations/components/text-input";
+import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 
 interface InvoiceDetailsDialogProps {
   open: boolean;
@@ -17,48 +18,7 @@ export function InvoiceDetailsDialog({ open, setOpen, selectedFile }: InvoiceDet
 
   const [invoiceNumber, setInvoiceNumber] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const [formattedAmount, setFormattedAmount] = useState<string>("");
   const [dueDate, setDueDate] = useState<string>("");
-
-  // Format number to Indonesian Rupiah
-  const formatCurrency = (value: string): string => {
-    // Remove non-numeric characters
-    const numericValue = value.replace(/[^0-9]/g, "");
-
-    if (!numericValue) return "";
-
-    // Format as currency
-    const formatter = new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-
-    return formatter.format(parseInt(numericValue));
-  };
-
-  // Parse formatted currency back to number
-  const parseCurrency = (value: string): number => {
-    // Remove currency symbol, dots, and other non-numeric characters
-    const numericValue = value.replace(/[^0-9]/g, "");
-    return numericValue ? parseInt(numericValue) : 0;
-  };
-
-  // Handle amount change
-  const handleAmountChange = (value: string) => {
-    // Store raw value for internal use
-    setAmount(value);
-
-    // Format and display
-    const formatted = formatCurrency(value);
-    setFormattedAmount(formatted);
-  };
-
-  // Format amount when component mounts or amount changes
-  useEffect(() => {
-    if (amount) setFormattedAmount(formatCurrency(amount));
-  }, [amount]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,7 +26,7 @@ export function InvoiceDetailsDialog({ open, setOpen, selectedFile }: InvoiceDet
     addInvoiceDocument?.({
       file: selectedFile,
       invoiceNumber: invoiceNumber,
-      amount: parseCurrency(formattedAmount),
+      amount: IDRFormatter.toNumber(amount),
       dueDate: dueDate
     });
 
@@ -74,10 +34,13 @@ export function InvoiceDetailsDialog({ open, setOpen, selectedFile }: InvoiceDet
     setOpen(false);
   };
 
+  const handleAmountChange = (value: string) => {
+    setAmount(IDRFormatter.toNumber(value).toString());
+  };
+
   const resetForm = () => {
     setInvoiceNumber("");
     setAmount("");
-    setFormattedAmount("");
     setDueDate("");
   };
 
@@ -111,7 +74,7 @@ export function InvoiceDetailsDialog({ open, setOpen, selectedFile }: InvoiceDet
                       title="Jumlah"
                       htmlFor="amount"
                       type="text"
-                      value={formattedAmount}
+                      value={IDRFormatter.toCurrency(amount)}
                       onChange={handleAmountChange}
                       placeholder="Rp"
                       required

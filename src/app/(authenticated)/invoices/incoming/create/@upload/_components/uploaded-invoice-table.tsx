@@ -1,6 +1,7 @@
 import { DocumentIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import React, { useMemo } from "react";
 import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
+import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 
 export function UploadedInvoiceTable() {
   const { invoiceDocuments, removeInvoiceDocument } = useCreateIncomingInvoice();
@@ -49,12 +50,7 @@ export function UploadedInvoiceTable() {
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{doc.invoiceNumber}</td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0
-                    }).format(doc.amount)}
+                    {IDRFormatter.toCurrency(doc.amount)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     {new Date(doc.dueDate).toLocaleDateString("id-ID")}
@@ -79,12 +75,7 @@ export function UploadedInvoiceTable() {
                   Total
                 </td>
                 <td className="whitespace-nowrap px-3 py-4 text-sm font-semibold text-gray-900">
-                  {new Intl.NumberFormat("id-ID", {
-                    style: "currency",
-                    currency: "IDR",
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
-                  }).format(totalAmount)}
+                  {IDRFormatter.toCurrency(totalAmount)}
                 </td>
                 <td colSpan={2}></td>
               </tr>

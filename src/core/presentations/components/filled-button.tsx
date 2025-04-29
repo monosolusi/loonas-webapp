@@ -40,7 +40,7 @@ export function FilledButton({ children, loading, type, onClick, disabled = fals
           </svg>
         )}
 
-        {!loading && <span>{children}</span>}
+        {!loading && children}
       </button>
     </div>
   );
