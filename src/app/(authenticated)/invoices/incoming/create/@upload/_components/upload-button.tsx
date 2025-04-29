@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import {
   InvoiceDetailsDialog
 } from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/invoice-details-dialog";
-import { FilledButton } from "@/core/presentations/components/filled-button";
+import { OutlinedButton } from "@/core/presentations/components/outlined-button";
 
 export function UploadButton() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,9 +30,9 @@ export function UploadButton() {
 
   return (
     <>
-      <FilledButton onClick={handleClick}>
+      <OutlinedButton onClick={handleClick}>
         Upload Faktur
-      </FilledButton>
+      </OutlinedButton>
       <input
         ref={fileInputRef}
         type="file"
