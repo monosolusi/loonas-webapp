@@ -1,21 +1,24 @@
 "use client";
 
-import React, { Fragment, useEffect, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-import { InvoiceDocument } from "@/features/invoice/presentations/providers/create-incoming-invoice";
+import React, { useEffect, useState } from "react";
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
+import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
+import { FilledButton } from "@/core/presentations/components/filled-button";
 import { TextInput } from "@/core/presentations/components/text-input";
 
 interface InvoiceDetailsDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (details: Omit<InvoiceDocument, "file">) => void;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedFile?: File | null;
 }
 
-export function InvoiceDetailsDialog({ isOpen, onClose, onSubmit }: InvoiceDetailsDialogProps) {
-  const [invoiceNumber, setInvoiceNumber] = useState("");
+export function InvoiceDetailsDialog({ open, setOpen, selectedFile }: InvoiceDetailsDialogProps) {
+  const { addInvoiceDocument } = useCreateIncomingInvoice();
+
+  const [invoiceNumber, setInvoiceNumber] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [formattedAmount, setFormattedAmount] = useState<string>("");
-  const [dueDate, setDueDate] = useState("");
+  const [dueDate, setDueDate] = useState<string>("");
 
   // Format number to Indonesian Rupiah
   const formatCurrency = (value: string): string => {
@@ -54,19 +57,21 @@ export function InvoiceDetailsDialog({ isOpen, onClose, onSubmit }: InvoiceDetai
 
   // Format amount when component mounts or amount changes
   useEffect(() => {
-    if (amount) {
-      setFormattedAmount(formatCurrency(amount));
-    }
+    if (amount) setFormattedAmount(formatCurrency(amount));
   }, [amount]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({
-      invoiceNumber,
+    if (!selectedFile) return;
+    addInvoiceDocument?.({
+      file: selectedFile,
+      invoiceNumber: invoiceNumber,
       amount: parseCurrency(formattedAmount),
-      dueDate
+      dueDate: dueDate
     });
+
     resetForm();
+    setOpen(false);
   };
 
   const resetForm = () => {
@@ -77,51 +82,31 @@ export function InvoiceDetailsDialog({ isOpen, onClose, onSubmit }: InvoiceDetai
   };
 
   return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black/25" />
-        </Transition.Child>
+    <Dialog as="form" open={open} onClose={setOpen} className="relative z-50" onSubmit={handleSubmit}>
+      <DialogBackdrop
+        transition
+        className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+      />
 
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <Dialog.Panel
-                className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title
-                  as="h3"
-                  className="text-lg font-medium leading-6 text-gray-900"
-                >
+      <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <DialogPanel
+            transition
+            className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 w-full sm:max-w-sm sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
+          >
+            <div className="sm:flex sm:items-start">
+              <div className="flex-1 mt-3 sm:mt-0 sm:ml-4 sm:text-left">
+                <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
                   Detail Faktur
-                </Dialog.Title>
-                <form onSubmit={handleSubmit}>
-                  <div className="mt-4">
+                </DialogTitle>
+                <div className="my-4">
+                  <div className="flex flex-col gap-y-2">
                     <TextInput
-                      title="Nomor Faktur"
-                      htmlFor="invoice-number"
-                      type="text"
+                      title="Nomor Faktur (Optional)"
                       value={invoiceNumber}
                       onChange={setInvoiceNumber}
+                      placeholder="Cth. FAK-0001"
                     />
-                  </div>
-
-                  <div className="mt-4">
                     <TextInput
                       title="Jumlah"
                       htmlFor="amount"
@@ -131,9 +116,6 @@ export function InvoiceDetailsDialog({ isOpen, onClose, onSubmit }: InvoiceDetai
                       placeholder="Rp"
                       required
                     />
-                  </div>
-
-                  <div className="mt-4">
                     <TextInput
                       title="Tanggal Jatuh Tempo"
                       htmlFor="due-date"
@@ -143,28 +125,26 @@ export function InvoiceDetailsDialog({ isOpen, onClose, onSubmit }: InvoiceDetai
                       required
                     />
                   </div>
-
-                  <div className="mt-6 flex justify-end space-x-3">
-                    <button
-                      type="button"
-                      className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-default focus:ring-offset-2"
-                      onClick={onClose}
-                    >
-                      Batal
-                    </button>
-                    <button
-                      type="submit"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-primary-default px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary-default focus:ring-offset-2"
-                    >
-                      Simpan
-                    </button>
-                  </div>
-                </form>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
+                </div>
+              </div>
+            </div>
+            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+              <div className="ml-3">
+                <FilledButton>
+                  Simpan
+                </FilledButton>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
+              >
+                Batalkan
+              </button>
+            </div>
+          </DialogPanel>
         </div>
-      </Dialog>
-    </Transition>
+      </div>
+    </Dialog>
   );
 }
