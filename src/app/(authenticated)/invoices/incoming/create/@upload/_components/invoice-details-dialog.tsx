@@ -24,11 +24,12 @@ export function InvoiceDetailsDialog({ open, setOpen, selectedFile }: InvoiceDet
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFile) return;
+
     addInvoiceDocument?.({
       file: selectedFile,
       invoiceNumber: invoiceNumber,
       amount: IDRFormatter.toNumber(amount),
-      dueDate: DateTime.fromFormat(dueDate, "dd/mm/yyyy")
+      dueDate: DateTime.fromFormat(dueDate, "yyyy-MM-dd")
     });
 
     resetForm();
