@@ -15,7 +15,9 @@ export function EmptyState() {
         Mulai dengan mengupload faktur yang ingin kamu bayarkan.
       </p>
       <div className="mt-6">
-        <UploadButton />
+        <div className="flex justify-center">
+          <UploadButton />
+        </div>
       </div>
     </div>
   );
