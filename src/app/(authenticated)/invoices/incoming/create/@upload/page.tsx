@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
 import {
   useCreateIncomingInvoiceSteps
@@ -11,12 +11,24 @@ import {
 } from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/uploaded-invoice-table";
 import { EmptyState } from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/empty-state";
 import { FilledButton } from "@/core/presentations/components/filled-button";
+import { DisclaimerDialog } from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/disclaimer-dialog";
 
 export default function UploadInvoicePage() {
   const { currentStep, nextStep } = useCreateIncomingInvoiceSteps();
   const { invoiceDocuments } = useCreateIncomingInvoice();
+  const [openDisclaimerDialog, setOpenDisclaimerDialog] = useState(false);
 
   if (currentStep !== 3) return null;
+
+  const handleLanjutClick = () => {
+    setOpenDisclaimerDialog(true);
+  };
+
+  const handleConfirmDisclaimer = () => {
+    setOpenDisclaimerDialog(false);
+    nextStep?.();
+  };
+
   return (
     <div>
       <div className="sm:flex sm:items-center">
@@ -32,7 +44,7 @@ export default function UploadInvoicePage() {
         <div className="mt-4 sm:mt-0 sm:ml-4 sm:flex-none">
           <FilledButton 
             disabled={invoiceDocuments.length === 0} 
-            onClick={() => nextStep?.()}
+            onClick={handleLanjutClick}
             type="button"
           >
             Lanjutkan
@@ -41,6 +53,12 @@ export default function UploadInvoicePage() {
       </div>
 
       {invoiceDocuments.length > 0 ? <UploadedInvoiceTable /> : <EmptyState />}
+
+      <DisclaimerDialog 
+        open={openDisclaimerDialog}
+        onClose={setOpenDisclaimerDialog}
+        onConfirm={handleConfirmDisclaimer}
+      />
     </div>
   );
 }
