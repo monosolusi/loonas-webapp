@@ -5,7 +5,7 @@ import { PaymentSchemeEntity } from "@/features/payment/domain/entities/payment-
 import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
 
 export function SchemeSelection() {
-  const { setPaymentScheme, paymentGateway } = useCreateIncomingInvoice();
+  const { setPaymentScheme, paymentGateway, paymentScheme } = useCreateIncomingInvoice();
 
   const handleSelectScheme = (scheme: PaymentSchemeEntity) => {
     if (!setPaymentScheme) return;
@@ -22,7 +22,7 @@ export function SchemeSelection() {
           <div
             key={scheme.id}
             className={`flex cursor-pointer flex-col items-center rounded-md border p-3 ${
-              paymentGateway?.id === scheme.id
+              paymentScheme?.id === scheme.id
                 ? "border-primary-default bg-primary-50"
                 : "border-gray-200"
             }`}
