@@ -33,16 +33,13 @@ function PaymentMethodContent() {
 
   // Function to get the appropriate icon based on payment method title
   const getPaymentIcon = (title: string) => {
-    switch (title) {
-      case "Credit Card":
-        return <CreditCardIcon className="h-10 w-10 text-gray-600" />;
-      case "QRIS":
-        return <QrCodeIcon className="h-10 w-10 text-gray-600" />;
-      case "Virtual Account":
-        return <BanknotesIcon className="h-10 w-10 text-gray-600" />;
-      default:
-        return <CreditCardIcon className="h-10 w-10 text-gray-600" />;
-    }
+    const paymentIconMap = {
+      "Credit Card": <CreditCardIcon className="h-10 w-10 text-gray-600" />,
+      "QRIS": <QrCodeIcon className="h-10 w-10 text-gray-600" />,
+      "Virtual Account": <BanknotesIcon className="h-10 w-10 text-gray-600" />
+    };
+
+    return paymentIconMap[title] || <CreditCardIcon className="h-10 w-10 text-gray-600" />;
   };
 
   // Function to get the appropriate bank icon based on scheme name
@@ -135,15 +132,7 @@ function PaymentMethodContent() {
                     <div className="flex items-center">
                       {/* Left: Icon/Logo */}
                       <div className="flex-shrink-0 mr-4">
-                        {gateway.schemes.length > 0 ? (
-                          <img
-                            src={gateway.schemes[0].logoUrl}
-                            alt={gateway.title}
-                            className="h-10 w-10 object-contain"
-                          />
-                        ) : (
-                          getPaymentIcon(gateway.title)
-                        )}
+                        {getPaymentIcon(gateway.title)}
                       </div>
 
                       {/* Center: Payment method info */}
