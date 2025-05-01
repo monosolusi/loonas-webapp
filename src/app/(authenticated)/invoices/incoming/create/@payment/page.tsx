@@ -7,16 +7,10 @@ import {
 } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 import { PaymentGatewayProvider, usePaymentGateway } from "@/features/payment/presentations/providers/payment-gateway";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
-import { PaymentSchemeEntity } from "@/features/payment/domain/entities/payment-scheme";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import { RadioGroup } from "@headlessui/react";
-import { 
-  CreditCardIcon, 
-  QrCodeIcon, 
-  BanknotesIcon, 
-  BuildingLibraryIcon 
-} from "@heroicons/react/24/outline";
+import { SchemeSelection } from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/scheme-selection";
+import { PaymentMethod } from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/payment-method";
 
 function PaymentMethodContent() {
   const { currentStep, nextStep } = useCreateIncomingInvoiceSteps();
@@ -31,41 +25,9 @@ function PaymentMethodContent() {
     invoiceDocuments
   } = useCreateIncomingInvoice();
 
-  // Function to get the appropriate icon based on payment method title
-  const getPaymentIcon = (title: string) => {
-    const paymentIconMap = {
-      "Credit Card": <CreditCardIcon className="h-10 w-10 text-gray-600" />,
-      "QRIS": <QrCodeIcon className="h-10 w-10 text-gray-600" />,
-      "Virtual Account": <BanknotesIcon className="h-10 w-10 text-gray-600" />
-    };
-
-    return paymentIconMap[title] || <CreditCardIcon className="h-10 w-10 text-gray-600" />;
-  };
-
-  // Function to get the appropriate bank icon based on scheme name
-  const getBankIcon = (name: string) => {
-    // We're using a generic bank icon for all banks since we don't have specific icons
-    return <BuildingLibraryIcon className="h-8 w-8 text-gray-600" />;
-  };
-
   // Calculate total invoice amount
   const totalAmount = invoiceDocuments.reduce((sum, doc) => sum + doc.amount, 0);
 
-  const handleSelectGateway = (gateway: PaymentGatewayEntity) => {
-    setPaymentGateway?.(gateway);
-
-    // For gateways that don't require scheme selection, automatically select the first scheme
-    if (!gateway.requiresSchemeSelection) {
-      setPaymentScheme?.(gateway.schemes[0]);
-    } else {
-      // For gateways that require scheme selection (like Virtual Account), user needs to select a specific scheme
-      setPaymentScheme?.(undefined);
-    }
-  };
-
-  const handleSelectScheme = (scheme: PaymentSchemeEntity) => {
-    setPaymentScheme?.(scheme);
-  };
 
   // Calculate fees
   const calculateFees = (gateway: PaymentGatewayEntity) => {
@@ -97,11 +59,7 @@ function PaymentMethodContent() {
   };
 
   if (currentStep !== 4) return null;
-
-  if (loading) {
-    return <div className="mt-4">Loading payment methods...</div>;
-  }
-
+  if (loading) return <div className="mt-4">Loading payment methods...</div>;
   return (
     <div>
       <div className="sm:flex sm:items-center mb-6">
@@ -116,95 +74,8 @@ function PaymentMethodContent() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column - Payment methods */}
         <div className="lg:col-span-2">
-          <RadioGroup value={paymentGateway || null} onChange={handleSelectGateway}>
-            <RadioGroup.Label className="sr-only">Metode Pembayaran</RadioGroup.Label>
-            <div className="space-y-4">
-              {paymentGateways.map((gateway) => (
-                <RadioGroup.Option
-                  key={gateway.id}
-                  value={gateway}
-                  className={({ checked }) => `
-                    relative rounded-lg border p-4 cursor-pointer focus:outline-none
-                    ${checked ? 'border-primary-default ring-1 ring-primary-default' : 'border-gray-200'}
-                  `}
-                >
-                  {({ checked }) => (
-                    <div className="flex items-center">
-                      {/* Left: Icon/Logo */}
-                      <div className="flex-shrink-0 mr-4">
-                        {getPaymentIcon(gateway.title)}
-                      </div>
-
-                      {/* Center: Payment method info */}
-                      <div className="flex-1 min-w-0">
-                        <RadioGroup.Label as="h3" className="text-base font-medium text-gray-900">
-                          {gateway.title}
-                        </RadioGroup.Label>
-                        <div className="mt-1 flex flex-wrap items-center">
-                          {gateway.schemes.length > 0 && !gateway.requiresSchemeSelection && (
-                            <div className="flex items-center space-x-1 text-xs text-gray-500">
-                              {gateway.schemes.map((scheme) => (
-                                <span key={scheme.id}>{scheme.name}</span>
-                              )).reduce((prev, curr, i) => [prev, <span key={i} className="mx-1">•</span>, curr] as any)}
-                            </div>
-                          )}
-                        </div>
-                        <p className="mt-1 text-xs text-gray-500">Estimasi Pencairan: 1 hari kerja</p>
-                      </div>
-
-                      {/* Right: Fees */}
-                      <div className="flex-shrink-0 ml-4 text-right">
-                        <p className="text-sm font-medium text-gray-900">Fee</p>
-                        <p className="text-sm text-gray-700">
-                          {formatFeeText(gateway)}
-                        </p>
-                      </div>
-
-                      {/* Radio button */}
-                      <div className="flex-shrink-0 ml-4">
-                        <span
-                          className={`${
-                            checked ? 'bg-primary-default border-transparent' : 'bg-white border-gray-300'
-                          } rounded-full h-5 w-5 flex items-center justify-center border`}
-                        >
-                          {checked && (
-                            <span className="rounded-full bg-white h-2 w-2" />
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </RadioGroup.Option>
-              ))}
-            </div>
-          </RadioGroup>
-
-          {/* Scheme selection for gateways that require it */}
-          {paymentGateway?.requiresSchemeSelection && (
-            <div className="mt-6 border-t pt-6">
-              <h3 className="text-sm font-medium text-gray-900 mb-4">Pilih Bank:</h3>
-              <div className="grid grid-cols-3 gap-4">
-                {paymentGateway.schemes.map((scheme) => (
-                  <div
-                    key={scheme.id}
-                    className={`flex cursor-pointer flex-col items-center rounded-md border p-3 ${
-                      paymentScheme?.id === scheme.id
-                        ? 'border-primary-default bg-primary-50'
-                        : 'border-gray-200'
-                    }`}
-                    onClick={() => handleSelectScheme(scheme)}
-                  >
-                    <img
-                      src={scheme.logoUrl}
-                      alt={scheme.name}
-                      className="h-8 w-auto object-contain"
-                    />
-                    <span className="mt-2 text-xs text-gray-700">{scheme.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <PaymentMethod />
+          <SchemeSelection />
         </div>
 
         {/* Right column - Payment details */}
@@ -257,7 +128,8 @@ function PaymentMethodContent() {
                 <span className="text-gray-600">
                   Biaya {paymentGateway.title} ({formatFeeText(paymentGateway)})
                 </span>
-                <span className="text-gray-900 font-medium">{IDRFormatter.toCurrency(calculateFees(paymentGateway))}</span>
+                <span
+                  className="text-gray-900 font-medium">{IDRFormatter.toCurrency(calculateFees(paymentGateway))}</span>
               </div>
             )}
 
