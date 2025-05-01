@@ -38,7 +38,7 @@ function PaymentMethodContent() {
         </div>
 
         {/* Right column - Payment details */}
-        <div className="bg-gray-50 rounded-lg p-6">
+        <div className="bg-gray-100 rounded-lg p-6">
           <h2 className="text-base font-semibold text-gray-900 mb-4">Detail Pembayaran</h2>
           <RecipientInfo />
           <BankAccountInfo />
