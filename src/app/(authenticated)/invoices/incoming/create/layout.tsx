@@ -9,11 +9,18 @@ import {
   CreateIncomingInvoiceStepsProvider
 } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 
-export default function CreateIncomingInvoiceLayout({ children, recipients, banks, upload }: {
+export default function CreateIncomingInvoiceLayout({ 
+  children, 
+  recipients, 
+  banks, 
+  upload,
+  payment
+}: {
   children: React.ReactNode,
   recipients: React.ReactNode,
   banks: React.ReactNode,
   upload: React.ReactNode,
+  payment: React.ReactNode,
 }) {
   return (
     <CreateIncomingInvoiceProvider>
@@ -27,6 +34,7 @@ export default function CreateIncomingInvoiceLayout({ children, recipients, bank
             {recipients}
             {banks}
             {upload}
+            {payment}
           </div>
         </PageContent>
       </CreateIncomingInvoiceStepsProvider>
