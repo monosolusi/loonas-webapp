@@ -1,7 +1,7 @@
 import { PaymentSchemeEntity } from "@/features/payment/domain/entities/payment-scheme";
 import React from "react";
 
-export function AvailableScheme({ schemes }: { schemes: PaymentSchemeEntity[] }) {
+export function AvailableSchemeDescription({ schemes }: { schemes: PaymentSchemeEntity[] }) {
   if (schemes.length === 0) return null;
   return (
     <div className="flex items-center space-x-1 text-xs text-gray-500">

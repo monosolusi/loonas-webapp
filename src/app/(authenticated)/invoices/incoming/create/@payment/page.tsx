@@ -11,6 +11,9 @@ import { FilledButton } from "@/core/presentations/components/filled-button";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { SchemeSelection } from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/scheme-selection";
 import { PaymentMethod } from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/payment-method";
+import { RecipientInfo } from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/recipient-info";
+import { BankAccountInfo } from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/bank-account-info";
+import { InvoiceList } from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/invoice-list";
 
 function PaymentMethodContent() {
   const { currentStep, nextStep } = useCreateIncomingInvoiceSteps();
@@ -81,40 +84,9 @@ function PaymentMethodContent() {
         {/* Right column - Payment details */}
         <div className="bg-gray-50 rounded-lg p-6">
           <h2 className="text-base font-semibold text-gray-900 mb-4">Detail Pembayaran</h2>
-
-          {/* Recipient info */}
-          {receiver && (
-            <div className="mb-4">
-              <h3 className="text-sm font-medium text-gray-700">Penerima</h3>
-              <p className="text-sm text-gray-900">{receiver.name}</p>
-            </div>
-          )}
-
-          {/* Bank account info */}
-          {bankAccount && (
-            <div className="mb-4">
-              <h3 className="text-sm font-medium text-gray-700">Rekening Tujuan</h3>
-              <p className="text-sm text-gray-900">{bankAccount.bankName} - {bankAccount.accountNumber}</p>
-              <p className="text-sm text-gray-900">{bankAccount.accountHolderName}</p>
-            </div>
-          )}
-
-          {/* Invoice list */}
-          <div className="mb-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Faktur</h3>
-            <div className="space-y-2">
-              {invoiceDocuments.map((doc, index) => (
-                <div key={index} className="flex justify-between text-sm">
-                  <span className="text-gray-600">
-                    {doc.invoiceNumber || `Faktur ${index + 1}`}
-                  </span>
-                  <span className="text-gray-900 font-medium">
-                    {IDRFormatter.toCurrency(doc.amount)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <RecipientInfo />
+          <BankAccountInfo />
+          <InvoiceList />
 
           {/* Totals */}
           <div className="border-t pt-4 mt-4">

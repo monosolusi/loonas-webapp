@@ -1,9 +1,11 @@
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { PaymentIcon } from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/payment-icon";
 import { Label, Radio } from "@headlessui/react";
-import { AvailableScheme } from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/available-scheme";
 import React from "react";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import {
+  AvailableSchemeDescription
+} from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/available-scheme-description";
 
 export function PaymentMethodItem({ payment }: { payment: PaymentGatewayEntity }) {
 
@@ -39,7 +41,7 @@ export function PaymentMethodItem({ payment }: { payment: PaymentGatewayEntity }
               {payment.title}
             </Label>
             <div className="mt-1 flex flex-wrap items-center">
-              <AvailableScheme schemes={payment.schemes} />
+              <AvailableSchemeDescription schemes={payment.schemes} />
             </div>
             <p className="mt-1 text-xs text-gray-500">Estimasi Pencairan: 1 hari kerja</p>
           </div>
