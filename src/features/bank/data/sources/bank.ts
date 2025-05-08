@@ -80,17 +80,18 @@ export class BankServiceImpl implements BankService {
 
   public async listBankAccounts(partnerId: string, session: SessionEntity): Promise<BankAccountModel[]> {
     try {
+      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
+
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const url = `${baseUrl}/partners/${partnerId}/bank-accounts`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${session.accessToken}`
-        }
-      });
+      const headers = {
+        Authorization: `Bearer ${session.accessToken}`,
+        "X-Account-Id": session.selectedAccount.id
+      };
 
+      const response = await fetch(url, { method: "GET", headers });
       if (!response.ok) {
         const data = await response.json();
         if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
@@ -149,25 +150,25 @@ export class BankServiceImpl implements BankService {
 
   public async createBankAccount(bankId: string, accountNumber: string, accountHolderName: string, partnerId: string, session: SessionEntity): Promise<BankAccountModel> {
     try {
+      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
+
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const url = `${baseUrl}/partners/${partnerId}/bank-accounts`;
+      const headers = {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.accessToken}`,
+        "X-Account-Id": session.selectedAccount.id
+      };
+
       const body = {
         bank_id: bankId,
         account_number: accountNumber,
         account_holder_name: accountHolderName
       };
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${session.accessToken}`
-        },
-        body: JSON.stringify(body)
-      });
-
+      const response = await fetch(url, { method: "POST", headers: headers, body: JSON.stringify(body) });
       if (!response.ok) {
         const data = await response.json();
         if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
