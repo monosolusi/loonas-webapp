@@ -3,12 +3,17 @@
 import { useRouter } from "next/navigation";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-export function BackArrow() {
+export function BackArrow(props: { onClick?: () => void }) {
   const router = useRouter();
+
+  function handleClick() {
+    if (props.onClick) props.onClick();
+    else router.back();
+  }
 
   return (
     <div
-      onClick={() => router.back()}
+      onClick={handleClick}
       className="mb-4 flex flex-cols cursor-pointer hover:text-primary-default"
     >
       <ArrowLeftIcon className="size-5 mr-1 mt-0.5" />
