@@ -83,10 +83,24 @@ export class LocalStorageSessionService implements SessionService {
   }
 
   public async retrieve(): Promise<SessionModel> {
+    const hasSelectedAccount = await this.hasSelectedAccount();
     const accessToken = localStorage.getItem("accessToken");
-    const selectedAccount = await this.retrieveSelectedAccount();
+    const selectedAccount = hasSelectedAccount ? await this.retrieveSelectedAccount() : undefined;
 
     if (!accessToken) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
     return new SessionModel({ accessToken, selectedAccount });
+  }
+
+  private async hasSelectedAccount() {
+    try {
+      const selectedAccount = await this.retrieveSelectedAccount();
+      if (selectedAccount) return true;
+      else return false;
+    } catch (err) {
+      if (err instanceof ServerError) {
+        if (err.code === ErrorCodes.NOT_FOUND.code) return false;
+        else throw err;
+      } else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
   }
 }

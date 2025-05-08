@@ -108,7 +108,6 @@ export function SignInProvider({ children }: { children: any }) {
       router.replace("/home");
     } catch (err: any) {
       setError(err);
-    } finally {
       setLoading(false);
     }
   }

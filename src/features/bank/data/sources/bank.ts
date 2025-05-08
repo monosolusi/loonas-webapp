@@ -20,6 +20,11 @@ export abstract class BankService {
    */
   public abstract listBankAccounts(partnerId: string, session: SessionEntity): Promise<BankAccountModel[]>;
 
+  public abstract getBankAccount(params: {
+    partnerId: string,
+    id: string
+  }, session: SessionEntity): Promise<BankAccountModel>;
+
   /**
    * Verifies the holder of a bank account
    * @param bankId ID of the bank
@@ -42,6 +47,43 @@ export abstract class BankService {
 }
 
 export class BankServiceImpl implements BankService {
+  public async getBankAccount(params: {
+    partnerId: string;
+    id: string;
+  }, session: SessionEntity): Promise<BankAccountModel> {
+    try {
+      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
+
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
+      if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const url = `${baseUrl}/partners/${params.partnerId}/bank-accounts/${params.id}`;
+      const headers = {
+        Authorization: `Bearer ${session.accessToken}`,
+        "X-Account-Id": session.selectedAccount.id
+      };
+
+      const response = await fetch(url, { method: "GET", headers });
+      if (!response.ok) {
+        const data = await response.json();
+        if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
+
+        const ErrorCode = ErrorCodes.find(data.code);
+        if (ErrorCode) throw new ServerError(ErrorCode);
+
+        throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
+      }
+
+      const data = await response.json();
+      if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      return BankAccountModel.fromJson(data);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
   public async listBanks(session: SessionEntity): Promise<BankModel[]> {
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;

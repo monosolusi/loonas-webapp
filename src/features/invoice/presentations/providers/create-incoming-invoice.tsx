@@ -6,6 +6,24 @@ import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account"
 import { DateTime } from "luxon";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { PaymentSchemeEntity } from "@/features/payment/domain/entities/payment-scheme";
+import { DataFailed } from "@/core/resources/data-state";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
+import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
+import {
+  CreatePaymentRequestUseCase,
+  CreatePaymentRequestUseCaseParams
+} from "@/features/invoice/domain/usecases/create-payment-request";
+import { PaymentRequestRepositoryImpl } from "@/features/invoice/data/repositories/payment-request";
+import { PaymentRequestServiceImpl } from "@/features/invoice/data/sources/payment-request";
+import { BankServiceImpl } from "@/features/bank/data/sources/bank";
+import { PaymentGatewayServiceImpl } from "@/features/payment/data/sources/payment-gateway";
+import { PartnerServiceImpl } from "@/features/partner/data/sources/partner";
+import {
+  UploadPaymentRequestInvoicesUseCase,
+  UploadPaymentRequestInvoicesUseCaseParams
+} from "@/features/invoice/domain/usecases/upload-payment-request-invoices";
+import { PaymentRequestEntity } from "@/features/invoice/domain/entities/payment-request";
 
 export interface InvoiceDocument {
   file: File;
@@ -26,6 +44,7 @@ interface CreateIncomingInvoiceContextProps {
   setPaymentScheme?: React.Dispatch<React.SetStateAction<PaymentSchemeEntity | undefined>>;
   addInvoiceDocument?: (document: InvoiceDocument) => void;
   removeInvoiceDocument?: (index: number) => void;
+  createPaymentRequest?: () => Promise<PaymentRequestEntity>;
 }
 
 const CreateIncomingInvoiceContext = React.createContext<CreateIncomingInvoiceContextProps>({
@@ -47,6 +66,51 @@ export function CreateIncomingInvoiceProvider({ children }: { children: React.Re
     setInvoiceDocuments(prev => prev.filter((_, i) => i !== index));
   };
 
+  const createPaymentRequest = async () => {
+    try {
+      // Check if all the field conditions are satisfied
+      if (!receiver) throw new ServerError(ErrorCodes.EMPTY_RECEIVER);
+      if (!bankAccount) throw new ServerError(ErrorCodes.EMPTY_BANK_ACCOUNT);
+      if (!invoiceDocuments) throw new ServerError(ErrorCodes.EMPTY_INVOICES);
+      if (!paymentGateway) throw new ServerError(ErrorCodes.EMPTY_PAYMENT_METHOD);
+      if (paymentGateway.requiresSchemeSelection && !paymentScheme) throw new ServerError(ErrorCodes.EMPTY_PAYMENT_SCHEME);
+
+      const sessionService = new LocalStorageSessionService();
+      const partnerService = new PartnerServiceImpl();
+      const bankService = new BankServiceImpl();
+      const paymentGatewayService = new PaymentGatewayServiceImpl();
+      const paymentRequestService = new PaymentRequestServiceImpl(partnerService, bankService, paymentGatewayService);
+      const sessionRepository = new SessionRepositoryImpl(sessionService);
+      const paymentRequestRepository = new PaymentRequestRepositoryImpl(paymentRequestService);
+      const create = new CreatePaymentRequestUseCase(paymentRequestRepository, sessionRepository);
+      const createParams = new CreatePaymentRequestUseCaseParams({
+        receiver: receiver,
+        bankAccount: bankAccount,
+        invoices: invoiceDocuments,
+        paymentMethod: paymentGateway,
+        paymentScheme: paymentScheme
+      });
+
+      const result = await create.execute(createParams);
+      if (result instanceof DataFailed) throw result.error;
+      if (result.data === undefined) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      // Upload the invoice documents given the PaymentRequestId
+      const upload = new UploadPaymentRequestInvoicesUseCase(paymentRequestRepository, sessionRepository);
+      const uploadParams = new UploadPaymentRequestInvoicesUseCaseParams({
+        paymentRequest: result.data,
+        invoices: invoiceDocuments
+      });
+
+      const uploadResult = await upload.execute(uploadParams);
+      if (uploadResult instanceof DataFailed) throw uploadResult.error;
+      return result.data;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+
   return (
     <CreateIncomingInvoiceContext.Provider
       value={{
@@ -60,7 +124,8 @@ export function CreateIncomingInvoiceProvider({ children }: { children: React.Re
         setPaymentGateway,
         setPaymentScheme,
         addInvoiceDocument,
-        removeInvoiceDocument
+        removeInvoiceDocument,
+        createPaymentRequest
       }}
     >
       {children}

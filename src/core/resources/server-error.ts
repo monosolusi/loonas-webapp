@@ -42,6 +42,36 @@ export class ErrorCodes {
     message: "Ups! Nomor telepon-nya belum diisi"
   };
 
+  public static readonly EMPTY_RECEIVER: ErrorStructureType = {
+    code: "EMPTY_RECEIVER",
+    httpCode: 400,
+    message: "Ups! Penerima-nya belum diisi"
+  };
+
+  public static readonly EMPTY_BANK_ACCOUNT: ErrorStructureType = {
+    code: "EMPTY_BANK_ACCOUNT",
+    httpCode: 400,
+    message: "Ups! Nomor rekening-nya belum diisi"
+  };
+
+  public static readonly EMPTY_INVOICES: ErrorStructureType = {
+    code: "EMPTY_INVOICES",
+    httpCode: 400,
+    message: "Ups! Invoice-nya belum diisi"
+  };
+
+  public static readonly EMPTY_PAYMENT_METHOD: ErrorStructureType = {
+    code: "EMPTY_PAYMENT_METHOD",
+    httpCode: 400,
+    message: "Ups! Metode pembayaran-nya belum diisi"
+  };
+
+  public static readonly EMPTY_PAYMENT_SCHEME: ErrorStructureType = {
+    code: "EMPTY_PAYMENT_SCHEME",
+    httpCode: 400,
+    message: "Ups! Metode pembayaran-nya belum diisi"
+  };
+
   public static readonly HTTP_ERROR: ErrorStructureType = { code: "HTTP_ERROR", httpCode: 500, message: "HTTP error" };
 
   public static readonly VALIDATION_FAILED: ErrorStructureType = {
