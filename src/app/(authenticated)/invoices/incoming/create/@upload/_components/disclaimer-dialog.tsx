@@ -1,9 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { FilledButton } from "@/core/presentations/components/filled-button";
+import {
+  DisclaimerCheckbox
+} from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/disclaimer-checkbox";
 
 interface DisclaimerDialogProps {
   open: boolean;
@@ -12,7 +15,39 @@ interface DisclaimerDialogProps {
   loading?: boolean;
 }
 
+interface CheckboxItem {
+  id: string;
+  checked: boolean;
+  description: string;
+}
+
 export function DisclaimerDialog({ open, onClose, onConfirm, loading }: DisclaimerDialogProps) {
+  const [checkboxes, setCheckboxes] = useState<CheckboxItem[]>([
+    {
+      id: "statement-1",
+      checked: false,
+      description: "Saya dengan ini menyatakan bahwa faktur dan/atau dokumen yang telah saya unggah adalah benar, akurat, dan sesuai dengan kondisi sebenarnya."
+    },
+    {
+      id: "statement-2",
+      checked: false,
+      description: "Saya memahami dan menyetujui bahwa Loonas tidak bertanggung jawab atas setiap kesalahan, ketidaksesuaian, atau informasi yang menyesatkan yang terdapat dalam dokumen yang saya unggah."
+    },
+    {
+      id: "statement-3",
+      checked: false,
+      description: "Dengan ini saya membebaskan dan melepaskan Loonas dari segala bentuk tanggung jawab, tuntutan, gugatan, dan/atau klaim dari pihak mana pun atas akibat yang timbul dari isi dan/atau penggunaan dokumen tersebut."
+    }
+  ]);
+
+  const allChecked = checkboxes.every(checkbox => checkbox.checked);
+
+  const handleCheckboxChange = (id: string, checked: boolean) => {
+    setCheckboxes(prev => prev.map(checkbox =>
+      checkbox.id === id ? { ...checkbox, checked } : checkbox
+    ));
+  };
+
   return (
     <Dialog
       onClose={onClose}
@@ -41,12 +76,22 @@ export function DisclaimerDialog({ open, onClose, onConfirm, loading }: Disclaim
                   <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
                     Konfirmasi Dokumen
                   </DialogTitle>
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      Dengan melanjutkan, saya menyatakan bahwa dokumen yang diupload sudah benar dan lengkap. 
-                      Saya memahami bahwa Loonas tidak bertanggung jawab atas kesalahan informasi dalam dokumen yang saya upload.
-                      Saya melepaskan Loonas dari segala tanggung jawab terkait kebenaran isi dokumen tersebut.
-                    </p>
+                  <div className="mt-4 space-y-4">
+                    {checkboxes.map((checkbox) => (
+                      <DisclaimerCheckbox
+                        key={checkbox.id}
+                        checked={checkbox.checked}
+                        onChange={(checked) => handleCheckboxChange(checkbox.id, checked)}
+                        description={checkbox.description}
+                      />
+                    ))}
+
+                    <div className="mt-4">
+                      <p className="text-sm text-black">
+                        Pernyataan ini berlaku sebagai bentuk pengesahan pengguna atas kebenaran dokumen yang diserahkan
+                        dan menjadi bagian yang tidak terpisahkan dari Syarat dan Ketentuan Loonas.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -57,6 +102,7 @@ export function DisclaimerDialog({ open, onClose, onConfirm, loading }: Disclaim
                   type="button"
                   loading={loading}
                   onClick={onConfirm}
+                  disabled={!allChecked}
                 >
                   Setuju & Lanjutkan
                 </FilledButton>
