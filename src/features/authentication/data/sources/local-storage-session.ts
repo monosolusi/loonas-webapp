@@ -84,7 +84,9 @@ export class LocalStorageSessionService implements SessionService {
 
   public async retrieve(): Promise<SessionModel> {
     const accessToken = localStorage.getItem("accessToken");
+    const selectedAccount = await this.retrieveSelectedAccount();
+
     if (!accessToken) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
-    return new SessionModel({ accessToken });
+    return new SessionModel({ accessToken, selectedAccount });
   }
 }

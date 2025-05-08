@@ -174,6 +174,12 @@ export class ErrorCodes {
     message: "No associated accounts for user"
   };
 
+  public static readonly NO_SELECTED_ACCOUNT: ErrorStructureType = {
+    code: "NO_SELECTED_ACCOUNT",
+    httpCode: 404,
+    message: "No selected account"
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }
