@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { PageHeading } from "@/core/presentations/components/page-heading";
 import { PageContent } from "@/core/presentations/components/page-content";
-import { ClipboardDocumentIcon } from "@heroicons/react/24/outline";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { OutlinedButton } from "@/core/presentations/components/outlined-button";
 import { RemainingPaymentTime } from "./_components/remaining-payment-time";
 import { DateTime } from "luxon";
+import { VirtualAccountDetailBox } from "@/app/(authenticated)/invoices/[id]/va-pay-in-detail/_components/va-detail";
 
 export default function VirtualAccountPayInDetailPage() {
   const paymentData = {
     expirationTime: DateTime.now().plus({ hour: 24 }),
-    bankLogo: "/images/bank-logo.png", // Path logo bank
+    bankLogo: "https://res.cloudinary.com/monosolusi/image/upload/v1745932428/loonas/web-assets/2560px-BRI_2020.svg_lwjmpi.png", // Path logo bank
     vaNumber: "12345678901234",
     amount: 1500000,
     receiverName: "PT. Example Company",
@@ -22,13 +22,7 @@ export default function VirtualAccountPayInDetailPage() {
     fee: 2500
   };
 
-  const [copied, setCopied] = useState(false);
   const totalPayment = paymentData.amount + paymentData.fee;
-  const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(paymentData.vaNumber);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const formatRupiah = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -48,6 +42,7 @@ export default function VirtualAccountPayInDetailPage() {
     console.log("Sudah bayar diklik");
   };
 
+  // @ts-ignore
   return (
     <>
       <PageHeading>Harap Lakukan Pembayaran</PageHeading>
@@ -59,46 +54,12 @@ export default function VirtualAccountPayInDetailPage() {
             <RemainingPaymentTime deadline={paymentData.expirationTime} />
 
             {/* Virtual Account Box */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <div className="flex items-center mb-6">
-                {/* Bank Logo Placeholder */}
-                <div className="h-12 w-16 bg-gray-100 rounded flex items-center justify-center mr-4">
-                  <span className="text-xs text-gray-500">LOGO</span>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Virtual Account</p>
-                  <p className="text-lg font-semibold">Bank XYZ</p>
-                </div>
-              </div>
-
-              {/* VA Number with Copy button */}
-              <div className="flex items-center mb-6">
-                <div
-                  className="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-4 flex justify-between items-center">
-                  <span className="font-mono text-lg font-bold">{paymentData.vaNumber}</span>
-                  <button
-                    onClick={copyToClipboard}
-                    className="text-blue-600 hover:text-blue-800 flex items-center"
-                  >
-                    <ClipboardDocumentIcon className="h-5 w-5 mr-1" />
-                    <span className="text-sm">{copied ? "Tersalin!" : "Salin"}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Amount */}
-              <div>
-                <p className="text-sm text-gray-500 mb-1">Total Pembayaran</p>
-                <p className="text-2xl font-bold">{formatRupiah(totalPayment)}</p>
-                <p className="text-sm text-gray-500 mt-2">Mohon lakukan pembayaran sesuai dengan jumlah yang
-                  tertera.</p>
-                <p className="text-sm text-gray-500 mt-2">
-                  Bingung cara bayarnya gimana? <a href="https://loonas.id" target="_blank" rel="noopener noreferrer"
-                                                   className="text-blue-600">Ikuti petunjuk disini</a>
-                </p>
-              </div>
-
-            </div>
+            <VirtualAccountDetailBox
+              logoUrl={paymentData.bankLogo}
+              bankName={paymentData.receiverBank}
+              accountNumber={paymentData.vaNumber}
+              totalPayment={paymentData.amount + paymentData.fee}
+            />
           </div>
 
           {/* Right side - Payment Details */}
