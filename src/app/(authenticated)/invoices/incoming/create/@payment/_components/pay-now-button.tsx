@@ -22,13 +22,13 @@ export function PayNowButton() {
       const paymentRequest = await createPaymentRequest();
 
       // Assuming it is a success,
-      // we will navigate to /invoices/:payment_request_id/va-pay-in-details for VA and /invoices/:payment_request_id/qris-pay-in-details for QRIS
+      // we will navigate to /invoices/:payment_request_id/va-pay-in-detail for VA and /invoices/:payment_request_id/qris-pay-in-detail for QRIS
       // For CC payment method, we haven't thought about it.
-      // Maybe we can go to /invoices/:payment_request_id/cc-pay-in-details
+      // Maybe we can go to /invoices/:payment_request_id/cc-pay-in-detail
       if (paymentRequest.paymentMethod.title.toLowerCase() === "virtual account") {
-        router.replace(`/invoices/${paymentRequest.id}/va-pay-in-details`);
+        router.replace(`/invoices/${paymentRequest.id}/va-pay-in-detail`);
       } else if (paymentRequest.paymentMethod.title.toLowerCase() === "qris") {
-        router.replace(`invoices/${paymentRequest.id}/qris-pay-in-details`);
+        router.replace(`invoices/${paymentRequest.id}/qris-pay-in-detail`);
       } else throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
     } catch (err) {
       console.error(err);
