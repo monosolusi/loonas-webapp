@@ -39,13 +39,9 @@ function HeaderAccountListComponent() {
     if (!selectedAccount && accounts?.length) changeAccount?.(accounts[0]);
   }, [selectAccountLoading, selectedAccount, accounts]);
 
-  function generateShortAccountId(id: string) {
-    return id.substring(0, 6).toUpperCase();
-  }
-
   function generateSelectedAccountLabel(selectedAccount?: PersonalAccountEntity) {
     if (!selectedAccount) return "Pilih Akun";
-    else return `${selectedAccount.fullName} (ID: ${generateShortAccountId(selectedAccount.id)})`;
+    else return `${selectedAccount.fullName} (ID: ${selectedAccount.generateShortAccountId()})`;
   }
 
   async function handleSignOutClick() {
@@ -97,7 +93,7 @@ function HeaderAccountListComponent() {
                 className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed"
               >
                 <p>{selectedAccount.fullName}</p>
-                <p className="text-xs/5 text-gray-500">ID: {generateShortAccountId(selectedAccount.id)}</p>
+                <p className="text-xs/5 text-gray-500">ID: {selectedAccount.generateShortAccountId()}</p>
               </div>
             </MenuItem>
           )}
@@ -111,7 +107,7 @@ function HeaderAccountListComponent() {
                   className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed"
                 >
                   <p>{account.fullName}</p>
-                  <p className="text-xs/5 text-gray-500">ID: {generateShortAccountId(account.id)}</p>
+                  <p className="text-xs/5 text-gray-500">ID: {account.generateShortAccountId()}</p>
                 </div>
               </MenuItem>
             ))}
