@@ -138,6 +138,12 @@ export class ErrorCodes {
     message: "Not Implemented"
   };
 
+  public static readonly INVALID_PAY_IN_TYPE: ErrorStructureType = {
+    code: "INVALID_PAY_IN_TYPE",
+    httpCode: 400,
+    message: "Invalid pay in type"
+  };
+
   public static readonly INVALID_OTP: ErrorStructureType = {
     code: "INVALID_OTP",
     httpCode: 400,

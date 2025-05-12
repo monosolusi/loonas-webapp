@@ -5,6 +5,10 @@ import { PartnerService } from "@/features/partner/data/sources/partner";
 import { BankService } from "@/features/bank/data/sources/bank";
 import { PaymentGatewayService } from "@/features/payment/data/sources/payment-gateway";
 import { PaymentRequestModel } from "../models/payment-request";
+import { PartnerModel } from "@/features/partner/data/models/partner";
+import { BankAccountModel } from "@/features/bank/data/models/bank-account";
+import { PaymentGatewayModel } from "@/features/payment/data/models/payment-gateway";
+import { PaymentSchemeModel } from "@/features/payment/data/models/payment-scheme";
 
 interface PaymentRequestServiceCreateParams {
   receiverId: string;
@@ -14,6 +18,11 @@ interface PaymentRequestServiceCreateParams {
   paymentSchemeId?: string;
 }
 
+interface PaymentRequestServiceGetParams {
+  id: string;
+  includes?: string;
+}
+
 export abstract class PaymentRequestService {
   public abstract create(params: PaymentRequestServiceCreateParams, session: SessionEntity): Promise<PaymentRequestModel>;
 
@@ -21,6 +30,8 @@ export abstract class PaymentRequestService {
     requestId: string,
     invoiceDocuments: File[]
   }, session: SessionEntity): Promise<void>;
+
+  public abstract get(params: PaymentRequestServiceGetParams, session: SessionEntity): Promise<PaymentRequestModel>;
 }
 
 export class PaymentRequestServiceImpl implements PaymentRequestService {
@@ -30,6 +41,55 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
     private readonly bankService: BankService,
     private readonly paymentGatewayService: PaymentGatewayService
   ) {
+  }
+
+  public async get(params: PaymentRequestServiceGetParams, session: SessionEntity): Promise<PaymentRequestModel> {
+    try {
+      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
+
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
+      if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const url = `${baseUrl}/payment-requests/${params.id}${params.includes ? `?include=${params.includes}` : ""}`;
+      const headers = {
+        Authorization: `Bearer ${session.accessToken}`,
+        "X-Account-Id": session.selectedAccount.id
+      };
+
+      const response = await fetch(url, { method: "GET", headers });
+      if (!response.ok) {
+        const data = await response.json();
+        if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
+
+        const ErrorCode = ErrorCodes.find(data.code);
+        if (ErrorCode) throw new ServerError(ErrorCode);
+        throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
+      }
+
+      const data = await response.json();
+      const receiver = await this.getPartnerOrFetch({ id: data.receiver_id, data: data.receiver }, session);
+      const bankAccount = await this.getBankAccountOrFetch({
+        id: data.receiver_bank_account_id,
+        partnerId: data.receiver_id,
+        data: data.receiver_bank_account
+      }, session);
+
+      const paymentMethod = await this.getPaymentMethodOrFetch({
+        id: data.payment_method_id,
+        data: data.payment_method
+      }, session);
+
+      const paymentScheme = await this.getPaymentSchemeOrFetch({
+        id: data.payment_scheme_id,
+        gatewayId: data.payment_method_id,
+        data: data.payment_scheme
+      }, session);
+
+      return PaymentRequestModel.fromJson(data, { receiver, bankAccount, paymentMethod, paymentScheme });
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
   }
 
   public async uploadInvoices(params: {
@@ -129,5 +189,47 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
     }
   }
+
+  private async getPartnerOrFetch(params: {
+    id: string,
+    data: Record<string, any>
+  }, session: SessionEntity): Promise<PartnerModel> {
+    if (params.data) return PartnerModel.fromJson(params.data);
+    return this.partnerService.get({ id: params.id }, session);
+  }
+
+  private async getBankAccountOrFetch(params: {
+    id: string,
+    partnerId: string,
+    data: Record<string, any>
+  }, session: SessionEntity): Promise<BankAccountModel> {
+    if (params.data) return BankAccountModel.fromJson(params.data);
+    return this.bankService.getBankAccount({
+      partnerId: params.partnerId,
+      id: params.id
+    }, session);
+  }
+
+  private async getPaymentMethodOrFetch(params: {
+    id: string,
+    data: Record<string, any>
+  }, session: SessionEntity): Promise<PaymentGatewayModel> {
+    if (params.data) return PaymentGatewayModel.fromJson(params.data);
+    return this.paymentGatewayService.get({ id: params.id }, session);
+  }
+
+  private async getPaymentSchemeOrFetch(params: {
+    id: string,
+    gatewayId: string,
+    data: Record<string, any>
+  }, session: SessionEntity): Promise<PaymentSchemeModel | undefined> {
+    if (!params.id) return undefined; // It means it is not require to have PaymentScheme
+    if (params.data) return PaymentSchemeModel.fromJson(params.data);
+    return this.paymentGatewayService.getScheme({
+      id: params.id,
+      gatewayId: params.gatewayId
+    }, session);
+  }
+
 
 }

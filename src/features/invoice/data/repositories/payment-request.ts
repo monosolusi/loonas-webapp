@@ -2,6 +2,7 @@ import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state"
 import {
   PaymentRequestRepository,
   PaymentRequestRepositoryCreateParams,
+  PaymentRequestRepositoryGetParams,
   PaymentRequestRepositoryUploadInvoicesParams
 } from "@/features/invoice/domain/repositories/payment-request";
 import { PaymentRequestEntity } from "../../domain/entities/payment-request";
@@ -13,6 +14,20 @@ export class PaymentRequestRepositoryImpl implements PaymentRequestRepository {
   constructor(
     private readonly paymentRequestService: PaymentRequestService
   ) {
+  }
+
+  public async get(params: PaymentRequestRepositoryGetParams, session: SessionEntity): Promise<DataState<PaymentRequestEntity>> {
+    try {
+      const paymentRequest = await this.paymentRequestService.get({
+        id: params.id,
+        includes: params.includes
+      }, session);
+
+      return new DataSuccess(paymentRequest.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
   }
 
   public async uploadInvoices(params: PaymentRequestRepositoryUploadInvoicesParams, session: SessionEntity): Promise<DataState<boolean>> {

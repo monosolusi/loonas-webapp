@@ -27,9 +27,16 @@ export interface PaymentRequestRepositoryUploadInvoicesParams {
   invoices: InvoiceDocument[];
 }
 
+export interface PaymentRequestRepositoryGetParams {
+  id: string;
+  includes?: string;
+}
+
 export abstract class PaymentRequestRepository {
   public abstract create(params: PaymentRequestRepositoryCreateParams, session: SessionEntity): Promise<DataState<PaymentRequestEntity>>
 
   public abstract uploadInvoices(params: PaymentRequestRepositoryUploadInvoicesParams, session: SessionEntity): Promise<DataState<boolean>>
+
+  public abstract get(params: PaymentRequestRepositoryGetParams, session: SessionEntity): Promise<DataState<PaymentRequestEntity>>
 
 }
