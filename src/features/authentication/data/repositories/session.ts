@@ -32,7 +32,7 @@ export class SessionRepositoryImpl implements SessionRepository {
   public async saveSession(accessToken: string): Promise<DataState<SessionEntity>> {
     try {
       const session = await this.sessionService.saveSession(accessToken);
-      return new DataSuccess(session);
+      return new DataSuccess(session.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
@@ -42,7 +42,7 @@ export class SessionRepositoryImpl implements SessionRepository {
   public async retrieve(): Promise<DataState<SessionEntity>> {
     try {
       const session = await this.sessionService.retrieve();
-      return new DataSuccess(session);
+      return new DataSuccess(session.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
