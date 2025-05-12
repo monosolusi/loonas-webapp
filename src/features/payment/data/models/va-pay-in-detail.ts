@@ -10,7 +10,7 @@ interface VirtualAccountPayInDetailModelConstructor {
   recipientName: string;
   paymentScheme: PaymentSchemeModel;
   expirationTime: string;
-  amount: string;
+  amount: number;
   status: PayInStatus;
   createdAt: string;
   updatedAt: string;
@@ -22,7 +22,7 @@ export class VirtualAccountPayInDetailModel implements AbstractModel {
   public recipientName: string;
   public paymentScheme: PaymentSchemeModel;
   public expirationTime: string;
-  public amount: string;
+  public amount: number;
   public status: PayInStatus;
   public createdAt: string;
   public updatedAt: string;

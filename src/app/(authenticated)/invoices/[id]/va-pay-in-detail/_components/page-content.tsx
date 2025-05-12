@@ -7,23 +7,49 @@ import {
 } from "@/app/(authenticated)/invoices/[id]/va-pay-in-detail/_components/remaining-payment-time";
 import { VirtualAccountDetailBox } from "@/app/(authenticated)/invoices/[id]/va-pay-in-detail/_components/va-detail";
 import { PaymentDetail } from "@/app/(authenticated)/invoices/[id]/va-pay-in-detail/_components/payment-detail";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { PageContent } from "@/core/presentations/components/page-content";
+import { useVirtualAccountPayInDetail } from "@/features/payment/presentations/providers/virtual-account-pay-in-detail";
+import { usePaymentRequest } from "@/features/payment/presentations/providers/payment-request";
+
+interface PaymentData {
+  expirationTime: DateTime;
+  bankLogo: string;
+  vaNumber: string;
+  vaBankName: string;
+  amount: number;
+  receiverName: string;
+  accountHolderName: string;
+  receiverBank: string;
+  receiverAccountNumber: string;
+  fee: number;
+}
 
 export function VirtualAccountPayInDetailPageContent() {
-  const paymentData = {
-    expirationTime: DateTime.now().plus({ hour: 24 }),
-    bankLogo: "https://res.cloudinary.com/monosolusi/image/upload/v1745932428/loonas/web-assets/2560px-BRI_2020.svg_lwjmpi.png", // Path logo bank
-    vaNumber: "12345678901234",
-    amount: 1500000,
-    receiverName: "PT. Example Company",
-    accountHolderName: "John Doe",
-    receiverBank: "Bank XYZ",
-    receiverAccountNumber: "9876543210",
-    fee: 2500
-  };
+  const [paymentData, setPaymentData] = useState<PaymentData>();
+  const { vaDetail } = useVirtualAccountPayInDetail();
+  const { paymentRequest } = usePaymentRequest();
+
+  useEffect(() => {
+    if (!vaDetail || !paymentRequest) return;
+    if (!paymentRequest.paymentScheme) return;
+
+    setPaymentData({
+      expirationTime: vaDetail.expirationTime,
+      bankLogo: paymentRequest.paymentScheme.logoUrl,
+      vaNumber: vaDetail.accountNumber,
+      vaBankName: vaDetail.paymentScheme.name,
+      amount: vaDetail.amount,
+      receiverName: paymentRequest.receiver.name,
+      accountHolderName: vaDetail.recipientName,
+      receiverBank: paymentRequest.bankAccount.bankName,
+      receiverAccountNumber: paymentRequest.bankAccount.accountNumber,
+      fee: paymentRequest.totalFee
+    });
+  }, [vaDetail, paymentRequest]);
 
 
+  if (!paymentData) return <>Loading...</>;
   return (
     <>
       <PageHeading>Harap Lakukan Pembayaran</PageHeading>
@@ -37,7 +63,7 @@ export function VirtualAccountPayInDetailPageContent() {
             {/* Virtual Account Box */}
             <VirtualAccountDetailBox
               logoUrl={paymentData.bankLogo}
-              bankName={paymentData.receiverBank}
+              bankName={paymentData.vaBankName}
               accountNumber={paymentData.vaNumber}
               totalPayment={paymentData.amount + paymentData.fee}
             />

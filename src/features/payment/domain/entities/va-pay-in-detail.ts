@@ -10,7 +10,7 @@ interface VirtualAccountPayInDetailEntityConstructor {
   recipientName: string;
   paymentScheme: PaymentSchemeEntity;
   expirationTime: DateTime;
-  amount: string;
+  amount: number;
   status: PayInStatus;
   createdAt: DateTime;
   updatedAt: DateTime;
@@ -22,7 +22,7 @@ export class VirtualAccountPayInDetailEntity implements AbstractEntity {
   public recipientName: string;
   public paymentScheme: PaymentSchemeEntity;
   public expirationTime: DateTime;
-  public amount: string;
+  public amount: number;
   public status: PayInStatus;
   public createdAt: DateTime;
   public updatedAt: DateTime;
