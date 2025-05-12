@@ -41,7 +41,7 @@ export function VirtualAccountPayInDetailPageContent() {
       vaBankName: vaDetail.paymentScheme.name,
       amount: vaDetail.amount,
       receiverName: paymentRequest.receiver.name,
-      accountHolderName: vaDetail.recipientName,
+      accountHolderName: paymentRequest.bankAccount.accountHolderName,
       receiverBank: paymentRequest.bankAccount.bankName,
       receiverAccountNumber: paymentRequest.bankAccount.accountNumber,
       fee: paymentRequest.totalFee
