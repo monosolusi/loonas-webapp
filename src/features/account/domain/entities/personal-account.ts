@@ -58,4 +58,8 @@ export class PersonalAccountEntity implements AbstractEntity {
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
   }
+
+  public generateShortAccountId() {
+    return this.id.substring(0, 6).toUpperCase();
+  }
 }

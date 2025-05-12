@@ -57,15 +57,18 @@ function AccountCard({ account, onAccountChanged }: { account: PersonalAccountEn
       className={classNames(
         "cursor-pointer",
         "data-[disabled=true]:bg-gray-100 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:border-transparent",
-        "relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-xs focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400"
+        "relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-xs focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 hover:border-gray-400"
       )}
     >
       <div className="min-w-0 flex-1">
         <div className="focus:outline-hidden">
           <div className="flex">
-            <p className="text-sm font-medium text-gray-900 flex-1">
-              {account.fullName}
-            </p>
+            <div className="flex-1">
+              <p className="text-xs text-gray-400">{account.generateShortAccountId()}</p>
+              <p className="text-sm font-medium text-black">
+                {account.fullName}
+              </p>
+            </div>
             <VerificationStatusBadge />
           </div>
           <p className="truncate text-sm text-gray-500">Akun Personal</p>
