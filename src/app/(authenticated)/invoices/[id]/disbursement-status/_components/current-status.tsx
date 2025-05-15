@@ -1,19 +1,19 @@
 import React from "react";
-import PaperPlaneAnimation from "../_static-files/paper-plane-animation.json";
 import { Card } from "@/core/presentations/components/card";
 import { Player } from "@lottiefiles/react-lottie-player";
 
 interface CurrentStatusProps {
   title: string;
   description: string;
+  lottieFile: any;
 }
 
 export function CurrentStatus(props: CurrentStatusProps) {
   return (
     <Card>
       <div className="flex justify-center mb-4">
-        <div className="h-35 w-36">
-          <Player autoplay loop src={PaperPlaneAnimation} />
+        <div className="h-35 w-35">
+          <Player autoplay loop src={props.lottieFile} />
         </div>
       </div>
       <div className="text-center">

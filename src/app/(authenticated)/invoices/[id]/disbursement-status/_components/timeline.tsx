@@ -30,7 +30,7 @@ export function Timeline(props: TimelineProps) {
   const getStepStatus = (stepStatus: PaymentRequestStatus): "completed" | "current" | "upcoming" => {
     const statusOrder = [
       PaymentRequestStatus.PENDING_PAYMENT,
-      PaymentRequestStatus.PROCESSING,
+      PaymentRequestStatus.PAYMENT_RECEIVED_PENDING_DELIVERY,
       PaymentRequestStatus.COMPLETED,
       PaymentRequestStatus.EXPIRED,
       PaymentRequestStatus.FAILED
