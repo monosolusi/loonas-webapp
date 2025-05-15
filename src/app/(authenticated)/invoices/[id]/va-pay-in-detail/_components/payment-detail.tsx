@@ -1,10 +1,8 @@
 "use client";
 
 import React from "react";
-import { FilledButton } from "@/core/presentations/components/filled-button";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import { useRouter } from "next/navigation";
+import { ActionButtons } from "@/app/(authenticated)/invoices/[id]/va-pay-in-detail/_components/action-buttons";
 
 interface PaymentDetailProps {
   invoiceId: string;
@@ -18,16 +16,6 @@ interface PaymentDetailProps {
 }
 
 export function PaymentDetail(props: PaymentDetailProps) {
-  const router = useRouter();
-
-  const handlePayLater = () => {
-    router.push("/invoices");
-  };
-
-  const handlePaymentDone = () => {
-    router.push(`/invoices/${props.invoiceId}/disbursement-status`);
-  };
-
   return (
     <div className="w-full lg:w-5/12 flex flex-col">
       <div className="bg-white border border-gray-200 rounded-lg p-6">
@@ -76,14 +64,7 @@ export function PaymentDetail(props: PaymentDetailProps) {
       </div>
 
       {/* Action Buttons - Placed directly below the payment details */}
-      <div className="mt-4 flex flex-col gap-3">
-        <FilledButton onClick={handlePaymentDone}>
-          Sudah Bayar
-        </FilledButton>
-        <OutlinedButton onClick={handlePayLater}>
-          Bayar Nanti
-        </OutlinedButton>
-      </div>
+      <ActionButtons invoiceId={props.invoiceId} />
     </div>
   );
 }
