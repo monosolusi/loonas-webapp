@@ -1,6 +1,6 @@
 import { DataState } from "@/core/resources/data-state";
 import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
-import { PaymentRequestEntity } from "@/features/invoice/domain/entities/payment-request";
+import { PaymentRequestEntity } from "@/features/payment/domain/entities/payment-request";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { PaymentSchemeEntity } from "@/features/payment/domain/entities/payment-scheme";

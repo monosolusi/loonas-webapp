@@ -3,8 +3,8 @@ import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { PaymentRequestEntity } from "@/features/invoice/domain/entities/payment-request";
-import { PaymentRequestRepository } from "@/features/invoice/domain/repositories/payment-request";
+import { PaymentRequestEntity } from "@/features/payment/domain/entities/payment-request";
+import { PaymentRequestRepository } from "@/features/payment/domain/repositories/payment-request";
 
 export interface InvoiceDocument {
   file: File;

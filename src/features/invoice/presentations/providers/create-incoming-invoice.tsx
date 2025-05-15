@@ -13,17 +13,17 @@ import { LocalStorageSessionService } from "@/features/authentication/data/sourc
 import {
   CreatePaymentRequestUseCase,
   CreatePaymentRequestUseCaseParams
-} from "@/features/invoice/domain/usecases/create-payment-request";
-import { PaymentRequestRepositoryImpl } from "@/features/invoice/data/repositories/payment-request";
-import { PaymentRequestServiceImpl } from "@/features/invoice/data/sources/payment-request";
+} from "@/features/payment/domain/usecases/create-payment-request";
+import { PaymentRequestRepositoryImpl } from "@/features/payment/data/repositories/payment-request";
+import { PaymentRequestServiceImpl } from "@/features/payment/data/sources/payment-request";
 import { BankServiceImpl } from "@/features/bank/data/sources/bank";
 import { PaymentGatewayServiceImpl } from "@/features/payment/data/sources/payment-gateway";
 import { PartnerServiceImpl } from "@/features/partner/data/sources/partner";
 import {
   UploadPaymentRequestInvoicesUseCase,
   UploadPaymentRequestInvoicesUseCaseParams
-} from "@/features/invoice/domain/usecases/upload-payment-request-invoices";
-import { PaymentRequestEntity } from "@/features/invoice/domain/entities/payment-request";
+} from "@/features/payment/domain/usecases/upload-payment-request-invoices";
+import { PaymentRequestEntity } from "@/features/payment/domain/entities/payment-request";
 
 export interface InvoiceDocument {
   file: File;

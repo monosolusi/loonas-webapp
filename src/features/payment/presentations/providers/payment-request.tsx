@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { PaymentRequestEntity } from "@/features/invoice/domain/entities/payment-request";
+import { PaymentRequestEntity } from "@/features/payment/domain/entities/payment-request";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
-import { PaymentRequestRepositoryImpl } from "@/features/invoice/data/repositories/payment-request";
-import { PaymentRequestServiceImpl } from "@/features/invoice/data/sources/payment-request";
+import { PaymentRequestRepositoryImpl } from "@/features/payment/data/repositories/payment-request";
+import { PaymentRequestServiceImpl } from "@/features/payment/data/sources/payment-request";
 import { DataFailed } from "@/core/resources/data-state";
 import { PartnerServiceImpl } from "@/features/partner/data/sources/partner";
 import { BankServiceImpl } from "@/features/bank/data/sources/bank";

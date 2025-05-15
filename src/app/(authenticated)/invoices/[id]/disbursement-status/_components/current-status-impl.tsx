@@ -1,7 +1,7 @@
 import DoneAnimation from "../_static-files/done-animation.json";
 import PaperPlaneAnimation from "../_static-files/paper-plane-animation.json";
 import PeopleWaitingAnimation from "../_static-files/people-waiting.json";
-import { PaymentRequestStatus } from "@/features/invoice/domain/enums/payment-request";
+import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { CurrentStatus } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/current-status";
 
 export function CurrentStatusImpl() {

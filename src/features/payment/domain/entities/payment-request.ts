@@ -5,7 +5,7 @@ import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment
 import { PaymentSchemeEntity } from "@/features/payment/domain/entities/payment-scheme";
 import { AbstractEntity } from "@/core/resources/entity";
 import { InvoiceSummaryDocumentEntity } from "@/features/invoice/domain/entities/invoice-summary-document";
-import { PaymentRequestStatus } from "@/features/invoice/domain/enums/payment-request";
+import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 
 interface PaymentRequestEntityConstructor {
   id: string;

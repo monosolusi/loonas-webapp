@@ -10,7 +10,7 @@ import {
   CurrentStatusImpl
 } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/current-status-impl";
 import { TimelineImpl } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/timeline-impl";
-import { PaymentRequestStatus } from "@/features/invoice/domain/enums/payment-request";
+import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { useRouter } from "next/navigation";
 
 
