@@ -25,7 +25,7 @@ interface PaymentData {
   fee: number;
 }
 
-export function VirtualAccountPayInDetailPageContent() {
+export function VirtualAccountPayInDetailPageContent(props: { invoiceId: string; }) {
   const [paymentData, setPaymentData] = useState<PaymentData>();
   const { vaDetail } = useVirtualAccountPayInDetail();
   const { paymentRequest } = usePaymentRequest();
@@ -71,6 +71,7 @@ export function VirtualAccountPayInDetailPageContent() {
 
           {/* Right side - Payment Details */}
           <PaymentDetail
+            invoiceId={props.invoiceId}
             receiverName={paymentData.receiverName}
             bankName={paymentData.receiverBank}
             accountNumber={paymentData.receiverAccountNumber}

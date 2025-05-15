@@ -11,7 +11,7 @@ export default async function VirtualAccountPayInDetailPage({ params }: { params
   return (
     <PaymentRequestProvider requestId={id} includes="receiver,receiver_bank_account">
       <VirtualAccountPayInDetailProvider requestId={id}>
-        <VirtualAccountPayInDetailPageContent />
+        <VirtualAccountPayInDetailPageContent invoiceId={id} />
       </VirtualAccountPayInDetailProvider>
     </PaymentRequestProvider>
   );

@@ -1,25 +1,31 @@
+"use client";
+
+import React from "react";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { OutlinedButton } from "@/core/presentations/components/outlined-button";
-import React from "react";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { useRouter } from "next/navigation";
 
 interface PaymentDetailProps {
-  receiverName: string,
-  bankName: string,
-  accountNumber: string,
-  accountHolderName: string,
-  total: number,
-  fee: number,
-  totalPayment: number
+  invoiceId: string;
+  receiverName: string;
+  bankName: string;
+  accountNumber: string;
+  accountHolderName: string;
+  total: number;
+  fee: number;
+  totalPayment: number;
 }
 
 export function PaymentDetail(props: PaymentDetailProps) {
+  const router = useRouter();
+
   const handlePayLater = () => {
-    console.log("Bayar nanti diklik");
+    router.push("/invoices");
   };
 
   const handlePaymentDone = () => {
-    console.log("Sudah bayar diklik");
+    router.push(`/invoices/${props.invoiceId}/disbursement-status`);
   };
 
   return (
