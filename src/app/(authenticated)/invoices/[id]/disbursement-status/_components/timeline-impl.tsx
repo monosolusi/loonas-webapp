@@ -1,14 +1,16 @@
-import { PaymentRequestStatus } from "@/features/invoice/domain/enums/payment-request";
+import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { BanknotesIcon, ClockIcon, CreditCardIcon } from "@heroicons/react/20/solid";
 import { Timeline } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/timeline";
 import React from "react";
+import { usePaymentRequest } from "@/features/payment/presentations/providers/payment-request";
 
 export function TimelineImpl() {
-  const currentStatus = PaymentRequestStatus.PENDING_PAYMENT;
+  const { paymentRequest } = usePaymentRequest();
 
+  if (!paymentRequest) return null;
   return (
     <Timeline
-      currentStatus={currentStatus}
+      currentStatus={paymentRequest.status}
       items={[
         {
           id: 1,

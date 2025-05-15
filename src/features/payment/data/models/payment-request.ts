@@ -3,9 +3,9 @@ import { PaymentGatewayModel } from "@/features/payment/data/models/payment-gate
 import { PaymentSchemeModel } from "@/features/payment/data/models/payment-scheme";
 import { DateTime } from "luxon";
 import { BankAccountModel } from "@/features/bank/data/models/bank-account";
-import { PaymentRequestStatus } from "@/features/invoice/domain/enums/payment-request";
+import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { AbstractModel } from "@/core/resources/model";
-import { PaymentRequestEntity } from "@/features/invoice/domain/entities/payment-request";
+import { PaymentRequestEntity } from "@/features/payment/domain/entities/payment-request";
 import { InvoiceSummaryDocumentModel } from "@/features/invoice/data/models/invoice-summary-document";
 
 interface PaymentRequestModelConstructor {

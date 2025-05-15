@@ -1,11 +1,12 @@
 import DoneAnimation from "../_static-files/done-animation.json";
 import PaperPlaneAnimation from "../_static-files/paper-plane-animation.json";
 import PeopleWaitingAnimation from "../_static-files/people-waiting.json";
-import { PaymentRequestStatus } from "@/features/invoice/domain/enums/payment-request";
+import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { CurrentStatus } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/current-status";
+import { usePaymentRequest } from "@/features/payment/presentations/providers/payment-request";
 
 export function CurrentStatusImpl() {
-  const currentStatus = PaymentRequestStatus.PENDING_PAYMENT;
+  const { paymentRequest } = usePaymentRequest();
 
   const getDetail = (status: PaymentRequestStatus) => {
     if (status === PaymentRequestStatus.PENDING_PAYMENT) {
@@ -29,12 +30,13 @@ export function CurrentStatusImpl() {
     } else return null;
   };
 
-  if (!(getDetail(currentStatus))) return null;
+  if (!paymentRequest) return null;
+  if (!(getDetail(paymentRequest.status))) return null;
   return (
     <CurrentStatus
-      title={getDetail(currentStatus)?.title ?? ""}
-      description={getDetail(currentStatus)?.description ?? ""}
-      lottieFile={getDetail(currentStatus)?.lottieFile ?? null}
+      title={getDetail(paymentRequest.status)?.title ?? ""}
+      description={getDetail(paymentRequest.status)?.description ?? ""}
+      lottieFile={getDetail(paymentRequest.status)?.lottieFile ?? null}
     />
   );
 }

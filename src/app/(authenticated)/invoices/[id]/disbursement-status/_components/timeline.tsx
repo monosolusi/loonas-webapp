@@ -1,6 +1,6 @@
 import React from "react";
 import { Card } from "@/core/presentations/components/card";
-import { PaymentRequestStatus } from "@/features/invoice/domain/enums/payment-request";
+import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { CheckIcon } from "@heroicons/react/20/solid";
 
 
