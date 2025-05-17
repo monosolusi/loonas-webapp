@@ -1,17 +1,32 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, {useRef, useState} from "react";
+import {OutlinedButton} from "@/core/presentations/components/outlined-button";
 import {
-  InvoiceDetailsDialog
-} from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/invoice-details-dialog";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+  InvoiceDetailsDialogImpl
+} from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/invoice-details-dialog-impl";
+import {
+  MaxInvoiceErrorDialog
+} from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/max-invoice-error-dialog";
+import {useCreateIncomingInvoice} from "@/features/invoice/presentations/providers/create-incoming-invoice";
 
 export function UploadButton() {
+  const {invoiceDocuments} = useCreateIncomingInvoice();
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [maxInvoiceDialogOpen, setMaxInvoiceDialogOpen] = useState<boolean>(false);
 
-  const handleClick = () => fileInputRef.current?.click();
+  const handleClick = () => {
+    if (!fileInputRef.current) return;
+    if (invoiceDocuments.length >= 5) {
+      setMaxInvoiceDialogOpen(true);
+      return;
+    }
+
+    fileInputRef.current.click();
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -41,7 +56,8 @@ export function UploadButton() {
         accept=".pdf,.png,.jpg,.jpeg"
       />
 
-      <InvoiceDetailsDialog open={isDialogOpen} setOpen={setIsDialogOpen} selectedFile={selectedFile} />
+      <InvoiceDetailsDialogImpl open={isDialogOpen} setOpen={setIsDialogOpen} selectedFile={selectedFile}/>
+      <MaxInvoiceErrorDialog open={maxInvoiceDialogOpen} onClose={() => setMaxInvoiceDialogOpen(false)}/>
     </>
   );
 }

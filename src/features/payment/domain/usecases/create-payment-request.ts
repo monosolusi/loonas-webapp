@@ -1,20 +1,22 @@
-import { PartnerEntity } from "@/features/partner/domain/entities/partner";
-import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
-import { PaymentSchemeEntity } from "@/features/payment/domain/entities/payment-scheme";
-import { DateTime } from "luxon";
-import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
-import { UseCase } from "@/core/resources/use-case";
-import { DataFailed, DataState } from "@/core/resources/data-state";
-import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { PaymentRequestEntity } from "@/features/payment/domain/entities/payment-request";
-import { PaymentRequestRepository } from "@/features/payment/domain/repositories/payment-request";
+import {PartnerEntity} from "@/features/partner/domain/entities/partner";
+import {PaymentGatewayEntity} from "@/features/payment/domain/entities/payment-gateway";
+import {PaymentSchemeEntity} from "@/features/payment/domain/entities/payment-scheme";
+import {DateTime} from "luxon";
+import {BankAccountEntity} from "@/features/bank/domain/entities/bank-account";
+import {UseCase} from "@/core/resources/use-case";
+import {DataFailed, DataState} from "@/core/resources/data-state";
+import {ErrorCodes, ServerError} from "@/core/resources/server-error";
+import {SessionRepository} from "@/features/authentication/domain/repositories/session";
+import {PaymentRequestEntity} from "@/features/payment/domain/entities/payment-request";
+import {PaymentRequestRepository} from "@/features/payment/domain/repositories/payment-request";
 
 interface InvoiceDocument {
   file: File;
   invoiceNumber?: string;
   amount: number;
   dueDate: DateTime;
+  invoiceDate: DateTime;
+  note?: string;
 }
 
 interface CreatePaymentRequestUseCaseParamsConstructor {
@@ -64,7 +66,7 @@ export class CreatePaymentRequestUseCase implements UseCase<DataState<PaymentReq
       }, session.data);
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
-      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, {error: err}));
     }
   }
 

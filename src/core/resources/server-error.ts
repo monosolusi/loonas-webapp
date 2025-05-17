@@ -72,7 +72,7 @@ export class ErrorCodes {
     message: "Ups! Metode pembayaran-nya belum diisi"
   };
 
-  public static readonly HTTP_ERROR: ErrorStructureType = { code: "HTTP_ERROR", httpCode: 500, message: "HTTP error" };
+  public static readonly HTTP_ERROR: ErrorStructureType = {code: "HTTP_ERROR", httpCode: 500, message: "HTTP error"};
 
   public static readonly VALIDATION_FAILED: ErrorStructureType = {
     code: "VALIDATION_FAILED",
@@ -114,13 +114,13 @@ export class ErrorCodes {
     httpCode: 500,
     message: "DB hard delete failed"
   };
-  public static readonly FORBIDDEN: ErrorStructureType = { code: "FORBIDDEN", httpCode: 403, message: "Forbidden" };
+  public static readonly FORBIDDEN: ErrorStructureType = {code: "FORBIDDEN", httpCode: 403, message: "Forbidden"};
   public static readonly NO_VALID_SESSION: ErrorStructureType = {
     code: "NO_VALID_SESSION",
     httpCode: 403,
     message: "No valid session"
   };
-  public static readonly UNKNOWN: ErrorStructureType = { code: "UNKNOWN", httpCode: 500, message: "Unknown error" };
+  public static readonly UNKNOWN: ErrorStructureType = {code: "UNKNOWN", httpCode: 500, message: "Unknown error"};
   public static readonly SERVICE_NOT_FOUND: ErrorStructureType = {
     code: "SERVICE_NOT_FOUND",
     httpCode: 500,
@@ -131,12 +131,18 @@ export class ErrorCodes {
     httpCode: 500,
     message: "Not updated"
   };
-  public static readonly NOT_FOUND: ErrorStructureType = { code: "NOT_FOUND", httpCode: 404, message: "Not found" };
+  public static readonly NOT_FOUND: ErrorStructureType = {code: "NOT_FOUND", httpCode: 404, message: "Not found"};
   public static readonly NOT_IMPLEMENTED: ErrorStructureType = {
     code: "NOT_IMPLEMENTED",
     httpCode: 500,
     message: "Not Implemented"
   };
+
+  public static readonly INVALID_INVOICE_DATE: ErrorStructureType = {
+    code: "INVALID_INVOICE_DATE",
+    httpCode: 400,
+    message: "Tanggal invoice tidak valid. Coba cek kembali",
+  }
 
   public static readonly INVALID_PAY_IN_TYPE: ErrorStructureType = {
     code: "INVALID_PAY_IN_TYPE",
@@ -232,6 +238,6 @@ export class ServerError extends Error {
     this.code = code.code;
     this.httpCode = code.httpCode;
     this.message = code.message;
-    this.details = Object.assign({}, { code: code.code, message: code.message }, details);
+    this.details = Object.assign({}, {code: code.code, message: code.message}, details);
   }
 }

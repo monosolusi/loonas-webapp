@@ -1,53 +1,74 @@
 "use client";
 
-import React, { useState } from "react";
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
-import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
-import { FilledButton } from "@/core/presentations/components/filled-button";
-import { TextInput } from "@/core/presentations/components/text-input";
-import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import { DateTime } from "luxon";
+import React, {useState} from "react";
+import {Dialog, DialogBackdrop, DialogPanel, DialogTitle} from "@headlessui/react";
+import {FilledButton} from "@/core/presentations/components/filled-button";
+import {TextInput} from "@/core/presentations/components/text-input";
+import {IDRFormatter} from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import {DateTime} from "luxon";
+import {ServerError} from "@/core/resources/server-error";
+import {ErrorCard} from "@/core/presentations/components/error-card";
+
+export interface InvoiceDetailsDialogOnSubmitParams {
+  invoiceNumber: string;
+  amount: number;
+  dueDate: DateTime;
+  invoiceDate: DateTime;
+  note: string;
+}
 
 interface InvoiceDetailsDialogProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedFile?: File | null;
+  onSubmit: (params: InvoiceDetailsDialogOnSubmitParams) => boolean;
+  onCancel?: () => void;
+  error?: ServerError;
 }
 
-export function InvoiceDetailsDialog({ open, setOpen, selectedFile }: InvoiceDetailsDialogProps) {
-  const { addInvoiceDocument } = useCreateIncomingInvoice();
-
+export function InvoiceDetailsDialog(props: InvoiceDetailsDialogProps) {
   const [invoiceNumber, setInvoiceNumber] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [dueDate, setDueDate] = useState<string>("");
+  const [invoiceDate, setInvoiceDate] = useState<string>("");
+  const [note, setNote] = useState<string>("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedFile) return;
 
-    addInvoiceDocument?.({
-      file: selectedFile,
+    const isSuccess = props.onSubmit({
       invoiceNumber: invoiceNumber,
       amount: IDRFormatter.toNumber(amount),
-      dueDate: DateTime.fromFormat(dueDate, "yyyy-MM-dd")
+      dueDate: DateTime.fromFormat(dueDate, "yyyy-MM-dd"),
+      invoiceDate: DateTime.fromFormat(invoiceDate, "yyyy-MM-dd"),
+      note: note
     });
 
+    if (!isSuccess) return;
+
     resetForm();
-    setOpen(false);
+    props.setOpen(false);
   };
 
   const handleAmountChange = (value: string) => {
     setAmount(IDRFormatter.toNumber(value).toString());
   };
 
+  const handleCancelClick = () => {
+    if (props.onCancel) props.onCancel();
+    resetForm();
+  }
+
   const resetForm = () => {
     setInvoiceNumber("");
     setAmount("");
     setDueDate("");
+    setInvoiceDate("");
+    setNote("");
   };
 
+
   return (
-    <Dialog as="form" open={open} onClose={setOpen} className="relative z-50" onSubmit={handleSubmit}>
+    <Dialog as="form" open={props.open} onClose={props.setOpen} className="relative z-50" onSubmit={handleSubmit}>
       <DialogBackdrop
         transition
         className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
@@ -64,6 +85,7 @@ export function InvoiceDetailsDialog({ open, setOpen, selectedFile }: InvoiceDet
                 <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
                   Detail Faktur
                 </DialogTitle>
+                {props.error && <ErrorCard>{props.error.message}</ErrorCard>}
                 <div className="my-4">
                   <div className="flex flex-col gap-y-2">
                     <TextInput
@@ -82,12 +104,25 @@ export function InvoiceDetailsDialog({ open, setOpen, selectedFile }: InvoiceDet
                       required
                     />
                     <TextInput
+                      title="Tanggal Faktur"
+                      htmlFor="invoice-date"
+                      type="date"
+                      value={invoiceDate}
+                      onChange={setInvoiceDate}
+                      required
+                    />
+                    <TextInput
                       title="Tanggal Jatuh Tempo"
                       htmlFor="due-date"
                       type="date"
                       value={dueDate}
                       onChange={setDueDate}
                       required
+                    />
+                    <TextInput
+                      title="Catatan (Optional)"
+                      value={note}
+                      onChange={setNote}
                     />
                   </div>
                 </div>
@@ -101,7 +136,7 @@ export function InvoiceDetailsDialog({ open, setOpen, selectedFile }: InvoiceDet
               </div>
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={handleCancelClick}
                 className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
               >
                 Batalkan

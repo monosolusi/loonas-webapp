@@ -1,19 +1,19 @@
-import { DocumentIcon, XCircleIcon } from "@heroicons/react/24/solid";
-import React, { useMemo } from "react";
-import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
-import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import {DocumentIcon, XCircleIcon} from "@heroicons/react/24/solid";
+import React, {useMemo} from "react";
+import {InvoiceDocument} from "@/features/invoice/presentations/providers/create-incoming-invoice";
+import {IDRFormatter} from "@/core/utilities/currency/domain/formatters/idr-formatter";
 
-export function UploadedInvoiceTable() {
-  const { invoiceDocuments, removeInvoiceDocument } = useCreateIncomingInvoice();
+interface UploadedInvoiceTableProps {
+  documents: InvoiceDocument[];
+  onDelete: (index: number) => boolean;
+}
 
-  const handleDeleteDocument = (index: number) => removeInvoiceDocument?.(index);
-
+export function UploadedInvoiceTable(props: UploadedInvoiceTableProps) {
   const totalAmount = useMemo(() => {
-    return invoiceDocuments.reduce((sum, doc) => sum + doc.amount, 0);
-  }, [invoiceDocuments]);
+    return props.documents.reduce((sum, doc) => sum + doc.amount, 0);
+  }, [props.documents]);
 
-
-  if (invoiceDocuments.length === 0) return null;
+  if (props.documents.length === 0) return null;
   return (
     <div className="mt-8 flow-root">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -32,7 +32,7 @@ export function UploadedInvoiceTable() {
                   Jumlah
                 </th>
                 <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                  Tanggal Jatuh Tempo
+                  Tanggal Faktur / Jatuh Tempo
                 </th>
                 <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
                   <span className="sr-only">Hapus</span>
@@ -40,12 +40,15 @@ export function UploadedInvoiceTable() {
               </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-              {invoiceDocuments.map((doc, index) => (
+              {props.documents.map((doc, index) => (
                 <tr key={index}>
                   <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                     <div className="flex items-center">
-                      <DocumentIcon className="h-5 w-5 text-gray-400 mr-2" aria-hidden="true" />
-                      {doc.file.name}
+                      <DocumentIcon className="h-5 w-5 text-gray-400 mr-2" aria-hidden="true"/>
+                      <div>
+                        <div>{doc.file.name}</div>
+                        {doc.note && <div className="text-xs text-gray-400">{doc.note}</div>}
+                      </div>
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{doc.invoiceNumber}</td>
@@ -53,15 +56,24 @@ export function UploadedInvoiceTable() {
                     {IDRFormatter.toCurrency(doc.amount)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {doc.dueDate.setLocale("id-id").toLocaleString()}
+                    <div>
+                      <span className="block">
+                        <strong
+                          className="text-gray-700">Faktur:</strong> {doc.invoiceDate.setLocale("id-id").toLocaleString()}
+                      </span>
+                      <span className="block">
+                        <strong
+                          className="text-gray-700">Jatuh Tempo:</strong> {doc.dueDate.setLocale("id-id").toLocaleString()}
+                      </span>
+                    </div>
                   </td>
                   <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <button
                       type="button"
-                      onClick={() => handleDeleteDocument(index)}
+                      onClick={props.onDelete.bind(null, index)}
                       className="text-red-600 hover:text-red-900"
                     >
-                      <XCircleIcon className="h-5 w-5" aria-hidden="true" />
+                      <XCircleIcon className="h-5 w-5" aria-hidden="true"/>
                       <span className="sr-only">Hapus</span>
                     </button>
                   </td>
