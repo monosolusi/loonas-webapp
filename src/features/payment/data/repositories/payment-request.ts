@@ -1,14 +1,14 @@
-import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
+import {DataFailed, DataState, DataSuccess} from "@/core/resources/data-state";
 import {
   PaymentRequestRepository,
   PaymentRequestRepositoryCreateParams,
   PaymentRequestRepositoryGetParams,
   PaymentRequestRepositoryUploadInvoicesParams
 } from "@/features/payment/domain/repositories/payment-request";
-import { PaymentRequestEntity } from "../../domain/entities/payment-request";
-import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { PaymentRequestService } from "@/features/payment/data/sources/payment-request";
-import { SessionEntity } from "@/features/authentication/domain/entities/session";
+import {PaymentRequestEntity} from "../../domain/entities/payment-request";
+import {ErrorCodes, ServerError} from "@/core/resources/server-error";
+import {PaymentRequestService} from "@/features/payment/data/sources/payment-request";
+import {SessionEntity} from "@/features/authentication/domain/entities/session";
 
 export class PaymentRequestRepositoryImpl implements PaymentRequestRepository {
   constructor(
@@ -26,7 +26,7 @@ export class PaymentRequestRepositoryImpl implements PaymentRequestRepository {
       return new DataSuccess(paymentRequest.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
-      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, {error: err}));
     }
   }
 
@@ -40,7 +40,7 @@ export class PaymentRequestRepositoryImpl implements PaymentRequestRepository {
       return new DataSuccess(true);
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
-      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, {error: err}));
     }
   }
 
@@ -52,7 +52,9 @@ export class PaymentRequestRepositoryImpl implements PaymentRequestRepository {
         invoices: params.invoices.map(invoice => ({
           invoiceNumber: invoice.invoiceNumber,
           amount: invoice.amount,
-          dueDate: invoice.dueDate
+          dueDate: invoice.dueDate,
+          invoiceDate: invoice.invoiceDate,
+          note: invoice.note
         })),
         paymentMethodId: params.paymentMethod.id,
         paymentSchemeId: params.paymentScheme?.id
@@ -61,7 +63,7 @@ export class PaymentRequestRepositoryImpl implements PaymentRequestRepository {
       return new DataSuccess(paymentRequest.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
-      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, {error: err}));
     }
   }
 }

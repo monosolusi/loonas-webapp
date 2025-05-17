@@ -1,16 +1,18 @@
-import { DateTime } from "luxon";
-import { UseCase } from "@/core/resources/use-case";
-import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
-import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { PaymentRequestEntity } from "@/features/payment/domain/entities/payment-request";
-import { PaymentRequestRepository } from "@/features/payment/domain/repositories/payment-request";
+import {DateTime} from "luxon";
+import {UseCase} from "@/core/resources/use-case";
+import {DataFailed, DataState, DataSuccess} from "@/core/resources/data-state";
+import {ErrorCodes, ServerError} from "@/core/resources/server-error";
+import {SessionRepository} from "@/features/authentication/domain/repositories/session";
+import {PaymentRequestEntity} from "@/features/payment/domain/entities/payment-request";
+import {PaymentRequestRepository} from "@/features/payment/domain/repositories/payment-request";
 
 export interface InvoiceDocument {
   file: File;
   invoiceNumber?: string;
   amount: number;
   dueDate: DateTime;
+  invoiceDate: DateTime;
+  note?: string;
 }
 
 interface UploadPaymentRequestInvoicesUseCaseParamsConstructor {
@@ -54,7 +56,7 @@ export class UploadPaymentRequestInvoicesUseCase implements UseCase<DataState<bo
       return new DataSuccess(true);
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
-      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, {error: err}));
     }
   }
 }
