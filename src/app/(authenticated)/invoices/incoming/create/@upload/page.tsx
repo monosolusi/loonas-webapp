@@ -1,21 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
-import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
+import React, {useState} from "react";
+import {useCreateIncomingInvoice} from "@/features/invoice/presentations/providers/create-incoming-invoice";
+import {useCreateIncomingInvoiceSteps} from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
+import {UploadButton} from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/upload-button";
+import {EmptyState} from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/empty-state";
+import {FilledButton} from "@/core/presentations/components/filled-button";
+import {DisclaimerDialog} from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/disclaimer-dialog";
 import {
-  useCreateIncomingInvoiceSteps
-} from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
-import { UploadButton } from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/upload-button";
-import {
-  UploadedInvoiceTable
-} from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/uploaded-invoice-table";
-import { EmptyState } from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/empty-state";
-import { FilledButton } from "@/core/presentations/components/filled-button";
-import { DisclaimerDialog } from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/disclaimer-dialog";
+  UploadedInvoiceTableImpl
+} from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/uploaded-invoice-table-impl";
 
 export default function UploadInvoicePage() {
-  const { currentStep, nextStep } = useCreateIncomingInvoiceSteps();
-  const { invoiceDocuments } = useCreateIncomingInvoice();
+  const {currentStep, nextStep} = useCreateIncomingInvoiceSteps();
+  const {invoiceDocuments} = useCreateIncomingInvoice();
   const [openDisclaimerDialog, setOpenDisclaimerDialog] = useState(false);
 
   if (currentStep !== 3) return null;
@@ -39,11 +37,11 @@ export default function UploadInvoicePage() {
           </p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-4 sm:flex-none">
-          <UploadButton />
+          <UploadButton/>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-4 sm:flex-none">
-          <FilledButton 
-            disabled={invoiceDocuments.length === 0} 
+          <FilledButton
+            disabled={invoiceDocuments.length === 0}
             onClick={handleLanjutClick}
             type="button"
           >
@@ -52,9 +50,9 @@ export default function UploadInvoicePage() {
         </div>
       </div>
 
-      {invoiceDocuments.length > 0 ? <UploadedInvoiceTable /> : <EmptyState />}
+      {invoiceDocuments.length > 0 ? <UploadedInvoiceTableImpl/> : <EmptyState/>}
 
-      <DisclaimerDialog 
+      <DisclaimerDialog
         open={openDisclaimerDialog}
         onClose={setOpenDisclaimerDialog}
         onConfirm={handleConfirmDisclaimer}

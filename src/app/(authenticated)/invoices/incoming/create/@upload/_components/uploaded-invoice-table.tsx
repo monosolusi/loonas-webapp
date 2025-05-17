@@ -1,19 +1,20 @@
-import { DocumentIcon, XCircleIcon } from "@heroicons/react/24/solid";
-import React, { useMemo } from "react";
-import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
-import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import {DocumentIcon, XCircleIcon} from "@heroicons/react/24/solid";
+import React, {useMemo} from "react";
+import {InvoiceDocument} from "@/features/invoice/presentations/providers/create-incoming-invoice";
+import {IDRFormatter} from "@/core/utilities/currency/domain/formatters/idr-formatter";
 
-export function UploadedInvoiceTable() {
-  const { invoiceDocuments, removeInvoiceDocument } = useCreateIncomingInvoice();
+interface UploadedInvoiceTableProps {
+  documents: InvoiceDocument[];
+  onDelete: (index: number) => boolean;
+}
 
-  const handleDeleteDocument = (index: number) => removeInvoiceDocument?.(index);
-
+export function UploadedInvoiceTable(props: UploadedInvoiceTableProps) {
   const totalAmount = useMemo(() => {
-    return invoiceDocuments.reduce((sum, doc) => sum + doc.amount, 0);
-  }, [invoiceDocuments]);
+    return props.documents.reduce((sum, doc) => sum + doc.amount, 0);
+  }, [props.documents]);
 
 
-  if (invoiceDocuments.length === 0) return null;
+  if (props.documents.length === 0) return null;
   return (
     <div className="mt-8 flow-root">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -40,11 +41,11 @@ export function UploadedInvoiceTable() {
               </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-              {invoiceDocuments.map((doc, index) => (
+              {props.documents.map((doc, index) => (
                 <tr key={index}>
                   <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                     <div className="flex items-center">
-                      <DocumentIcon className="h-5 w-5 text-gray-400 mr-2" aria-hidden="true" />
+                      <DocumentIcon className="h-5 w-5 text-gray-400 mr-2" aria-hidden="true"/>
                       {doc.file.name}
                     </div>
                   </td>
@@ -58,10 +59,10 @@ export function UploadedInvoiceTable() {
                   <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <button
                       type="button"
-                      onClick={() => handleDeleteDocument(index)}
+                      onClick={props.onDelete.bind(null, index)}
                       className="text-red-600 hover:text-red-900"
                     >
-                      <XCircleIcon className="h-5 w-5" aria-hidden="true" />
+                      <XCircleIcon className="h-5 w-5" aria-hidden="true"/>
                       <span className="sr-only">Hapus</span>
                     </button>
                   </td>
