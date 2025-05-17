@@ -13,7 +13,6 @@ export function UploadedInvoiceTable(props: UploadedInvoiceTableProps) {
     return props.documents.reduce((sum, doc) => sum + doc.amount, 0);
   }, [props.documents]);
 
-
   if (props.documents.length === 0) return null;
   return (
     <div className="mt-8 flow-root">
@@ -33,7 +32,7 @@ export function UploadedInvoiceTable(props: UploadedInvoiceTableProps) {
                   Jumlah
                 </th>
                 <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                  Tanggal Jatuh Tempo
+                  Tanggal Faktur / Jatuh Tempo
                 </th>
                 <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
                   <span className="sr-only">Hapus</span>
@@ -46,7 +45,10 @@ export function UploadedInvoiceTable(props: UploadedInvoiceTableProps) {
                   <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                     <div className="flex items-center">
                       <DocumentIcon className="h-5 w-5 text-gray-400 mr-2" aria-hidden="true"/>
-                      {doc.file.name}
+                      <div>
+                        <div>{doc.file.name}</div>
+                        {doc.note && <div className="text-xs text-gray-400">{doc.note}</div>}
+                      </div>
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{doc.invoiceNumber}</td>
@@ -54,7 +56,16 @@ export function UploadedInvoiceTable(props: UploadedInvoiceTableProps) {
                     {IDRFormatter.toCurrency(doc.amount)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {doc.dueDate.setLocale("id-id").toLocaleString()}
+                    <div>
+                      <span className="block">
+                        <strong
+                          className="text-gray-700">Faktur:</strong> {doc.invoiceDate.setLocale("id-id").toLocaleString()}
+                      </span>
+                      <span className="block">
+                        <strong
+                          className="text-gray-700">Jatuh Tempo:</strong> {doc.dueDate.setLocale("id-id").toLocaleString()}
+                      </span>
+                    </div>
                   </td>
                   <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <button
