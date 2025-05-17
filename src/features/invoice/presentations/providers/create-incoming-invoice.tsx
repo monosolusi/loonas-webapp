@@ -1,35 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
-import { PartnerEntity } from "@/features/partner/domain/entities/partner";
-import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
-import { DateTime } from "luxon";
-import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
-import { PaymentSchemeEntity } from "@/features/payment/domain/entities/payment-scheme";
-import { DataFailed } from "@/core/resources/data-state";
-import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
+import React, {useState} from "react";
+import {PartnerEntity} from "@/features/partner/domain/entities/partner";
+import {BankAccountEntity} from "@/features/bank/domain/entities/bank-account";
+import {DateTime} from "luxon";
+import {PaymentGatewayEntity} from "@/features/payment/domain/entities/payment-gateway";
+import {PaymentSchemeEntity} from "@/features/payment/domain/entities/payment-scheme";
+import {DataFailed} from "@/core/resources/data-state";
+import {ErrorCodes, ServerError} from "@/core/resources/server-error";
+import {SessionRepositoryImpl} from "@/features/authentication/data/repositories/session";
+import {LocalStorageSessionService} from "@/features/authentication/data/sources/local-storage-session";
 import {
   CreatePaymentRequestUseCase,
   CreatePaymentRequestUseCaseParams
 } from "@/features/payment/domain/usecases/create-payment-request";
-import { PaymentRequestRepositoryImpl } from "@/features/payment/data/repositories/payment-request";
-import { PaymentRequestServiceImpl } from "@/features/payment/data/sources/payment-request";
-import { BankServiceImpl } from "@/features/bank/data/sources/bank";
-import { PaymentGatewayServiceImpl } from "@/features/payment/data/sources/payment-gateway";
-import { PartnerServiceImpl } from "@/features/partner/data/sources/partner";
+import {PaymentRequestRepositoryImpl} from "@/features/payment/data/repositories/payment-request";
+import {PaymentRequestServiceImpl} from "@/features/payment/data/sources/payment-request";
+import {BankServiceImpl} from "@/features/bank/data/sources/bank";
+import {PaymentGatewayServiceImpl} from "@/features/payment/data/sources/payment-gateway";
+import {PartnerServiceImpl} from "@/features/partner/data/sources/partner";
 import {
   UploadPaymentRequestInvoicesUseCase,
   UploadPaymentRequestInvoicesUseCaseParams
 } from "@/features/payment/domain/usecases/upload-payment-request-invoices";
-import { PaymentRequestEntity } from "@/features/payment/domain/entities/payment-request";
+import {PaymentRequestEntity} from "@/features/payment/domain/entities/payment-request";
 
 export interface InvoiceDocument {
   file: File;
   invoiceNumber?: string;
   amount: number;
   dueDate: DateTime;
+  invoiceDate: DateTime;
+  note?: string;
 }
 
 interface CreateIncomingInvoiceContextProps {
@@ -51,7 +53,7 @@ const CreateIncomingInvoiceContext = React.createContext<CreateIncomingInvoiceCo
   invoiceDocuments: []
 });
 
-export function CreateIncomingInvoiceProvider({ children }: { children: React.ReactNode }) {
+export function CreateIncomingInvoiceProvider({children}: { children: React.ReactNode }) {
   const [receiver, setReceiver] = useState<PartnerEntity>();
   const [bankAccount, setBankAccount] = useState<BankAccountEntity>();
   const [invoiceDocuments, setInvoiceDocuments] = useState<InvoiceDocument[]>([]);
@@ -59,6 +61,8 @@ export function CreateIncomingInvoiceProvider({ children }: { children: React.Re
   const [paymentScheme, setPaymentScheme] = useState<PaymentSchemeEntity>();
 
   const addInvoiceDocument = (document: InvoiceDocument) => {
+    // Check the invoiceDate should not be greater than dueDate
+    if (document.invoiceDate > document.dueDate) throw new ServerError(ErrorCodes.INVALID_INVOICE_DATE);
     setInvoiceDocuments(prev => [...prev, document]);
   };
 

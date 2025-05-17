@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, {useRef, useState} from "react";
+import {OutlinedButton} from "@/core/presentations/components/outlined-button";
 import {
-  InvoiceDetailsDialog
-} from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/invoice-details-dialog";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+  InvoiceDetailsDialogImpl
+} from "@/app/(authenticated)/invoices/incoming/create/@upload/_components/invoice-details-dialog-impl";
 
 export function UploadButton() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -41,7 +41,7 @@ export function UploadButton() {
         accept=".pdf,.png,.jpg,.jpeg"
       />
 
-      <InvoiceDetailsDialog open={isDialogOpen} setOpen={setIsDialogOpen} selectedFile={selectedFile} />
+      <InvoiceDetailsDialogImpl open={isDialogOpen} setOpen={setIsDialogOpen} selectedFile={selectedFile}/>
     </>
   );
 }
