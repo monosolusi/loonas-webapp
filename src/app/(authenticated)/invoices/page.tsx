@@ -3,10 +3,11 @@ import {PageContent} from "@/core/presentations/components/page-content";
 import {PageHeading} from "@/core/presentations/components/page-heading";
 import {CreateNewInvoiceButton} from "@/app/(authenticated)/invoices/_components/create-new-button";
 import {InvoiceTableImpl} from "@/app/(authenticated)/invoices/_components/invoice-table-impl";
+import {InvoiceProvider} from "@/features/invoice/presentations/providers/invoice";
 
 export default function InvoiceMainPage() {
   return (
-    <>
+    <InvoiceProvider>
       <div className="flex justify-between items-center">
         <div className="flex-1">
           <PageHeading>Kumpulan Faktur</PageHeading>
@@ -18,6 +19,6 @@ export default function InvoiceMainPage() {
       <PageContent>
         <InvoiceTableImpl/>
       </PageContent>
-    </>
+    </InvoiceProvider>
   );
 }

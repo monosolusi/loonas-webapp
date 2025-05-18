@@ -1,14 +1,15 @@
 "use client";
 
-import {EllipsisVerticalIcon} from "@heroicons/react/24/solid";
 import React from "react";
 import {PaymentRequestStatus} from "@/features/payment/domain/enums/payment-request";
 import {DateTime} from "luxon";
 import {IDRFormatter} from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import {InvoiceTypeIcon} from "@/app/(authenticated)/invoices/_components/invoice-type-icon";
-import {InvoiceType} from "@/features/invoice/domain/invoice-type";
+import {InvoiceType} from "@/features/invoice/domain/enums/invoice-type";
+import Link from "next/link";
 
 export interface InvoiceRow {
+  id: string;
   type: InvoiceType;
   receiverName: string;
   bankAccount: {
@@ -67,7 +68,6 @@ export function InvoiceTable(props: InvoiceTableProps) {
                   <th className="px-3 py-3.5 text-left text-sm font-semibold text-black" scope="col">
                     Tanggal Dibuat
                   </th>
-                  <th className="py-3.5 pl-3 pr-4 sm:pr-6" scope="col"></th>
                 </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
@@ -77,13 +77,16 @@ export function InvoiceTable(props: InvoiceTableProps) {
                       className="py-4 pl-4 pr-3 text-sm font-medium text-black sm:pl-6">
                       <InvoiceTypeIcon type={row.type}/>
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-black">
-                      {row.receiverName}
+                    <td className="whitespace-normal px-3 py-4 text-sm text-black max-w-[200px]">
+                      <Link href={`/invoices/${row.id}`}
+                            className="font-bold underline line-clamp-2 cursor-pointer hover:text-primary-default">
+                        {row.receiverName}
+                      </Link>
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-black">
                       <div>
-                        <div className="font-medium">{row.bankAccount.bankName}</div>
-                        <div className="text-xs">{row.bankAccount.accountHolderName}</div>
+                        <div>{row.bankAccount.accountHolderName}</div>
+                        <div className="text-xs text-gray-400">{row.bankAccount.bankName}</div>
                         <div className="text-xs text-gray-400">{row.bankAccount.accountNumber}</div>
                       </div>
                     </td>
@@ -100,12 +103,6 @@ export function InvoiceTable(props: InvoiceTableProps) {
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-black">
                       {row.createdAt.setLocale("id").toFormat("dd LLL yyyy, HH:mm")}
-                    </td>
-                    <td className="whitespace-nowrap py-4 pl-3 pr-4 flex justify-center sm:pr-6">
-                      <button className="text-gray-400 hover:text-gray-700">
-                        <EllipsisVerticalIcon className="h-5 w-5" aria-hidden="true"/>
-                        <span className="sr-only">Aksi</span>
-                      </button>
                     </td>
                   </tr>
                 ))}
