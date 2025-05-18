@@ -1,8 +1,8 @@
 import React from "react";
-import { RecentInvoicesTable } from "@/app/(authenticated)/home/_components/recent-invoices-table";
-import { PageContent } from "@/core/presentations/components/page-content";
-import { PageHeading } from "@/core/presentations/components/page-heading";
-import { CreateNewInvoiceButton } from "@/app/(authenticated)/invoices/_components/create-new-button";
+import {PageContent} from "@/core/presentations/components/page-content";
+import {PageHeading} from "@/core/presentations/components/page-heading";
+import {CreateNewInvoiceButton} from "@/app/(authenticated)/invoices/_components/create-new-button";
+import {InvoiceTableImpl} from "@/app/(authenticated)/invoices/_components/invoice-table-impl";
 
 export default function InvoiceMainPage() {
   return (
@@ -12,11 +12,11 @@ export default function InvoiceMainPage() {
           <PageHeading>Kumpulan Faktur</PageHeading>
         </div>
         <div className="mx-auto px-4 sm:flex-nowrap sm:px-6 lg:px-8">
-          <CreateNewInvoiceButton />
+          <CreateNewInvoiceButton/>
         </div>
       </div>
       <PageContent>
-        <RecentInvoicesTable />
+        <InvoiceTableImpl/>
       </PageContent>
     </>
   );
