@@ -1,17 +1,15 @@
 "use client";
 
-import { FilledButton } from "@/core/presentations/components/filled-button";
-import React, { useState } from "react";
-import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
-import {
-  useCreateIncomingInvoiceSteps
-} from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
-import { useRouter } from "next/navigation";
-import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import {FilledButton} from "@/core/presentations/components/filled-button";
+import React, {useState} from "react";
+import {useCreateIncomingInvoice} from "@/features/invoice/presentations/providers/create-incoming-invoice";
+import {useCreateIncomingInvoiceSteps} from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
+import {useRouter} from "next/navigation";
+import {ErrorCodes, ServerError} from "@/core/resources/server-error";
 
 export function PayNowButton() {
-  const { paymentGateway, paymentScheme, createPaymentRequest } = useCreateIncomingInvoice();
-  const { nextStep } = useCreateIncomingInvoiceSteps();
+  const {paymentGateway, paymentScheme, createPaymentRequest} = useCreateIncomingInvoice();
+  const {nextStep} = useCreateIncomingInvoiceSteps();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -28,7 +26,9 @@ export function PayNowButton() {
       if (paymentRequest.paymentMethod.title.toLowerCase() === "virtual account") {
         router.replace(`/invoices/${paymentRequest.id}/va-pay-in-detail`);
       } else if (paymentRequest.paymentMethod.title.toLowerCase() === "qris") {
-        router.replace(`invoices/${paymentRequest.id}/qris-pay-in-detail`);
+        router.replace(`/invoices/${paymentRequest.id}/qris-pay-in-detail`);
+      } else if (paymentRequest.paymentMethod.title.toLowerCase() === "credit card") {
+        router.replace(`/invoices/${paymentRequest.id}/cc-enter-card-detail`);
       } else throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
     } catch (err) {
       console.error(err);
