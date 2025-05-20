@@ -6,7 +6,7 @@ import {
   RemainingPaymentTime
 } from "@/app/(authenticated)/invoices/[id]/va-pay-in-detail/_components/remaining-payment-time";
 import { VirtualAccountDetailBox } from "@/app/(authenticated)/invoices/[id]/va-pay-in-detail/_components/va-detail";
-import { PaymentDetail } from "@/app/(authenticated)/invoices/[id]/va-pay-in-detail/_components/payment-detail";
+import { PaymentDetail } from "@/app/(authenticated)/invoices/[id]/_components/payment-detail";
 import React, { useEffect, useState } from "react";
 import { PageContent } from "@/core/presentations/components/page-content";
 import { useVirtualAccountPayInDetail } from "@/features/payment/presentations/providers/virtual-account-pay-in-detail";
@@ -39,7 +39,7 @@ export function VirtualAccountPayInDetailPageContent(props: { invoiceId: string;
       bankLogo: paymentRequest.paymentScheme.logoUrl,
       vaNumber: vaDetail.accountNumber,
       vaBankName: vaDetail.paymentScheme.name,
-      amount: vaDetail.amount,
+      amount: paymentRequest.total,
       receiverName: paymentRequest.receiver.name,
       accountHolderName: paymentRequest.bankAccount.accountHolderName,
       receiverBank: paymentRequest.bankAccount.bankName,
