@@ -1,140 +1,96 @@
-import { Fragment } from "react";
-import { ArrowDownCircleIcon, ArrowUpCircleIcon } from "@heroicons/react/20/solid";
+"use client";
 
-type Status = "Paid" | "Withdraw" | "Overdue";
-const statuses = {
-  Paid: "text-green-700 bg-green-50 ring-green-600/20",
-  Withdraw: "text-gray-600 bg-gray-50 ring-gray-500/10",
-  Overdue: "text-red-700 bg-red-50 ring-red-600/10"
-};
+import React from "react";
+import Link from "next/link";
+import { InvoiceTypeIcon } from "@/app/(authenticated)/invoices/_components/invoice-type-icon";
+import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
+import { DateTime } from "luxon";
+import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
+import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { EmptyInvoiceState } from "@/app/(authenticated)/home/_components/invoice-empty";
 
-const days = [
-  {
-    date: "Hari Ini",
-    dateTime: "2023-03-22",
-    transactions: [
-      {
-        id: 1,
-        invoiceNumber: "00012",
-        href: "#",
-        amount: "Rp 10.000.000",
-        status: "Paid" as Status,
-        type: "Faktur Keluaran",
-        client: "PT. Red Med Indonesia",
-        icon: ArrowUpCircleIcon
-      },
-      {
-        id: 2,
-        invoiceNumber: "00011",
-        href: "#",
-        amount: "Rp 108.381.312",
-        status: "Withdraw" as Status,
-        client: "PT. Red Mart Indonesia",
-        type: "Faktur Masukan",
-        icon: ArrowDownCircleIcon
-      },
-      {
-        id: 3,
-        invoiceNumber: "00009",
-        href: "#",
-        amount: "Rp 83.138.482",
-        status: "Overdue" as Status,
-        client: "PT. Samsung Electronics Indonesia",
-        type: "Faktur Masukan",
-        icon: ArrowDownCircleIcon
-      }
-    ]
-  },
-  {
-    date: "Yesterday",
-    dateTime: "2023-03-21",
-    transactions: [
-      {
-        id: 4,
-        invoiceNumber: "00010",
-        href: "#",
-        amount: "Rp 294.112.341",
-        status: "Paid" as Status,
-        client: "PT. Indomarco Prismatama",
-        type: "Faktur Keluaran",
-        icon: ArrowUpCircleIcon
-      }
-    ]
-  }
-];
-
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ");
+export interface InvoiceRow {
+  id: string; // This is PaymentRequest's id
+  receiverName: string;
+  status: PaymentRequestStatus;
+  total: number;
+  createdAt: DateTime;
 }
 
-export function RecentInvoicesTable() {
+interface RecentInvoiceTableProps {
+  data: InvoiceRow[];
+}
+
+export function RecentInvoicesTable(props: RecentInvoiceTableProps) {
+  const statusChips: Record<PaymentRequestStatus, { label: string; className: string }> = {
+    PENDING_INVOICE: { label: "Menunggu Invoice", className: "bg-gray-300 text-gray-800" },
+    PENDING_PAYMENT: { label: "Menunggu Pembayaran", className: "bg-yellow-100 text-yellow-700" },
+    PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Dana Diterima", className: "bg-blue-100 text-blue-700" },
+    COMPLETED: { label: "Selesai", className: "bg-emerald-100 text-emerald-700" },
+    EXPIRED: { label: "Kedaluwarsa", className: "bg-gray-100 text-gray-500" },
+    FAILED: { label: "Gagal", className: "bg-red-100 text-red-700" },
+    CANCELLED: { label: "Dibatalkan", className: "bg-pink-100 text-pink-700" }
+  };
+
+  if (props.data?.length === 0) return <EmptyInvoiceState />;
   return (
-    <table className="w-full text-left">
-      <thead className="sr-only">
-      <tr>
-        <th>Jumlah</th>
-        <th className="hidden sm:table-cell">Klien</th>
-        <th>Informasi Lebih Lanjut</th>
-      </tr>
-      </thead>
-      <tbody>
-      {days.map((day) => (
-        <Fragment key={day.dateTime}>
-          <tr className="text-sm/6 text-gray-900">
-            <th scope="colgroup" colSpan={3} className="relative isolate py-2 font-semibold">
-              <time dateTime={day.dateTime}>{day.date}</time>
-              <div
-                className="absolute inset-y-0 right-full -z-10 w-screen border-b border-gray-200 bg-gray-50" />
-              <div className="absolute inset-y-0 left-0 -z-10 w-screen border-b border-gray-200 bg-gray-50" />
+    <div className="inline-block min-w-full py-2 align-middle">
+      <div className="overflow-hidden shadow-sm ring-1 ring-black/5 ">
+        <table className="min-w-full divide-y divide-gray-300">
+          <thead className="bg-gray-50">
+          <tr>
+            <th scope="col" className="py-3.5 pl-4 text-left text-sm font-semibold sm:pl-8">
+            </th>
+            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+              Nama Penerima
+            </th>
+            <th
+              scope="col"
+              className="hidden px-3 py-3.5 text-center text-sm font-semibold text-gray-900 sm:table-cell"
+            >
+              Status
+            </th>
+            <th scope="col" className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
+              Total
+            </th>
+            <th
+              scope="col"
+              className="hidden relative py-3.5 pr-4 pl-3 text-sm text-right text-gray-900 sm:pr-8 sm:table-cell"
+            >
+              Tanggal Dibuat
             </th>
           </tr>
-          {day.transactions.map((transaction) => (
-            <tr key={transaction.id}>
-              <td className="relative py-5 pr-6">
-                <div className="flex gap-x-6">
-                  <transaction.icon
-                    aria-hidden="true"
-                    className="hidden h-6 w-5 flex-none text-gray-400 sm:block"
-                  />
-                  <div className="flex-auto">
-                    <div className="flex items-start gap-x-3">
-                      <div className="text-sm/6 font-medium text-gray-900">{transaction.amount}</div>
-                      <div
-                        className={classNames(
-                          statuses[transaction.status],
-                          "rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset"
-                        )}
-                      >
-                        {transaction.status}
-                      </div>
-                    </div>
-                    <div className="mt-1 text-xs/5 text-gray-500">{transaction.type}</div>
-                  </div>
-                </div>
-                <div className="absolute right-full bottom-0 h-px w-screen bg-gray-100" />
-                <div className="absolute bottom-0 left-0 h-px w-screen bg-gray-100" />
+          </thead>
+          <tbody className="divide-y divide-gray-200 bg-white">
+          {props.data.map((row => (
+            <tr key={row.id}>
+              <td className="py-4 pl-4 text-sm font-medium whitespace-nowrap sm:pl-8">
+                <InvoiceTypeIcon type={InvoiceType.INCOMING} />
               </td>
-              <td className="hidden py-5 pr-6 sm:table-cell">
-                <div className="text-sm/6 text-gray-900">{transaction.client}</div>
+              <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-900 sm:table-cell">
+                <Link
+                  href={`/invoices/${row.id}`}
+                  className="font-bold underline line-clamp-2 cursor-pointer hover:text-primary-default"
+                >
+                  {row.receiverName}
+                </Link>
               </td>
-              <td className="py-5 text-right">
-                <div className="flex justify-end">
-                  <a
-                    href={transaction.href}
-                    className="text-sm/6 font-medium text-primary-600 hover:text-primary-500"
-                  >
-                    Lihat<span className="hidden sm:inline"> detail</span>
-                  </a>
-                </div>
-                <div className="mt-1 text-xs/5 text-gray-500">
-                  Faktur <span className="text-gray-900">#{transaction.invoiceNumber}</span>
-                </div>
+              <td className="hidden px-3 py-4 text-sm text-center whitespace-nowrap text-gray-500 sm:table-cell">
+              <span className={`px-2 py-1 rounded ${statusChips[row.status].className}`}>
+                {statusChips[row.status].label}
+              </span>
+              </td>
+              <td className="px-3 py-4 text-sm text-right whitespace-nowrap text-gray-500">
+                {IDRFormatter.toCurrency(row.total)}
+              </td>
+              <td className="relative py-4 pr-4 pl-3 text-right text-sm whitespace-nowrap sm:pr-8">
+                {row.createdAt.setLocale("id").toFormat("dd LLL yyyy, HH:mm")}
               </td>
             </tr>
-          ))}
-        </Fragment>
-      ))}
-      </tbody>
-    </table>
+          )))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }

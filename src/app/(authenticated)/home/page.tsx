@@ -1,6 +1,6 @@
 import { InvoiceSummary } from "@/app/(authenticated)/home/_components/invoice-summary";
-import { RecentInvoices } from "@/app/(authenticated)/home/_components/recent-invoices";
 import { Clients } from "@/app/(authenticated)/home/_components/clients";
+import { RecentInvoices } from "@/app/(authenticated)/home/_components/recent-invoices";
 
 
 export default function InvoiceHomePage() {
@@ -12,6 +12,5 @@ export default function InvoiceHomePage() {
         <Clients />
       </div>
     </>
-  )
-    ;
+  );
 }
