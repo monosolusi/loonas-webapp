@@ -24,7 +24,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 interface SelectedAccountContextProps {
   states: [boolean]; // loading
   selectedAccount?: PersonalAccountEntity;
-  changeAccount?: (account: PersonalAccountEntity) => (void | Promise<void>);
+  changeAccount?: (account: PersonalAccountEntity, reload?: boolean) => (void | Promise<void>);
 }
 
 const SelectedAccountContext = createContext<SelectedAccountContextProps>({
@@ -71,8 +71,9 @@ export function SelectedAccountProvider({ children }: { children: any }) {
    * However, the backend will be able to check the account ownership.
    * It Should be a good thing for a moment until we release the MVP.
    * @param newAccount
+   * @param reload
    */
-  async function changeAccount(newAccount: PersonalAccountEntity) {
+  async function changeAccount(newAccount: PersonalAccountEntity, reload: boolean = true) {
     try {
       const sessionService = new LocalStorageSessionService();
       const sessionRepository = new SessionRepositoryImpl(sessionService);
@@ -95,7 +96,7 @@ export function SelectedAccountProvider({ children }: { children: any }) {
         if (!selectedAccount.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
         setSelectedAccount(selectedAccount.data);
-        window.location.reload();
+        if (reload) window.location.reload();
       } else {
         // This is where the latest status is completed, so we need to check the verification outcome
         if (verification.data.verificationOutcome === VerificationOutcome.REJECTED) {
@@ -107,7 +108,7 @@ export function SelectedAccountProvider({ children }: { children: any }) {
           if (!selectedAccount.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
           setSelectedAccount(selectedAccount.data);
-          window.location.reload();
+          if (reload) window.location.reload();
         }
       }
     } catch (err: any) {

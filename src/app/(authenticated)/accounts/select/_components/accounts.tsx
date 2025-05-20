@@ -35,14 +35,15 @@ function AccountCard({ account, onAccountChanged }: { account: PersonalAccountEn
   const { changeAccount } = useSelectedAccountProvider();
   const [verification] = useAccountVerificationWork();
 
-  function handleChangeAccount(account: PersonalAccountEntity, verification?: AccountVerificationWorkEntity) {
-    // Cannot change acount if verification is completed and rejected
+  const handleChangeAccount = async (account: PersonalAccountEntity, verification?: AccountVerificationWorkEntity) => {
+    // Cannot change account if verification is completed and rejected
     if (!verification) return;
+    if (!changeAccount) return;
     if (verification.latestStatus === VerificationStatus.COMPLETED && verification.verificationOutcome === VerificationOutcome.REJECTED) return;
 
-    changeAccount?.(account);
+    await changeAccount(account, false);
     onAccountChanged?.();
-  }
+  };
 
   function isDisabled(verification?: AccountVerificationWorkEntity): boolean {
     if (!verification) return true;
