@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
-import {PaymentRequestStatus} from "@/features/payment/domain/enums/payment-request";
-import {DateTime} from "luxon";
-import {IDRFormatter} from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import {InvoiceTypeIcon} from "@/app/(authenticated)/invoices/_components/invoice-type-icon";
-import {InvoiceType} from "@/features/invoice/domain/enums/invoice-type";
 import Link from "next/link";
+import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
+import { DateTime } from "luxon";
+import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { InvoiceTypeIcon } from "@/app/(authenticated)/invoices/_components/invoice-type-icon";
+import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
+import { EmptyInvoiceState } from "@/app/(authenticated)/invoices/_components/empty-invoice-state";
 
 export interface InvoiceRow {
   id: string;
@@ -30,15 +31,16 @@ interface InvoiceTableProps {
 
 export function InvoiceTable(props: InvoiceTableProps) {
   const statusChips: Record<PaymentRequestStatus, { label: string; className: string }> = {
-    PENDING_INVOICE: {label: "Menunggu Invoice", className: "bg-gray-300 text-gray-800"},
-    PENDING_PAYMENT: {label: "Menunggu Pembayaran", className: "bg-yellow-100 text-yellow-700"},
-    PAYMENT_RECEIVED_PENDING_DELIVERY: {label: "Dana Diterima", className: "bg-blue-100 text-blue-700"},
-    COMPLETED: {label: "Selesai", className: "bg-emerald-100 text-emerald-700"},
-    EXPIRED: {label: "Kedaluwarsa", className: "bg-gray-100 text-gray-500"},
-    FAILED: {label: "Gagal", className: "bg-red-100 text-red-700"},
-    CANCELLED: {label: "Dibatalkan", className: "bg-pink-100 text-pink-700"}
+    PENDING_INVOICE: { label: "Menunggu Invoice", className: "bg-gray-300 text-gray-800" },
+    PENDING_PAYMENT: { label: "Menunggu Pembayaran", className: "bg-yellow-100 text-yellow-700" },
+    PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Dana Diterima", className: "bg-blue-100 text-blue-700" },
+    COMPLETED: { label: "Selesai", className: "bg-emerald-100 text-emerald-700" },
+    EXPIRED: { label: "Kedaluwarsa", className: "bg-gray-100 text-gray-500" },
+    FAILED: { label: "Gagal", className: "bg-red-100 text-red-700" },
+    CANCELLED: { label: "Dibatalkan", className: "bg-pink-100 text-pink-700" }
   };
 
+  if (props.data.length === 0) return <EmptyInvoiceState />;
   return (
     <div>
       <div className="flow-root">
@@ -75,7 +77,7 @@ export function InvoiceTable(props: InvoiceTableProps) {
                   <tr key={idx}>
                     <td
                       className="py-4 pl-4 pr-3 text-sm font-medium text-black sm:pl-6">
-                      <InvoiceTypeIcon type={row.type}/>
+                      <InvoiceTypeIcon type={row.type} />
                     </td>
                     <td className="whitespace-normal px-3 py-4 text-sm text-black max-w-[200px]">
                       <Link href={`/invoices/${row.id}`}
