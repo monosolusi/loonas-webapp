@@ -78,22 +78,22 @@ export function SelectedAccountProvider({ children }: { children: any }) {
       const sessionRepository = new SessionRepositoryImpl(sessionService);
       const selectAccount = new SelectSessionAccountUseCase(sessionRepository);
       const selectAccountParams = new SelectSessionAccountUseCaseParams(newAccount);
-      const selectedAccount = await selectAccount.execute(selectAccountParams);
-      if (selectedAccount instanceof DataFailed) throw selectedAccount.error;
-      if (!selectedAccount.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       // Also, we need to check if the account verification is rejected or not
       const accountService = new AccountServiceImpl();
       const accountRepository = new AccountRepositoryImpl(accountService);
       const retrieveVerification = new RetrieveAccountVerificationWorkUseCase(accountRepository, sessionRepository);
-      const retrieveVerificationParams = new RetrieveAccountVerificationWorkUseCaseParams(selectedAccount.data.id);
+      const retrieveVerificationParams = new RetrieveAccountVerificationWorkUseCaseParams(newAccount.id);
       const verification = await retrieveVerification.execute(retrieveVerificationParams);
       if (verification instanceof DataFailed) throw verification.error;
       if (!verification.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-
       if (verification.data.latestStatus !== VerificationStatus.COMPLETED) {
         // Still not yet completed the verification, so we still allow the use to change the account
+        const selectedAccount = await selectAccount.execute(selectAccountParams);
+        if (selectedAccount instanceof DataFailed) throw selectedAccount.error;
+        if (!selectedAccount.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
         setSelectedAccount(selectedAccount.data);
         window.location.reload();
       } else {
@@ -102,6 +102,10 @@ export function SelectedAccountProvider({ children }: { children: any }) {
           // If the verification outcome is rejected, we need to throw an error
           throw new ServerError(ErrorCodes.ACCOUNT_VERIFICATION_REJECTED);
         } else {
+          const selectedAccount = await selectAccount.execute(selectAccountParams);
+          if (selectedAccount instanceof DataFailed) throw selectedAccount.error;
+          if (!selectedAccount.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
           setSelectedAccount(selectedAccount.data);
           window.location.reload();
         }
