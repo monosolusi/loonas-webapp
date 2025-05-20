@@ -1,4 +1,4 @@
-import { Header } from "@/app/(authenticated)/home/_components/header";
+import { Header } from "@/app/(authenticated)/_components/header";
 import { ProtectedPage } from "@/core/presentations/components/protected-page";
 import { PageMain } from "@/core/presentations/components/page-main";
 

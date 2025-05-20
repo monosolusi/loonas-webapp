@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ArrowLeftStartOnRectangleIcon, ChevronDownIcon, PlusIcon } from "@heroicons/react/20/solid";
-
 import { AccountListProvider, useAccountListProvider } from "@/features/account/presentation/providers/account-list";
 import { useSelectedAccountProvider } from "@/features/authentication/presentation/providers/selected-account";
 import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";

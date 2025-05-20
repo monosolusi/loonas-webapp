@@ -95,15 +95,17 @@ export function SelectedAccountProvider({ children }: { children: any }) {
       if (verification.data.latestStatus !== VerificationStatus.COMPLETED) {
         // Still not yet completed the verification, so we still allow the use to change the account
         setSelectedAccount(selectedAccount.data);
+        window.location.reload();
       } else {
         // This is where the latest status is completed, so we need to check the verification outcome
         if (verification.data.verificationOutcome === VerificationOutcome.REJECTED) {
           // If the verification outcome is rejected, we need to throw an error
           throw new ServerError(ErrorCodes.ACCOUNT_VERIFICATION_REJECTED);
-        } else setSelectedAccount(selectedAccount.data);
+        } else {
+          setSelectedAccount(selectedAccount.data);
+          window.location.reload();
+        }
       }
-
-
     } catch (err: any) {
       setError(err);
     }
