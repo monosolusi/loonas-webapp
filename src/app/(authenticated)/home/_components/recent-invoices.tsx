@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { RecentInvoiceTableImpl } from "@/app/(authenticated)/home/_components/recent-invoice-table-impl";
 import { InvoiceProvider } from "@/features/invoice/presentations/providers/invoice";
 
@@ -12,9 +13,9 @@ export function RecentInvoices() {
             <h2 className="text-base font-semibold text-gray-900">
               Riwayat Faktur Terbaru
             </h2>
-            <a href="#" className="text-sm/6 font-semibold text-primary-default hover:text-primary-500">
+            <Link href="/invoices" className="text-sm/6 font-semibold text-primary-default hover:text-primary-500">
               Lihat semua
-            </a>
+            </Link>
           </div>
         </div>
         <div className="mt-6 overflow-hidden">
