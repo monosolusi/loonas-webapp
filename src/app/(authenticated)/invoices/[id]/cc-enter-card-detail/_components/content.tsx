@@ -5,6 +5,9 @@ import { PageContent } from "@/core/presentations/components/page-content";
 import { PageHeading } from "@/core/presentations/components/page-heading";
 import { PaymentDetail } from "@/app/(authenticated)/invoices/[id]/_components/payment-detail";
 import { usePaymentRequest } from "@/features/payment/presentations/providers/payment-request";
+import {
+  useCreditCardFullRedirectPayInDetail
+} from "@/features/payment/presentations/providers/cc-full-redirect-pay-in-detail";
 
 interface PaymentData {
   receiverName: string;
@@ -13,14 +16,16 @@ interface PaymentData {
   accountHolderName: string;
   amount: number;
   fee: number;
+  redirectUrl: string;
 }
 
 export function EnterCardDetailContent() {
   const [paymentData, setPaymentData] = useState<PaymentData>();
   const { paymentRequest } = usePaymentRequest();
+  const { ccDetail } = useCreditCardFullRedirectPayInDetail();
 
   useEffect(() => {
-    if (!paymentRequest) return;
+    if (!paymentRequest || !ccDetail) return;
 
     setPaymentData({
       amount: paymentRequest.total,
@@ -28,12 +33,13 @@ export function EnterCardDetailContent() {
       accountHolderName: paymentRequest.bankAccount.accountHolderName,
       receiverBank: paymentRequest.bankAccount.bankName,
       receiverAccountNumber: paymentRequest.bankAccount.accountNumber,
-      fee: paymentRequest.totalFee
+      fee: paymentRequest.totalFee,
+      redirectUrl: ccDetail.redirectUrl
     });
 
   }, [paymentRequest]);
 
-  if (!paymentData) return <>Loading...</>;
+  if (!paymentData || !ccDetail) return <>Loading...</>;
   return (
     <>
       <PageHeading>Harap Lakukan Pembayaran</PageHeading>
@@ -42,7 +48,7 @@ export function EnterCardDetailContent() {
           <div className="w-full lg:w-7/12 space-y-6">
             <div className="w-full">
               <iframe
-                src="https://sandbox.doku.com/wt-frontend-transaction/dynamic-payment-page?signature=HMACSHA256%3Dtnw5hf0aoeRDNKZz%2Fr8O5DZo29KDxCirHLrDS7Hd5lI%3D&clientId=BRN-0271-1747612485660&invoiceNumber=a13adc71-c16c-479b-991d-28dc5a891854&requestId=b66ea518-432a-4c13-81ea-10f645a140e5&backgroundColor=fcfcfc&fontColor=171717&buttonBackgroundColor=0050ac&buttonFontColor=f5f5f5&transactionType=S"
+                src={paymentData.redirectUrl}
                 className="w-full min-h-[400px]"
                 allowFullScreen
               />
