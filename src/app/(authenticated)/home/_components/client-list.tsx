@@ -1,10 +1,11 @@
 import React from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import { DateTime } from "luxon";
 import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
 import { EmptyClientState } from "@/app/(authenticated)/home/_components/client-empty";
+import { ClientLastInvoiceImpl } from "@/app/(authenticated)/home/_components/client-last-invoice-impl";
+import { ListPartnerInvoiceProvider } from "@/features/partner/presentation/providers/list-partner-invoice";
 
 export interface ClientItem {
   id: string;
@@ -25,15 +26,7 @@ function classNames(...classes: any) {
 }
 
 export function ClientList(props: ClientListProps) {
-  const statusChips: Record<InvoiceStatus, { label: string; className: string }> = {
-    PENDING_INVOICE: { label: "Menunggu Invoice", className: "bg-gray-300 text-gray-800" },
-    PENDING_PAYMENT: { label: "Menunggu Pembayaran", className: "bg-yellow-100 text-yellow-700" },
-    PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Dana Diterima", className: "bg-blue-100 text-blue-700" },
-    COMPLETED: { label: "Selesai", className: "bg-emerald-100 text-emerald-700" },
-    EXPIRED: { label: "Kedaluwarsa", className: "bg-gray-100 text-gray-500" },
-    FAILED: { label: "Gagal", className: "bg-red-100 text-red-700" },
-    CANCELLED: { label: "Dibatalkan", className: "bg-pink-100 text-pink-700" }
-  };
+
 
   if (props.data.length === 0) return <EmptyClientState />;
   return (
@@ -71,35 +64,9 @@ export function ClientList(props: ClientListProps) {
               </MenuItems>
             </Menu>
           </div>
-          <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm/6">
-            <div className="flex justify-between gap-x-4 py-3">
-              <dt className="text-gray-500">Invoice Terbaru</dt>
-              <dd className="text-primary-400 underline cursor-pointer">
-                <Link href="/invoices">
-                  <time>{client.lastInvoice.date.setLocale("id").toFormat("dd LLL yyyy, HH:mm")}</time>
-                </Link>
-              </dd>
-            </div>
-            <div className="flex justify-between gap-x-4 py-3">
-              <dt className="text-gray-500">Total</dt>
-              <dd className="flex items-start gap-x-2">
-                <div className="font-medium text-gray-900">{client.lastInvoice.amount}</div>
-              </dd>
-            </div>
-            <div className="flex justify-between gap-x-4 py-3">
-              <dt className="text-gray-500">Status</dt>
-              <dd className="text-gray-700">
-                <div
-                  className={classNames(
-                    statusChips[client.lastInvoice.status].className,
-                    "rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset"
-                  )}
-                >
-                  {statusChips[client.lastInvoice.status].label}
-                </div>
-              </dd>
-            </div>
-          </dl>
+          <ListPartnerInvoiceProvider partnerId={client.id} limit={1}>
+            <ClientLastInvoiceImpl />
+          </ListPartnerInvoiceProvider>
         </li>
       ))}
     </ul>

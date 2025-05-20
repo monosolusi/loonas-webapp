@@ -1,13 +1,30 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
-import { PartnerRepository } from "../../domain/repositories/partner";
+import { PartnerRepository, PartnerRepositorySearchParams } from "../../domain/repositories/partner";
 import { PartnerService } from "../sources/partner";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PartnerEntity } from "../../domain/entities/partner";
-import { PartnerModel } from "../models/partner";
+import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
 
 export class PartnerRepositoryImpl implements PartnerRepository {
   constructor(private partnerService: PartnerService) {
+  }
+
+  public async listInvoice(filter: {
+    partnerId: string
+  }, params: PartnerRepositorySearchParams, session: SessionEntity): Promise<DataState<InvoiceEntity[]>> {
+    try {
+      const invoices = await this.partnerService.listInvoice(
+        { partnerId: filter.partnerId },
+        params,
+        session
+      );
+
+      return new DataSuccess(invoices.map(invoice => invoice.toEntity()));
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
   }
 
   public async create(
