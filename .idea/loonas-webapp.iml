@@ -8,6 +8,5 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="loonas-api" />
-    <orderEntry type="library" name="xendit" level="application" />
   </component>
 </module>

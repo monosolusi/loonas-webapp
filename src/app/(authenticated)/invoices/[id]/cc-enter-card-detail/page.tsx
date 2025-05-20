@@ -1,13 +1,17 @@
-import {PageHeading} from "@/core/presentations/components/page-heading";
-import {PageContent} from "@/core/presentations/components/page-content";
+import { PaymentRequestProvider } from "@/features/payment/presentations/providers/payment-request";
+import { EnterCardDetailContent } from "./_components/content";
+import {
+  CreditCardFullRedirectPayInDetailProvider
+} from "@/features/payment/presentations/providers/cc-full-redirect-pay-in-detail";
 
-export default function EnterCardDetailPage() {
+export default async function EnterCardDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+
   return (
-    <>
-      <PageHeading>Masukan Detail Kartu Kredit</PageHeading>
-      <PageContent>
-        Content goes here
-      </PageContent>
-    </>
+    <PaymentRequestProvider requestId={id}>
+      <CreditCardFullRedirectPayInDetailProvider requestId={id}>
+        <EnterCardDetailContent />
+      </CreditCardFullRedirectPayInDetailProvider>
+    </PaymentRequestProvider>
   );
 }

@@ -5,7 +5,7 @@ import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-fo
 import { ActionButtons } from "@/app/(authenticated)/invoices/[id]/va-pay-in-detail/_components/action-buttons";
 
 interface PaymentDetailProps {
-  invoiceId: string;
+  invoiceId?: string;
   receiverName: string;
   bankName: string;
   accountNumber: string;
@@ -13,6 +13,7 @@ interface PaymentDetailProps {
   total: number;
   fee: number;
   totalPayment: number;
+  showActions?: boolean;
 }
 
 export function PaymentDetail(props: PaymentDetailProps) {
@@ -64,7 +65,9 @@ export function PaymentDetail(props: PaymentDetailProps) {
       </div>
 
       {/* Action Buttons - Placed directly below the payment details */}
-      <ActionButtons invoiceId={props.invoiceId} />
+      {((props.showActions === undefined || props.showActions && props.invoiceId) && props.invoiceId) && (
+        <ActionButtons invoiceId={props.invoiceId} />
+      )}
     </div>
   );
 }
