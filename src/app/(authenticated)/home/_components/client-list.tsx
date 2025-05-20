@@ -6,10 +6,8 @@ import { DateTime } from "luxon";
 import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
 import { EmptyClientState } from "@/app/(authenticated)/home/_components/client-empty";
 
-type Status = "Paid" | "Withdraw" | "Overdue";
-
-interface ClientItem {
-  id: number;
+export interface ClientItem {
+  id: string;
   name: string;
   lastInvoice: {
     date: DateTime;
