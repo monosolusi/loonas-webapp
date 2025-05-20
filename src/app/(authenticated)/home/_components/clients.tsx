@@ -1,5 +1,6 @@
 import React from "react";
-import { EmptyClientState } from "@/app/(authenticated)/home/_components/client-empty";
+import { ClientList } from "@/app/(authenticated)/home/_components/client-list";
+import Link from "next/link";
 
 export function Clients() {
   return (
@@ -7,11 +8,12 @@ export function Clients() {
       <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
         <div className="flex items-center justify-between">
           <h2 className="text-base/7 font-semibold text-gray-900">Klien Terbaru</h2>
-          <a href="#" className="text-sm/6 font-semibold text-primary-600 hover:text-primary-500">
+          <Link href="/partners" className="text-sm/6 font-semibold text-primary-600 hover:text-primary-500">
             Lihat semua
-          </a>
+          </Link>
         </div>
-        <EmptyClientState />
+        {/*<EmptyClientState />*/}
+        <ClientList data={[]} />
       </div>
     </div>
   );

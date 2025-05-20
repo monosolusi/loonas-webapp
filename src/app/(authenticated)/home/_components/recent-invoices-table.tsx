@@ -5,14 +5,14 @@ import Link from "next/link";
 import { InvoiceTypeIcon } from "@/app/(authenticated)/invoices/_components/invoice-type-icon";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { DateTime } from "luxon";
-import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { EmptyInvoiceState } from "@/app/(authenticated)/home/_components/invoice-empty";
+import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
 
 export interface InvoiceRow {
   id: string; // This is PaymentRequest's id
   receiverName: string;
-  status: PaymentRequestStatus;
+  status: InvoiceStatus;
   total: number;
   createdAt: DateTime;
 }
@@ -22,7 +22,7 @@ interface RecentInvoiceTableProps {
 }
 
 export function RecentInvoicesTable(props: RecentInvoiceTableProps) {
-  const statusChips: Record<PaymentRequestStatus, { label: string; className: string }> = {
+  const statusChips: Record<InvoiceStatus, { label: string; className: string }> = {
     PENDING_INVOICE: { label: "Menunggu Invoice", className: "bg-gray-300 text-gray-800" },
     PENDING_PAYMENT: { label: "Menunggu Pembayaran", className: "bg-yellow-100 text-yellow-700" },
     PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Dana Diterima", className: "bg-blue-100 text-blue-700" },
