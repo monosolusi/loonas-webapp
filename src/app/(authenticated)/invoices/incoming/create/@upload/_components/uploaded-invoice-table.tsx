@@ -1,7 +1,7 @@
-import {DocumentIcon, XCircleIcon} from "@heroicons/react/24/solid";
-import React, {useMemo} from "react";
-import {InvoiceDocument} from "@/features/invoice/presentations/providers/create-incoming-invoice";
-import {IDRFormatter} from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { DocumentIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import React, { useMemo } from "react";
+import { InvoiceDocument } from "@/features/invoice/presentations/providers/create-incoming-invoice";
+import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 
 interface UploadedInvoiceTableProps {
   documents: InvoiceDocument[];
@@ -44,7 +44,7 @@ export function UploadedInvoiceTable(props: UploadedInvoiceTableProps) {
                 <tr key={index}>
                   <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                     <div className="flex items-center">
-                      <DocumentIcon className="h-5 w-5 text-gray-400 mr-2" aria-hidden="true"/>
+                      <DocumentIcon className="h-5 w-5 text-gray-400 mr-2" aria-hidden="true" />
                       <div>
                         <div>{doc.file.name}</div>
                         {doc.note && <div className="text-xs text-gray-400">{doc.note}</div>}
@@ -58,12 +58,12 @@ export function UploadedInvoiceTable(props: UploadedInvoiceTableProps) {
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <div>
                       <span className="block">
-                        <strong
-                          className="text-gray-700">Faktur:</strong> {doc.invoiceDate.setLocale("id-id").toLocaleString()}
+                        <strong className="text-gray-700">Faktur:</strong>
+                        {doc.invoiceDate.setLocale("id-id").toLocaleString()}
                       </span>
                       <span className="block">
-                        <strong
-                          className="text-gray-700">Jatuh Tempo:</strong> {doc.dueDate.setLocale("id-id").toLocaleString()}
+                        <strong className="text-gray-700">Jatuh Tempo:</strong>
+                        {doc.dueDate.setLocale("id-id").toLocaleString()}
                       </span>
                     </div>
                   </td>
@@ -73,7 +73,7 @@ export function UploadedInvoiceTable(props: UploadedInvoiceTableProps) {
                       onClick={props.onDelete.bind(null, index)}
                       className="text-red-600 hover:text-red-900"
                     >
-                      <XCircleIcon className="h-5 w-5" aria-hidden="true"/>
+                      <XCircleIcon className="h-5 w-5" aria-hidden="true" />
                       <span className="sr-only">Hapus</span>
                     </button>
                   </td>

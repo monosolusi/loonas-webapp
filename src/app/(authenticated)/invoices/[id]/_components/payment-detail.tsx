@@ -3,6 +3,7 @@
 import React from "react";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { ActionButtons } from "@/app/(authenticated)/invoices/[id]/va-pay-in-detail/_components/action-buttons";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 interface PaymentDetailProps {
   invoiceId?: string;
@@ -18,7 +19,7 @@ interface PaymentDetailProps {
 
 export function PaymentDetail(props: PaymentDetailProps) {
   return (
-    <div className="w-full lg:w-5/12 flex flex-col">
+    <div className="w-full flex flex-col">
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h3 className="text-lg font-semibold mb-4">Rincian Pembayaran</h3>
 
@@ -46,19 +47,37 @@ export function PaymentDetail(props: PaymentDetailProps) {
           <div className="border-t border-gray-200 my-2 pt-2"></div>
 
           <div className="flex justify-between items-center">
-            <span className="text-gray-600">Total Tagihan</span>
+            <span className="text-gray-500 items-center">
+              <span className="group relative inline-flex items-center">
+                Dana Diteruskan <InformationCircleIcon className="h-4 w-4 ml-1 text-gray-500 cursor-help" />
+                <span
+                  className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 text-xs text-white bg-black rounded-md whitespace-nowrap"
+                >
+                  Dana yang akan diteruskan ke rekening tujuan
+                </span>
+              </span>
+            </span>
             <span className="font-medium">{IDRFormatter.toCurrency(props.total)}</span>
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="text-gray-600">Biaya Layanan</span>
+            <span className="text-gray-500">Biaya Layanan</span>
             <span className="font-medium">{IDRFormatter.toCurrency(props.fee)}</span>
           </div>
 
           <div className="border-t border-gray-200 my-2 pt-2"></div>
 
           <div className="flex justify-between items-center">
-            <span className="text-gray-600 font-semibold">Total Pembayaran</span>
+            <span className="text-gray-500 items-center">
+              <span className="group relative inline-flex items-center">
+                Bayar <InformationCircleIcon className="h-4 w-4 ml-1 text-gray-500 cursor-help" />
+                <span
+                  className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 text-xs text-white bg-black rounded-md whitespace-nowrap"
+                >
+                  Total yang harus kamu bayar, sudah termasuk biaya tambahan
+                </span>
+              </span>
+            </span>
             <span className="font-bold text-lg">{IDRFormatter.toCurrency(props.totalPayment)}</span>
           </div>
         </div>

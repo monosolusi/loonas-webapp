@@ -8,6 +8,7 @@ import { DateTime } from "luxon";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { EmptyInvoiceState } from "@/app/(authenticated)/home/_components/invoice-empty";
 import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
+import { InvoiceStatusChip } from "@/app/(authenticated)/invoices/_components/invoice-status-chip";
 
 export interface InvoiceRow {
   id: string; // This is PaymentRequest's id
@@ -22,16 +23,6 @@ interface RecentInvoiceTableProps {
 }
 
 export function RecentInvoicesTable(props: RecentInvoiceTableProps) {
-  const statusChips: Record<InvoiceStatus, { label: string; className: string }> = {
-    PENDING_INVOICE: { label: "Menunggu Invoice", className: "bg-gray-300 text-gray-800" },
-    PENDING_PAYMENT: { label: "Menunggu Pembayaran", className: "bg-yellow-100 text-yellow-700" },
-    PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Dana Diterima", className: "bg-blue-100 text-blue-700" },
-    COMPLETED: { label: "Selesai", className: "bg-emerald-100 text-emerald-700" },
-    EXPIRED: { label: "Kedaluwarsa", className: "bg-gray-100 text-gray-500" },
-    FAILED: { label: "Gagal", className: "bg-red-100 text-red-700" },
-    CANCELLED: { label: "Dibatalkan", className: "bg-pink-100 text-pink-700" }
-  };
-
   if (props.data?.length === 0) return <EmptyInvoiceState />;
   return (
     <div className="inline-block min-w-full py-2 align-middle">
@@ -76,9 +67,7 @@ export function RecentInvoicesTable(props: RecentInvoiceTableProps) {
                 </Link>
               </td>
               <td className="hidden px-3 py-4 text-sm text-center whitespace-nowrap text-gray-500 sm:table-cell">
-              <span className={`px-2 py-1 rounded ${statusChips[row.status].className}`}>
-                {statusChips[row.status].label}
-              </span>
+                <InvoiceStatusChip status={row.status} />
               </td>
               <td className="px-3 py-4 text-sm text-right whitespace-nowrap text-gray-500">
                 {IDRFormatter.toCurrency(row.total)}
