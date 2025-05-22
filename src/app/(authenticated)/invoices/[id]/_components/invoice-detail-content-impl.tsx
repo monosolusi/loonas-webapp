@@ -1,29 +1,42 @@
-import { InvoiceDetailContent } from "@/app/(authenticated)/invoices/[id]/_components/invoice-detail-content";
-import { v4 as uuid } from "uuid";
-import { DateTime } from "luxon";
-import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
+"use client";
+
+import {
+  InvoiceDetailContent,
+  InvoiceDetailItem
+} from "@/app/(authenticated)/invoices/[id]/_components/invoice-detail-content";
+import { useMemo } from "react";
+import { useGetInvoice } from "@/features/invoice/presentations/providers/get-invoice";
 
 export function InvoiceDetailContentImpl() {
+  const { invoice } = useGetInvoice();
 
-  return <InvoiceDetailContent data={{
-    id: uuid(),
-    documents: [{
-      id: uuid(),
-      name: "Nama_Yang_Tidak_Diketahui.pdf",
-      invoiceNumber: "INV/2025/05/00001",
-      invoiceDate: DateTime.now().minus({ days: 20 }),
-      dueDate: DateTime.now().plus({ days: 20 }),
-      amount: 100000000,
-      note: "Untuk pembayaran yang keren"
-    }],
-    status: PaymentRequestStatus.COMPLETED,
-    paymentDetail: {
-      receiverName: "PT. Mono Solusi Indonesia",
-      bankName: "PT BANK CENTRAL ASIA",
-      accountNumber: "123456789",
-      accountHolderName: "John Doe",
-      total: 100000000,
-      fee: 50000
-    }
-  }} />;
+  const invoiceDetail: InvoiceDetailItem | null = useMemo(() => {
+    if (!invoice) return null;
+    if (!invoice.documents) return null;
+    return {
+      id: invoice.id,
+      documents: invoice.documents.map((doc, idx) => ({
+        id: doc.id,
+        name: doc.file?.name ?? `Dokumen ${idx}`,
+        invoiceNumber: doc.invoiceNumber,
+        invoiceDate: doc.invoiceDate,
+        dueDate: doc.dueDate,
+        amount: doc.amount,
+        note: doc.note
+      })),
+      status: invoice.status,
+      paymentDetail: {
+        receiverName: invoice.receiver.name,
+        bankName: invoice.bankAccount.bankName,
+        accountNumber: invoice.bankAccount.accountNumber,
+        accountHolderName: invoice.bankAccount.accountHolderName,
+        total: invoice.amount,
+        fee: invoice.fee
+      }
+    };
+  }, [invoice]);
+
+  if (!invoice) return null;
+  if (!invoiceDetail) return null;
+  return <InvoiceDetailContent data={invoiceDetail} />;
 }

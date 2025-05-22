@@ -1,8 +1,10 @@
-import {DateTime} from "luxon";
-import {AbstractEntity} from "@/core/resources/entity";
+import { DateTime } from "luxon";
+import { AbstractEntity } from "@/core/resources/entity";
+import { FileEntity } from "@/features/file/domain/entities/file";
 
 interface InvoiceSummaryDocumentEntityConstructor {
   id: string;
+  file?: FileEntity;
   invoiceNumber?: string;
   amount: number;
   dueDate: DateTime;
@@ -12,6 +14,7 @@ interface InvoiceSummaryDocumentEntityConstructor {
 
 export class InvoiceSummaryDocumentEntity implements AbstractEntity {
   public id: string;
+  public file?: FileEntity;
   public invoiceNumber?: string;
   public amount: number;
   public dueDate: DateTime;
@@ -20,6 +23,7 @@ export class InvoiceSummaryDocumentEntity implements AbstractEntity {
 
   constructor(args: InvoiceSummaryDocumentEntityConstructor) {
     this.id = args.id;
+    this.file = args.file;
     this.invoiceNumber = args.invoiceNumber;
     this.amount = args.amount;
     this.dueDate = args.dueDate;

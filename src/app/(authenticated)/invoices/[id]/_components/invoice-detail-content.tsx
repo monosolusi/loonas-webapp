@@ -54,7 +54,7 @@ export function InvoiceDetailContent(props: InvoiceDetailContentProps) {
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="py-3.5 pl-4 text-left text-sm font-semibold sm:pl-8">
+                <th scope="col" className="py-3.5 pl-4 text-left text-sm font-semibold sm:pl-5">
                   Dokumen
                 </th>
                 <th
@@ -68,7 +68,7 @@ export function InvoiceDetailContent(props: InvoiceDetailContentProps) {
                 </th>
                 <th
                   scope="col"
-                  className="hidden relative py-3.5 pr-4 pl-3 text-sm text-right text-gray-900 sm:pr-8 sm:table-cell"
+                  className="hidden relative py-3.5 pr-4 pl-3 text-sm text-right text-gray-900 sm:pr-5 sm:table-cell"
                 >
                   Jumlah
                 </th>
@@ -77,7 +77,7 @@ export function InvoiceDetailContent(props: InvoiceDetailContentProps) {
               <tbody className="divide-y divide-gray-200 bg-white">
               {props.data.documents.map((doc) => (
                 <tr key={doc.id}>
-                  <td className="py-4 pl-4 text-sm font-medium whitespace-nowrap sm:pl-8">
+                  <td className="py-4 pl-4 text-sm font-medium whitespace-nowrap sm:pl-5">
                     <div className="flex flex-col space-y-1">
                       <div className="text-gray-900 font-bold">
                         <div className="overflow-hidden overflow-ellipsis max-w-[220px]">
@@ -103,7 +103,7 @@ export function InvoiceDetailContent(props: InvoiceDetailContentProps) {
                   </td>
 
                   <td
-                    className="hidden relative py-4 pr-4 pl-3 text-right text-sm whitespace-nowrap sm:pr-8 sm:table-cell"
+                    className="hidden relative py-4 pr-4 pl-3 text-right text-sm whitespace-nowrap sm:pr-5 sm:table-cell"
                   >
                     Rp 100.000.000
                   </td>

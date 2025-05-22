@@ -3,17 +3,62 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { InvoiceModel } from "@/features/invoice/data/models/invoice";
 
 interface InvoiceServiceFilter {
+  id?: string;
 }
 
 interface InvoiceServiceFilterParams {
   limit?: number;
+  includes?: string;
 }
 
 export abstract class InvoiceService {
   public abstract list(filter: InvoiceServiceFilter, params: InvoiceServiceFilterParams, session: SessionEntity): Promise<InvoiceModel[]>;
+
+  public abstract get(
+    filter: InvoiceServiceFilter,
+    params: Pick<InvoiceServiceFilterParams, "includes">,
+    session: SessionEntity
+  ): Promise<InvoiceModel>;
 }
 
 export class InvoiceServiceImpl implements InvoiceService {
+  public async get(filter: InvoiceServiceFilter, params: Pick<InvoiceServiceFilterParams, "includes">, session: SessionEntity): Promise<InvoiceModel> {
+    try {
+      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
+      if (!filter.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
+      if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const url = new URL(`${baseUrl}/invoices/${filter.id}`);
+      if (params.includes) url.searchParams.set("include", params.includes);
+
+      const method = "GET";
+      const headers = {
+        "Authorization": `Bearer ${session.accessToken}`,
+        "X-Account-Id": session.selectedAccount.id
+      };
+
+      const response = await fetch(url, { method, headers });
+      if (!response.ok) {
+        const data = await response.json();
+        if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
+
+        const ErrorCode = ErrorCodes.find(data.code);
+        if (ErrorCode) throw new ServerError(ErrorCode);
+
+        throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
+      }
+
+      const data = await response.json();
+      if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      return InvoiceModel.fromJson(data);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
   public async list(filter: InvoiceServiceFilter, params: InvoiceServiceFilterParams, session: SessionEntity): Promise<InvoiceModel[]> {
     try {
       if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
