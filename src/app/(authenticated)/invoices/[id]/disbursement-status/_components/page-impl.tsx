@@ -56,7 +56,7 @@ export function DisbursementStatusPageImpl() {
           <div className="mb-6">
             <TimelineImpl />
           </div>
-          <Actions />
+          <Actions invoiceId={paymentRequest.id} />
         </div>
       </PageContent>
     );

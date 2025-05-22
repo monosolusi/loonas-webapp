@@ -6,8 +6,11 @@ import { FilledButton } from "@/core/presentations/components/filled-button";
 import { usePaymentRequest } from "@/features/payment/presentations/providers/payment-request";
 import { useRouter } from "next/navigation";
 
+interface ActionsProps {
+  invoiceId?: string;
+}
 
-export function Actions() {
+export function Actions(props: ActionsProps) {
   const router = useRouter();
   const { paymentRequest } = usePaymentRequest();
 
@@ -16,7 +19,8 @@ export function Actions() {
   };
 
   const navigateToInvoiceList = () => {
-    router.push("/invoices");
+    if (props.invoiceId) router.push(`/invoices/${props.invoiceId}`);
+    else router.push("/invoices");
   };
 
   if (!paymentRequest) return null;
@@ -29,7 +33,7 @@ export function Actions() {
       </div>
       <div className="flex-1">
         <FilledButton onClick={navigateToInvoiceList}>
-          Lihat Semua Faktur
+          Lihat {props.invoiceId ? "Detail" : "Semua"} Faktur
         </FilledButton>
       </div>
     </div>
