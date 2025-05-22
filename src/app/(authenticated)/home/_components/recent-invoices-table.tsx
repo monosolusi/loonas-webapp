@@ -46,7 +46,7 @@ export function RecentInvoicesTable(props: RecentInvoiceTableProps) {
             </th>
             <th
               scope="col"
-              className="hidden relative py-3.5 pr-4 pl-3 text-sm text-right text-gray-900 sm:pr-8 sm:table-cell"
+              className="hidden py-3.5 pr-4 pl-3 text-sm text-right text-gray-900 sm:pr-8 sm:table-cell"
             >
               Tanggal Dibuat
             </th>

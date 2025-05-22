@@ -21,13 +21,7 @@ interface ClientListProps {
   data: ClientItem[];
 }
 
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ");
-}
-
 export function ClientList(props: ClientListProps) {
-
-
   if (props.data.length === 0) return <EmptyClientState />;
   return (
     <ul role="list" className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
