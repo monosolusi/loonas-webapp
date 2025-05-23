@@ -4,12 +4,14 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { InvoiceModel } from "@/features/invoice/data/models/invoice";
 
 interface PartnerServiceFilter {
-  partnerId: string;
+  partnerId?: string;
+  id?: string;
 }
 
 interface PartnerServiceSearchParams {
   limit?: number;
 }
+
 
 export abstract class PartnerService {
   public abstract create(name: string, email: string, phone: string, session: SessionEntity): Promise<boolean>;
@@ -18,7 +20,7 @@ export abstract class PartnerService {
 
   public abstract listInvoice(filter: PartnerServiceFilter, params: PartnerServiceSearchParams, session: SessionEntity): Promise<InvoiceModel[]>;
 
-  public abstract get(params: { id: string }, session: SessionEntity): Promise<PartnerModel>;
+  public abstract get(params: PartnerServiceFilter, session: SessionEntity): Promise<PartnerModel>;
 }
 
 export class PartnerServiceImpl implements PartnerService {
@@ -59,9 +61,10 @@ export class PartnerServiceImpl implements PartnerService {
     }
   }
 
-  public async get(params: { id: string; }, session: SessionEntity): Promise<PartnerModel> {
+  public async get(params: PartnerServiceFilter, session: SessionEntity): Promise<PartnerModel> {
     try {
       if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
+      if (!params.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);

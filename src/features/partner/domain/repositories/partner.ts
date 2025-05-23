@@ -8,6 +8,11 @@ export interface PartnerRepositorySearchParams {
   limit?: number;
 }
 
+export interface PartnerRepositoryFilter {
+  id?: string;
+  partnerId?: string;
+}
+
 export abstract class PartnerRepository {
   public abstract create(
     name: string,
@@ -25,4 +30,6 @@ export abstract class PartnerRepository {
     params: PartnerRepositorySearchParams,
     session: SessionEntity
   ): Promise<DataState<InvoiceEntity[]>>
+
+  public abstract get(filter: PartnerRepositoryFilter, session: SessionEntity): Promise<DataState<PartnerEntity>>
 }
