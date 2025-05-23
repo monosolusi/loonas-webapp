@@ -4,6 +4,7 @@ import { BanknotesIcon, BuildingOffice2Icon, DocumentIcon } from "@heroicons/rea
 import { BackArrow } from "@/core/presentations/components/back-arrow";
 import { PartnerDetailImpl } from "@/app/(authenticated)/clients/[id]/_components/partner-detail-impl";
 import { GetPartnerProvider } from "@/features/partner/presentation/providers/get-partner";
+import { UpdatePartnerProvider } from "@/features/partner/presentation/providers/update-partner";
 
 
 const secondaryNavigation = [
@@ -59,7 +60,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           </aside>
 
           <GetPartnerProvider id={id}>
-            <PartnerDetailImpl />
+            <UpdatePartnerProvider id={id}>
+              <PartnerDetailImpl />
+            </UpdatePartnerProvider>
           </GetPartnerProvider>
         </div>
       </PageContent>

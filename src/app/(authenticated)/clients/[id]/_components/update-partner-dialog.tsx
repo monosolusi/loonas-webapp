@@ -8,12 +8,14 @@ import { ServerError } from "@/core/resources/server-error";
 import { isValidPhoneNumber, parsePhoneNumberFromString } from "libphonenumber-js";
 
 export interface PartnerExistingDataItem {
+  id: string;
   name: string;
   email: string;
   phone: string;
 }
 
 interface OnSubmitParams {
+  id: string;
   name: string;
   email: string;
   phone: string;
@@ -32,6 +34,7 @@ export function UpdatePartnerDialog(props: UpdatePartnerDialogProps) {
   const [name, setName] = React.useState<string>(props.existingData.name);
   const [email, setEmail] = React.useState<string>(props.existingData.email);
   const [phone, setPhone] = React.useState<string>(props.existingData.phone);
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   const handleClose = (value: boolean) => {
     props.onClose?.();
@@ -46,9 +49,10 @@ export function UpdatePartnerDialog(props: UpdatePartnerDialogProps) {
     return emailRegex.test(email);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
+      setLoading(true);
 
       if (!name || !email || !phone) return;
       if (!isValidEmail(email)) return;
@@ -59,7 +63,14 @@ export function UpdatePartnerDialog(props: UpdatePartnerDialogProps) {
       const formattedPhone = parsePhoneNumberFromString(phoneNumber, "ID")?.format("E.164");
       if (!formattedPhone) return;
 
-      props.onSubmit?.({ name, email, phone: formattedPhone });
+      await props.onSubmit?.({
+        id: props.existingData.id,
+        name: name,
+        email: email,
+        phone: formattedPhone
+      });
+
+      setLoading(false);
     } catch {
       return;
     }
@@ -118,7 +129,7 @@ export function UpdatePartnerDialog(props: UpdatePartnerDialogProps) {
             </div>
             <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
               <div className="ml-3">
-                <FilledButton>
+                <FilledButton loading={loading}>
                   Perbarui Klien
                 </FilledButton>
               </div>

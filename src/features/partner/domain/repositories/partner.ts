@@ -13,6 +13,12 @@ export interface PartnerRepositoryFilter {
   partnerId?: string;
 }
 
+export interface PartnerRepositoryUpdateFields {
+  name?: string;
+  email?: string;
+  phone?: string;
+}
+
 export abstract class PartnerRepository {
   public abstract create(
     name: string,
@@ -32,4 +38,10 @@ export abstract class PartnerRepository {
   ): Promise<DataState<InvoiceEntity[]>>
 
   public abstract get(filter: PartnerRepositoryFilter, session: SessionEntity): Promise<DataState<PartnerEntity>>
+
+  public abstract update(
+    filter: Pick<PartnerRepositoryFilter, "id">,
+    updateData: PartnerRepositoryUpdateFields,
+    session: SessionEntity
+  ): Promise<DataState<PartnerEntity>>
 }

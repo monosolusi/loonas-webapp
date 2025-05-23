@@ -6,6 +6,7 @@ import {
 } from "@/app/(authenticated)/clients/[id]/_components/update-partner-dialog";
 import { useGetPartner } from "@/features/partner/presentation/providers/get-partner";
 import React, { useMemo } from "react";
+import { useUpdatePartner } from "@/features/partner/presentation/providers/update-partner";
 
 interface UpdatePartnerDialogProps {
   open: boolean;
@@ -13,7 +14,8 @@ interface UpdatePartnerDialogProps {
 }
 
 export function UpdatePartnerDialogImpl(props: UpdatePartnerDialogProps) {
-  const { partner, loading } = useGetPartner();
+  const { partner, loading, refresh } = useGetPartner();
+  const { updatePartner } = useUpdatePartner();
 
   const formattedPartner: PartnerExistingDataItem | null = useMemo(() => {
     if (!partner) return null;
@@ -28,6 +30,16 @@ export function UpdatePartnerDialogImpl(props: UpdatePartnerDialogProps) {
 
   const handleClose = () => props.setOpen(false);
   const handleCancel = () => props.setOpen(false);
+  const handleSubmit = async (params: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+  }) => {
+    await updatePartner?.({ id: params.id }, { name: params.name, email: params.email, phone: params.phone });
+    await refresh?.();
+    props.setOpen(false);
+  };
 
   if (loading || !partner || !formattedPartner) return null;
   return (
@@ -35,6 +47,7 @@ export function UpdatePartnerDialogImpl(props: UpdatePartnerDialogProps) {
       open={props.open}
       onClose={handleClose}
       onCancel={handleCancel}
+      onSubmit={handleSubmit}
       existingData={formattedPartner}
     />
   );

@@ -1,55 +1,58 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { PartnerEntity } from "@/features/partner/domain/entities/partner";
+import React, { useContext, useState } from "react";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { PartnerServiceImpl } from "@/features/partner/data/sources/partner";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { PartnerRepositoryImpl } from "@/features/partner/data/repositories/partner";
 import { DataFailed } from "@/core/resources/data-state";
-import { GetPartnerUseCase, GetPartnerUseCaseParams } from "@/features/partner/domain/usecases/get-partner";
+import { UpdatePartnerUseCase, UpdatePartnerUseCaseParams } from "@/features/partner/domain/usecases/update-partner";
 
-interface GetPartnerContextProps {
-  partner?: PartnerEntity,
-  loading: boolean,
-  error?: ServerError,
-  refresh?: () => Promise<void>;
+interface UpdatePartnerParams {
+  name?: string;
+  email?: string;
+  phone?: string;
 }
 
-interface GetPartnerProviderProps {
+interface UpdatePartnerProviderProps {
   id: string;
   children: React.ReactNode;
 }
 
-const GetPartnerContext = React.createContext<GetPartnerContextProps>({
+interface UpdatePartnerContextProps {
+  loading: boolean;
+  updatePartner?: (filter: { id: string }, params: UpdatePartnerParams) => Promise<void>;
+  error?: ServerError;
+}
+
+const UpdatePartnerContext = React.createContext<UpdatePartnerContextProps>({
   loading: false
 });
 
-export function GetPartnerProvider(props: GetPartnerProviderProps) {
-  const [partner, setPartner] = useState<PartnerEntity>();
+export function UpdatePartnerProvider(props: UpdatePartnerProviderProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<ServerError>();
 
-  const fetchPartner = async (id: string) => {
+  const updatePartner = async (filter: { id: string }, params: UpdatePartnerParams) => {
     setLoading(true);
     setError(undefined);
 
     try {
       if (!props.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      if (props.id !== filter.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const sessionService = new LocalStorageSessionService();
       const partnerService = new PartnerServiceImpl();
       const sessionRepository = new SessionRepositoryImpl(sessionService);
       const partnerRepository = new PartnerRepositoryImpl(partnerService);
-      const retrieve = new GetPartnerUseCase(partnerRepository, sessionRepository);
-      const retrieveParams = new GetPartnerUseCaseParams({ id });
+      const update = new UpdatePartnerUseCase(partnerRepository, sessionRepository);
+      const updateParams = new UpdatePartnerUseCaseParams(filter, params);
 
-      const result = await retrieve.execute(retrieveParams);
+      const result = await update.execute(updateParams);
       if (result instanceof DataFailed) throw result.error;
       if (result.data === undefined) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      setPartner(result.data);
       setLoading(false);
     } catch (err) {
       if (err instanceof ServerError) setError(err);
@@ -57,23 +60,15 @@ export function GetPartnerProvider(props: GetPartnerProviderProps) {
     }
   };
 
-  const refresh = async () => {
-    await fetchPartner(props.id);
-  };
-
-  useEffect(() => {
-    if (props.id) fetchPartner(props.id);
-  }, [props.id]);
-
   return (
-    <GetPartnerContext.Provider
-      value={{ partner, loading, refresh, error }}
+    <UpdatePartnerContext.Provider
+      value={{ loading, error, updatePartner }}
     >
       {props.children}
-    </GetPartnerContext.Provider>
+    </UpdatePartnerContext.Provider>
   );
 }
 
-export function useGetPartner() {
-  return React.useContext(GetPartnerContext);
+export function useUpdatePartner() {
+  return useContext(UpdatePartnerContext);
 }
