@@ -34,11 +34,9 @@ interface InvoiceDetailContentProps {
 export function InvoiceDetailContent(props: InvoiceDetailContentProps) {
   return (
     <div className="flex flex-col space-y-6">
-      <div className="flex flex-row space-x-2 justify-between">
-        <div className="flex flex-col space-y-1">
-          <div className="flex">
-            <InvoiceStatusChip status={props.data.status} />
-          </div>
+      <div className="flex flex-row space-x-2 justify-between items-center">
+        <div className="flex">
+          <InvoiceStatusChip status={props.data.status} />
         </div>
         <SeeDisbursementStatus invoiceId={props.data.id} status={props.data.status} />
       </div>
