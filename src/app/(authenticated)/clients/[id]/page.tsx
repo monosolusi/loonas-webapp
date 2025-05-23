@@ -1,10 +1,10 @@
 import { PageContent } from "@/core/presentations/components/page-content";
-import { PageHeading } from "@/core/presentations/components/page-heading";
 import { BanknotesIcon, BuildingOffice2Icon, DocumentIcon } from "@heroicons/react/24/outline";
 import { BackArrow } from "@/core/presentations/components/back-arrow";
 import { PartnerDetailImpl } from "@/app/(authenticated)/clients/[id]/_components/partner-detail-impl";
 import { GetPartnerProvider } from "@/features/partner/presentation/providers/get-partner";
 import { UpdatePartnerProvider } from "@/features/partner/presentation/providers/update-partner";
+import { PageHeadingImpl } from "@/app/(authenticated)/clients/[id]/_components/page-heading-impl";
 
 
 const secondaryNavigation = [
@@ -21,11 +21,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   const { id } = await params;
 
   return (
-    <>
+    <GetPartnerProvider id={id}>
       <div className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
         <BackArrow />
       </div>
-      <PageHeading>PT. Mono Solusi Indonesia</PageHeading>
+      <PageHeadingImpl />
       <PageContent>
         <div className="flex flex-row mx-auto max-w-7xl">
           <aside
@@ -59,13 +59,12 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
             </nav>
           </aside>
 
-          <GetPartnerProvider id={id}>
-            <UpdatePartnerProvider id={id}>
-              <PartnerDetailImpl />
-            </UpdatePartnerProvider>
-          </GetPartnerProvider>
+          <UpdatePartnerProvider id={id}>
+            <PartnerDetailImpl />
+          </UpdatePartnerProvider>
+
         </div>
       </PageContent>
-    </>
+    </GetPartnerProvider>
   );
 }
