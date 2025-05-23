@@ -31,10 +31,6 @@ interface InvoiceDetailContentProps {
   data: InvoiceDetailItem;
 }
 
-const getFirstUuidPart = (uuid: string): string => {
-  return uuid.split("-")[0];
-};
-
 export function InvoiceDetailContent(props: InvoiceDetailContentProps) {
   return (
     <div className="flex flex-col space-y-6">
