@@ -43,8 +43,6 @@ export function InvoiceDetailContent(props: InvoiceDetailContentProps) {
           <div className="flex">
             <InvoiceStatusChip status={props.data.status} />
           </div>
-          <p className="text-xl font-bold uppercase">Faktur Masukan: {getFirstUuidPart(props.data.id)}</p>
-          <p className="text-sm text-gray-400">{props.data.id}</p>
         </div>
         <SeeDisbursementStatus invoiceId={props.data.id} status={props.data.status} />
       </div>
