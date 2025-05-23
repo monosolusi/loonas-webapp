@@ -8,6 +8,17 @@ export interface PartnerRepositorySearchParams {
   limit?: number;
 }
 
+export interface PartnerRepositoryFilter {
+  id?: string;
+  partnerId?: string;
+}
+
+export interface PartnerRepositoryUpdateFields {
+  name?: string;
+  email?: string;
+  phone?: string;
+}
+
 export abstract class PartnerRepository {
   public abstract create(
     name: string,
@@ -25,4 +36,12 @@ export abstract class PartnerRepository {
     params: PartnerRepositorySearchParams,
     session: SessionEntity
   ): Promise<DataState<InvoiceEntity[]>>
+
+  public abstract get(filter: PartnerRepositoryFilter, session: SessionEntity): Promise<DataState<PartnerEntity>>
+
+  public abstract update(
+    filter: Pick<PartnerRepositoryFilter, "id">,
+    updateData: PartnerRepositoryUpdateFields,
+    session: SessionEntity
+  ): Promise<DataState<PartnerEntity>>
 }

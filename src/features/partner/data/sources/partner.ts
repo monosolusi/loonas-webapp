@@ -4,11 +4,18 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { InvoiceModel } from "@/features/invoice/data/models/invoice";
 
 interface PartnerServiceFilter {
-  partnerId: string;
+  partnerId?: string;
+  id?: string;
 }
 
 interface PartnerServiceSearchParams {
   limit?: number;
+}
+
+interface PartnerServiceUpdateFields {
+  name?: string;
+  email?: string;
+  phone?: string;
 }
 
 export abstract class PartnerService {
@@ -18,10 +25,58 @@ export abstract class PartnerService {
 
   public abstract listInvoice(filter: PartnerServiceFilter, params: PartnerServiceSearchParams, session: SessionEntity): Promise<InvoiceModel[]>;
 
-  public abstract get(params: { id: string }, session: SessionEntity): Promise<PartnerModel>;
+  public abstract get(params: PartnerServiceFilter, session: SessionEntity): Promise<PartnerModel>;
+
+  public abstract update(
+    filter: Pick<PartnerServiceFilter, "id">,
+    updateData: PartnerServiceUpdateFields,
+    session: SessionEntity
+  ): Promise<PartnerModel>
 }
 
 export class PartnerServiceImpl implements PartnerService {
+  public async update(filter: Pick<PartnerServiceFilter, "id">, updateData: PartnerServiceUpdateFields, session: SessionEntity): Promise<PartnerModel> {
+    try {
+      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
+      if (!session.accessToken) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
+      if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const url = new URL(`${baseUrl}/partners/${filter.id}`);
+      const method = "PUT";
+      const headers = {
+        "Authorization": `Bearer ${session.accessToken}`,
+        "X-Account-Id": session.selectedAccount.id,
+        "Content-Type": "application/json"
+      };
+
+      const body = {
+        ...(updateData.name && { name: updateData.name }),
+        ...(updateData.email && { email: updateData.email }),
+        ...(updateData.phone && { phone: updateData.phone })
+      };
+
+      const response = await fetch(url, { method, headers, body: JSON.stringify(body) });
+      if (!response.ok) {
+        const data = await response.json();
+        if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
+
+        const ErrorCode = ErrorCodes.find(data.code);
+        if (ErrorCode) throw new ServerError(ErrorCode);
+
+        throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
+      }
+
+      const data = await response.json();
+      if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      return PartnerModel.fromJson(data);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
   public async listInvoice(filter: PartnerServiceFilter, params: PartnerServiceSearchParams, session: SessionEntity): Promise<InvoiceModel[]> {
     try {
       if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
@@ -59,9 +114,10 @@ export class PartnerServiceImpl implements PartnerService {
     }
   }
 
-  public async get(params: { id: string; }, session: SessionEntity): Promise<PartnerModel> {
+  public async get(params: PartnerServiceFilter, session: SessionEntity): Promise<PartnerModel> {
     try {
       if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
+      if (!params.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
