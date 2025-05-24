@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
-import { UpdatePartnerDialogImpl } from "@/app/(authenticated)/clients/[id]/_components/update-partner-dialog-impl";
+import {
+  UpdatePartnerDialogImpl
+} from "@/app/(authenticated)/clients/[id]/detail/_components/update-partner-dialog-impl";
 
 export interface PartnerDetailItem {
   id: string;

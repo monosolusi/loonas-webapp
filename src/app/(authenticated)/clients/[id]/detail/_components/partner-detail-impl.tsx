@@ -1,6 +1,6 @@
 "use client";
 
-import { PartnerDetail, PartnerDetailItem } from "@/app/(authenticated)/clients/[id]/_components/partner-detail";
+import { PartnerDetail, PartnerDetailItem } from "@/app/(authenticated)/clients/[id]/detail/_components/partner-detail";
 import { useMemo } from "react";
 import { useGetPartner } from "@/features/partner/presentation/providers/get-partner";
 

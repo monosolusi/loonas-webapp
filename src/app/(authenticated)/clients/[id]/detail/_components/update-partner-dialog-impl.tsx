@@ -3,7 +3,7 @@
 import {
   PartnerExistingDataItem,
   UpdatePartnerDialog
-} from "@/app/(authenticated)/clients/[id]/_components/update-partner-dialog";
+} from "@/app/(authenticated)/clients/[id]/detail/_components/update-partner-dialog";
 import { useGetPartner } from "@/features/partner/presentation/providers/get-partner";
 import React, { useMemo } from "react";
 import { useUpdatePartner } from "@/features/partner/presentation/providers/update-partner";
