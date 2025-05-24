@@ -23,7 +23,11 @@ export default async function ClientDetailLayout(props: ClientDetailLayoutProps)
       <PageContent>
         <div className="flex flex-row mx-auto max-w-7xl">
           <SideNavigation />
-          {props.children}
+          <main className="flex px-4 sm:px-6 lg:flex-auto py-4">
+            <div className="w-full">
+              {props.children}
+            </div>
+          </main>
         </div>
       </PageContent>
     </GetPartnerProvider>

@@ -1,9 +1,9 @@
 import { Table } from "@/core/presentations/components/table";
 import { TableHeader } from "@/core/presentations/components/table-header";
 import { TableBody } from "@/core/presentations/components/table-body";
-import Link from "next/link";
 import { TableContainer } from "@/core/presentations/components/table-container";
 import React, { useMemo } from "react";
+import { TableMainCell } from "@/core/presentations/components/table-main-cell";
 
 export interface ClientItem {
   id: string;
@@ -22,13 +22,7 @@ export function ClientTable(props: ClientTableProps) {
     return props.data.map((client) => ({
       row: [
         {
-          node: (
-            <Link
-              className="font-bold text-primary-default  hover:underline line-clamp-2"
-              href={`/clients/${client.id}`}>
-              {client.name}
-            </Link>
-          ),
+          node: <TableMainCell href={`/clients/${client.id}`}>{client.name}</TableMainCell>,
           hideOnMobile: false
         },
         { node: client.email, hideOnMobile: true },
