@@ -23,6 +23,12 @@ import {
   CreateBankAccountUseCaseParams
 } from "@/features/bank/domain/usecases/create-bank-account";
 
+interface BankAccountProviderProps {
+  children: React.ReactNode;
+  receiver?: PartnerEntity;
+  receiverId?: string;
+}
+
 interface BankAccountContextProps {
   bankAccounts: BankAccountEntity[];
   loading: boolean;
@@ -41,7 +47,7 @@ const BankAccountContext = React.createContext<BankAccountContextProps>({
   creating: false
 });
 
-export function BankAccountProvider({ children, receiver }: { children: React.ReactNode, receiver?: PartnerEntity }) {
+export function BankAccountProvider(props: BankAccountProviderProps) {
   const [bankAccounts, setBankAccounts] = useState<BankAccountEntity[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [verifying, setVerifying] = useState<boolean>(false);
@@ -49,8 +55,9 @@ export function BankAccountProvider({ children, receiver }: { children: React.Re
   const [error, setError] = useState<ServerError>();
 
   useEffect(() => {
-    if (receiver) fetchBankAccounts(receiver.id);
-  }, [receiver]);
+    if (props.receiver) fetchBankAccounts(props.receiver.id);
+    else if (props.receiverId) fetchBankAccounts(props.receiverId);
+  }, [props.receiver, props.receiverId]);
 
   async function fetchBankAccounts(partnerId: string) {
     setLoading(true);
@@ -136,7 +143,7 @@ export function BankAccountProvider({ children, receiver }: { children: React.Re
         createBankAccount: createAccount
       }}
     >
-      {children}
+      {props.children}
     </BankAccountContext.Provider>
   );
 }
