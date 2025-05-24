@@ -45,25 +45,29 @@ export function EnterCardDetailContent() {
       <PageHeading>Harap Lakukan Pembayaran</PageHeading>
       <PageContent>
         <div className="flex flex-col lg:flex-row gap-6">
-          <div className="w-full lg:w-7/12 space-y-6">
-            <div className="w-full">
-              <iframe
-                src={paymentData.redirectUrl}
-                className="w-full min-h-[400px]"
-                allowFullScreen
-              />
+          <div className="flex-3">
+            <div className="w-full space-y-6">
+              <div className="w-full">
+                <iframe
+                  src={paymentData.redirectUrl}
+                  className="w-full min-h-[500px]"
+                  allowFullScreen
+                />
+              </div>
             </div>
           </div>
-          <PaymentDetail
-            receiverName={paymentData.receiverName}
-            bankName={paymentData.receiverBank}
-            accountNumber={paymentData.receiverAccountNumber}
-            accountHolderName={paymentData.accountHolderName}
-            total={paymentData.amount}
-            fee={paymentData.fee}
-            totalPayment={paymentData.amount + paymentData.fee}
-            showActions={false}
-          />
+          <div className="flex-2">
+            <PaymentDetail
+              receiverName={paymentData.receiverName}
+              bankName={paymentData.receiverBank}
+              accountNumber={paymentData.receiverAccountNumber}
+              accountHolderName={paymentData.accountHolderName}
+              total={paymentData.amount}
+              fee={paymentData.fee}
+              totalPayment={paymentData.amount + paymentData.fee}
+              showActions={false}
+            />
+          </div>
         </div>
       </PageContent>
     </>
