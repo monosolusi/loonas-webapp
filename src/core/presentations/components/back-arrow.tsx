@@ -16,7 +16,7 @@ export function BackArrow(props: { onClick?: () => void }) {
       onClick={handleClick}
       className="mb-4 flex flex-cols cursor-pointer hover:text-primary-default"
     >
-      <ArrowLeftIcon className="size-5 mr-1 mt-0.5" />
+      <ArrowLeftIcon className="size-4 mr-1 mt-0.5" />
       <span>Kembali</span>
     </div>
   );

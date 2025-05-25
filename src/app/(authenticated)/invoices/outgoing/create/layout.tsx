@@ -7,6 +7,14 @@ import {
   HasNoAccountErrorDialog
 } from "@/app/(authenticated)/invoices/outgoing/create/_components/has-no-account-error-dialog";
 import { PageContent } from "@/core/presentations/components/page-content";
+import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import {
+  CreateOutgoingInvoiceProgressStepper
+} from "@/app/(authenticated)/invoices/outgoing/create/_components/create-outgoing-invoice-progress-stepper";
+import {
+  CreateOutgoingInvoiceProvider
+} from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 
 interface CreateOutgoingInvoiceLayoutProps {
   children: React.ReactNode,
@@ -27,9 +35,25 @@ export default function CreateOutgoingInvoiceLayout(props: CreateOutgoingInvoice
   // If nothing happens, return the children
   if (!loading && !error) {
     return (
-      <PageContent>
-        {props.recipient}
-      </PageContent>
+      <CreateOutgoingInvoiceProvider maxStep={4}>
+        <PageContent>
+          <div className="flex flex-col space-y-12">
+            <div className="flex flex-col space-y-2">
+              <div className="flex flex-row items-start">
+                <OutlinedButton>
+                  <ArrowLeftIcon className="size-4 mt-0.5 mr-1" />
+                  Kembali
+                </OutlinedButton>
+              </div>
+
+              <CreateOutgoingInvoiceProgressStepper />
+            </div>
+            <div>
+              {props.recipient}
+            </div>
+          </div>
+        </PageContent>
+      </CreateOutgoingInvoiceProvider>
     );
   }
 }
