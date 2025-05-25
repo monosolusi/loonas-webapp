@@ -1,6 +1,6 @@
 export function PageHeading({ children, withBackground }: { children: any, withBackground?: boolean }) {
   return (
-    <header className="relative">
+    <header className="relative mb-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="relative text-3xl font-bold tracking-tight text-gray-900 inline-block">
           {children}
