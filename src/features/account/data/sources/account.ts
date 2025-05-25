@@ -45,33 +45,31 @@ export class AccountServiceImpl implements AccountService {
     accountId: string;
   }, session: SessionEntity): Promise<AccountBankAccountModel[]> {
     try {
-      return [];
+      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
+      if (!params.accountId) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      // if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-      // if (!params.accountId) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      //
-      // const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
-      // if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      //
-      // const url = `${baseUrl}/bank-accounts`;
-      // const headers = {
-      //   Authorization: `Bearer ${session.accessToken}`,
-      //   "X-Account-Id": session.selectedAccount.id
-      // };
-      //
-      // const response = await fetch(url, { headers });
-      // if (!response.ok) {
-      //   const data = await response.json();
-      //   if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
-      //
-      //   const ErrorCode = ErrorCodes.find(data.code);
-      //   if (ErrorCode) throw new ServerError(ErrorCode);
-      //
-      //   throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
-      // }
-      //
-      // const data = await response.json();
-      // return data.map(AccountBankAccountModel.fromJson);
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
+      if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const url = `${baseUrl}/bank-accounts`;
+      const headers = {
+        Authorization: `Bearer ${session.accessToken}`,
+        "X-Account-Id": session.selectedAccount.id
+      };
+
+      const response = await fetch(url, { headers });
+      if (!response.ok) {
+        const data = await response.json();
+        if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
+
+        const ErrorCode = ErrorCodes.find(data.code);
+        if (ErrorCode) throw new ServerError(ErrorCode);
+
+        throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
+      }
+
+      const data = await response.json();
+      return data.map(AccountBankAccountModel.fromJson);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
