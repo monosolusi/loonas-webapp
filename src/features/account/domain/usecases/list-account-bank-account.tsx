@@ -28,8 +28,11 @@ export class ListAccountBankAccountUseCase implements UseCase<DataState<AccountB
       if (bankAccounts.data.length === 0) throw new ServerError(ErrorCodes.ACCOUNT_HAS_NO_BANK_ACCOUNT);
       return bankAccounts;
     } catch (err) {
-      if (err instanceof ServerError) return new DataFailed(err);
-      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+      if (err instanceof ServerError) {
+        // Expecting when we have NOT_FOUND error
+        if (err.code === ErrorCodes.NOT_FOUND.code) return new DataFailed(new ServerError(ErrorCodes.ACCOUNT_HAS_NO_BANK_ACCOUNT));
+        else return new DataFailed(err);
+      } else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
     }
   }
 

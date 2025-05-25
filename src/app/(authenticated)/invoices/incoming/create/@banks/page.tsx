@@ -9,7 +9,6 @@ import { RowItem } from "@/app/(authenticated)/invoices/incoming/create/@banks/_
 import {
   useCreateIncomingInvoiceSteps
 } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
-import { ListBankProvider } from "@/features/bank/presentation/providers/list-bank";
 import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
 
 function SelectBankAccountContent() {
@@ -84,10 +83,8 @@ export default function SelectBankAccountPage() {
 
   if (currentStep !== 2) return null;
   return (
-    <ListBankProvider>
-      <BankAccountProvider receiver={receiver}>
-        <SelectBankAccountContent />
-      </BankAccountProvider>
-    </ListBankProvider>
+    <BankAccountProvider receiver={receiver}>
+      <SelectBankAccountContent />
+    </BankAccountProvider>
   );
 }

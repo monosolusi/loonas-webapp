@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, Label } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { useListBank } from "@/features/bank/presentation/providers/list-bank";
 import { BankEntity } from "@/features/bank/domain/entities/bank";
+import { useListBank } from "@/features/bank/presentation/hooks/use-list-bank";
 
 export function BankCombobox({ selectedBank, setSelectedBank }: {
   selectedBank: BankEntity | null,

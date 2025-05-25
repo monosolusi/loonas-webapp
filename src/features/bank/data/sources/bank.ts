@@ -3,50 +3,57 @@ import { BankModel } from "../models/bank";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { AccountInquiryResultModel } from "@/features/bank/data/models/account-inquiry-result";
 import { BankAccountModel } from "@/features/bank/data/models/bank-account";
-
-export abstract class BankService {
-  /**
-   * Retrieves a list of available banks
-   * @param session Current user session
-   * @returns Promise resolving to array of BankModel
-   */
-  public abstract listBanks(session: SessionEntity): Promise<BankModel[]>;
-
-  /**
-   * Retrieves bank accounts for a specific partner
-   * @param partnerId ID of the partner
-   * @param session Current user session
-   * @returns Promise resolving to an array of BankAccountModel
-   */
-  public abstract listBankAccounts(partnerId: string, session: SessionEntity): Promise<BankAccountModel[]>;
-
-  public abstract getBankAccount(params: {
-    partnerId: string,
-    id: string
-  }, session: SessionEntity): Promise<BankAccountModel>;
-
-  /**
-   * Verifies the holder of a bank account
-   * @param bankId ID of the bank
-   * @param accountNumber Account number to verify
-   * @param session Current user session
-   * @returns Promise resolving to AccountInquiryResultModel
-   */
-  public abstract verifyAccountHolder(bankId: string, accountNumber: string, session: SessionEntity): Promise<AccountInquiryResultModel>;
-
-  /**
-   * Creates a new bank account for a partner
-   * @param bankId ID of the bank
-   * @param accountNumber Account number
-   * @param accountHolderName Name of the account holder
-   * @param partnerId ID of the partner
-   * @param session Current user session
-   * @returns Promise resolving to created BankAccountModel
-   */
-  public abstract createBankAccount(bankId: string, accountNumber: string, accountHolderName: string, partnerId: string, session: SessionEntity): Promise<BankAccountModel>;
-}
+import { BankService } from "@/features/bank/domain/sources/bank";
+import { AccountBankAccountModel } from "@/features/account/data/models/account-bank-account";
 
 export class BankServiceImpl implements BankService {
+  public async createBankAccountForAccount(params: {
+    bankId: string;
+    accountNumber: string;
+    accountId: string;
+  }, session: SessionEntity): Promise<AccountBankAccountModel> {
+    try {
+      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
+      if (!session.accessToken) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+      if (session.selectedAccount.id !== params.accountId) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
+      if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const method = "POST";
+      const url = `${baseUrl}/accounts/bank-accounts`;
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.accessToken}`,
+        "X-Account-Id": session.selectedAccount.id
+      };
+
+      const body = {
+        bank_id: params.bankId,
+        account_number: params.accountNumber
+      };
+
+      const response = await fetch(url, { method, body: JSON.stringify(body), headers });
+      if (!response.ok) {
+        const data = await response.json();
+        if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
+
+        const ErrorCode = ErrorCodes.find(data.code);
+        if (ErrorCode) throw new ServerError(ErrorCode);
+
+        throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
+      }
+
+      const data = await response.json();
+      if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      return AccountBankAccountModel.fromJson(data);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
   public async getBankAccount(params: {
     partnerId: string;
     id: string;

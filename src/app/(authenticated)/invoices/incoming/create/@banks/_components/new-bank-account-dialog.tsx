@@ -8,6 +8,7 @@ import { useCreateIncomingInvoice } from "@/features/invoice/presentations/provi
 import { BankEntity } from "@/features/bank/domain/entities/bank";
 import { BankCombobox } from "@/app/(authenticated)/invoices/incoming/create/@banks/_components/bank-combobox";
 import { AccountInquiryResultEntity } from "@/features/bank/domain/entities/account-inquiry-result";
+import { InquiryBankAccount } from "@/features/bank/presentation/components/inquiry-bank-account";
 
 export function NewBankAccountDialog({ open, setOpen, onCreated }: {
   open: boolean;
@@ -16,27 +17,15 @@ export function NewBankAccountDialog({ open, setOpen, onCreated }: {
 }) {
   const { receiver } = useCreateIncomingInvoice();
   const {
-    verifyAccountHolder,
     createBankAccount,
     error,
-    verifying,
     creating
   } = useBankAccount();
 
 
   const [selectedBank, setSelectedBank] = useState<BankEntity | null>(null);
   const [accountNumber, setAccountNumber] = useState<string>("");
-  const [verified, setVerified] = useState<boolean>(false);
   const [inquiredAccount, setInquiredAccount] = useState<AccountInquiryResultEntity>();
-
-  async function handleVerify() {
-    if (!selectedBank || !accountNumber) return;
-
-    const inquiryResult = await verifyAccountHolder?.(selectedBank.id, accountNumber);
-    if (!inquiryResult) return;
-    setInquiredAccount(inquiryResult);
-    setVerified(true);
-  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -57,7 +46,6 @@ export function NewBankAccountDialog({ open, setOpen, onCreated }: {
   function resetForm() {
     setSelectedBank(null);
     setAccountNumber("");
-    setVerified(false);
   }
 
   // Clear form when the dialog is closed
@@ -99,23 +87,15 @@ export function NewBankAccountDialog({ open, setOpen, onCreated }: {
                       inputMode="numeric"
                       placeholder="Cth. 1234567890"
                       required
-                      disabled={verified}
                     />
 
-                    {!verified && (
-                      <div className="mt-2">
-                        <FilledButton
-                          type="button"
-                          onClick={handleVerify}
-                          disabled={!selectedBank || !accountNumber || verifying}
-                          className="w-full"
-                        >
-                          {verifying ? "Memverifikasi..." : "Verifikasi Rekening"}
-                        </FilledButton>
-                      </div>
-                    )}
+                    <InquiryBankAccount
+                      bankId={selectedBank?.id}
+                      accountNumber={accountNumber}
+                      onInquired={setInquiredAccount}
+                    />
 
-                    {verified && inquiredAccount && (
+                    {inquiredAccount && (
                       <div className="mt-2">
                         <label className="block text-sm font-medium text-gray-700">
                           Nama Pemilik Rekening
@@ -130,7 +110,7 @@ export function NewBankAccountDialog({ open, setOpen, onCreated }: {
               </div>
             </div>
             <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-              {verified && inquiredAccount && (
+              {inquiredAccount && (
                 <div className="ml-3">
                   <FilledButton disabled={creating}>
                     {creating ? "Menyimpan..." : "Buat Rekening Baru"}

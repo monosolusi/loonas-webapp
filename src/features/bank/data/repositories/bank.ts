@@ -4,11 +4,32 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { AccountInquiryResultEntity } from "@/features/bank/domain/entities/account-inquiry-result";
 import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
 import { BankRepository } from "@/features/bank/domain/repositories/bank";
-import { BankService } from "@/features/bank/data/sources/bank";
 import { BankEntity } from "@/features/bank/domain/entities/bank";
+import { AccountBankAccountEntity } from "@/features/account/domain/entities/account-bank-account";
+import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
+import { BankService } from "@/features/bank/domain/sources/bank";
 
 export class BankRepositoryImpl implements BankRepository {
   constructor(private bankService: BankService) {
+  }
+
+  public async createBankAccountForAccount(params: {
+    bankId: string;
+    accountNumber: string;
+    account: PersonalAccountEntity
+  }, session: SessionEntity): Promise<DataState<AccountBankAccountEntity>> {
+    try {
+      const bankAccount = await this.bankService.createBankAccountForAccount({
+        bankId: params.bankId,
+        accountNumber: params.accountNumber,
+        accountId: params.account.id
+      }, session);
+
+      return new DataSuccess(bankAccount.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
   }
 
   async listBanks(session: SessionEntity): Promise<DataState<BankEntity[]>> {

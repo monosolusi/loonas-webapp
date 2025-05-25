@@ -51,7 +51,7 @@ export class AccountServiceImpl implements AccountService {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      const url = `${baseUrl}/bank-accounts`;
+      const url = `${baseUrl}/accounts/bank-accounts`;
       const headers = {
         Authorization: `Bearer ${session.accessToken}`,
         "X-Account-Id": session.selectedAccount.id
