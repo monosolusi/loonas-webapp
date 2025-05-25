@@ -8,6 +8,7 @@ import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/oc
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PersonalAccountEntity } from "../entities/personal-account";
 import { AccountVerificationWorkEntity } from "../entities/account-verification-work";
+import { AccountBankAccountEntity } from "@/features/account/domain/entities/account-bank-account";
 
 export abstract class AccountRepository {
   public abstract createPersonal(
@@ -29,4 +30,6 @@ export abstract class AccountRepository {
   public abstract retrieveVerificationWork(accountId: string, session: SessionEntity): Promise<DataState<AccountVerificationWorkEntity>>
 
   public abstract list(session: SessionEntity): Promise<DataState<PersonalAccountEntity[]>>
+
+  public abstract listBankAccount(account: PersonalAccountEntity, session: SessionEntity): Promise<DataState<AccountBankAccountEntity[]>>
 }

@@ -10,12 +10,24 @@ import { AccountService } from "../sources/account";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { AccountVerificationWorkEntity } from "@/features/account/domain/entities/account-verification-work";
 import { AccountRepository } from "@/features/account/domain/repositories/account";
+import { AccountBankAccountEntity } from "../../domain/entities/account-bank-account";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 export class AccountRepositoryImpl implements AccountRepository {
 
   constructor(
     private readonly accountService: AccountService
   ) {
+  }
+
+  public async listBankAccount(account: PersonalAccountEntity, session: SessionEntity): Promise<DataState<AccountBankAccountEntity[]>> {
+    try {
+      const accounts = await this.accountService.listBankAccount({ accountId: account.id }, session);
+      return new DataSuccess(accounts.map(account => account.toEntity()));
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
   }
 
   public async list(session: SessionEntity): Promise<DataState<PersonalAccountEntity[]>> {
@@ -48,7 +60,7 @@ export class AccountRepositoryImpl implements AccountRepository {
     city: CityEntity,
     district: DistrictEntity,
     subdistrict:
-      SubdistrictEntity,
+    SubdistrictEntity,
     address: string,
     session: SessionEntity
   ): Promise<DataState<PersonalAccountEntity>> {

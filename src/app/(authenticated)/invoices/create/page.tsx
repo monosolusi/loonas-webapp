@@ -24,7 +24,6 @@ export default function CreateInvoicePage() {
                 href="/invoices/outgoing/create"
                 title="Faktur Keluaran"
                 description="Kamu sebagai penjual? Pilih ini untuk kirim tagihan ke pelanggan."
-                disabled
               />
             </Card>
           </div>
