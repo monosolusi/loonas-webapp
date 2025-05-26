@@ -15,7 +15,7 @@ interface ProgressStepperProps {
 
 const STATUS_COLOR: Record<StepStatus, string> = {
   current: "border-2 border-primary-default",
-  completed: "bg-primary-default group-hover:bg-primary-800",
+  completed: "border-2 border-primary-default bg-primary-default group-hover:bg-primary-800",
   upcoming: "border-2 border-gray-300 group-hover:border-gray-400"
 };
 
