@@ -1,3 +1,5 @@
+"use client";
+
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { BankServiceImpl } from "@/features/bank/data/sources/bank";

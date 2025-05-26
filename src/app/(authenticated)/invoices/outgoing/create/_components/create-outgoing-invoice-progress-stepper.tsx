@@ -21,9 +21,7 @@ export function CreateOutgoingInvoiceProgressStepper() {
       // If currentStep < index, then it should be upcoming
 
       const status: StepStatus = currentStep > index ? "completed" : currentStep === index ? "current" : "upcoming";
-      const obj = Object.assign({}, step, { status }) as ProgressStepperItem;
-      console.log(obj);
-      return obj;
+      return Object.assign({}, step, { status }) as ProgressStepperItem;
     });
   }, [currentStep]);
 

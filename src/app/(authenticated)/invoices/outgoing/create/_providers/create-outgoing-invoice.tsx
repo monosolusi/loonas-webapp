@@ -1,11 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 
 interface CreateOutgoingInvoiceContextProps {
   currentStep: number;
   nextStep?: () => void;
   previousStep?: () => void;
+  recipient?: PartnerEntity;
+  setRecipient?: React.Dispatch<React.SetStateAction<PartnerEntity | undefined>>;
 }
 
 interface CreateOutgoingInvoiceProviderProps {
@@ -19,6 +22,7 @@ const CreateOutgoingInvoiceContext = React.createContext<CreateOutgoingInvoiceCo
 
 export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProviderProps) {
   const [currentStep, setCurrentStep] = useState(0);
+  const [recipient, setRecipient] = useState<PartnerEntity>();
 
   const nextStep = () => {
     setCurrentStep((prev) => {
@@ -36,7 +40,13 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
 
   return (
     <CreateOutgoingInvoiceContext.Provider
-      value={{ currentStep, nextStep, previousStep }}
+      value={{
+        currentStep,
+        nextStep,
+        previousStep,
+        recipient,
+        setRecipient
+      }}
     >
       {props.children}
     </CreateOutgoingInvoiceContext.Provider>
