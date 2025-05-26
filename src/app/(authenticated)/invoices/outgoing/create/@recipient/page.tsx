@@ -8,6 +8,9 @@ import {
 import {
   useCreateOutgoingInvoice
 } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import {
+  NewClientButton
+} from "@/app/(authenticated)/invoices/outgoing/create/@recipient/_components/new-client-button";
 
 const RECIPIENT_SECTION_STEP = 0;
 
@@ -18,11 +21,16 @@ export default function RecipientSection() {
   return (
     <>
       <div className="flex flex-col">
-        <div className="flex flex-1 flex-col">
-          <h1 className="text-base font-semibold text-gray-900">Klien</h1>
-          <p className="text-sm text-gray-700">
-            Pilih klien tujuan agar kamu bisa mengirimkan invoice dengan mudah.
-          </p>
+        <div className="flex flex-row justify-between">
+          <div className="flex flex-1 flex-col">
+            <h1 className="text-base font-semibold text-gray-900">Klien</h1>
+            <p className="text-sm text-gray-700">
+              Pilih klien tujuan agar kamu bisa mengirimkan invoice dengan mudah.
+            </p>
+          </div>
+          <div className="self-end">
+            <NewClientButton />
+          </div>
         </div>
         <div className="flex-1 mt-4">
           <ClientTableImpl />

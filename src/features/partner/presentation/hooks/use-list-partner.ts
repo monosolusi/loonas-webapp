@@ -27,11 +27,12 @@ async function listPartnerFetcher(): Promise<PartnerEntity[]> {
 }
 
 export function useListPartner() {
-  const { data, isLoading, error } = useSWR("list-partner", listPartnerFetcher);
+  const { data, isLoading, error, mutate } = useSWR("list-partner", listPartnerFetcher);
 
   return {
     partners: data ?? [],
     loading: isLoading,
-    error: error
+    error: error,
+    refreshPartners: mutate
   };
 }
