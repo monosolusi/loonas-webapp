@@ -13,6 +13,7 @@ export enum TaxType {
 export enum DiscountType {
   PERCENTAGE = "PERCENTAGE",
   FIXED = "FIXED",
+  NO_DISCOUNT = "NO_DISCOUNT"
 }
 
 export interface InvoiceItem {
@@ -99,7 +100,7 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
         discountType?: DiscountType,
         discount?: number
       }): number => {
-        if (!params.discountType || !params.discount) return params.price * params.qty;
+        if (!params.discountType || !params.discount || params.discountType === DiscountType.NO_DISCOUNT) return params.price * params.qty;
         if (params.discountType === DiscountType.PERCENTAGE) {
           return params.price * params.qty * (100 - params.discount) / 100;
         } else if (params.discountType === DiscountType.FIXED) {

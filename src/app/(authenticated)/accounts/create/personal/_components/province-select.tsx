@@ -4,7 +4,7 @@ import { ProvinceProvider, useProvince } from "@/core/utilities/address/presenta
 import { useCreatePersonalAccount } from "@/features/account/presentation/providers/create-personal-account";
 import React from "react";
 import { Label } from "../../../../../../core/presentations/components/label";
-import { Select } from "./select";
+import { Select } from "../../../../../../core/presentations/components/select";
 
 export function ProvinceSelect() {
   return (

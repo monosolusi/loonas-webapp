@@ -4,7 +4,7 @@ import { SubdistrictProvider, useSubdistrict } from "@/core/utilities/address/pr
 import { useCreatePersonalAccount } from "@/features/account/presentation/providers/create-personal-account";
 import React from "react";
 import { Label } from "../../../../../../core/presentations/components/label";
-import { Select } from "./select";
+import { Select } from "../../../../../../core/presentations/components/select";
 
 export function SubdistrictSelect() {
   const { district } = useCreatePersonalAccount();

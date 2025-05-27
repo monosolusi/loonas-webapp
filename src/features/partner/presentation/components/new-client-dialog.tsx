@@ -6,11 +6,6 @@ import { FilledButton } from "@/core/presentations/components/filled-button";
 import React from "react";
 import { useCreatePartner } from "@/features/partner/presentation/hooks/use-create-partner";
 
-interface ClientItem {
-  name: string;
-  email: string;
-  phoneNumber: string;
-};
 
 interface NewClientDialogProps {
   open: boolean;

@@ -12,6 +12,7 @@ export type TextInputProps = {
   className?: string;
   type?: React.HTMLInputTypeAttribute;
   boldLabel?: boolean;
+  inputTextAlign?: "text-left" | "text-right" | "text-center";
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "type">;
 
 
@@ -24,6 +25,7 @@ export function TextInput({
                             onChange,
                             className,
                             boldLabel = false,
+                            inputTextAlign,
                             ...props
                           }: TextInputProps) {
 
@@ -48,7 +50,7 @@ export function TextInput({
             type={type}
             value={value}
             onChange={handleChange}
-            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-default sm:text-sm/6"
+            className={`${inputTextAlign} block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-default sm:text-sm/6 disabled:bg-gray-50 disabled:text-gray-500 disabled:shadow-none disabled:border-gray-200 disabled:cursor-not-allowed disabled:text-gray-500`}
           />
         </div>
       </div>

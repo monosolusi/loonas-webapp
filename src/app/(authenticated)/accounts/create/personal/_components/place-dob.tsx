@@ -4,7 +4,7 @@ import React from "react";
 import { DateTime } from "luxon";
 import { useCreatePersonalAccount } from "@/features/account/presentation/providers/create-personal-account";
 import { Label } from "../../../../../../core/presentations/components/label";
-import { Select } from "./select";
+import { Select } from "../../../../../../core/presentations/components/select";
 
 export function PlaceDateOfBirth() {
   const {

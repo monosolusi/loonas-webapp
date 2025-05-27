@@ -8,7 +8,7 @@ interface SelectData {
   label: string;
 }
 
-export function Select({ id, data, value, onChange, disableFirstOption, isError, required }: {
+export interface SelectProps {
   id?: string;
   value?: string,
   onChange?: (data: SelectData) => void;
@@ -16,7 +16,9 @@ export function Select({ id, data, value, onChange, disableFirstOption, isError,
   disableFirstOption?: boolean;
   isError?: boolean;
   required?: boolean;
-}) {
+}
+
+export function Select({ id, data, value, onChange, disableFirstOption, isError, required }: SelectProps) {
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const value = e.target.value;

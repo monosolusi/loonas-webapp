@@ -1,51 +1,53 @@
 "use client";
 
 import { FilledButton } from "@/core/presentations/components/filled-button";
-import {
-  DiscountType,
-  TaxType,
-  useCreateOutgoingInvoice
-} from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import { AddItemDialog } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/add-item-dialog";
+import { useState } from "react";
 
 export function HeaderAddItemButton() {
-  const { addInvoiceItem } = useCreateOutgoingInvoice();
+  // const { addInvoiceItem } = useCreateOutgoingInvoice();
+  const [open, setOpen] = useState(false);
 
   const handleClick = () => {
-    if (!addInvoiceItem) return;
-
-    addInvoiceItem({
-      name: "Item 1",
-      description: "Deskripsi Item 1",
-      qty: 1,
-      price: 100000,
-      taxType: TaxType.EXCLUSIVE,
-      tax: 9900,
-      discountType: DiscountType.FIXED,
-      discount: 10000
-    });
-
-    addInvoiceItem({
-      name: "Item 2",
-      description: "Deskripsi Item 2",
-      qty: 10,
-      price: 100000,
-      taxType: TaxType.INCLUSIVE,
-      tax: 10000
-    });
-
-    addInvoiceItem({
-      name: "Item 3",
-      description: "Deskripsi Item 3",
-      qty: 10,
-      price: 100000,
-      taxType: TaxType.NON_TAXABLE,
-      tax: 0
-    });
+    setOpen(true);
+    // if (!addInvoiceItem) return;
+    //
+    // addInvoiceItem({
+    //   name: "Item 1",
+    //   description: "Deskripsi Item 1",
+    //   qty: 1,
+    //   price: 100000,
+    //   taxType: TaxType.EXCLUSIVE,
+    //   tax: 9900,
+    //   discountType: DiscountType.FIXED,
+    //   discount: 10000
+    // });
+    //
+    // addInvoiceItem({
+    //   name: "Item 2",
+    //   description: "Deskripsi Item 2",
+    //   qty: 10,
+    //   price: 100000,
+    //   taxType: TaxType.INCLUSIVE,
+    //   tax: 10000
+    // });
+    //
+    // addInvoiceItem({
+    //   name: "Item 3",
+    //   description: "Deskripsi Item 3",
+    //   qty: 10,
+    //   price: 100000,
+    //   taxType: TaxType.NON_TAXABLE,
+    //   tax: 0
+    // });
   };
 
   return (
-    <FilledButton onClick={handleClick}>
-      Tambah Item
-    </FilledButton>
+    <>
+      <FilledButton onClick={handleClick}>
+        Tambah Item
+      </FilledButton>
+      <AddItemDialog open={open} />
+    </>
   );
 }
