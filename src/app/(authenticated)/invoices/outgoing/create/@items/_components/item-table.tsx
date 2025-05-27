@@ -9,6 +9,9 @@ import {
   DiscountType,
   TaxType
 } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import {
+  AddItemTableButton
+} from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/add-item-table-button";
 
 export interface ItemRow {
   name: string;
@@ -113,17 +116,7 @@ export function ItemTable(props: ItemTableProps) {
             className: "cursor-pointer",
             row: [
               {
-                node: (
-                  <div className="flex flex-col items-center justify-center">
-                    <div
-                      className="group flex flex-row items-center space-x-1 rounded-sm px-6 py-3 hover:bg-gray-50"
-                    >
-                      <div className="text-primary-default">
-                        Tambah Item
-                      </div>
-                    </div>
-                  </div>
-                ),
+                node: <AddItemTableButton />,
                 hideOnMobile: false,
                 colSpan: 7
               }

@@ -33,6 +33,7 @@ export function TotalWithTaxField(props: TotalWithTaxFieldProps) {
       taxType: props.taxType,
       tax: props.tax
     });
+    
 
     return TaxCalculator.calculateTotalWithTax({
       taxType: props.taxType,

@@ -43,9 +43,9 @@ export function AddItemDialog(props: AddItemDialogProps) {
   const [description, setDescription] = useState<string>("");
   const [qty, setQty] = useState<number>(1);
   const [price, setPrice] = useState<number>(0);
-  const [discountType, setDiscountType] = useState<DiscountType>();
+  const [discountType, setDiscountType] = useState<DiscountType>(DiscountType.NO_DISCOUNT);
   const [discount, setDiscount] = useState<number>(0);
-  const [taxType, setTaxType] = useState<TaxType>();
+  const [taxType, setTaxType] = useState<TaxType>(TaxType.NON_TAXABLE);
   const [tax, setTax] = useState<number>(0);
   const [error, setError] = useState<ServerError>();
 
@@ -54,21 +54,34 @@ export function AddItemDialog(props: AddItemDialogProps) {
     if (!description) return true;
     if (!qty) return true;
     if (!price) return true;
+    if (taxType !== TaxType.NON_TAXABLE && !tax) return true;
+    if ((discountType !== DiscountType.NO_DISCOUNT) && !discount) return true;
     return false;
-  }, [name, description, qty, price]);
+  }, [name, description, qty, price, tax, taxType, discount, discountType]);
+
+  const handleDiscountTypeChange = (type: DiscountType) => {
+    setDiscountType(type);
+    if (type === DiscountType.NO_DISCOUNT) setDiscount(0);
+  };
+
+  const handleTaxTypeChange = (type: TaxType) => {
+    setTaxType(type);
+    if (type === TaxType.NON_TAXABLE) setTax(0);
+  };
 
   const clearInput = () => {
     setName("");
     setDescription("");
     setQty(1);
     setPrice(0);
-    setDiscountType(undefined);
+    setDiscountType(DiscountType.NO_DISCOUNT);
     setDiscount(0);
-    setTaxType(undefined);
+    setTaxType(TaxType.NON_TAXABLE);
     setTax(0);
   };
 
   const handleClose = () => {
+    clearInput();
     props.onClose?.();
   };
 
@@ -76,10 +89,8 @@ export function AddItemDialog(props: AddItemDialogProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log(name, description, qty, price, discountType, discount, taxType, tax);
     if (!props.onSubmit) return;
     if (!name) return;
-    if (!description) return;
     if (!qty) return;
     if (!price) return;
 
@@ -90,7 +101,7 @@ export function AddItemDialog(props: AddItemDialogProps) {
       price: price,
       discountType: discountType,
       discount: discount,
-      taxType: taxType ?? TaxType.NON_TAXABLE,
+      taxType: taxType,
       tax: tax
     });
 
@@ -134,14 +145,14 @@ export function AddItemDialog(props: AddItemDialogProps) {
           </div>
           <div className="flex flex-row space-x-2">
             <div className="flex-1">
-              <DiscountTypeSelect value={discountType} onChange={setDiscountType} />
+              <DiscountTypeSelect value={discountType} onChange={handleDiscountTypeChange} />
             </div>
             <div className="flex-1">
               <DiscountInput type={discountType} value={discount} onChange={setDiscount} />
             </div>
           </div>
           <div className="flex-1">
-            <TaxTypeSelect value={taxType} onChange={setTaxType} />
+            <TaxTypeSelect value={taxType} onChange={handleTaxTypeChange} />
           </div>
           <div className="flex flex-row space-x-2">
             <div className="flex-1">
@@ -168,7 +179,7 @@ export function AddItemDialog(props: AddItemDialogProps) {
           />
         </div>
         <div className="flex flex-row space-x-4 pt-4 px-4 justify-end border-t border-gray-200 -mx-4 sm:-mx-6 sm:px-6">
-          <OutlinedButton>
+          <OutlinedButton type="button" onClick={handleClose}>
             Batal
           </OutlinedButton>
           <FilledButton type="submit" disabled={submitDisabled}>

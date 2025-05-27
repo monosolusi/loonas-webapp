@@ -1,16 +1,15 @@
 "use client";
 
-import { FilledButton } from "@/core/presentations/components/filled-button";
+import React, { useState } from "react";
 import {
   AddItemDialog,
   ItemDetail
 } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/add-item-dialog";
-import { useState } from "react";
 import {
   useCreateOutgoingInvoice
 } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 
-export function HeaderAddItemButton() {
+export function AddItemTableButton() {
   const { addInvoiceItem } = useCreateOutgoingInvoice();
   const [open, setOpen] = useState(false);
 
@@ -25,9 +24,18 @@ export function HeaderAddItemButton() {
 
   return (
     <>
-      <FilledButton onClick={handleClick}>
-        Tambah Item
-      </FilledButton>
+      <div
+        className="flex flex-col items-center justify-center"
+        onClick={handleClick}
+      >
+        <div
+          className="group flex flex-row items-center space-x-1 rounded-sm px-6 py-3 hover:bg-gray-50"
+        >
+          <div className="text-primary-default">
+            Tambah Item
+          </div>
+        </div>
+      </div>
       <AddItemDialog
         open={open}
         onSubmit={handleSubmit}

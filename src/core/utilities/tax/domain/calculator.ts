@@ -34,9 +34,10 @@ export class TaxCalculator {
   }
 
   public static calculateTaxBase(params: CalculateTaxBaseParams) {
-    if (!params.taxType || !params.tax) return 0; // This is the case where it is not taxable
+    if (!params.taxType) return 0; // This is the case where it is not taxable
     if (params.taxType === TaxType.EXCLUSIVE) return params.base;
-    else if (params.taxType === TaxType.INCLUSIVE) return params.base - params.tax;
+    else if (params.taxType === TaxType.INCLUSIVE) return params.base - (params.tax ?? 0);
+    else if (params.taxType === TaxType.NON_TAXABLE) return 0;
     else return 0;
   }
 
