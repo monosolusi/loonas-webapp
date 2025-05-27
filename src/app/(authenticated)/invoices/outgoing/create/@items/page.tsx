@@ -6,12 +6,8 @@ import {
 } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { OutlinedButton } from "@/core/presentations/components/outlined-button";
 import { FilledButton } from "@/core/presentations/components/filled-button";
-import { TableContainer } from "@/core/presentations/components/table-container";
-import { Table } from "@/core/presentations/components/table";
-import { TableHeader } from "@/core/presentations/components/table-header";
-import { TableBody } from "@/core/presentations/components/table-body";
 import { Card } from "@/core/presentations/components/card";
-import { PencilSquareIcon, PhotoIcon } from "@heroicons/react/24/solid";
+import { PhotoIcon } from "@heroicons/react/24/solid";
 import {
   InvoiceNumberInput
 } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/invoice-number-input";
@@ -19,6 +15,10 @@ import { InvoiceDateInput } from "@/app/(authenticated)/invoices/outgoing/create
 import {
   InvoiceDueDateInput
 } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/invoice-due-date-input";
+import { ItemTableImpl } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/item-table-impl";
+import {
+  HeaderAddItemButton
+} from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/header-add-item-button";
 
 const ITEMS_SECTION_STEP = 1;
 
@@ -38,9 +38,7 @@ export default function ItemsSection() {
             </p>
           </div>
           <div className="flex-1 flex justify-end self-end">
-            <FilledButton>
-              Tambah Item
-            </FilledButton>
+            <HeaderAddItemButton />
           </div>
         </div>
         <div className="flex-1 mt-4">
@@ -66,128 +64,7 @@ export default function ItemsSection() {
           </Card>
         </div>
         <div className="flex-1 mt-4">
-          <TableContainer>
-            <Table>
-              <TableHeader items={[
-                { node: "Nama Produk", hideOnMobile: false },
-                { node: "Qty / Harga", hideOnMobile: false, className: "text-right" },
-                { node: "Diskon", hideOnMobile: false, className: "text-right" },
-                { node: "DPP", hideOnMobile: false, className: "text-right" },
-                { node: "Pajak", hideOnMobile: false, className: "text-right" },
-                { node: "Jumlah", hideOnMobile: false, className: "text-right" },
-                { node: "", hideOnMobile: false }
-              ]} />
-              <TableBody items={[
-                {
-                  className: "group hover:bg-gray-50 cursor-pointer",
-                  row: [
-                    {
-                      node: (
-                        <div className="flex flex-col space-y-1">
-                          <div className="text-gray-900 font-bold group-hover:underline">
-                            Produk 1
-                          </div>
-                          <span className="text-xs text-gray-500">Keterangan</span>
-                        </div>
-                      ),
-                      hideOnMobile: false
-                    },
-                    { node: "10 / Rp 100.000", hideOnMobile: false, className: "text-right" },
-                    { node: "10%", hideOnMobile: false, className: "text-right" },
-                    { node: "Rp 900.000", hideOnMobile: false, className: "text-right" },
-                    { node: "Rp 90.000", hideOnMobile: false, className: "text-right" },
-                    { node: "Rp 990.000", hideOnMobile: false, className: "text-right" },
-                    {
-                      node: (
-                        <div className="flex justify-center">
-                          <PencilSquareIcon className="size-5 text-gray-500" />
-                        </div>
-                      ),
-                      hideOnMobile: false
-                    }
-                  ]
-                },
-                {
-                  className: "group hover:bg-gray-50 cursor-pointer",
-                  row: [
-                    {
-                      node: (
-                        <div className="flex flex-col space-y-1">
-                          <div className="text-gray-900 font-bold group-hover:underline">
-                            Produk 2
-                          </div>
-                          <span className="text-xs text-gray-500">Keterangan</span>
-                        </div>
-                      ),
-                      hideOnMobile: false
-                    },
-                    { node: "10 / Rp 100.000", hideOnMobile: false, className: "text-right" },
-                    { node: "10%", hideOnMobile: false, className: "text-right" },
-                    { node: "Rp 900.000", hideOnMobile: false, className: "text-right" },
-                    { node: "Rp 90.000", hideOnMobile: false, className: "text-right" },
-                    { node: "Rp 990.000", hideOnMobile: false, className: "text-right" },
-                    {
-                      node: (
-                        <div className="flex justify-center">
-                          <PencilSquareIcon className="size-5 text-gray-500" />
-                        </div>
-                      ),
-                      hideOnMobile: false
-                    }
-                  ]
-                },
-                {
-                  className: "cursor-pointer",
-                  row: [
-                    {
-                      node: (
-                        <div className="flex flex-col items-center justify-center">
-                          <div
-                            className="group flex flex-row items-center space-x-1 rounded-sm px-6 py-3 hover:bg-gray-50"
-                          >
-                            <span className="text-primary-default">
-                              Tambah Item
-                            </span>
-                          </div>
-                        </div>
-                      ),
-                      hideOnMobile: false,
-                      colSpan: 7
-                    }
-                  ]
-                }
-              ]} />
-              <tfoot className="divide-y divide-gray-200 bg-gray-50">
-              <tr>
-                <td colSpan={5} className="text-sm text-right px-3 pt-4 pb-2">
-                  Dasar Pengenaan Pajak (DPP)
-                </td>
-                <td className="text-sm text-right px-3 pt-4 pb-2">
-                  Rp 1.800.000
-                </td>
-                <td></td>
-              </tr>
-              <tr>
-                <td colSpan={5} className="text-sm text-right px-3 py-2">
-                  Total Pajak
-                </td>
-                <td className="text-sm text-right px-3 py-2">
-                  Rp 180.000
-                </td>
-                <td></td>
-              </tr>
-              <tr>
-                <td colSpan={5} className="text-sm text-right px-3 pt-2 pb-4">
-                  Grand Total Faktur
-                </td>
-                <td className="text-sm text-right font-bold underline px-3 pt-2 pb-4">
-                  Rp 1.980.000
-                </td>
-                <td></td>
-              </tr>
-              </tfoot>
-            </Table>
-          </TableContainer>
+          <ItemTableImpl />
         </div>
         <div className="flex-1 mt-4">
           <Card>
