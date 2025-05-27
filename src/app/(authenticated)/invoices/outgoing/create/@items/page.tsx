@@ -11,8 +11,14 @@ import { Table } from "@/core/presentations/components/table";
 import { TableHeader } from "@/core/presentations/components/table-header";
 import { TableBody } from "@/core/presentations/components/table-body";
 import { Card } from "@/core/presentations/components/card";
-import { TextInput } from "@/core/presentations/components/text-input";
 import { PencilSquareIcon, PhotoIcon } from "@heroicons/react/24/solid";
+import {
+  InvoiceNumberInput
+} from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/invoice-number-input";
+import { InvoiceDateInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/invoice-date-input";
+import {
+  InvoiceDueDateInput
+} from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/invoice-due-date-input";
 
 const ITEMS_SECTION_STEP = 1;
 
@@ -47,13 +53,13 @@ export default function ItemsSection() {
               </div>
               <div className="flex flex-row justify-between space-x-4">
                 <div className="flex-1">
-                  <TextInput title="No. Faktur" />
+                  <InvoiceNumberInput />
                 </div>
                 <div className="flex-1">
-                  <TextInput type="date" title="Tanggal Faktur" />
+                  <InvoiceDateInput />
                 </div>
                 <div className="flex-1">
-                  <TextInput type="date" title="Tanggal Jatuh Tempo" />
+                  <InvoiceDueDateInput />
                 </div>
               </div>
             </div>

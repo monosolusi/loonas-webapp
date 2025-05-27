@@ -3,7 +3,7 @@
 import React from "react";
 import { Label } from "@/core/presentations/components/label";
 
-type TextInputProps = {
+export type TextInputProps = {
   title: string;
   description?: string;
   htmlFor?: string;
