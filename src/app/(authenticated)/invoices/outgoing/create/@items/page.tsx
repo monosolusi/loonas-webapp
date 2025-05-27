@@ -50,10 +50,10 @@ export default function ItemsSection() {
                   <TextInput title="No. Faktur" />
                 </div>
                 <div className="flex-1">
-                  <TextInput title="Tanggal Faktur" />
+                  <TextInput type="date" title="Tanggal Faktur" />
                 </div>
                 <div className="flex-1">
-                  <TextInput title="Tanggal Jatuh Tempo" />
+                  <TextInput type="date" title="Tanggal Jatuh Tempo" />
                 </div>
               </div>
             </div>
