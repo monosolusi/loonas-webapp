@@ -1,13 +1,14 @@
 "use client";
 
-import React, {useState} from "react";
-import {Dialog, DialogBackdrop, DialogPanel, DialogTitle} from "@headlessui/react";
-import {FilledButton} from "@/core/presentations/components/filled-button";
-import {TextInput} from "@/core/presentations/components/text-input";
-import {IDRFormatter} from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import {DateTime} from "luxon";
-import {ServerError} from "@/core/resources/server-error";
-import {ErrorCard} from "@/core/presentations/components/error-card";
+import React, { useState } from "react";
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
+import { FilledButton } from "@/core/presentations/components/filled-button";
+import { TextInput } from "@/core/presentations/components/text-input";
+import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { DateTime } from "luxon";
+import { ServerError } from "@/core/resources/server-error";
+import { ErrorCard } from "@/core/presentations/components/error-card";
+import { DateInput } from "@/core/presentations/components/date-input";
 
 export interface InvoiceDetailsDialogOnSubmitParams {
   invoiceNumber: string;
@@ -56,7 +57,7 @@ export function InvoiceDetailsDialog(props: InvoiceDetailsDialogProps) {
   const handleCancelClick = () => {
     if (props.onCancel) props.onCancel();
     resetForm();
-  }
+  };
 
   const resetForm = () => {
     setInvoiceNumber("");
@@ -103,20 +104,18 @@ export function InvoiceDetailsDialog(props: InvoiceDetailsDialogProps) {
                       placeholder="Rp"
                       required
                     />
-                    <TextInput
+                    <DateInput
                       title="Tanggal Faktur"
                       htmlFor="invoice-date"
-                      type="date"
-                      value={invoiceDate}
-                      onChange={setInvoiceDate}
+                      value={DateTime.fromFormat(invoiceDate, "yyyy-MM-dd")}
+                      onChange={(value) => setInvoiceDate(value.toFormat("yyyy-MM-dd"))}
                       required
                     />
-                    <TextInput
+                    <DateInput
                       title="Tanggal Jatuh Tempo"
                       htmlFor="due-date"
-                      type="date"
-                      value={dueDate}
-                      onChange={setDueDate}
+                      value={DateTime.fromFormat(dueDate, "yyyy-MM-dd")}
+                      onChange={(value) => setDueDate(value.toFormat("yyyy-MM-dd"))}
                       required
                     />
                     <TextInput
