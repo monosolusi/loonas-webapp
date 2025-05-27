@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { DateTime } from "luxon";
+import { TaxCalculator } from "@/core/utilities/tax/domain/calculator";
 
 export enum TaxType {
   INCLUSIVE = "INCLUSIVE",
@@ -94,38 +95,8 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
     if (!setItems) return;
 
     setItems((prev) => {
-      const calculateBase = (params: {
-        price: number,
-        qty: number,
-        discountType?: DiscountType,
-        discount?: number
-      }): number => {
-        if (!params.discountType || !params.discount || params.discountType === DiscountType.NO_DISCOUNT) return params.price * params.qty;
-        if (params.discountType === DiscountType.PERCENTAGE) {
-          return params.price * params.qty * (100 - params.discount) / 100;
-        } else if (params.discountType === DiscountType.FIXED) {
-          return params.price * params.qty - params.discount;
-        } else return params.price * params.qty;
-      };
-
-      const calculateTaxBase = (params: {
-        base: number,
-        taxType?: TaxType,
-        tax?: number
-      }): number => {
-        if (!params.taxType || !params.tax) return 0; // This is the case where it is not taxable
-        if (params.taxType === TaxType.EXCLUSIVE) return params.base;
-        else if (params.taxType === TaxType.INCLUSIVE) return params.base - params.tax;
-        else return 0;
-      };
-
-      const calculateTotal = (params: { taxType: TaxType, base: number, taxBase: number, tax: number }) => {
-        if (params.taxType === TaxType.NON_TAXABLE) return params.base;
-        else return params.taxBase + params.tax;
-      };
-
-      const base = calculateBase(item);
-      const taxBase = calculateTaxBase({ base, taxType: item.taxType, tax: item.tax });
+      const base = TaxCalculator.calculateAmountBeforeTax(item);
+      const taxBase = TaxCalculator.calculateTaxBase({ base, taxType: item.taxType, tax: item.tax });
       const newItem: InvoiceItem = {
         name: item.name,
         description: item.description,
@@ -136,7 +107,7 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
         taxBase: taxBase,
         discountType: item.discountType,
         discount: item.discount,
-        total: calculateTotal({ taxType: item.taxType, base, taxBase, tax: item.tax })
+        total: TaxCalculator.calculateTotalWithTax({ taxType: item.taxType, base, taxBase, tax: item.tax })
       };
 
       return [...prev, newItem];

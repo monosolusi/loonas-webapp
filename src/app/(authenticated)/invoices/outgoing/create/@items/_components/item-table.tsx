@@ -118,9 +118,9 @@ export function ItemTable(props: ItemTableProps) {
                     <div
                       className="group flex flex-row items-center space-x-1 rounded-sm px-6 py-3 hover:bg-gray-50"
                     >
-                            <span className="text-primary-default">
-                              Tambah Item
-                            </span>
+                      <div className="text-primary-default">
+                        Tambah Item
+                      </div>
                     </div>
                   </div>
                 ),

@@ -11,6 +11,10 @@ interface TextInputWithLeftAddOnProps {
 }
 
 export function TextInputWithLeftAddOn(props: TextInputWithLeftAddOnProps) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (props.onChange) props.onChange(e.target.value);
+  };
+
   return (
     <div>
       <Label title={props.title} />
@@ -23,7 +27,7 @@ export function TextInputWithLeftAddOn(props: TextInputWithLeftAddOnProps) {
           type="text"
           className={`${props.textDirection} -ml-px block w-full grow rounded-r-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-default sm:text-sm/6 disabled:bg-gray-50 disabled:text-gray-500 disabled:shadow-none disabled:border-gray-200 disabled:cursor-not-allowed disabled:text-gray-500`}
           value={props.value ?? ""}
-          onChange={(e) => props.onChange?.(e.target.value)}
+          onChange={handleChange}
           disabled={props.disabled === undefined ? false : props.disabled}
         />
       </div>
