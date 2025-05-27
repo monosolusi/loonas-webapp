@@ -2,7 +2,6 @@ import React from "react";
 import { PageContent } from "@/core/presentations/components/page-content";
 import { PageHeading } from "@/core/presentations/components/page-heading";
 import { InvoiceProvider } from "@/features/invoice/presentations/providers/invoice";
-import { ListPartnerProvider } from "@/features/partner/presentation/providers/list-partner";
 import { InvoiceTableImpl } from "@/app/(authenticated)/invoices/_components/invoice-table-impl";
 import { CreateNewInvoiceButton } from "@/app/(authenticated)/invoices/_components/create-new-button";
 
@@ -23,9 +22,7 @@ export default function InvoiceMainPage() {
             </div>
           </div>
           <div className="flex-1">
-            <ListPartnerProvider>
-              <InvoiceTableImpl />
-            </ListPartnerProvider>
+            <InvoiceTableImpl />
           </div>
         </div>
       </PageContent>

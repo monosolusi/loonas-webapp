@@ -24,7 +24,7 @@ export default function RecipientSection() {
         <div className="flex flex-row justify-between">
           <div className="flex flex-1 flex-col">
             <h1 className="text-base font-semibold text-gray-900">Klien</h1>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-gray-500">
               Pilih klien tujuan agar kamu bisa mengirimkan invoice dengan mudah.
             </p>
           </div>

@@ -18,6 +18,7 @@ import { BackButton } from "@/app/(authenticated)/invoices/outgoing/create/_comp
 interface CreateOutgoingInvoiceLayoutProps {
   children: React.ReactNode,
   recipient: React.ReactNode;
+  items: React.ReactNode;
 }
 
 export default function CreateOutgoingInvoiceLayout(props: CreateOutgoingInvoiceLayoutProps) {
@@ -45,6 +46,7 @@ export default function CreateOutgoingInvoiceLayout(props: CreateOutgoingInvoice
             </div>
             <div>
               {props.recipient}
+              {props.items}
             </div>
           </div>
         </PageContent>

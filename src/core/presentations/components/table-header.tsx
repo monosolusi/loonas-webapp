@@ -3,6 +3,7 @@ import React from "react";
 export interface TableHeaderItem {
   node: React.ReactNode;
   hideOnMobile: boolean;
+  className?: string;
 }
 
 export function TableHeader(props: { items: TableHeaderItem[] }) {
@@ -21,7 +22,7 @@ export function TableHeader(props: { items: TableHeaderItem[] }) {
           scope="col"
           className={addHideOnMobileClass(
             props.items.at(0)?.hideOnMobile,
-            "py-3.5 pl-4 text-left text-sm font-semibold"
+            `py-3.5 pl-4 text-left text-sm font-semibold ${props.items.at(0)?.className}`
           )}
         >
           {props.items.at(0)?.node}
@@ -35,7 +36,7 @@ export function TableHeader(props: { items: TableHeaderItem[] }) {
           scope="col"
           className={addHideOnMobileClass(
             item.hideOnMobile,
-            "px-3 py-3.5 text-sm text-left font-semibold text-gray-900"
+            `px-3 py-3.5 text-sm text-left font-semibold text-gray-900 ${item.className}`
           )}
         >
           {item.node}
@@ -47,7 +48,7 @@ export function TableHeader(props: { items: TableHeaderItem[] }) {
           scope="col"
           className={addHideOnMobileClass(
             props.items.at(-1)?.hideOnMobile,
-            "py-3.5 pr-4 pl-3 text-sm text-left  text-gray-900"
+            `py-3.5 pr-4 pl-3 text-sm text-left  text-gray-900 ${props.items.at(-1)?.className}`
           )}
         >
           {props.items.at(-1)?.node}

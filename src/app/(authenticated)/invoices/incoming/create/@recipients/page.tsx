@@ -4,11 +4,11 @@ import React from "react";
 import {
   NewClientButton
 } from "@/app/(authenticated)/invoices/incoming/create/@recipients/_components/new-client-button";
-import { ListPartnerProvider, useListPartner } from "@/features/partner/presentation/providers/list-partner";
 import { RowItem } from "@/app/(authenticated)/invoices/incoming/create/@recipients/_components/row-item";
 import {
   useCreateIncomingInvoiceSteps
 } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
+import { useListPartner } from "@/features/partner/presentation/hooks/use-list-partner";
 
 function SelectRecipientContent() {
   const { partners, loading } = useListPartner();
@@ -79,9 +79,6 @@ export default function SelectRecipientPage() {
   const { currentStep } = useCreateIncomingInvoiceSteps();
 
   if (currentStep !== 1) return null;
-  return (
-    <ListPartnerProvider>
-      <SelectRecipientContent />
-    </ListPartnerProvider>
-  );
+  return <SelectRecipientContent />;
+
 }

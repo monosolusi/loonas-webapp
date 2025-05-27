@@ -3,10 +3,10 @@
 import React, { useState } from "react";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { CreateNewPartnerProvider } from "@/features/partner/presentation/providers/create-new-partner";
-import { useListPartner } from "@/features/partner/presentation/providers/list-partner";
 import {
   NewClientDialog
 } from "@/app/(authenticated)/invoices/incoming/create/@recipients/_components/new-client-dialog";
+import { useListPartner } from "@/features/partner/presentation/hooks/use-list-partner";
 
 
 export function NewClientButton() {

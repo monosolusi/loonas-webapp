@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { ClientTable } from "@/app/(authenticated)/clients/_components/client-table";
-import { useListPartner } from "@/features/partner/presentation/providers/list-partner";
+import { useListPartner } from "@/features/partner/presentation/hooks/use-list-partner";
 
 export function ClientTableImpl() {
   const { partners, loading } = useListPartner();

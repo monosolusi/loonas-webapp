@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import { ListPartnerProvider } from "@/features/partner/presentation/providers/list-partner";
 import { ClientListImpl } from "@/app/(authenticated)/home/_components/client-list-impl";
 
 export function Clients() {
@@ -13,9 +12,7 @@ export function Clients() {
             Lihat semua
           </Link>
         </div>
-        <ListPartnerProvider>
-          <ClientListImpl />
-        </ListPartnerProvider>
+        <ClientListImpl />
       </div>
     </div>
   );
