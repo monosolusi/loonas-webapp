@@ -21,6 +21,7 @@ export function TaxTypeSelect(props: TaxTypeSelectProps) {
         { value: "", label: "Pilih Jenis Pajak" },
         { value: TaxType.INCLUSIVE, label: "Inklusif" },
         { value: TaxType.EXCLUSIVE, label: "Eksklusif" },
+        { value: TaxType.SPECIAL_DPP_11_12_EXCLUSIVE, label: "DPP 11/12 Eksklusif" },
         { value: TaxType.NON_TAXABLE, label: "Tidak Kena Pajak" }
       ]}
       disableFirstOption

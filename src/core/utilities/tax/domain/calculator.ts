@@ -35,14 +35,18 @@ export class TaxCalculator {
 
   public static calculateTaxBase(params: CalculateTaxBaseParams) {
     if (!params.taxType) return 0; // This is the case where it is not taxable
-    if (params.taxType === TaxType.EXCLUSIVE) return params.base;
-    else if (params.taxType === TaxType.INCLUSIVE) return params.base - (params.tax ?? 0);
+    if (params.taxType === TaxType.EXCLUSIVE) return Math.floor(params.base);
+    else if (params.taxType === TaxType.INCLUSIVE) return Math.floor(params.base - (params.tax ?? 0));
+    else if (params.taxType === TaxType.SPECIAL_DPP_11_12_EXCLUSIVE) return Math.floor(params.base * (11 / 12));
     else if (params.taxType === TaxType.NON_TAXABLE) return 0;
     else return 0;
   }
 
   public static calculateTotalWithTax(params: CalculateTotalWithTaxParams) {
     if (params.taxType === TaxType.NON_TAXABLE) return params.base;
-    else return params.taxBase + params.tax;
+    if (params.taxType === TaxType.EXCLUSIVE) return params.base + params.tax;
+    if (params.taxType === TaxType.INCLUSIVE) return params.base;
+    if (params.taxType === TaxType.SPECIAL_DPP_11_12_EXCLUSIVE) return params.base + params.tax;
+    else return 0;
   }
 }

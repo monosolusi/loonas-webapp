@@ -9,6 +9,7 @@ export enum TaxType {
   INCLUSIVE = "INCLUSIVE",
   EXCLUSIVE = "EXCLUSIVE",
   NON_TAXABLE = "NON_TAXABLE",
+  SPECIAL_DPP_11_12_EXCLUSIVE = "SPECIAL_DPP_11_12_EXCLUSIVE"
 }
 
 export enum DiscountType {
