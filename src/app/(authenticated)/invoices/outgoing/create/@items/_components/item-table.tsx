@@ -7,11 +7,11 @@ import React, { useMemo } from "react";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import {
   DiscountType,
-  TaxType
 } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import {
   AddItemTableButton
 } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/add-item-table-button";
+import { TaxType } from "@/features/tax/domain/enums/tax-type";
 
 export interface ItemRow {
   name: string;

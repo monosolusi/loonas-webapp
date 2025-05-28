@@ -1,6 +1,6 @@
-import { TaxType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { SelectInput } from "@/core/presentations/components/select-input";
 import React from "react";
+import { TaxType } from "@/features/tax/domain/enums/tax-type";
 
 interface TaxTypeSelectProps {
   value?: TaxType;
@@ -19,9 +19,8 @@ export function TaxTypeSelect(props: TaxTypeSelectProps) {
       onChange={handleChange}
       data={[
         { value: "", label: "Pilih Jenis Pajak" },
-        { value: TaxType.INCLUSIVE, label: "Inklusif" },
-        { value: TaxType.EXCLUSIVE, label: "Eksklusif" },
-        { value: TaxType.SPECIAL_DPP_11_12_EXCLUSIVE, label: "DPP 11/12 Eksklusif" },
+        { value: TaxType.MANUAL_INCLUSIVE, label: "Manual Inklusif" },
+        { value: TaxType.MANUAL_EXCLUSIVE, label: "Manual Eksklusif" },
         { value: TaxType.NON_TAXABLE, label: "Tidak Kena Pajak" }
       ]}
       disableFirstOption

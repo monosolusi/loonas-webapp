@@ -4,18 +4,12 @@ import React, { useState } from "react";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { DateTime } from "luxon";
 import { TaxCalculator } from "@/core/utilities/tax/domain/calculator";
-
-export enum TaxType {
-  INCLUSIVE = "INCLUSIVE",
-  EXCLUSIVE = "EXCLUSIVE",
-  NON_TAXABLE = "NON_TAXABLE",
-  SPECIAL_DPP_11_12_EXCLUSIVE = "SPECIAL_DPP_11_12_EXCLUSIVE"
-}
+import { TaxType } from "@/features/tax/domain/enums/tax-type";
 
 export enum DiscountType {
   PERCENTAGE = "PERCENTAGE",
   FIXED = "FIXED",
-  NO_DISCOUNT = "NO_DISCOUNT"
+  NO_DISCOUNT = "NO_DISCOUNT",
 }
 
 export interface InvoiceItem {
@@ -67,7 +61,7 @@ interface CreateOutgoingInvoiceProviderProps {
 const CreateOutgoingInvoiceContext = React.createContext<CreateOutgoingInvoiceContextProps>({
   currentStep: 0,
   invoiceDate: DateTime.now().setZone("Asia/Jakarta"),
-  dueDate: DateTime.now().setZone("Asia/Jakarta").plus({ days: 7 })
+  dueDate: DateTime.now().setZone("Asia/Jakarta").plus({ days: 7 }),
 });
 
 export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProviderProps) {
@@ -80,7 +74,7 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
 
   const nextStep = () => {
     setCurrentStep((prev) => {
-      if (prev < (props.maxStep - 1)) return prev + 1;
+      if (prev < props.maxStep - 1) return prev + 1;
       return prev;
     });
   };
@@ -108,7 +102,7 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
         taxBase: taxBase,
         discountType: item.discountType,
         discount: item.discount,
-        total: TaxCalculator.calculateTotalWithTax({ taxType: item.taxType, base, taxBase, tax: item.tax })
+        total: TaxCalculator.calculateTotalWithTax({ taxType: item.taxType, base, taxBase, tax: item.tax }),
       };
 
       return [...prev, newItem];
@@ -131,7 +125,7 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
         setInvoiceDate,
         setInvoiceNumber,
         setRecipient,
-        addInvoiceItem
+        addInvoiceItem,
       }}
     >
       {props.children}

@@ -1,12 +1,12 @@
 import { TextInputWithLeftAddOn } from "@/core/presentations/components/text-input-with-left-add-on";
 import React from "react";
 import { TextInput } from "@/core/presentations/components/text-input";
-import { TaxType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import { TaxType } from "@/features/tax/domain/enums/tax-type";
 
 interface TaxInputProps {
   value?: number;
   onChange?: (value: number) => void;
-  taxType?: TaxType;
+  taxType: TaxType;
 }
 
 export function TaxInput(props: TaxInputProps) {
@@ -16,7 +16,7 @@ export function TaxInput(props: TaxInputProps) {
     props.onChange(numberValue);
   };
 
-  if (!props.taxType || props.taxType === TaxType.NON_TAXABLE) return <TextInput title="Pajak" disabled />;
+  if (props.taxType === TaxType.NON_TAXABLE) return <TextInput title="Pajak" disabled />;
   return (
     <TextInputWithLeftAddOn
       title="Pajak"
