@@ -19,6 +19,7 @@ import { ItemTableImpl } from "@/app/(authenticated)/invoices/outgoing/create/@i
 import {
   HeaderAddItemButton
 } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/header-add-item-button";
+import { TextArea } from "@/core/presentations/components/text-area";
 
 const ITEMS_SECTION_STEP = 1;
 
@@ -46,8 +47,9 @@ export default function ItemsSection() {
             <div className="flex flex-col space-y-4">
               <div>
                 <h1 className="text-base font-semibold text-gray-900">Data Faktur</h1>
-                <p className="text-sm text-gray-500">Masukkan data dasar faktur untuk pencatatan dan pelacakan yang
-                  akurat.</p>
+                <p className="text-sm text-gray-500">
+                  Masukkan data dasar faktur untuk pencatatan dan pelacakan yang akurat.
+                </p>
               </div>
               <div className="flex flex-row justify-between space-x-4">
                 <div className="flex-1">
@@ -71,36 +73,10 @@ export default function ItemsSection() {
             <div className="flex flex-row space-x-4">
               <div className="flex-1 flex-col space-y-4">
                 <div className="flex-1">
-                  <div>
-                    <label htmlFor="comment" className="block text-sm/6 font-medium text-gray-900">
-                      Keterangan
-                    </label>
-                    <div className="mt-2">
-                    <textarea
-                      id="comment"
-                      name="comment"
-                      rows={4}
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-default sm:text-sm/6"
-                      defaultValue={""}
-                    />
-                    </div>
-                  </div>
+                  <TextArea title="Keterangan" />
                 </div>
                 <div className="flex-1">
-                  <div>
-                    <label htmlFor="comment" className="block text-sm/6 font-medium text-gray-900">
-                      Syarat & Ketentuan
-                    </label>
-                    <div className="mt-2">
-                    <textarea
-                      id="comment"
-                      name="comment"
-                      rows={4}
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-default sm:text-sm/6"
-                      defaultValue={""}
-                    />
-                    </div>
-                  </div>
+                  <TextArea title="Syarat & Ketentuan" />
                 </div>
               </div>
               <div className="flex-1">
