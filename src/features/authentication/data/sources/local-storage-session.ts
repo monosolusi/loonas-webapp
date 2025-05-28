@@ -7,8 +7,7 @@ import { PersonalAccountEntity } from "@/features/account/domain/entities/person
 import { PersonalAccountModel } from "@/features/account/data/models/personal-account";
 import { DistrictModel } from "@/core/utilities/address/data/model/district";
 import { SubdistrictModel } from "@/core/utilities/address/data/model/subdistrict";
-
-;
+import { mutate } from "swr";
 
 export abstract class SessionService {
   public abstract retrieve(): Promise<SessionModel>;
@@ -80,6 +79,8 @@ export class LocalStorageSessionService implements SessionService {
   public async signOut(): Promise<void> {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("selectedAccount");
+
+    await mutate(() => true, undefined, { revalidate: false });
   }
 
   public async retrieve(): Promise<SessionModel> {
