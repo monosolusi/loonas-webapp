@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { DateTime } from "luxon";
-import { TaxCalculator } from "@/core/utilities/tax/domain/calculator";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 
 export enum DiscountType {
@@ -32,8 +31,10 @@ export interface AddInvoiceItemParams {
   price: number;
   taxType: TaxType;
   tax: number;
+  taxBase: number;
   discountType?: DiscountType;
   discount?: number;
+  total: number;
 }
 
 interface CreateOutgoingInvoiceContextProps {
@@ -90,8 +91,6 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
     if (!setItems) return;
 
     setItems((prev) => {
-      const base = TaxCalculator.calculateAmountBeforeTax(item);
-      const taxBase = TaxCalculator.calculateTaxBase({ base, taxType: item.taxType, tax: item.tax });
       const newItem: InvoiceItem = {
         name: item.name,
         description: item.description,
@@ -99,10 +98,10 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
         price: item.price,
         taxType: item.taxType,
         tax: item.tax,
-        taxBase: taxBase,
+        taxBase: item.taxBase,
         discountType: item.discountType,
         discount: item.discount,
-        total: TaxCalculator.calculateTotalWithTax({ taxType: item.taxType, base, taxBase, tax: item.tax }),
+        total: item.total,
       };
 
       return [...prev, newItem];

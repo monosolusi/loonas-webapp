@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import { TaxCalculator } from "@/core/utilities/tax/domain/calculator";
 
 interface AddItemProviderProps {
   children: React.ReactNode;
@@ -21,6 +22,7 @@ interface AddItemContextProps {
   total: number;
   mustRecalculateTax: boolean;
   recalculated?: () => void;
+  clearInput?: () => void;
   setName?: React.Dispatch<React.SetStateAction<string>>;
   setDescription?: React.Dispatch<React.SetStateAction<string>>;
   setQty?: React.Dispatch<React.SetStateAction<number>>;
@@ -65,10 +67,37 @@ export function AddItemProvider(props: AddItemProviderProps) {
   // Functions
   const recalculated = () => setMustRecalculateTax(false);
 
+  const clearInput = () => {
+    setName("");
+    setDescription("");
+    setQty(1);
+    setPrice(0);
+    setDiscountType(DiscountType.NO_DISCOUNT);
+    setDiscount(0);
+    setTaxType(TaxType.NON_TAXABLE);
+    setTax(0);
+    setTaxBase(0);
+    setTotal(0);
+    setMustRecalculateTax(true);
+  };
+
   useEffect(() => {
     if (taxType === TaxType.NON_TAXABLE) setMustRecalculateTax(false);
     else setMustRecalculateTax(true);
   }, [qty, price, taxType, discount, discountType, tax, taxBase]);
+
+  useEffect(() => {
+    if (taxType === TaxType.NON_TAXABLE) {
+      const total = TaxCalculator.calculateAmountBeforeTax({
+        price: price,
+        qty: qty,
+        discountType: discountType,
+        discount: discount,
+      });
+
+      setTotal(total);
+    }
+  }, [taxType, qty, price, discountType, discount]);
 
   return (
     <AddItemContext.Provider
@@ -85,6 +114,7 @@ export function AddItemProvider(props: AddItemProviderProps) {
         total,
         mustRecalculateTax,
         recalculated,
+        clearInput,
         setName,
         setDescription,
         setQty,

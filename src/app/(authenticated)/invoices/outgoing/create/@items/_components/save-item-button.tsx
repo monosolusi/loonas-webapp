@@ -1,5 +1,7 @@
-import { FilledButton } from "@/core/presentations/components/filled-button";
+"use client";
+
 import React, { useMemo } from "react";
+import { FilledButton } from "@/core/presentations/components/filled-button";
 import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 
 export function SaveItemButton() {
