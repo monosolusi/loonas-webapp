@@ -1,17 +1,18 @@
-import { TextInput } from "@/core/presentations/components/text-input";
+"use client";
+
 import React from "react";
+import { TextInput } from "@/core/presentations/components/text-input";
+import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 
-interface QtyInputProps {
-  value?: number;
-  onChange?: (value: number) => void;
-}
+export function QtyInput() {
+  const { qty, setQty } = useAddItem();
 
-export function QtyInput(props: QtyInputProps) {
   const handleChange = (value: string) => {
-    if (props.onChange) {
-      const numberValue = Number(value.replace(/\./g, ""));
-      props.onChange(numberValue);
-    }
+    if (!setQty) return;
+
+    const numberValue = Number(value.replace(/\./g, ""));
+    if (qty === numberValue) return; // No change on this value
+    setQty(numberValue);
   };
 
   return (
@@ -19,7 +20,7 @@ export function QtyInput(props: QtyInputProps) {
       title="Qty"
       type="text"
       inputTextAlign="text-right"
-      value={props.value?.toLocaleString("id-ID")}
+      value={qty.toLocaleString("id-ID")}
       onChange={handleChange}
       required
     />

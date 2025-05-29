@@ -1,17 +1,17 @@
-import { TextInputWithLeftAddOn } from "@/core/presentations/components/text-input-with-left-add-on";
+"use client";
+
 import React, { useMemo } from "react";
+import { TextInputWithLeftAddOn } from "@/core/presentations/components/text-input-with-left-add-on";
+import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 
-interface TotalFieldProps {
-  qty: number;
-  price: number;
-}
+export function TotalField() {
+  const { qty, price } = useAddItem();
 
-export function TotalField(props: TotalFieldProps) {
   const total = useMemo(() => {
-    if (props.qty === 0) return 0;
-    if (props.price === 0) return 0;
-    return props.qty * props.price;
-  }, [props.qty, props.price]);
+    if (qty === 0) return 0;
+    if (price === 0) return 0;
+    return qty * price;
+  }, [qty, price]);
 
   return (
     <TextInputWithLeftAddOn

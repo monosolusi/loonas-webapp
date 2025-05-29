@@ -1,51 +1,18 @@
-import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+"use client";
+
+import React from "react";
 import { TextInputWithLeftAddOn } from "@/core/presentations/components/text-input-with-left-add-on";
-import React, { useMemo } from "react";
-import { TaxType } from "@/features/tax/domain/enums/tax-type";
+import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 
-interface TotalWithTaxFieldProps {
-  price?: number;
-  qty?: number;
-  discountType?: DiscountType;
-  discount?: number;
-  taxType?: TaxType;
-  tax?: number;
-}
-
-export function TotalWithTaxField(props: TotalWithTaxFieldProps) {
-  const totalWithTax = useMemo(() => {
-    return 0;
-    // if (!props.price || !props.qty) return 0;
-    //
-    // const amountBeforeTax = TaxCalculator.calculateAmountBeforeTax({
-    //   price: props.price,
-    //   qty: props.qty,
-    //   discountType: props.discountType,
-    //   discount: props.discount,
-    // });
-    //
-    // if (!props.taxType || props.taxType === TaxType.NON_TAXABLE) return amountBeforeTax;
-    //
-    // const taxBase = TaxCalculator.calculateTaxBase({
-    //   base: amountBeforeTax,
-    //   taxType: props.taxType,
-    //   tax: props.tax,
-    // });
-    //
-    // return TaxCalculator.calculateTotalWithTax({
-    //   taxType: props.taxType,
-    //   tax: props.tax ?? 0,
-    //   taxBase: taxBase,
-    //   base: amountBeforeTax,
-    // });
-  }, [props.price, props.qty, props.discountType, props.discount, props.tax, props.taxType]);
+export function TotalWithTaxField() {
+  const { total } = useAddItem();
 
   return (
     <TextInputWithLeftAddOn
       title="Total"
       leftAddOn="Rp"
       textDirection="text-right"
-      value={totalWithTax.toLocaleString("id-ID")}
+      value={total.toLocaleString("id-ID")}
       disabled
     />
   );

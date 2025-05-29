@@ -1,29 +1,29 @@
-import { SelectInput } from "@/core/presentations/components/select-input";
+"use client";
+
 import React from "react";
+import { SelectInput } from "@/core/presentations/components/select-input";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
+import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 
-interface TaxTypeSelectProps {
-  value?: TaxType;
-  onChange?: (value: TaxType) => void;
-}
+export function TaxTypeSelect() {
+  const { taxType, setTaxType } = useAddItem();
 
-export function TaxTypeSelect(props: TaxTypeSelectProps) {
-  const handleChange = (data: { value: string, label: string }) => {
-    if (props.onChange) props.onChange(data.value as TaxType);
+  const handleChange = (data: { value: string; label: string }) => {
+    if (!setTaxType) return;
+    if (taxType === data.value) return;
+    setTaxType(data.value as TaxType);
   };
 
   return (
     <SelectInput
       title="Jenis Pajak"
-      value={props.value ?? ""}
+      value={taxType}
       onChange={handleChange}
       data={[
-        { value: "", label: "Pilih Jenis Pajak" },
         { value: TaxType.MANUAL_INCLUSIVE, label: "Manual Inklusif" },
         { value: TaxType.MANUAL_EXCLUSIVE, label: "Manual Eksklusif" },
-        { value: TaxType.NON_TAXABLE, label: "Tidak Kena Pajak" }
+        { value: TaxType.NON_TAXABLE, label: "Tidak Kena Pajak" },
       ]}
-      disableFirstOption
     />
   );
 }

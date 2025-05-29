@@ -2,10 +2,7 @@ import React, { useMemo, useState } from "react";
 import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { ServerError } from "@/core/resources/server-error";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
-import { TextInput } from "@/core/presentations/components/text-input";
 import { OutlinedButton } from "@/core/presentations/components/outlined-button";
-import { FilledButton } from "@/core/presentations/components/filled-button";
-import { TextArea } from "@/core/presentations/components/text-area";
 import { QtyInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/qty-input";
 import { PriceInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/price-input";
 import { TotalField } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/total-field";
@@ -16,6 +13,12 @@ import { TaxInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/
 import { TaxBaseField } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/tax-base-field";
 import { TotalWithTaxField } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/total-with-tax-field";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
+import { TaxCalculator } from "@/core/utilities/tax/domain/calculator";
+import { CalculateTaxButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/calculate-tax-button";
+import { AddItemProvider } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
+import { NameInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/name-input";
+import { DescriptionInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/description-input";
+import { SaveItemButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/save-item-button";
 
 export interface ItemDetail {
   name: string;
@@ -44,25 +47,67 @@ export function AddItemDialog(props: AddItemDialogProps) {
   const [taxType, setTaxType] = useState<TaxType>(TaxType.NON_TAXABLE);
   const [tax, setTax] = useState<number>(0);
   const [taxBase, setTaxBase] = useState<number>(0);
+  const [amountAfterTax, setAmountAfterTax] = useState<number>(0);
+  const [taxHasCalculated, setTaxHasCalculated] = useState<boolean>(false);
   const [error, setError] = useState<ServerError>();
 
   const submitDisabled = useMemo(() => {
     if (!name) return true;
     if (!qty) return true;
-    if (!price) return true;
+    if (price === undefined || price === null) return true;
     if (taxType !== TaxType.NON_TAXABLE && (!tax || !taxBase)) return true;
     if (discountType !== DiscountType.NO_DISCOUNT && !discount) return true;
+    if (!taxHasCalculated) return true;
     return false;
   }, [name, description, qty, price, tax, taxBase, taxType, discount, discountType]);
+
+  const amountBeforeTax: number = useMemo(() => {
+    return TaxCalculator.calculateAmountBeforeTax({ qty, price, discount, discountType });
+  }, [qty, price, discount, discountType]);
+
+  const mustRecalculateTax = () => setTaxHasCalculated(false);
+
+  const handleQtyChange = (value: number) => {
+    setQty(value);
+    mustRecalculateTax();
+  };
+
+  const handlePriceChange = (value: number) => {
+    setPrice(value);
+    mustRecalculateTax();
+  };
+
+  const handleTaxCalculated = (item: { tax: number; taxBase: number; amountAfterTax: number }) => {
+    setTax(item.tax);
+    setTaxBase(item.taxBase);
+    setAmountAfterTax(item.amountAfterTax);
+  };
 
   const handleDiscountTypeChange = (type: DiscountType) => {
     setDiscountType(type);
     if (type === DiscountType.NO_DISCOUNT) setDiscount(0);
+    mustRecalculateTax();
+  };
+
+  const handleDiscountChange = (value: number) => {
+    setDiscount(value);
+    mustRecalculateTax();
   };
 
   const handleTaxTypeChange = (type: TaxType) => {
     setTaxType(type);
     if (type === TaxType.NON_TAXABLE) setTax(0);
+    mustRecalculateTax();
+  };
+
+  const handleTaxChange = (value: number) => {
+    setTax(value);
+    mustRecalculateTax();
+  };
+
+  const handleTaxBaseChange = (value: number) => {
+    setTaxBase(value);
+    mustRecalculateTax();
   };
 
   const clearInput = () => {
@@ -104,60 +149,60 @@ export function AddItemDialog(props: AddItemDialogProps) {
   };
 
   return (
-    <LoonasDialog title="Tambah Item" width="lg" open={props.open} onClose={handleClose}>
-      <form onSubmit={handleSubmit}>
-        <p className="text-sm text-gray-500">Yuk, isi detail barang yang mau kamu cantumkan di faktur.</p>
-        <div className="my-4 flex flex-col space-y-4">
-          <TextInput title="Nama" value={name} onChange={setName} required />
-          <TextArea title="Deskripsi" value={description} onChange={setDescription} rows={2} />
-          <div className="flex flex-row space-x-2">
+    <AddItemProvider>
+      <LoonasDialog title="Tambah Item" width="lg" open={props.open} onClose={handleClose}>
+        <form onSubmit={handleSubmit}>
+          <p className="text-sm text-gray-500">Yuk, isi detail barang yang mau kamu cantumkan di faktur.</p>
+          <div className="my-4 flex flex-col space-y-4">
+            <NameInput />
+            <DescriptionInput />
+            <div className="flex flex-row space-x-2">
+              <div className="flex-1">
+                <QtyInput />
+              </div>
+              <div className="flex-2">
+                <PriceInput />
+              </div>
+              <div className="flex-2">
+                <TotalField />
+              </div>
+            </div>
+            <div className="flex flex-row space-x-2">
+              <div className="flex-1">
+                <DiscountTypeSelect />
+              </div>
+              <div className="flex-1">
+                <DiscountInput />
+              </div>
+            </div>
             <div className="flex-1">
-              <QtyInput value={qty} onChange={setQty} />
+              <TaxTypeSelect />
             </div>
-            <div className="flex-2">
-              <PriceInput value={price} onChange={setPrice} />
+            <div className="flex flex-row space-x-2">
+              <div className="flex-1">
+                <TaxInput />
+              </div>
+              <div className="flex-1">
+                <TaxBaseField />
+              </div>
             </div>
-            <div className="flex-2">
-              <TotalField qty={qty} price={price} />
+            <div className="flex flex-row items-end space-x-2">
+              <div className="flex-2">
+                <TotalWithTaxField />
+              </div>
+              <div className="flex-1">
+                <CalculateTaxButton />
+              </div>
             </div>
           </div>
-          <div className="flex flex-row space-x-2">
-            <div className="flex-1">
-              <DiscountTypeSelect value={discountType} onChange={handleDiscountTypeChange} />
-            </div>
-            <div className="flex-1">
-              <DiscountInput type={discountType} value={discount} onChange={setDiscount} />
-            </div>
+          <div className="-mx-4 flex flex-row justify-end space-x-4 border-t border-gray-200 px-4 pt-4 sm:-mx-6 sm:px-6">
+            <OutlinedButton type="button" onClick={handleClose}>
+              Batal
+            </OutlinedButton>
+            <SaveItemButton />
           </div>
-          <div className="flex-1">
-            <TaxTypeSelect value={taxType} onChange={handleTaxTypeChange} />
-          </div>
-          <div className="flex flex-row space-x-2">
-            <div className="flex-1">
-              <TaxInput value={tax} onChange={setTax} taxType={taxType} />
-            </div>
-            <div className="flex-1">
-              <TaxBaseField value={taxBase} onChange={setTaxBase} taxType={taxType} />
-            </div>
-          </div>
-          <TotalWithTaxField
-            price={price}
-            qty={qty}
-            discountType={discountType}
-            discount={discount}
-            taxType={taxType}
-            tax={tax}
-          />
-        </div>
-        <div className="-mx-4 flex flex-row justify-end space-x-4 border-t border-gray-200 px-4 pt-4 sm:-mx-6 sm:px-6">
-          <OutlinedButton type="button" onClick={handleClose}>
-            Batal
-          </OutlinedButton>
-          <FilledButton type="submit" disabled={submitDisabled}>
-            Simpan Item
-          </FilledButton>
-        </div>
-      </form>
-    </LoonasDialog>
+        </form>
+      </LoonasDialog>
+    </AddItemProvider>
   );
 }
