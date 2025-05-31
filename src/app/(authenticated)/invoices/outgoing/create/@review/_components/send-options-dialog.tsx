@@ -9,6 +9,7 @@ import { useCreateOutgoingInvoice } from "@/features/invoice/presentations/hooks
 import { useCreateOutgoingInvoice as useCreateOutgoingInvoiceProvider } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { InvoiceSendChannel } from "@/features/invoice/domain/enums/invoice-send-channel";
+import { useSelectedAccountProvider } from "@/features/authentication/presentation/providers/selected-account";
 
 interface SendOptionsDialogProps {
   open: boolean;
@@ -19,6 +20,7 @@ interface SendOptionsDialogProps {
 export function SendOptionsDialog(props: SendOptionsDialogProps) {
   const [sendEmail, setSendEmail] = useState<boolean>(false);
   const [sendWhatsApp, setSendWhatsApp] = useState<boolean>(false);
+  const { selectedAccount } = useSelectedAccountProvider();
   const { trigger, isMutating } = useCreateOutgoingInvoice();
   const { recipient, invoiceNumber, invoiceDate, dueDate, items, note, tnc, paymentConfiguration, signature } =
     useCreateOutgoingInvoiceProvider();
@@ -63,6 +65,7 @@ export function SendOptionsDialog(props: SendOptionsDialogProps) {
     props.onClose();
   };
 
+  if (!recipient) return null;
   return (
     <LoonasDialog title="Pilih Metode Pengiriman Faktur" open={props.open} onClose={props.onClose} allowDismiss={false}>
       <div className="flex flex-col space-y-8">
@@ -77,9 +80,9 @@ export function SendOptionsDialog(props: SendOptionsDialogProps) {
             <div className="flex flex-col space-y-1">
               <div className="text-base font-semibold text-gray-900">Kirim Email</div>
               <div className="text-sm text-gray-500">
-                Faktur akan dikirimkan ke <span className="underline">halo@monosolusi.com</span> dan{" "}
-                <span className="underline">PT. Mono Solusi Indonesia</span> dapat membayar melalui link yang akan
-                dkirimkan via email.
+                Faktur akan dikirimkan ke <span className="underline">{recipient.email}</span> dan{" "}
+                <span className="underline">{recipient.name}</span> dapat membayar melalui link yang akan dkirimkan via
+                email.
               </div>
             </div>
           </LoonasCheckbox>
@@ -87,9 +90,9 @@ export function SendOptionsDialog(props: SendOptionsDialogProps) {
             <div className="flex flex-col space-y-1">
               <div className="text-base font-semibold text-gray-900">Kirim WhatsApp</div>
               <div className="text-sm text-gray-500">
-                Faktur akan dikirimkan ke <span className="underline">+62812345678</span> dan{" "}
-                <span className="underline">PT. Mono Solusi Indonesia</span> dapat membayar melalui link yang akan
-                dkirimkan via WhatsApp.
+                Faktur akan dikirimkan ke <span className="underline">{recipient.phoneNumber}</span> dan{" "}
+                <span className="underline">{recipient.name}</span> dapat membayar melalui link yang akan dkirimkan via
+                WhatsApp.
               </div>
             </div>
           </LoonasCheckbox>
