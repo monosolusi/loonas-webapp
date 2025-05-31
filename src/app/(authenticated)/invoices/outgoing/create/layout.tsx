@@ -14,6 +14,7 @@ interface CreateOutgoingInvoiceLayoutProps {
   recipient: React.ReactNode;
   items: React.ReactNode;
   payment: React.ReactNode;
+  review: React.ReactNode;
 }
 
 export default function CreateOutgoingInvoiceLayout(props: CreateOutgoingInvoiceLayoutProps) {
@@ -43,6 +44,7 @@ export default function CreateOutgoingInvoiceLayout(props: CreateOutgoingInvoice
               {props.recipient}
               {props.items}
               {props.payment}
+              {props.review}
             </div>
           </div>
         </PageContent>
