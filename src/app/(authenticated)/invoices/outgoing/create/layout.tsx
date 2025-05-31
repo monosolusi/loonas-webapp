@@ -3,22 +3,17 @@
 import React from "react";
 import { useListAccountBankAccout } from "@/features/bank/presentation/hooks/use-list-account-bank-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import {
-  HasNoAccountErrorDialog
-} from "@/app/(authenticated)/invoices/outgoing/create/_components/has-no-account-error-dialog";
+import { HasNoAccountErrorDialog } from "@/app/(authenticated)/invoices/outgoing/create/_components/has-no-account-error-dialog";
 import { PageContent } from "@/core/presentations/components/page-content";
-import {
-  CreateOutgoingInvoiceProgressStepper
-} from "@/app/(authenticated)/invoices/outgoing/create/_components/create-outgoing-invoice-progress-stepper";
-import {
-  CreateOutgoingInvoiceProvider
-} from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import { CreateOutgoingInvoiceProgressStepper } from "@/app/(authenticated)/invoices/outgoing/create/_components/create-outgoing-invoice-progress-stepper";
+import { CreateOutgoingInvoiceProvider } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { BackButton } from "@/app/(authenticated)/invoices/outgoing/create/_components/back-button";
 
 interface CreateOutgoingInvoiceLayoutProps {
-  children: React.ReactNode,
+  children: React.ReactNode;
   recipient: React.ReactNode;
   items: React.ReactNode;
+  payment: React.ReactNode;
 }
 
 export default function CreateOutgoingInvoiceLayout(props: CreateOutgoingInvoiceLayoutProps) {
@@ -47,6 +42,7 @@ export default function CreateOutgoingInvoiceLayout(props: CreateOutgoingInvoice
             <div>
               {props.recipient}
               {props.items}
+              {props.payment}
             </div>
           </div>
         </PageContent>

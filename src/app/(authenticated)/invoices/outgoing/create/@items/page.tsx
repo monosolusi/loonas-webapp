@@ -13,12 +13,12 @@ import { NoteInput } from "@/app/(authenticated)/invoices/outgoing/create/@items
 import { TermAndConditionInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/term-and-condition-input";
 import { SignatureInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/signature-input";
 import { NextStepButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/next-step-button";
+import { DemoButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/demo-button";
 
 const ITEMS_SECTION_STEP = 1;
 
 export default function ItemsSection() {
   const { currentStep, recipient } = useCreateOutgoingInvoice();
-
   if (currentStep !== ITEMS_SECTION_STEP) return null;
   return (
     <>
@@ -31,7 +31,8 @@ export default function ItemsSection() {
               <span className="font-bold text-gray-700 underline">{recipient?.name}</span> secara detail.
             </p>
           </div>
-          <div className="flex flex-1 justify-end self-end">
+          <div className="flex flex-1 flex-row justify-end space-x-2 self-end">
+            <DemoButton />
             <HeaderAddItemButton />
           </div>
         </div>

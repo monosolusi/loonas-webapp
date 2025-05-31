@@ -2,14 +2,14 @@ import { Label } from "@/core/presentations/components/label";
 import { Select, SelectProps } from "@/core/presentations/components/select";
 
 type SelectInputProps = {
-  title: string;
+  title?: string;
 } & SelectProps;
 
 export function SelectInput(props: SelectInputProps) {
   return (
     <>
-      <Label title={props.title} />
-      <div className="mt-2">
+      {props.title && <Label title={props.title} />}
+      <div className={`${props.title && "mt-2"}`}>
         <Select
           data={props.data}
           onChange={props.onChange}
