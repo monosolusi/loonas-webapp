@@ -2,17 +2,15 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
-export function Card({ children, className }: { children?: any, className?: string }) {
+interface CardProps {
+  children?: React.ReactNode;
+  className?: string;
+}
+
+export function Card(props: CardProps) {
   return (
-    <div className={
-      classNames(
-        className,
-        "overflow-hidden rounded-lg bg-white shadow-sm"
-      )
-    }>
-      <div className="px-4 py-5 sm:p-6">
-        {children}
-      </div>
+    <div className={classNames("rounded-lg bg-white shadow-sm", props.className, "overflow-hidden")}>
+      <div className="px-4 py-5 sm:p-6">{props.children}</div>
     </div>
   );
 }

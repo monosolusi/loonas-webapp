@@ -59,6 +59,10 @@ export class PersonalAccountEntity implements AbstractEntity {
     this.deletedAt = args.deletedAt;
   }
 
+  public get fullAddress() {
+    return `${this.address}, ${this.subdistrict.name}, ${this.district.name}, ${this.city.name}, ${this.province.name}`;
+  }
+
   public generateShortAccountId() {
     return this.id.substring(0, 6).toUpperCase();
   }
