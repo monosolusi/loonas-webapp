@@ -4,7 +4,7 @@ import React from "react";
 import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { OutlinedButton } from "@/core/presentations/components/outlined-button";
 import { PaymentConfigurationTableImpl } from "@/app/(authenticated)/invoices/outgoing/create/@payment/_components/payment-configuration-table-impl";
-import { FilledButton } from "@/core/presentations/components/filled-button";
+import { NextButton } from "@/app/(authenticated)/invoices/outgoing/create/@payment/_components/next-button";
 
 const PAYMENT_SETTING_SECTION_STEP = 2;
 
@@ -30,7 +30,7 @@ export default function PaymentSettingSection() {
         </div>
         <div className="mt-4 flex flex-1 flex-row justify-end gap-x-4">
           <OutlinedButton>Simpan Draft</OutlinedButton>
-          <FilledButton>Selanjutnya</FilledButton>
+          <NextButton />
         </div>
       </div>
     </>
