@@ -60,7 +60,7 @@ export class PersonalAccountEntity implements AbstractEntity {
   }
 
   public get fullAddress() {
-    return `${this.address}, ${this.subdistrict.name}, ${this.district.name}, ${this.city.name}, ${this.province.name}`;
+    return `${this.address}, ${this.subdistrict.label}, ${this.district.label}, ${this.city.label}, ${this.province.label}`;
   }
 
   public generateShortAccountId() {

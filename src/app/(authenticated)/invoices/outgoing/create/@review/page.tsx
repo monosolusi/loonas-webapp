@@ -13,6 +13,7 @@ import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-fo
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { SenderInformationImpl } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/sender-information-impl";
 import { InvoiceTopSummary } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/invoice-top-summary";
+import { BilLTo } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/bill-to";
 
 const REVIEW_SECTION_STEP = 3;
 
@@ -45,11 +46,7 @@ export default function ReviewSection() {
                 <InvoiceTopSummary />
               </div>
               <div className="mt-16 flex w-1/3 flex-col space-y-1">
-                <div className="flex-1 text-gray-500 italic">Tagihan Untuk</div>
-                <div className="flex-1 text-base font-semibold text-gray-900">Hermawan Wijaya</div>
-                <div className="flex-1 text-gray-500">Pakuwon Indah Regency Blok A No. 10, Jakarta 10110</div>
-                <div className="flex-1 text-gray-500">Telp. (021) 8888 8888</div>
-                <div className="flex-1 text-gray-500">Email. hermawan@wijaya.com</div>
+                <BilLTo />
               </div>
               <div className="flex flex-1">
                 <TableContainer className="rounded-xs shadow-none">
