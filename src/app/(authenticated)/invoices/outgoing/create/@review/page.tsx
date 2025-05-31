@@ -5,15 +5,11 @@ import { v4 as uuid } from "uuid";
 import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { Card } from "@/core/presentations/components/card";
 import { OutlinedButton } from "@/core/presentations/components/outlined-button";
-import { TableContainer } from "@/core/presentations/components/table-container";
-import { Table } from "@/core/presentations/components/table";
-import { TableHeader } from "@/core/presentations/components/table-header";
-import { TableBody } from "@/core/presentations/components/table-body";
-import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { SenderInformationImpl } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/sender-information-impl";
 import { InvoiceTopSummary } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/invoice-top-summary";
 import { BilLTo } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/bill-to";
+import { InvoiceItemTable } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/invoice-item-table";
 
 const REVIEW_SECTION_STEP = 3;
 
@@ -49,90 +45,7 @@ export default function ReviewSection() {
                 <BilLTo />
               </div>
               <div className="flex flex-1">
-                <TableContainer className="rounded-xs shadow-none">
-                  <Table>
-                    <TableHeader
-                      items={[
-                        { node: "Nama Produk", hideOnMobile: false },
-                        { node: "Qty / Harga", hideOnMobile: false, className: "text-right" },
-                        { node: "Diskon", hideOnMobile: false, className: "text-right" },
-                        { node: "DPP", hideOnMobile: false, className: "text-right" },
-                        { node: "Pajak", hideOnMobile: false, className: "text-right" },
-                        { node: "Jumlah", hideOnMobile: false, className: "text-right" },
-                      ]}
-                    />
-                    <TableBody
-                      items={[
-                        {
-                          row: [
-                            {
-                              node: (
-                                <div className="flex flex-col space-y-1">
-                                  <div className="font-bold text-gray-900 group-hover:underline">Item 1</div>
-                                  <span className="text-xs text-gray-500">Deskripsi Item Pertama</span>
-                                </div>
-                              ),
-                              hideOnMobile: false,
-                            },
-                            {
-                              node: `10 / ${IDRFormatter.toCurrency(100000)}`,
-                              hideOnMobile: false,
-                              className: "text-right",
-                            },
-                            {
-                              node: "10%",
-                              hideOnMobile: false,
-                              className: "text-right",
-                            },
-                            {
-                              node: IDRFormatter.toCurrency(100000),
-                              hideOnMobile: false,
-                              className: "text-right",
-                            },
-                            {
-                              node: IDRFormatter.toCurrency(10000),
-                              hideOnMobile: false,
-                              className: "text-right",
-                            },
-                            { node: IDRFormatter.toCurrency(110000), hideOnMobile: false, className: "text-right" },
-                          ],
-                        },
-                      ]}
-                    />
-                    <tfoot className="divide-y divide-gray-200 bg-gray-50">
-                      <tr>
-                        <td colSpan={5} className="px-3 pt-4 pb-2 text-right text-sm">
-                          Dasar Pengenaan Pajak (DPP)
-                        </td>
-                        <td className="px-3 pt-4 pb-2 text-right text-sm">{IDRFormatter.toCurrency(100000)}</td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td colSpan={5} className="px-3 py-2 text-right text-sm">
-                          Total Pajak
-                        </td>
-                        <td className="px-3 py-2 text-right text-sm">{IDRFormatter.toCurrency(100000)}</td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td colSpan={5} className="px-3 py-2 text-right text-sm">
-                          Total Non-Pajak
-                        </td>
-                        <td className="px-3 py-2 text-right text-sm">{IDRFormatter.toCurrency(100000)}</td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td colSpan={5} className="px-3 pt-2 pb-4 text-right text-sm">
-                          Grand Total Faktur
-                        </td>
-                        <td className="px-3 pt-2 pb-4 text-right text-sm font-bold underline">
-                          {IDRFormatter.toCurrency(100000)}
-                        </td>
-                        <td></td>
-                      </tr>
-                    </tfoot>
-                  </Table>
-                </TableContainer>
+                <InvoiceItemTable />
               </div>
               <div className="mt-8 flex flex-1 flex-row space-x-4">
                 <div className="flex-1 flex-col space-y-4">
