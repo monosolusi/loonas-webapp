@@ -6,21 +6,28 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
-export function FilledButton({ children, loading, type, onClick, disabled = false, className }: {
-  children?: any,
-  loading?: boolean,
-  disabled?: boolean,
-  type?: HTMLButtonType
-  onClick?: () => void,
-  className?: string,
+export function FilledButton({
+  children,
+  loading,
+  type,
+  onClick,
+  disabled = false,
+  className,
+}: {
+  children?: any;
+  loading?: boolean;
+  disabled?: boolean;
+  type?: HTMLButtonType;
+  onClick?: () => void;
+  className?: string;
 }) {
   return (
     <div className="group">
       <button
         type={type || "submit"}
         className={classNames(
-          "inline-flex w-full justify-center rounded-md bg-primary-default px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-default disabled:border-gray-200 disabled:bg-gray-200 disabled:text-gray-500 disabled:shadow-none",
-          className
+          "bg-primary-default hover:bg-primary-500 focus-visible:outline-primary-default inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 disabled:border-gray-200 disabled:bg-gray-200 disabled:text-gray-500 disabled:shadow-none",
+          className,
         )}
         disabled={loading || disabled}
         data-loading={loading}
@@ -28,8 +35,10 @@ export function FilledButton({ children, loading, type, onClick, disabled = fals
       >
         {loading && (
           <svg
-            className="mr-3 -ml-1 size-5 animate-spin text-white"
-            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            className="mr-3 ml-3 size-5 animate-spin text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
           >
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path

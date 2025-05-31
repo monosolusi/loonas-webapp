@@ -8,10 +8,11 @@ import { LocalStorageSessionService } from "@/features/authentication/data/sourc
 import { InvoiceEntity } from "../../domain/entities/invoice";
 import { ListInvoiceUseCase, ListInvoiceUseCaseParams } from "@/features/invoice/domain/usecases/list-invoice";
 import { InvoiceRepositoryImpl } from "@/features/invoice/data/repositories/invoice";
-import { InvoiceServiceImpl } from "@/features/invoice/data/services/invoice";
+import { InvoiceServiceImpl } from "@/features/invoice/data/sources/invoice";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 interface InvoiceContextProps {
-  invoices: InvoiceEntity[],
+  invoices: InvoiceEntity[];
   loading: boolean;
   error?: ServerError;
 }
@@ -23,7 +24,7 @@ interface InvoiceProviderProps {
 
 const InvoiceContext = React.createContext<InvoiceContextProps>({
   invoices: [],
-  loading: false
+  loading: false,
 });
 
 export function InvoiceProvider(props: InvoiceProviderProps) {
@@ -36,8 +37,9 @@ export function InvoiceProvider(props: InvoiceProviderProps) {
     setError(undefined);
 
     try {
+      const httpRequest = new HttpRequest();
       const sessionService = new LocalStorageSessionService();
-      const invoiceService = new InvoiceServiceImpl();
+      const invoiceService = new InvoiceServiceImpl(httpRequest);
       const sessionRepository = new SessionRepositoryImpl(sessionService);
       const invoiceRepository = new InvoiceRepositoryImpl(invoiceService);
       const listInvoices = new ListInvoiceUseCase(invoiceRepository, sessionRepository);
@@ -57,13 +59,7 @@ export function InvoiceProvider(props: InvoiceProviderProps) {
     fetchInvoices();
   }, []);
 
-  return (
-    <InvoiceContext.Provider
-      value={{ invoices, loading, error }}
-    >
-      {props.children}
-    </InvoiceContext.Provider>
-  );
+  return <InvoiceContext.Provider value={{ invoices, loading, error }}>{props.children}</InvoiceContext.Provider>;
 }
 
 export function useInvoice() {

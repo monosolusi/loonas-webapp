@@ -4,10 +4,13 @@ import { FilledButton } from "@/core/presentations/components/filled-button";
 import React, { useMemo, useState } from "react";
 import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { SendOptionsDialog } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/send-options-dialog";
+import { useRouter } from "next/navigation";
+import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 
 export function SendOptionsButton() {
   const { recipient, items, paymentConfiguration } = useCreateOutgoingInvoice();
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const router = useRouter();
 
   const isDisabled = useMemo(() => {
     if (!recipient) return true;
@@ -25,12 +28,17 @@ export function SendOptionsButton() {
     setDialogOpen(false);
   };
 
+  const handleCompleted = (item: OutgoingInvoiceEntity) => {
+    setDialogOpen(false);
+    router.push(`/invoices/${item.id}`);
+  };
+
   return (
     <>
       <FilledButton disabled={isDisabled} onClick={handleClick}>
         Kirim Faktur
       </FilledButton>
-      <SendOptionsDialog open={dialogOpen} onClose={handleClose} />
+      <SendOptionsDialog open={dialogOpen} onClose={handleClose} onCompleted={handleCompleted} />
     </>
   );
 }

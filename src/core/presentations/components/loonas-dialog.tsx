@@ -2,15 +2,18 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/re
 import React from "react";
 
 interface LoonasdialogProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   title?: string;
   width?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl" | "full";
   open: boolean;
   onClose?: (() => void) | (() => Promise<void>);
+  allowDismiss?: boolean;
 }
 
 export function LoonasDialog(props: LoonasdialogProps) {
-  const handleClose = () => {
+  const handleClose = (_: boolean) => {
+    const allowDismis = (props.allowDismiss === undefined? true : props.allowDismiss);
+    if (!allowDismis) return;
     if (props.onClose) props.onClose();
   };
 

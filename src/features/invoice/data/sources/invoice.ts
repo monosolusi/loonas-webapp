@@ -1,28 +1,93 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { InvoiceModel } from "@/features/invoice/data/models/invoice";
-
-interface InvoiceServiceFilter {
-  id?: string;
-}
-
-interface InvoiceServiceFilterParams {
-  limit?: number;
-  includes?: string;
-}
-
-export abstract class InvoiceService {
-  public abstract list(filter: InvoiceServiceFilter, params: InvoiceServiceFilterParams, session: SessionEntity): Promise<InvoiceModel[]>;
-
-  public abstract get(
-    filter: InvoiceServiceFilter,
-    params: Pick<InvoiceServiceFilterParams, "includes">,
-    session: SessionEntity
-  ): Promise<InvoiceModel>;
-}
+import {
+  CreateOutgoingParams,
+  InvoiceService,
+  InvoiceServiceFilter,
+  InvoiceServiceFilterParams,
+} from "@/features/invoice/domain/sources/invoice";
+import { OutgoingInvoiceModel } from "../models/outgoing-invoice";
+import { HttpRequest } from "@/core/helpers/http-request";
+import { InvoiceItemModel } from "@/features/invoice/data/models/invoice-item";
+import { FileModel } from "@/features/file/data/models/file";
+import { PartnerModel } from "@/features/partner/data/models/partner";
 
 export class InvoiceServiceImpl implements InvoiceService {
-  public async get(filter: InvoiceServiceFilter, params: Pick<InvoiceServiceFilterParams, "includes">, session: SessionEntity): Promise<InvoiceModel> {
+  constructor(private readonly http: HttpRequest) {}
+
+  public async createOutgoing(params: CreateOutgoingParams, session: SessionEntity): Promise<OutgoingInvoiceModel> {
+    try {
+      const path = "/invoices/outgoing";
+      const method = "POST";
+      const body = {
+        recipient_id: params.recipient.id,
+        invoice_number: params.invoiceNumber,
+        invoice_date: params.invoiceDate.toISO(),
+        due_date: params.dueDate.toISO(),
+        items: params.items.map((item) => ({
+          name: item.name,
+          description: item.description,
+          qty: item.qty,
+          price: item.price,
+          tax_type: item.taxType,
+          tax_base: item.taxBase,
+          tax: item.tax,
+          discount_type: item.discountType,
+          discount: item.discount,
+          total: item.total,
+        })),
+        note: params.note,
+        tnc: params.tnc,
+        payment_configuration: params.paymentConfiguration.map((config) => ({
+          payment_method_id: config.paymentMethod.id,
+          is_enabled: config.isEnabled,
+          charge_fee_on: config.chargeFeeOn,
+        })),
+        send_channel: params.sendChannel,
+      };
+
+      const result = await this.http.request({ path, method, body, session });
+      if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      if (!result.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      // Now we will upload the signature
+      let signature: FileModel | undefined;
+      if (params.signature) {
+        const signaturePath = `/invoices/outgoing/${result.id}/signature`;
+        const signatureMethod = "POST";
+        const signatureBody = new FormData();
+        signatureBody.append("signature", params.signature);
+
+        const signatureResult = await this.http.request(
+          {
+            path: signaturePath,
+            method: signatureMethod,
+            body: signatureBody,
+            session,
+          },
+          { inferContentType: false },
+        );
+
+        if (!signatureResult) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+        signature = FileModel.fromJson(signatureResult);
+      }
+
+      // Generate InvoiceItemModel[] from result.items
+      const items = result.items.map(InvoiceItemModel.fromJson);
+      const recipient = PartnerModel.fromJson(result.recipient);
+      return OutgoingInvoiceModel.fromJson(result, { items, recipient, signature });
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async get(
+    filter: InvoiceServiceFilter,
+    params: Pick<InvoiceServiceFilterParams, "includes">,
+    session: SessionEntity,
+  ): Promise<InvoiceModel> {
     try {
       if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
       if (!filter.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
@@ -35,8 +100,8 @@ export class InvoiceServiceImpl implements InvoiceService {
 
       const method = "GET";
       const headers = {
-        "Authorization": `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id
+        Authorization: `Bearer ${session.accessToken}`,
+        "X-Account-Id": session.selectedAccount.id,
       };
 
       const response = await fetch(url, { method, headers });
@@ -59,7 +124,11 @@ export class InvoiceServiceImpl implements InvoiceService {
     }
   }
 
-  public async list(filter: InvoiceServiceFilter, params: InvoiceServiceFilterParams, session: SessionEntity): Promise<InvoiceModel[]> {
+  public async list(
+    filter: InvoiceServiceFilter,
+    params: InvoiceServiceFilterParams,
+    session: SessionEntity,
+  ): Promise<InvoiceModel[]> {
     try {
       if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
 
@@ -71,8 +140,8 @@ export class InvoiceServiceImpl implements InvoiceService {
 
       const method = "GET";
       const headers = {
-        "Authorization": `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id
+        Authorization: `Bearer ${session.accessToken}`,
+        "X-Account-Id": session.selectedAccount.id,
       };
 
       const response = await fetch(url, { method, headers });
@@ -88,11 +157,10 @@ export class InvoiceServiceImpl implements InvoiceService {
 
       const data = await response.json();
       if (!data || !Array.isArray(data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return data.map(item => InvoiceModel.fromJson(item));
+      return data.map((item) => InvoiceModel.fromJson(item));
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
     }
   }
-
 }

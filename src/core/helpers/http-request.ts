@@ -4,7 +4,7 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 interface FetchParams {
   path: string;
   method: "POST" | "GET" | "PUT" | "DELETE" | "PATH";
-  body?: Record<string, any>;
+  body?: Record<string, any> | FormData;
   searchParams?: Record<string, any>;
   session: SessionEntity;
 }
@@ -13,6 +13,7 @@ interface FetchConfig {
   requireAuth?: boolean;
   requireAccount?: boolean;
   contentType?: string;
+  inferContentType?: boolean;
 }
 
 export class HttpRequest {
@@ -21,6 +22,7 @@ export class HttpRequest {
     config: FetchConfig = {
       requireAuth: true,
       requireAccount: true,
+      inferContentType: false,
       contentType: "application/json",
     },
   ) {
@@ -38,13 +40,19 @@ export class HttpRequest {
     const headers = {
       ...(config.requireAuth && { Authorization: `Bearer ${params.session.accessToken}` }),
       ...(config.requireAccount && { "X-Account-Id": params.session.selectedAccount?.id }),
-      ...(config.contentType && { "Content-Type": config.contentType }),
+      ...(!config.inferContentType && config.contentType && { "Content-Type": config.contentType }),
+    };
+
+    const generateBody = (body?: Record<string, any> | FormData) => {
+      if (!body) return undefined;
+      if (body instanceof FormData) return body;
+      return JSON.stringify(body);
     };
 
     const response = await fetch(url, {
       method: params.method,
       headers,
-      body: params.body ? JSON.stringify(params.body) : undefined,
+      body: generateBody(params.body),
     });
 
     if (!response.ok) {

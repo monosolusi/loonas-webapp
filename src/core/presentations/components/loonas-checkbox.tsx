@@ -5,6 +5,7 @@ interface LoonasCheckboxProps {
   checked: boolean;
   onChange?: (checked: boolean) => void | Promise<void>;
   children?: React.ReactNode;
+  disabled?: boolean;
 }
 
 export function LoonasCheckbox(props: LoonasCheckboxProps) {
@@ -18,7 +19,8 @@ export function LoonasCheckbox(props: LoonasCheckboxProps) {
       <Checkbox
         checked={props.checked}
         onChange={props.onChange}
-        className="group data-[checked]:bg-primary-default data-[checked]:border-primary-default mt-1 flex size-5 flex-row items-center justify-center rounded-sm border-1 border-gray-500 bg-white"
+        disabled={props.disabled}
+        className="group data-[checked]:bg-primary-default data-[checked]:border-primary-default mt-1 flex size-5 flex-row items-center justify-center rounded-sm border-1 border-gray-500 bg-white disabled:border-gray-200 data-[disabled]:border-gray-200 data-[disabled]:bg-gray-50"
       >
         <svg
           fill="none"
@@ -30,7 +32,7 @@ export function LoonasCheckbox(props: LoonasCheckboxProps) {
             strokeWidth={3}
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="opacity-0 group-data-[checked]:opacity-100"
+            className="opacity-0 group-data-[checked]:opacity-100 group-data-[disabled]:opacity-0"
           />
         </svg>
       </Checkbox>

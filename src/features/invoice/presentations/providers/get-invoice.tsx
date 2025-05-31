@@ -5,15 +5,16 @@ import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
-import { InvoiceServiceImpl } from "@/features/invoice/data/services/invoice";
+import { InvoiceServiceImpl } from "@/features/invoice/data/sources/invoice";
 import { InvoiceRepositoryImpl } from "@/features/invoice/data/repositories/invoice";
 import { DataFailed } from "@/core/resources/data-state";
 import { GetInvoiceUseCase, GetInvoiceUseCaseParams } from "@/features/invoice/domain/usecases/get-invoice";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 interface GetInvoiceContextProps {
-  invoice?: InvoiceEntity,
-  loading: boolean,
-  error?: ServerError,
+  invoice?: InvoiceEntity;
+  loading: boolean;
+  error?: ServerError;
 }
 
 interface GetInvoiceProviderProps {
@@ -23,7 +24,7 @@ interface GetInvoiceProviderProps {
 }
 
 const GetInvoiceContext = React.createContext<GetInvoiceContextProps>({
-  loading: false
+  loading: false,
 });
 
 export function GetInvoiceProvider(props: GetInvoiceProviderProps) {
@@ -36,15 +37,16 @@ export function GetInvoiceProvider(props: GetInvoiceProviderProps) {
     setError(undefined);
 
     try {
+      const httpRequest = new HttpRequest();
       const sessionService = new LocalStorageSessionService();
-      const invoiceService = new InvoiceServiceImpl();
+      const invoiceService = new InvoiceServiceImpl(httpRequest);
       const invoiceRepository = new InvoiceRepositoryImpl(invoiceService);
       const sessionRepository = new SessionRepositoryImpl(sessionService);
 
       const getInvoice = new GetInvoiceUseCase(invoiceRepository, sessionRepository);
       const getInvoiceParams = new GetInvoiceUseCaseParams({
         id: props.id,
-        includes: includes
+        includes: includes,
       });
 
       const result = await getInvoice.execute(getInvoiceParams);
@@ -59,18 +61,11 @@ export function GetInvoiceProvider(props: GetInvoiceProviderProps) {
     }
   };
 
-
   useEffect(() => {
     fetchInvoice(props.id, props.includes);
   }, [props.id, props.includes]);
 
-  return (
-    <GetInvoiceContext.Provider
-      value={{ invoice, loading, error }}
-    >
-      {props.children}
-    </GetInvoiceContext.Provider>
-  );
+  return <GetInvoiceContext.Provider value={{ invoice, loading, error }}>{props.children}</GetInvoiceContext.Provider>;
 }
 
 export function useGetInvoice() {
