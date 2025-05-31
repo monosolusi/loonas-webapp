@@ -12,6 +12,7 @@ import { TableBody } from "@/core/presentations/components/table-body";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { SenderInformationImpl } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/sender-information-impl";
+import { InvoiceTopSummary } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/invoice-top-summary";
 
 const REVIEW_SECTION_STEP = 3;
 
@@ -41,25 +42,7 @@ export default function ReviewSection() {
               <div className="flex flex-1 flex-row space-x-4">
                 <SenderInformationImpl />
                 <div className="flex-1"></div>
-                <div className="flex flex-1 flex-col space-y-1 self-end">
-                  <h3 className="mb-5 text-right text-2xl font-semibold text-gray-900">INVOICE</h3>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="text-end font-light text-gray-500">Referensi</div>
-                    <div className="flex-1 text-end font-semibold">INV/2025/05/0002</div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="flex-1 text-end font-light text-gray-500">Tanggal Invoice</div>
-                    <div className="text-end font-semibold">31 Mei 2025</div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="flex-1 text-end font-light text-gray-500">Tanggal Jatuh Tempo</div>
-                    <div className="text-end font-semibold">10 Juni 2025</div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="flex-1 text-end font-light text-gray-500">NPWP</div>
-                    <div className="text-end font-semibold">1000 0000 0185 2391</div>
-                  </div>
-                </div>
+                <InvoiceTopSummary />
               </div>
               <div className="mt-16 flex w-1/3 flex-col space-y-1">
                 <div className="flex-1 text-gray-500 italic">Tagihan Untuk</div>
