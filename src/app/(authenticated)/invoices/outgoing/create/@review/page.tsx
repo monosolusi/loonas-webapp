@@ -10,6 +10,9 @@ import { SenderInformationImpl } from "@/app/(authenticated)/invoices/outgoing/c
 import { InvoiceTopSummary } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/invoice-top-summary";
 import { BilLTo } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/bill-to";
 import { InvoiceItemTable } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/invoice-item-table";
+import { Note } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/note";
+import { Tnc } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/tnc";
+import { Signature } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/signature";
 
 const REVIEW_SECTION_STEP = 3;
 
@@ -49,33 +52,11 @@ export default function ReviewSection() {
               </div>
               <div className="mt-8 flex flex-1 flex-row space-x-4">
                 <div className="flex-1 flex-col space-y-4">
-                  <div className="flex-1 flex-col space-y-1">
-                    <div className="font-semibold text-gray-900">Keterangan</div>
-                    <div className="text-gray-500">
-                      Pembayaran termin kedua untuk penyelenggaraan acara "Tech Startup Day 2025", termasuk sewa venue,
-                      konsumsi, dan dokumentasi.
-                    </div>
-                  </div>
-                  <div className="flex-1 flex-col space-y-1">
-                    <div className="font-semibold text-gray-900">Syarat & Ketentuan</div>
-                    <div className="text-gray-500">
-                      {"Pembayaran dilakukan maksimal 7 hari sejak tanggal invoice.\nKeberatan atas tagihan wajib disampaikan dalam 3 hari kerja.\nInvoice ini berlaku sebagai dokumen resmi sesuai hukum Indonesia.".replace(
-                        /\n/g,
-                        "<br>",
-                      )}
-                    </div>
-                  </div>
+                  <Note />
+                  <Tnc />
                 </div>
                 <div className="flex-1">
-                  <div className="flex flex-col items-end space-y-4">
-                    <div className="text-gray-500">31 Mei 2025</div>
-                    <img
-                      alt="signature"
-                      className="w-1/2"
-                      src="https://res.cloudinary.com/monosolusi/image/upload/v1748665598/loonas/dummy-signature_kbwyhn.png"
-                    />
-                    <div className="text-gray-500">PT. Mono Solusi Indonesia</div>
-                  </div>
+                  <Signature />
                 </div>
               </div>
               <div className="mt-8 flex flex-1 flex-col items-start justify-start text-xs font-light text-gray-400 italic">
