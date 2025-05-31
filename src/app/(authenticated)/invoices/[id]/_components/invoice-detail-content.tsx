@@ -37,23 +37,20 @@ interface InvoiceDetailContentProps {
 }
 
 export function InvoiceDetailContent(props: InvoiceDetailContentProps) {
-
   const generatedBodyItems = useMemo(() => {
     return props.data.documents.map((doc) => ({
       row: [
         {
           node: (
             <div className="flex flex-col space-y-1">
-              <div className="text-gray-900 font-bold">
-                <div className="overflow-hidden overflow-ellipsis max-w-[220px]">
-                  {doc.name}
-                </div>
+              <div className="font-bold text-gray-900">
+                <div className="max-w-[220px] overflow-hidden overflow-ellipsis">{doc.name}</div>
               </div>
               {doc.invoiceNumber && <div className="text-xs text-gray-500">{doc.invoiceNumber}</div>}
               {doc.note && <div className="text-xs text-gray-500">{doc.note}</div>}
             </div>
           ),
-          hideOnMobile: false
+          hideOnMobile: false,
         },
         {
           node: (
@@ -68,16 +65,16 @@ export function InvoiceDetailContent(props: InvoiceDetailContentProps) {
               </span>
             </div>
           ),
-          hideOnMobile: true
+          hideOnMobile: true,
         },
-        { node: IDRFormatter.toCurrency(doc.amount), hideOnMobile: true }
-      ]
+        { node: IDRFormatter.toCurrency(doc.amount), hideOnMobile: true },
+      ],
     }));
   }, [props.data.documents]);
 
   return (
     <div className="flex flex-col space-y-6">
-      <div className="flex flex-row space-x-2 justify-between items-center">
+      <div className="flex flex-row items-center justify-between space-x-2">
         <div className="flex">
           <InvoiceStatusChip status={props.data.status} />
         </div>
@@ -87,19 +84,21 @@ export function InvoiceDetailContent(props: InvoiceDetailContentProps) {
         <div className="flex-3">
           <TableContainer>
             <Table>
-              <TableHeader items={[
-                { node: "Dokumen", hideOnMobile: false },
-                {
-                  node: (
-                    <div className="flex flex-col space-y-1">
-                      <span>Tanggal Faktur</span>
-                      <span>Tanggal Jatuh Temo</span>
-                    </div>
-                  ),
-                  hideOnMobile: true
-                },
-                { node: "Jumlah", hideOnMobile: true }
-              ]} />
+              <TableHeader
+                items={[
+                  { node: "Dokumen", hideOnMobile: false },
+                  {
+                    node: (
+                      <div className="flex flex-col space-y-1">
+                        <span>Tanggal Faktur</span>
+                        <span>Tanggal Jatuh Temo</span>
+                      </div>
+                    ),
+                    hideOnMobile: true,
+                  },
+                  { node: "Jumlah", hideOnMobile: true },
+                ]}
+              />
               <TableBody items={generatedBodyItems} />
             </Table>
           </TableContainer>
@@ -112,7 +111,7 @@ export function InvoiceDetailContent(props: InvoiceDetailContentProps) {
             accountHolderName={props.data.paymentDetail.accountHolderName}
             total={props.data.paymentDetail.total}
             fee={props.data.paymentDetail.fee}
-            totalPayment={props.data.paymentDetail.total + props.data.paymentDetail.fee}
+            totalPayment={Number(props.data.paymentDetail.total) + Number(props.data.paymentDetail.fee)}
             showActions={false}
           />
         </div>
