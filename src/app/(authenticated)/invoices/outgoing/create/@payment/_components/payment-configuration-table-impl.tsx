@@ -1,13 +1,17 @@
-import { PaymentConfigurationTable } from "@/app/(authenticated)/invoices/outgoing/create/@payment/_components/payment-configuration-table";
-import { useListPaymentMethod } from "@/features/payment/presentations/hooks/use-list-payment-method";
+import {
+  PaymentConfigurationTable
+} from "@/app/(authenticated)/invoices/outgoing/create/@payment/_components/payment-configuration-table";
 import { useMemo } from "react";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import {
+  useCreateOutgoingInvoice
+} from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 
 export function PaymentConfigurationTableImpl() {
-  const { paymentMethods } = useListPaymentMethod();
+  const { paymentConfiguration, setPaymentConfiguration } = useCreateOutgoingInvoice();
 
   const formattedData = useMemo(() => {
-    if (!paymentMethods) return [];
     const generateFeeInText = (variableFee: number, fixedFee: number) => {
       if (variableFee > 0 && fixedFee > 0) return `${variableFee}% + ${IDRFormatter.toCurrency(fixedFee)}`;
       if (variableFee > 0) return `${variableFee}%`;
@@ -15,17 +19,41 @@ export function PaymentConfigurationTableImpl() {
       return "Gratis";
     };
 
-    return paymentMethods.map((paymentMethod) => ({
-      id: paymentMethod.id,
-      name: paymentMethod.title,
-      isEnabled: true,
-      paymentSchemes: paymentMethod.schemes.map((scheme) => ({
+    return paymentConfiguration.map((configuration) => ({
+      id: configuration.paymentMethod.id,
+      name: configuration.paymentMethod.title,
+      isEnabled: configuration.isEnabled,
+      chargeFeeOn: configuration.chargeFeeOn,
+      paymentSchemes: configuration.paymentMethod.schemes.map((scheme) => ({
         name: scheme.name,
         image: scheme.logoUrl,
       })),
-      feeInText: generateFeeInText(paymentMethod.pricing.percentageFee, paymentMethod.pricing.baseFee),
+      feeInText: generateFeeInText(
+        configuration.paymentMethod.pricing.percentageFee,
+        configuration.paymentMethod.pricing.baseFee,
+      ),
     }));
-  }, [paymentMethods]);
+  }, [paymentConfiguration]);
 
-  return <PaymentConfigurationTable data={formattedData} />;
+  const handleEnableChange = (params: { id: string; isEnabled: boolean }) => {
+    if (!setPaymentConfiguration) return;
+    setPaymentConfiguration((prev) => {
+      const index = prev.findIndex((item) => item.paymentMethod.id === params.id);
+      if (index === -1) return prev;
+      prev[index].isEnabled = params.isEnabled;
+      return [...prev];
+    });
+  };
+
+  const handleChargeFeeOnChange = (params: { id: string; chargeFeeOn: ChargeFeeOn }) => {
+    if (!setPaymentConfiguration) return;
+    setPaymentConfiguration((prev) => {
+      const index = prev.findIndex((item) => item.paymentMethod.id === params.id);
+      if (index === -1) return prev;
+      prev[index].chargeFeeOn = params.chargeFeeOn;
+      return [...prev];
+    })
+  }
+
+  return <PaymentConfigurationTable data={formattedData} onEnableChange={handleEnableChange} onChargeFeeOnChange={handleChargeFeeOnChange} />;
 }

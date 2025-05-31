@@ -5,6 +5,7 @@ import { TableBody } from "@/core/presentations/components/table-body";
 import { Switch } from "@headlessui/react";
 import { SelectInput } from "@/core/presentations/components/select-input";
 import { TableContainer } from "@/core/presentations/components/table-container";
+import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 
 export interface PaymentSchemeItem {
   image: string;
@@ -17,10 +18,13 @@ export interface PaymentConfigurationItem {
   isEnabled: boolean;
   paymentSchemes: PaymentSchemeItem[];
   feeInText: string;
+  chargeFeeOn: ChargeFeeOn;
 }
 
 interface PaymentConfigurationTableProps {
   data: PaymentConfigurationItem[];
+  onEnableChange?: (params: { id: string; isEnabled: boolean }) => void;
+  onChargeFeeOnChange?: (params: { id: string; chargeFeeOn: ChargeFeeOn }) => void;
 }
 
 export function PaymentConfigurationTable(props: PaymentConfigurationTableProps) {
@@ -33,13 +37,13 @@ export function PaymentConfigurationTable(props: PaymentConfigurationTableProps)
               <div className="font-semibold text-gray-500">{item.name}</div>
               <div className="flex flex-row items-center space-x-2">
                 <Switch
-                  checked={true}
-                  onChange={() => {}}
+                  checked={item.isEnabled}
+                  onChange={(checked) => props.onEnableChange?.({ id: item.id, isEnabled: checked })}
                   className="group data-checked:bg-primary-default inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition"
                 >
                   <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-checked:translate-x-6" />
                 </Switch>
-                <div className="text-gray-900">Aktif</div>
+                <div className="min-w-[80px] text-gray-900">{item.isEnabled ? "Aktif" : "Non-Aktif"}</div>
               </div>
             </div>
           ),
@@ -66,6 +70,9 @@ export function PaymentConfigurationTable(props: PaymentConfigurationTableProps)
                 },
                 { value: "INVOICE_SENDER", label: "Ditanggung Kamu" },
               ]}
+              disabled={!item.isEnabled}
+              value={item.chargeFeeOn}
+              onChange={({ value }) => props.onChargeFeeOnChange?.({ id: item.id, chargeFeeOn: value as ChargeFeeOn })}
             />
           ),
           hideOnMobile: false,

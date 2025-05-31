@@ -1,9 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { DateTime } from "luxon";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
+import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
+import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
+import { useListPaymentMethod } from "@/features/payment/presentations/hooks/use-list-payment-method";
 
 export enum DiscountType {
   PERCENTAGE = "PERCENTAGE",
@@ -24,6 +27,12 @@ export interface InvoiceItem {
   total: number;
 }
 
+interface PaymentConfiguration {
+  paymentMethod: PaymentGatewayEntity;
+  isEnabled: boolean;
+  chargeFeeOn: ChargeFeeOn;
+}
+
 interface CreateOutgoingInvoiceContextProps {
   currentStep: number;
   nextStep?: () => void;
@@ -36,6 +45,8 @@ interface CreateOutgoingInvoiceContextProps {
   note?: string;
   tnc?: string;
   signature?: File | null;
+  paymentConfiguration: PaymentConfiguration[];
+  setPaymentConfiguration?: React.Dispatch<React.SetStateAction<PaymentConfiguration[]>>;
   setSignature?: React.Dispatch<React.SetStateAction<File | null>>;
   setTnc?: React.Dispatch<React.SetStateAction<string>>;
   setNote?: React.Dispatch<React.SetStateAction<string>>;
@@ -57,9 +68,12 @@ const CreateOutgoingInvoiceContext = React.createContext<CreateOutgoingInvoiceCo
   invoiceDate: DateTime.now().setZone("Asia/Jakarta"),
   dueDate: DateTime.now().setZone("Asia/Jakarta").plus({ days: 7 }),
   items: [],
+  paymentConfiguration: [],
 });
 
 export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProviderProps) {
+  const { paymentMethods } = useListPaymentMethod();
+
   const [currentStep, setCurrentStep] = useState(0);
   const [recipient, setRecipient] = useState<PartnerEntity>();
   const [invoiceNumber, setInvoiceNumber] = useState<string>("");
@@ -69,6 +83,18 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
   const [note, setNote] = useState<string>("");
   const [tnc, setTnc] = useState<string>("");
   const [signature, setSignature] = useState<File | null>(null);
+  const [paymentConfiguration, setPaymentConfiguration] = useState<PaymentConfiguration[]>([]);
+
+  useEffect(() => {
+    if (!paymentMethods) return;
+    const paymentConfiguration = paymentMethods.map((paymentMethod) => ({
+      paymentMethod: paymentMethod,
+      isEnabled: true,
+      chargeFeeOn: ChargeFeeOn.INVOICE_RECEIVER,
+    }));
+
+    setPaymentConfiguration(paymentConfiguration);
+  }, [paymentMethods]);
 
   const nextStep = () => {
     setCurrentStep((prev) => {
@@ -118,6 +144,8 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
         items,
         note,
         tnc,
+        paymentConfiguration,
+        setPaymentConfiguration,
         signature,
         setSignature,
         setTnc,

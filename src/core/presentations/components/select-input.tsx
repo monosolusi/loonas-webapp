@@ -16,6 +16,7 @@ export function SelectInput(props: SelectInputProps) {
           value={props.value}
           disableFirstOption={props.disableFirstOption}
           required={props.required}
+          disabled={props.disabled}
         />
       </div>
     </>

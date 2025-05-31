@@ -10,16 +10,16 @@ interface SelectData {
 
 export interface SelectProps {
   id?: string;
-  value?: string,
+  value?: string;
   onChange?: (data: SelectData) => void;
   data: SelectData[];
   disableFirstOption?: boolean;
   isError?: boolean;
   required?: boolean;
+  disabled?: boolean;
 }
 
-export function Select({ id, data, value, onChange, disableFirstOption, isError, required }: SelectProps) {
-
+export function Select({ id, data, value, onChange, disableFirstOption, isError, required, disabled }: SelectProps) {
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const value = e.target.value;
     const label = e.target.options[e.target.selectedIndex].text;
@@ -34,14 +34,12 @@ export function Select({ id, data, value, onChange, disableFirstOption, isError,
         value={value}
         onChange={handleChange}
         data-error={isError}
-        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-default sm:text-sm/6 data-[error=true]:outline-red-400 group-data[error=true]:outline-red-400"
+        className="focus:outline-primary-default group-data[error=true]:outline-red-400 col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200 data-[error=true]:outline-red-400 sm:text-sm/6"
         required={required}
+        disabled={disabled ?? false}
       >
         {data.map((item, index) => (
-          <option
-            key={item.value}
-            value={item.value}
-            disabled={index === 0 && disableFirstOption ? true : false}>
+          <option key={item.value} value={item.value} disabled={index === 0 && disableFirstOption ? true : false}>
             {item.label}
           </option>
         ))}
