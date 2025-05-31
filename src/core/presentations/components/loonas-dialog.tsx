@@ -15,11 +15,7 @@ export function LoonasDialog(props: LoonasdialogProps) {
   };
 
   return (
-    <Dialog
-      open={props.open}
-      onClose={handleClose}
-      className="relative z-10"
-    >
+    <Dialog open={props.open} onClose={handleClose} className="relative z-10">
       <DialogBackdrop
         className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
         transition
@@ -31,7 +27,7 @@ export function LoonasDialog(props: LoonasdialogProps) {
             transition
           >
             {props.title && (
-              <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
+              <DialogTitle as="h3" className="text-lg font-semibold text-gray-900">
                 {props.title}
               </DialogTitle>
             )}

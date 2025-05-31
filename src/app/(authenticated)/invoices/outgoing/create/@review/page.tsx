@@ -5,7 +5,6 @@ import { v4 as uuid } from "uuid";
 import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { Card } from "@/core/presentations/components/card";
 import { OutlinedButton } from "@/core/presentations/components/outlined-button";
-import { FilledButton } from "@/core/presentations/components/filled-button";
 import { SenderInformationImpl } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/sender-information-impl";
 import { InvoiceTopSummary } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/invoice-top-summary";
 import { BilLTo } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/bill-to";
@@ -13,6 +12,7 @@ import { InvoiceItemTable } from "@/app/(authenticated)/invoices/outgoing/create
 import { Note } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/note";
 import { Tnc } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/tnc";
 import { Signature } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/signature";
+import { SendOptionsButton } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/send-options-button";
 
 const REVIEW_SECTION_STEP = 3;
 
@@ -33,7 +33,7 @@ export default function ReviewSection() {
           </div>
           <div className="hidden flex-1 flex-row space-x-2 md:flex md:justify-end md:self-end">
             <OutlinedButton>Download PDF</OutlinedButton>
-            <FilledButton>Kirim Faktur Keluaran</FilledButton>
+            <SendOptionsButton />
           </div>
         </div>
         <div className="mt-4 flex flex-1 flex-row space-x-4">
