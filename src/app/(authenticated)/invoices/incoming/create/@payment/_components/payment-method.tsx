@@ -1,14 +1,14 @@
-import { RadioGroup } from "@headlessui/react";
-import {
-  PaymentMethodItem
-} from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/payment-method-item";
+"use client";
+
 import React from "react";
-import { usePaymentGateway } from "@/features/payment/presentations/providers/payment-gateway";
+import { RadioGroup } from "@headlessui/react";
+import { PaymentMethodItem } from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/payment-method-item";
 import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
+import { useListPaymentMethod } from "@/features/payment/presentations/hooks/use-list-payment-method";
 
 export function PaymentMethod() {
-  const { paymentGateways } = usePaymentGateway();
+  const { paymentMethods } = useListPaymentMethod();
   const { paymentGateway, setPaymentGateway, setPaymentScheme } = useCreateIncomingInvoice();
 
   const handleSelectGateway = (gateway: PaymentGatewayEntity) => {
@@ -22,7 +22,7 @@ export function PaymentMethod() {
   return (
     <RadioGroup value={paymentGateway || null} onChange={handleSelectGateway}>
       <div className="flex flex-col space-y-4">
-        {paymentGateways.map((gateway) => <PaymentMethodItem key={gateway.id} payment={gateway} />)}
+        {paymentMethods?.map((gateway) => <PaymentMethodItem key={gateway.id} payment={gateway} />)}
       </div>
     </RadioGroup>
   );
