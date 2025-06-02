@@ -73,10 +73,15 @@ export class InvoiceServiceImpl implements InvoiceService {
         signature = FileModel.fromJson(signatureResult);
       }
 
+      const finalisePath = `/invoices/outgoing/${result.id}/finalise`;
+      const finaliseMethod = "POST";
+      const finaliseResult = await this.http.request({ path: finalisePath, method: finaliseMethod, session });
+      if (!finaliseResult) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
       // Generate InvoiceItemModel[] from result.items
-      const items = result.items.map(InvoiceItemModel.fromJson);
-      const recipient = PartnerModel.fromJson(result.recipient);
-      return OutgoingInvoiceModel.fromJson(result, { items, recipient, signature });
+      const items = finaliseResult.items.map(InvoiceItemModel.fromJson);
+      const recipient = PartnerModel.fromJson(finaliseResult.recipient);
+      return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature });
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
