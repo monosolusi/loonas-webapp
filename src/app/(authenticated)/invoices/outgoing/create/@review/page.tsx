@@ -1,10 +1,8 @@
 "use client";
 
 import React from "react";
-import { v4 as uuid } from "uuid";
 import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { Card } from "@/core/presentations/components/card";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
 import { SenderInformationImpl } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/sender-information-impl";
 import { InvoiceTopSummary } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/invoice-top-summary";
 import { BilLTo } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/bill-to";
@@ -32,7 +30,6 @@ export default function ReviewSection() {
             </p>
           </div>
           <div className="hidden flex-1 flex-row space-x-2 md:flex md:justify-end md:self-end">
-            <OutlinedButton>Download PDF</OutlinedButton>
             <SendOptionsButton />
           </div>
         </div>
@@ -60,7 +57,6 @@ export default function ReviewSection() {
                 </div>
               </div>
               <div className="mt-8 flex flex-1 flex-col items-start justify-start text-xs font-light text-gray-400 italic">
-                <div className="flex-1">[{uuid()}]</div>
                 <div className="flex-1">Invoice ini dibuat dengan aplikasi loonas.id</div>
               </div>
             </div>

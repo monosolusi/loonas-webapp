@@ -15,7 +15,7 @@ export function InvoiceStatusChip(props: InvoiceStatusChipProps) {
     FAILED: { label: "Gagal", className: "bg-red-100 text-red-700" },
     CANCELLED: { label: "Dibatalkan", className: "bg-pink-100 text-pink-700" },
     DRAFT: { label: "Draft", className: "bg-gray-100 text-gray-500" },
-    READY_TO_SEND: { label: "Invoice Siap", className: "bg-gray-100 text-gray-500" },
+    READY_TO_SEND: { label: "Dalam Antrian Kirim", className: "bg-gray-100 text-gray-500" },
     SENT: { label: "Invoice Terkirim", className: "bg-gray-100 text-gray-500" },
     PAID: { label: "Sudah Dibayar", className: "bg-gray-100 text-gray-500" },
   };
