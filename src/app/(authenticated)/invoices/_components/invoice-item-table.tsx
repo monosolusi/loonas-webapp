@@ -4,30 +4,40 @@ import { TableBody } from "@/core/presentations/components/table-body";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { TableContainer } from "@/core/presentations/components/table-container";
 import React, { useMemo } from "react";
-import {
-  DiscountType,
-  useCreateOutgoingInvoice,
-} from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 
-export function InvoiceItemTable() {
-  const { items } = useCreateOutgoingInvoice();
+interface InvoiceItemTableProps {
+  items: {
+    name: string;
+    description?: string;
+    qty: number;
+    price: number;
+    discountType?: DiscountType;
+    discount?: number;
+    taxType: TaxType;
+    taxBase: number;
+    tax: number;
+    total: number;
+  }[];
+}
 
+export function InvoiceItemTable(props: InvoiceItemTableProps) {
   const totalTaxBase = useMemo(() => {
-    return items.reduce((sum, row) => sum + row.taxBase, 0);
-  }, [items]);
+    return props.items.reduce((sum, row) => sum + row.taxBase, 0);
+  }, [props.items]);
 
   const totalTax = useMemo(() => {
-    return items.reduce((sum, row) => sum + row.tax, 0);
-  }, [items]);
+    return props.items.reduce((sum, row) => sum + row.tax, 0);
+  }, [props.items]);
 
   const totalAmount = useMemo(() => {
-    return items.reduce((sum, row) => sum + row.total, 0);
-  }, [items]);
+    return props.items.reduce((sum, row) => sum + row.total, 0);
+  }, [props.items]);
 
   const nonTaxableAmount = useMemo(() => {
-    return items.filter((row) => row.taxType === TaxType.NON_TAXABLE).reduce((sum, row) => sum + row.total, 0);
-  }, [items]);
+    return props.items.filter((row) => row.taxType === TaxType.NON_TAXABLE).reduce((sum, row) => sum + row.total, 0);
+  }, [props.items]);
 
   const generateDiscountString = (discountType?: DiscountType, discount?: number) => {
     if (!discountType || !discount) return "-";
@@ -37,8 +47,8 @@ export function InvoiceItemTable() {
   };
 
   const formattedItems = useMemo(() => {
-    if (!items) return [];
-    return items.map((item) => ({
+    if (!props.items) return [];
+    return props.items.map((item) => ({
       row: [
         {
           node: (
@@ -72,7 +82,7 @@ export function InvoiceItemTable() {
         { node: IDRFormatter.toCurrency(110000), hideOnMobile: false, className: "text-right" },
       ],
     }));
-  }, [items]);
+  }, [props.items]);
 
   return (
     <TableContainer className="rounded-xs shadow-none">

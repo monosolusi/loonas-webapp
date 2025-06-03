@@ -2,15 +2,8 @@
 
 import React from "react";
 import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
-import { Card } from "@/core/presentations/components/card";
-import { SenderInformationImpl } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/sender-information-impl";
-import { InvoiceTopSummary } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/invoice-top-summary";
-import { BilLTo } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/bill-to";
-import { InvoiceItemTable } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/invoice-item-table";
-import { Note } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/note";
-import { Tnc } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/tnc";
-import { Signature } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/signature";
 import { SendOptionsButton } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/send-options-button";
+import { InvoicePreviewImpl } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/invoice-preview-impl";
 
 const REVIEW_SECTION_STEP = 3;
 
@@ -34,33 +27,7 @@ export default function ReviewSection() {
           </div>
         </div>
         <div className="mt-4 flex flex-1 flex-row space-x-4">
-          <Card className="w-full rounded-xs text-sm shadow-md">
-            <div className="flex flex-col space-y-4">
-              <div className="flex flex-1 flex-row space-x-4">
-                <SenderInformationImpl />
-                <div className="flex-1"></div>
-                <InvoiceTopSummary />
-              </div>
-              <div className="mt-16 flex w-1/3 flex-col space-y-1">
-                <BilLTo />
-              </div>
-              <div className="flex flex-1">
-                <InvoiceItemTable />
-              </div>
-              <div className="mt-8 flex flex-1 flex-row space-x-4">
-                <div className="flex-1 flex-col space-y-4">
-                  <Note />
-                  <Tnc />
-                </div>
-                <div className="flex-1">
-                  <Signature />
-                </div>
-              </div>
-              <div className="mt-8 flex flex-1 flex-col items-start justify-start text-xs font-light text-gray-400 italic">
-                <div className="flex-1">Invoice ini dibuat dengan aplikasi loonas.id</div>
-              </div>
-            </div>
-          </Card>
+          <InvoicePreviewImpl />
         </div>
       </div>
     </>
