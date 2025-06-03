@@ -6,8 +6,9 @@ import { AbstractEntity } from "@/core/resources/entity";
 import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { InvoiceSummaryDocumentEntity } from "@/features/invoice/domain/entities/invoice-summary-document";
+import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 
-export type InvoiceStatus = PaymentRequestStatus;
+export type InvoiceStatus = PaymentRequestStatus | OutgoingInvoiceStatus;
 
 interface InvoiceEntityConstructor {
   id: string;

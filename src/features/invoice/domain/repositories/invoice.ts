@@ -9,6 +9,7 @@ import { DateTime } from "luxon";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { InvoiceSendChannel } from "@/features/invoice/domain/enums/invoice-send-channel";
+import { CombinedInvoiceSummaryEntity } from "@/features/invoice/domain/entities/combined-invoice-summary";
 
 export interface InvoiceItem {
   name: string;
@@ -65,4 +66,6 @@ export interface InvoiceRepository {
   ): Promise<DataState<InvoiceEntity>>;
 
   createOutgoing(params: CreateOutgoingParams, session: SessionEntity): Promise<DataState<OutgoingInvoiceEntity>>;
+
+  listCombinedInvoiceSummary(session: SessionEntity): Promise<DataState<CombinedInvoiceSummaryEntity[]>>;
 }

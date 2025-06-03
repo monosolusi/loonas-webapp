@@ -12,7 +12,7 @@ function classNames(...classes: any) {
 export function TableContainer(props: TableContainerProps) {
   return (
     <div className="inline-block min-w-full py-2 align-middle">
-      <div className={classNames("overflow-hidden rounded-md shadow-sm ring-1 ring-black/5", props.className)}>
+      <div className={classNames("overflow-hidden rounded-sm shadow-sm ring-1 ring-black/5", props.className)}>
         {props.children}
       </div>
     </div>

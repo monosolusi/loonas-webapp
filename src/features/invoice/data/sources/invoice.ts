@@ -12,9 +12,19 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { InvoiceItemModel } from "@/features/invoice/data/models/invoice-item";
 import { FileModel } from "@/features/file/data/models/file";
 import { PartnerModel } from "@/features/partner/data/models/partner";
+import { CombinedInvoiceSummaryModel } from "../models/combined-invoice-summary";
 
 export class InvoiceServiceImpl implements InvoiceService {
   constructor(private readonly http: HttpRequest) {}
+
+  public async listCombinedInvoiceSummary(session: SessionEntity): Promise<CombinedInvoiceSummaryModel[]> {
+    const path = "/invoices/combined";
+    const method = "GET";
+    const result = await this.http.request({ path, method, session });
+    if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    if (!Array.isArray(result)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    return result.map((item) => CombinedInvoiceSummaryModel.fromJson(item));
+  }
 
   public async createOutgoing(params: CreateOutgoingParams, session: SessionEntity): Promise<OutgoingInvoiceModel> {
     try {

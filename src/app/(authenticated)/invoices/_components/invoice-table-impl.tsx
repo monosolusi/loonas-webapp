@@ -1,32 +1,23 @@
 "use client";
 
-import {InvoiceRow, InvoiceTable} from "@/app/(authenticated)/invoices/_components/invoice-table";
-import {useInvoice} from "@/features/invoice/presentations/providers/invoice";
-import {useMemo} from "react";
+import { InvoiceRow, InvoiceTable } from "@/app/(authenticated)/invoices/_components/invoice-table";
+import { useMemo } from "react";
+import { useCombinedInvoiceSummary } from "@/features/invoice/presentations/hooks/use-combined-invoice-summary";
 
 export function InvoiceTableImpl() {
-  const {invoices} = useInvoice();
+  const { invoices } = useCombinedInvoiceSummary();
 
   const formattedInvoices = useMemo((): InvoiceRow[] => {
     return invoices.map((invoice) => ({
       id: invoice.id,
+      displayId: invoice.id.split("-").at(0)?.toUpperCase() ?? invoice.id,
       type: invoice.type,
-      receiverName: invoice.receiver.name,
-      bankAccount: {
-        bankName: invoice.bankAccount.bankName,
-        accountNumber: invoice.bankAccount.accountNumber,
-        accountHolderName: invoice.bankAccount.accountHolderName
-      },
-      total: invoice.amount,
+      partnerName: invoice.partnerName,
+      total: invoice.total,
       status: invoice.status,
-      paymentMethod: invoice.paymentMethod.title,
       createdAt: invoice.createdAt,
     }));
-  }, [invoices])
+  }, [invoices]);
 
-  return (
-    <InvoiceTable
-      data={formattedInvoices}
-    />
-  );
+  return <InvoiceTable data={formattedInvoices} />;
 }

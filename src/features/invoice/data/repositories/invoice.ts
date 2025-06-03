@@ -10,9 +10,15 @@ import { InvoiceEntity } from "../../domain/entities/invoice";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { InvoiceService } from "@/features/invoice/domain/sources/invoice";
 import { OutgoingInvoiceEntity } from "../../domain/entities/outgoing-invoice";
+import { CombinedInvoiceSummaryEntity } from "../../domain/entities/combined-invoice-summary";
 
 export class InvoiceRepositoryImpl implements InvoiceRepository {
   constructor(private readonly invoiceService: InvoiceService) {}
+
+  public async listCombinedInvoiceSummary(session: SessionEntity): Promise<DataState<CombinedInvoiceSummaryEntity[]>> {
+    const invoices = await this.invoiceService.listCombinedInvoiceSummary(session);
+    return new DataSuccess(invoices.map((invoice) => invoice.toEntity()));
+  }
 
   public async createOutgoing(
     params: CreateOutgoingParams,

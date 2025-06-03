@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { DateTime } from "luxon";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { EmptyInvoiceState } from "@/app/(authenticated)/invoices/_components/empty-invoice-state";
@@ -13,19 +12,15 @@ import { InvoiceTypeIcon } from "@/app/(authenticated)/invoices/_components/invo
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import Link from "next/link";
 import { InvoiceStatusChip } from "@/app/(authenticated)/invoices/_components/invoice-status-chip";
+import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
 
 export interface InvoiceRow {
   id: string;
+  displayId: string;
   type: InvoiceType;
-  receiverName: string;
-  bankAccount: {
-    bankName: string;
-    accountNumber: string;
-    accountHolderName: string;
-  };
+  partnerName: string;
   total: number;
-  status: PaymentRequestStatus;
-  paymentMethod: string;
+  status: InvoiceStatus;
   createdAt: DateTime;
 }
 
@@ -40,21 +35,17 @@ export function InvoiceTable(props: InvoiceTableProps) {
         { node: <InvoiceTypeIcon type={row.type} />, hideOnMobile: true },
         {
           node: (
-            <Link
-              href={`/invoices/${row.id}`}
-              className="font-bold text-primary-default  hover:underline line-clamp-2"
-            >
-              {row.receiverName}
+            <Link href={`/invoices/${row.id}`} className="text-primary-default line-clamp-2 font-bold hover:underline">
+              {row.displayId}
             </Link>
           ),
-          hideOnMobile: false
+          hideOnMobile: false,
         },
-        { node: row.bankAccount.accountHolderName, hideOnMobile: false },
+        { node: row.partnerName, hideOnMobile: false },
         { node: IDRFormatter.toCurrency(row.total), hideOnMobile: false },
         { node: <InvoiceStatusChip status={row.status} />, hideOnMobile: false },
-        { node: row.paymentMethod, hideOnMobile: false },
-        { node: row.createdAt.setLocale("id").toFormat("dd LLL yyyy, HH:mm"), hideOnMobile: false }
-      ]
+        { node: row.createdAt.setLocale("id").toFormat("dd LLL yyyy, HH:mm"), hideOnMobile: false },
+      ],
     }));
   }, [props.data]);
 
@@ -62,15 +53,16 @@ export function InvoiceTable(props: InvoiceTableProps) {
   return (
     <TableContainer>
       <Table>
-        <TableHeader items={[
-          { node: <></>, hideOnMobile: false },
-          { node: "Nama Penerima", hideOnMobile: false },
-          { node: "Bank & No. Rekening", hideOnMobile: false },
-          { node: "Total", hideOnMobile: false },
-          { node: "Status", hideOnMobile: false },
-          { node: "Metode", hideOnMobile: false },
-          { node: "Tanggal Dibuat", hideOnMobile: false }
-        ]} />
+        <TableHeader
+          items={[
+            { node: <></>, hideOnMobile: false },
+            { node: "ID Invoice", hideOnMobile: false },
+            { node: "Nama Klien", hideOnMobile: false },
+            { node: "Total", hideOnMobile: false },
+            { node: "Status", hideOnMobile: false },
+            { node: "Tanggal Dibuat", hideOnMobile: false },
+          ]}
+        />
         <TableBody items={generatedBodyItems} />
       </Table>
     </TableContainer>
