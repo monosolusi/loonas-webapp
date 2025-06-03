@@ -26,8 +26,16 @@ export class HttpRequest {
       contentType: "application/json",
     },
   ) {
-    if (config.requireAccount && !params.session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-    if (config.requireAuth && !params.session.accessToken) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+    const mergedConfig = {
+      requireAuth: config.requireAuth || true,
+      requireAccount: config.requireAccount || true,
+      contentType: config.contentType ? config.contentType : config.inferContentType ? "application/json" : undefined,
+    };
+
+    if (mergedConfig.requireAuth && !params.session.accessToken) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+    if (mergedConfig.requireAccount && !params.session.selectedAccount) {
+      throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
+    }
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
     if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
@@ -37,11 +45,12 @@ export class HttpRequest {
       Object.entries(params.searchParams).forEach(([key, value]) => url.searchParams.set(key, value));
     }
 
-    const headers = {
-      ...(config.requireAuth && { Authorization: `Bearer ${params.session.accessToken}` }),
-      ...(config.requireAccount && { "X-Account-Id": params.session.selectedAccount?.id }),
-      ...(!config.inferContentType && config.contentType && { "Content-Type": config.contentType }),
-    };
+    const headers: Record<string, string> = {};
+    if (mergedConfig.requireAuth) headers["Authorization"] = `Bearer ${params.session.accessToken}`;
+    if (mergedConfig.contentType) headers["Content-Type"] = mergedConfig.contentType;
+    if (mergedConfig.requireAccount && params.session.selectedAccount) {
+      headers["X-Account-Id"] = params.session.selectedAccount.id;
+    }
 
     const generateBody = (body?: Record<string, any> | FormData) => {
       if (!body) return undefined;
@@ -51,7 +60,7 @@ export class HttpRequest {
 
     const response = await fetch(url, {
       method: params.method,
-      headers,
+      headers: headers,
       body: generateBody(params.body),
     });
 
