@@ -51,6 +51,10 @@ export interface CreateOutgoingParams {
   sendChannel: InvoiceSendChannel[];
 }
 
+export interface CombinedInvoiceSummaryFilter {
+  id: string;
+}
+
 export interface InvoiceService {
   list(
     filter: InvoiceServiceFilter,
@@ -67,4 +71,9 @@ export interface InvoiceService {
   createOutgoing(params: CreateOutgoingParams, session: SessionEntity): Promise<OutgoingInvoiceModel>;
 
   listCombinedInvoiceSummary(session: SessionEntity): Promise<CombinedInvoiceSummaryModel[]>;
+
+  getCombinedInvoiceSummary(
+    filter: CombinedInvoiceSummaryFilter,
+    session: SessionEntity,
+  ): Promise<CombinedInvoiceSummaryModel>;
 }

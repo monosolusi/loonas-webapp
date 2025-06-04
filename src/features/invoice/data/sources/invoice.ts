@@ -2,6 +2,7 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { InvoiceModel } from "@/features/invoice/data/models/invoice";
 import {
+  CombinedInvoiceSummaryFilter,
   CreateOutgoingParams,
   InvoiceService,
   InvoiceServiceFilter,
@@ -16,6 +17,17 @@ import { CombinedInvoiceSummaryModel } from "../models/combined-invoice-summary"
 
 export class InvoiceServiceImpl implements InvoiceService {
   constructor(private readonly http: HttpRequest) {}
+
+  public async getCombinedInvoiceSummary(
+    filter: CombinedInvoiceSummaryFilter,
+    session: SessionEntity,
+  ): Promise<CombinedInvoiceSummaryModel> {
+    const path = `/invoices/combined/${filter.id}`;
+    const method = "GET";
+    const result = await this.http.request({ path, method, session });
+    if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    return CombinedInvoiceSummaryModel.fromJson(result);
+  }
 
   public async listCombinedInvoiceSummary(session: SessionEntity): Promise<CombinedInvoiceSummaryModel[]> {
     const path = "/invoices/combined";

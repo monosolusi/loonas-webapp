@@ -1,6 +1,7 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import {
+  CombinedInvoiceSummaryFilter,
   CreateOutgoingParams,
   InvoiceRepository,
   InvoiceRepositoryFilter,
@@ -15,9 +16,27 @@ import { CombinedInvoiceSummaryEntity } from "../../domain/entities/combined-inv
 export class InvoiceRepositoryImpl implements InvoiceRepository {
   constructor(private readonly invoiceService: InvoiceService) {}
 
+  public async getCombinedInvoiceSummary(
+    filter: CombinedInvoiceSummaryFilter,
+    session: SessionEntity,
+  ): Promise<DataState<CombinedInvoiceSummaryEntity>> {
+    try {
+      const invoice = await this.invoiceService.getCombinedInvoiceSummary(filter, session);
+      return new DataSuccess(invoice.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
   public async listCombinedInvoiceSummary(session: SessionEntity): Promise<DataState<CombinedInvoiceSummaryEntity[]>> {
-    const invoices = await this.invoiceService.listCombinedInvoiceSummary(session);
-    return new DataSuccess(invoices.map((invoice) => invoice.toEntity()));
+    try {
+      const invoices = await this.invoiceService.listCombinedInvoiceSummary(session);
+      return new DataSuccess(invoices.map((invoice) => invoice.toEntity()));
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
   }
 
   public async createOutgoing(
