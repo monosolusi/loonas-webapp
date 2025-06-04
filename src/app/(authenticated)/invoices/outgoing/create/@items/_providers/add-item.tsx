@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
-import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { TaxCalculator } from "@/core/utilities/tax/domain/calculator";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
 interface AddItemProviderProps {
   children: React.ReactNode;

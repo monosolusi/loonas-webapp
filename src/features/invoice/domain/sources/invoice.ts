@@ -1,7 +1,6 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { InvoiceModel } from "@/features/invoice/data/models/invoice";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
-import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { DateTime } from "luxon";
 import { OutgoingInvoiceModel } from "@/features/invoice/data/models/outgoing-invoice";
@@ -9,6 +8,7 @@ import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { InvoiceSendChannel } from "@/features/invoice/domain/enums/invoice-send-channel";
 import { CombinedInvoiceSummaryModel } from "@/features/invoice/data/models/combined-invoice-summary";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
 export interface InvoiceServiceFilter {
   id?: string;

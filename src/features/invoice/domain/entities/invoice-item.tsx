@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
-import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { AbstractEntity } from "@/core/resources/entity";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
 interface InvoiceItemEntityConstructor {
   id: string;

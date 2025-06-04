@@ -4,12 +4,12 @@ import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
-import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { DateTime } from "luxon";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { InvoiceSendChannel } from "@/features/invoice/domain/enums/invoice-send-channel";
 import { CombinedInvoiceSummaryEntity } from "@/features/invoice/domain/entities/combined-invoice-summary";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
 export interface InvoiceItem {
   name: string;

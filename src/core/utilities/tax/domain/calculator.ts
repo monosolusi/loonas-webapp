@@ -1,4 +1,4 @@
-import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
 interface CalculateBaseParams {
   price: number;

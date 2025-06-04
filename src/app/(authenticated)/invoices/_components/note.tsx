@@ -5,5 +5,6 @@ interface NoteProps {
 }
 
 export function Note(props: NoteProps) {
+  if (!props.note) return null;
   return <ExtraInvoiceNote title="Keterangan">{props.note}</ExtraInvoiceNote>;
 }

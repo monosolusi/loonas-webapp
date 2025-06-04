@@ -1,7 +1,6 @@
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { DateTime } from "luxon";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
-import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataSuccess } from "@/core/resources/data-state";
 import { InvoiceRepository } from "@/features/invoice/domain/repositories/invoice";
@@ -11,6 +10,7 @@ import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoi
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { InvoiceSendChannel } from "@/features/invoice/domain/enums/invoice-send-channel";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
 interface InvoiceItem {
   name: string;

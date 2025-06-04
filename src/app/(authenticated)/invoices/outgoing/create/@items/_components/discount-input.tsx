@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { TextInput } from "@/core/presentations/components/text-input";
 import { TextInputWithRightAddOn } from "@/core/presentations/components/text-input-with-right-add-on";
 import { TextInputWithLeftAddOn } from "@/core/presentations/components/text-input-with-left-add-on";
 import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
 export function DiscountInput() {
   const { discountType, discount, setDiscount } = useAddItem();

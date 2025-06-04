@@ -1,5 +1,4 @@
 import React from "react";
-import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import { OutlinedButton } from "@/core/presentations/components/outlined-button";
 import { QtyInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/qty-input";
@@ -18,6 +17,7 @@ import { NameInput } from "@/app/(authenticated)/invoices/outgoing/create/@items
 import { DescriptionInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/description-input";
 import { SaveItemButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/save-item-button";
 import { AddItemForm } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/add-item-form";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
 export interface ItemDetail {
   name: string;

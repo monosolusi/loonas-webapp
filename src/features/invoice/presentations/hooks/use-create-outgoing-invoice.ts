@@ -2,7 +2,6 @@ import useSWRMutation from "swr/mutation";
 import { DateTime } from "luxon";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
-import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
@@ -17,6 +16,7 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { InvoiceSendChannel } from "@/features/invoice/domain/enums/invoice-send-channel";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
 interface InvoiceItem {
   name: string;

@@ -3,6 +3,11 @@
 import { useRouter } from "next/navigation";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
+/**
+ * @deprecated This component is deprecated and will be removed in the next major version.
+ * Please use the BackButton component instead.
+ * @see BackButton
+ */
 export function BackArrow(props: { onClick?: () => void }) {
   const router = useRouter();
 
@@ -12,11 +17,8 @@ export function BackArrow(props: { onClick?: () => void }) {
   }
 
   return (
-    <div
-      onClick={handleClick}
-      className="mb-4 flex flex-cols cursor-pointer hover:text-primary-default"
-    >
-      <ArrowLeftIcon className="size-4 mr-1 mt-0.5" />
+    <div onClick={handleClick} className="flex-cols hover:text-primary-default mb-4 flex cursor-pointer">
+      <ArrowLeftIcon className="mt-0.5 mr-1 size-4" />
       <span>Kembali</span>
     </div>
   );

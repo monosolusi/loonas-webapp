@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { SelectInput } from "@/core/presentations/components/select-input";
 import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
 export function DiscountTypeSelect() {
   const { discountType, setDiscountType } = useAddItem();

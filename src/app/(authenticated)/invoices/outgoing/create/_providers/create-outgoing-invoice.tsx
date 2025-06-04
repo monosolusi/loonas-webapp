@@ -7,12 +7,7 @@ import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { useListPaymentMethod } from "@/features/payment/presentations/hooks/use-list-payment-method";
-
-export enum DiscountType {
-  PERCENTAGE = "PERCENTAGE",
-  FIXED = "FIXED",
-  NO_DISCOUNT = "NO_DISCOUNT",
-}
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
 export interface InvoiceItem {
   name: string;

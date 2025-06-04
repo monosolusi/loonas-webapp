@@ -1,11 +1,13 @@
+"use client";
+
 import { Table } from "@/core/presentations/components/table";
 import { TableHeader } from "@/core/presentations/components/table-header";
 import { TableBody } from "@/core/presentations/components/table-body";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { TableContainer } from "@/core/presentations/components/table-container";
 import React, { useMemo } from "react";
-import { DiscountType } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
 interface InvoiceItemTableProps {
   items: {
@@ -52,7 +54,7 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
       row: [
         {
           node: (
-            <div className="flex flex-col space-y-1">
+            <div className="flex max-w-[210px] flex-col space-y-1 text-balance lg:max-w-full">
               <div className="font-bold text-gray-900 group-hover:underline">{item.name}</div>
               <span className="text-xs text-gray-500">{item.description}</span>
             </div>
@@ -70,16 +72,16 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
           className: "text-right",
         },
         {
-          node: item.taxBase ? "-" : IDRFormatter.toCurrency(item.taxBase),
+          node: !item.taxBase ? "-" : IDRFormatter.toCurrency(item.taxBase),
           hideOnMobile: false,
           className: "text-right",
         },
         {
-          node: item.tax ? "-" : IDRFormatter.toCurrency(item.tax),
+          node: !item.tax ? "-" : IDRFormatter.toCurrency(item.tax),
           hideOnMobile: false,
           className: "text-right",
         },
-        { node: IDRFormatter.toCurrency(110000), hideOnMobile: false, className: "text-right" },
+        { node: IDRFormatter.toCurrency(item.total), hideOnMobile: false, className: "text-right" },
       ],
     }));
   }, [props.items]);

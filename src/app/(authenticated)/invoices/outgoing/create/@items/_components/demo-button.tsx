@@ -1,9 +1,7 @@
-import {
-  DiscountType,
-  useCreateOutgoingInvoice,
-} from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
 export function DemoButton() {
   const { addInvoiceItem, setInvoiceNumber, setNote, setTnc } = useCreateOutgoingInvoice();

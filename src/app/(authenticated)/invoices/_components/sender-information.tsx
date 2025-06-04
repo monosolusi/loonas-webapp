@@ -9,7 +9,7 @@ interface SenderInformationProps {
 
 export function SenderInformation(props: SenderInformationProps) {
   return (
-    <div className="flex-1 flex-col space-y-1">
+    <div className="flex flex-col space-y-1">
       <div className="font-light text-gray-500 italic">Informasi Perusahaan</div>
       <h3 className="text-xl font-semibold text-gray-900">{props.senderName}</h3>
       <div className="font-light text-gray-500">{props.address}</div>
