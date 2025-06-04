@@ -1,9 +1,9 @@
 import { DateTime } from "luxon";
-import { PaymentDetail } from "@/app/(authenticated)/invoices/[id]/_components/payment-detail";
+import { PaymentDetail } from "@/app/(authenticated)/invoices/[id]/@incomingDetail/_components/payment-detail";
 import React, { useMemo } from "react";
 import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
 import { InvoiceStatusChip } from "@/app/(authenticated)/invoices/_components/invoice-status-chip";
-import { SeeDisbursementStatus } from "@/app/(authenticated)/invoices/[id]/_components/see-disbursement-status";
+import { SeeDisbursementStatus } from "@/app/(authenticated)/invoices/[id]/@incomingDetail/_components/see-disbursement-status";
 import { TableContainer } from "@/core/presentations/components/table-container";
 import { Table } from "@/core/presentations/components/table";
 import { TableHeader } from "@/core/presentations/components/table-header";

@@ -2,8 +2,8 @@
 
 import {
   InvoiceDetailContent,
-  InvoiceDetailItem
-} from "@/app/(authenticated)/invoices/[id]/_components/invoice-detail-content";
+  InvoiceDetailItem,
+} from "@/app/(authenticated)/invoices/[id]/@incomingDetail/_components/invoice-detail-content";
 import { useMemo } from "react";
 import { useGetInvoice } from "@/features/invoice/presentations/providers/get-invoice";
 
@@ -22,7 +22,7 @@ export function InvoiceDetailContentImpl() {
         invoiceDate: doc.invoiceDate,
         dueDate: doc.dueDate,
         amount: doc.amount,
-        note: doc.note
+        note: doc.note,
       })),
       status: invoice.status,
       paymentDetail: {
@@ -31,8 +31,8 @@ export function InvoiceDetailContentImpl() {
         accountNumber: invoice.bankAccount.accountNumber,
         accountHolderName: invoice.bankAccount.accountHolderName,
         total: invoice.amount,
-        fee: invoice.fee
-      }
+        fee: invoice.fee,
+      },
     };
   }, [invoice]);
 
