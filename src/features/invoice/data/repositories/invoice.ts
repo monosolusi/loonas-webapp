@@ -6,6 +6,7 @@ import {
   InvoiceRepository,
   InvoiceRepositoryFilter,
   InvoiceRepositoryFilterParams,
+  OutgoingInvoiceFilter,
 } from "@/features/invoice/domain/repositories/invoice";
 import { InvoiceEntity } from "../../domain/entities/invoice";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
@@ -15,6 +16,19 @@ import { CombinedInvoiceSummaryEntity } from "../../domain/entities/combined-inv
 
 export class InvoiceRepositoryImpl implements InvoiceRepository {
   constructor(private readonly invoiceService: InvoiceService) {}
+
+  public async getOutgoing(
+    filter: OutgoingInvoiceFilter,
+    session: SessionEntity,
+  ): Promise<DataState<OutgoingInvoiceEntity>> {
+    try {
+      const invoice = await this.invoiceService.getOutgoing(filter, session);
+      return new DataSuccess(invoice.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
 
   public async getCombinedInvoiceSummary(
     filter: CombinedInvoiceSummaryFilter,

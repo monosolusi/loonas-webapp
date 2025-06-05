@@ -7,6 +7,7 @@ import {
   InvoiceService,
   InvoiceServiceFilter,
   InvoiceServiceFilterParams,
+  OutgoingInvoiceFilter,
 } from "@/features/invoice/domain/sources/invoice";
 import { OutgoingInvoiceModel } from "../models/outgoing-invoice";
 import { HttpRequest } from "@/core/helpers/http-request";
@@ -14,9 +15,34 @@ import { InvoiceItemModel } from "@/features/invoice/data/models/invoice-item";
 import { FileModel } from "@/features/file/data/models/file";
 import { PartnerModel } from "@/features/partner/data/models/partner";
 import { CombinedInvoiceSummaryModel } from "../models/combined-invoice-summary";
+import { InvoiceItemSummaryModel } from "@/features/invoice/data/models/invoice-item-summary";
 
 export class InvoiceServiceImpl implements InvoiceService {
   constructor(private readonly http: HttpRequest) {}
+
+  public async getOutgoing(filter: OutgoingInvoiceFilter, session: SessionEntity): Promise<OutgoingInvoiceModel> {
+    if (!filter.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+    const path = `/invoices/outgoing/${filter.id}`;
+    const method = "GET";
+    const result = await this.http.request({ path, method, session });
+    if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+    if (!result.items) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    if (!result.recipient) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    if (!result.summary) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    if (result.signature) result.signature = FileModel.fromJson(result.signature);
+    result.items = result.items.map(InvoiceItemModel.fromJson);
+    result.recipient = PartnerModel.fromJson(result.recipient);
+    result.summary = InvoiceItemSummaryModel.fromJson(result.summary);
+
+    return OutgoingInvoiceModel.fromJson(result, {
+      items: result.items,
+      recipient: result.recipient,
+      signature: result.signature,
+      summary: result.summary,
+    });
+  }
 
   public async getCombinedInvoiceSummary(
     filter: CombinedInvoiceSummaryFilter,
@@ -103,7 +129,8 @@ export class InvoiceServiceImpl implements InvoiceService {
       // Generate InvoiceItemModel[] from result.items
       const items = finaliseResult.items.map(InvoiceItemModel.fromJson);
       const recipient = PartnerModel.fromJson(finaliseResult.recipient);
-      return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature });
+      const summary = InvoiceItemSummaryModel.fromJson(finaliseResult.summary);
+      return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature, summary });
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

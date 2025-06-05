@@ -55,6 +55,10 @@ export interface CombinedInvoiceSummaryFilter {
   id: string;
 }
 
+export interface OutgoingInvoiceFilter {
+  id?: string;
+}
+
 export interface InvoiceService {
   list(
     filter: InvoiceServiceFilter,
@@ -69,6 +73,8 @@ export interface InvoiceService {
   ): Promise<InvoiceModel>;
 
   createOutgoing(params: CreateOutgoingParams, session: SessionEntity): Promise<OutgoingInvoiceModel>;
+
+  getOutgoing(filter: OutgoingInvoiceFilter, session: SessionEntity): Promise<OutgoingInvoiceModel>;
 
   listCombinedInvoiceSummary(session: SessionEntity): Promise<CombinedInvoiceSummaryModel[]>;
 

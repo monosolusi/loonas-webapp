@@ -5,11 +5,9 @@ import { PageContent } from "@/core/presentations/components/page-content";
 import { BackButton } from "@/core/presentations/components/back-button";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
-import { Card } from "@/core/presentations/components/card";
-import { InvoiceStatusChip } from "@/app/(authenticated)/invoices/_components/invoice-status-chip";
-import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 import { OutlinedButton } from "@/core/presentations/components/outlined-button";
 import { FilledButton } from "@/core/presentations/components/filled-button";
+import { InvoiceSummary } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/invoice-summary";
 
 export default function OutgoingInvoiceDetailPage() {
   return (
@@ -28,36 +26,7 @@ export default function OutgoingInvoiceDetailPage() {
             </div>
           </div>
         </div>
-        <div className="flex-1">
-          <Card>
-            <div className="flex flex-col space-y-4">
-              <div className="flex flex-1 flex-col">
-                <div className="flex-1 text-xs font-semibold text-gray-900">ID Faktur</div>
-                <div className="flex-1 text-base text-gray-500">{uuid()}</div>
-              </div>
-              <div className="flex flex-row justify-evenly space-x-4 text-left">
-                <div className="flex flex-1 flex-col">
-                  <div className="flex-1 text-xs font-semibold text-gray-900">Status</div>
-                  <div className="flex-1 text-base text-gray-500">
-                    <InvoiceStatusChip status={OutgoingInvoiceStatus.READY_TO_SEND} />
-                  </div>
-                </div>
-                <div className="flex flex-1 flex-col">
-                  <div className="flex-1 text-xs font-semibold text-gray-900">Jenis Faktur</div>
-                  <div className="flex-1 text-base text-gray-500">Faktur Keluaran</div>
-                </div>
-                <div className="flex flex-1 flex-col">
-                  <div className="flex-1 text-xs font-semibold text-gray-900">Nilai Faktur</div>
-                  <div className="flex-1 text-base text-gray-500">Rp 110.000.000</div>
-                </div>
-                <div className="flex flex-1 flex-col">
-                  <div className="flex-1 text-xs font-semibold text-gray-900">Tanggal Dibuat</div>
-                  <div className="flex-1 text-base text-gray-500">31 Mei 2025 10:45</div>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
+        <InvoiceSummary />
         <div className="flex flex-1">
           <InvoicePreview
             invoice={{
