@@ -1,15 +1,16 @@
 import { DateTime } from "luxon";
 import { AbstractModel } from "@/core/resources/model";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
-import { PartnerModel } from "@/features/partner/data/models/partner";
 import { FileModel } from "@/features/file/data/models/file";
 import { InvoiceItemModel } from "@/features/invoice/data/models/invoice-item";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 import { InvoiceItemSummaryModel } from "@/features/invoice/data/models/invoice-item-summary";
+import { InvoiceSenderModel } from "@/features/invoice/data/models/invoice-sender";
+import { InvoiceRecipientModel } from "@/features/invoice/data/models/invoice-recipient";
 
 interface OutgoingInvoiceModelConstructor {
   id: string;
-  recipient: PartnerModel;
+  recipient: InvoiceRecipientModel;
   invoiceNumber: string;
   invoiceDate: DateTime;
   dueDate: DateTime;
@@ -19,21 +20,23 @@ interface OutgoingInvoiceModelConstructor {
   signature?: FileModel;
   status: OutgoingInvoiceStatus;
   summary: InvoiceItemSummaryModel;
+  sender: InvoiceSenderModel;
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
 }
 
 interface OutgoingInvoiceModelFromJsonParams {
-  recipient: PartnerModel;
+  recipient: InvoiceRecipientModel;
   items: InvoiceItemModel[];
   signature?: FileModel;
   summary: InvoiceItemSummaryModel;
+  sender: InvoiceSenderModel;
 }
 
 export class OutgoingInvoiceModel implements AbstractModel {
   public id: string;
-  public recipient: PartnerModel;
+  public recipient: InvoiceRecipientModel;
   public invoiceNumber: string;
   public invoiceDate: DateTime;
   public dueDate: DateTime;
@@ -43,6 +46,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
   public signature?: FileModel;
   public status: OutgoingInvoiceStatus;
   public summary: InvoiceItemSummaryModel;
+  public sender: InvoiceSenderModel;
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
@@ -59,6 +63,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
     this.signature = args.signature;
     this.status = args.status;
     this.summary = args.summary;
+    this.sender = args.sender;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
@@ -77,6 +82,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
       signature: params.signature,
       status: data.status as OutgoingInvoiceStatus,
       summary: params.summary,
+      sender: params.sender,
       createdAt: DateTime.fromISO(data.created_at),
       updatedAt: DateTime.fromISO(data.updated_at),
       deletedAt: data.deleted_at ? DateTime.fromISO(data.deleted_at) : undefined,
@@ -96,6 +102,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
       signature: this.signature?.toEntity(),
       status: this.status,
       summary: this.summary.toEntity(),
+      sender: this.sender.toEntity(),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,

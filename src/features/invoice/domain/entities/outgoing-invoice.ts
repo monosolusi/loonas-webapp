@@ -1,14 +1,15 @@
 import { DateTime } from "luxon";
-import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { FileEntity } from "@/features/file/domain/entities/file";
 import { AbstractEntity } from "@/core/resources/entity";
 import { InvoiceItemEntity } from "@/features/invoice/domain/entities/invoice-item";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 import { InvoiceItemSummaryEntity } from "@/features/invoice/domain/entities/invoice-item-summary";
+import { InvoiceSenderEntity } from "@/features/invoice/domain/entities/invoice-sender";
+import { InvoiceRecipientEntity } from "@/features/invoice/domain/entities/invoice-recipient";
 
 interface OutgoingInvoiceEntityConstructor {
   id: string;
-  recipient: PartnerEntity;
+  recipient: InvoiceRecipientEntity;
   invoiceNumber: string;
   invoiceDate: DateTime;
   dueDate: DateTime;
@@ -18,6 +19,7 @@ interface OutgoingInvoiceEntityConstructor {
   signature?: FileEntity;
   status: OutgoingInvoiceStatus;
   summary: InvoiceItemSummaryEntity;
+  sender: InvoiceSenderEntity;
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
@@ -25,7 +27,7 @@ interface OutgoingInvoiceEntityConstructor {
 
 export class OutgoingInvoiceEntity implements AbstractEntity {
   public id: string;
-  public recipient: PartnerEntity;
+  public recipient: InvoiceRecipientEntity;
   public invoiceNumber: string;
   public invoiceDate: DateTime;
   public dueDate: DateTime;
@@ -35,6 +37,7 @@ export class OutgoingInvoiceEntity implements AbstractEntity {
   public signature?: FileEntity;
   public status: OutgoingInvoiceStatus;
   public summary: InvoiceItemSummaryEntity;
+  public sender: InvoiceSenderEntity;
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
@@ -51,6 +54,7 @@ export class OutgoingInvoiceEntity implements AbstractEntity {
     this.signature = args.signature;
     this.status = args.status;
     this.summary = args.summary;
+    this.sender = args.sender;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;

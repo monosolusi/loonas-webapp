@@ -33,7 +33,7 @@ async function GetOutgoingInvoiceFetcher([_, param]: [string, GetOutgoingInvoice
 
 export function useGetOutgoingInvoice(props: GetOutgoingInvoiceFetcherParams) {
   const { data, isLoading, error, mutate } = useSWR(["get-outgoing-invoice", props], GetOutgoingInvoiceFetcher);
-
+  
   return {
     invoice: data,
     loading: isLoading,

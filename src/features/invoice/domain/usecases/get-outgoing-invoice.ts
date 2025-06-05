@@ -24,11 +24,11 @@ export class GetOutgoingInvoiceUseCase
   public async execute(params: GetOutgoingInvoiceUseCaseParams): Promise<DataState<OutgoingInvoiceEntity>> {
     try {
       const session = await this.sessionRepository.retrieve();
-      if (session instanceof DataFailed) throw session.error;
+      if (session instanceof DataFailed) return session;
       if (!session.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const invoice = await this.invoiceRepository.getOutgoing({ id: params.id }, session.data);
-      if (invoice instanceof DataFailed) throw invoice.error;
+      if (invoice instanceof DataFailed) return invoice;
       if (!invoice.data) throw new ServerError(ErrorCodes.NOT_FOUND);
       return invoice;
     } catch (err) {
