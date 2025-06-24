@@ -2,6 +2,7 @@ import { DetailItem } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/
 import { InvoiceStatusChip } from "@/app/(authenticated)/invoices/_components/invoice-status-chip";
 import { Card } from "@/core/presentations/components/card";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 import { DateTime } from "luxon";
 
@@ -10,6 +11,7 @@ interface InvoiceSummaryProps {
   status: OutgoingInvoiceStatus;
   total: number;
   createdAt: DateTime;
+  type: InvoiceType;
 }
 
 export function InvoiceSummary(props: InvoiceSummaryProps) {
@@ -21,7 +23,9 @@ export function InvoiceSummary(props: InvoiceSummaryProps) {
           <DetailItem label="ID Faktur">
             <InvoiceStatusChip status={props.status} />
           </DetailItem>
-          <DetailItem label="Jenis Faktur">Faktur Keluaran</DetailItem>
+          <DetailItem label="Jenis Faktur">
+            {props.type === InvoiceType.OUTGOING ? "Faktur Keluaran" : "Faktur Masukan"}
+          </DetailItem>
           <DetailItem label="Nilai Faktur">{IDRFormatter.toCurrency(props.total)}</DetailItem>
           <DetailItem label="Tanggal Dibuat">
             {props.createdAt.setLocale("id-ID").toFormat("dd MMMM yyyy hh:mm")}

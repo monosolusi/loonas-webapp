@@ -4,6 +4,7 @@ import { InvoiceSummary } from "@/app/(authenticated)/invoices/[id]/@outgoingDet
 import { useGetOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-outgoing-invoice";
 import { useParams } from "next/navigation";
 import { LoadingInvoiceSummary } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/loading-invoice-summary";
+import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 
 export function InvoiceSummaryImpl() {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +17,7 @@ export function InvoiceSummaryImpl() {
       id={invoice.id}
       status={invoice.status}
       total={invoice.summary.total}
+      type={InvoiceType.OUTGOING}
     />
   );
 }
