@@ -3,16 +3,18 @@ import { Card } from "@/core/presentations/components/card";
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { CheckIcon } from "@heroicons/react/20/solid";
 
-
 interface TimelineProps {
   items: {
     id: string | number;
     content: string;
     status: PaymentRequestStatus;
-    icon: any,
-    iconBackground: string
+    icon: any;
+    iconBackground: string;
   }[];
   currentStatus: PaymentRequestStatus;
+  override?: {
+    title?: React.ReactNode;
+  };
 }
 
 function classNames(...classes: any[]) {
@@ -33,7 +35,7 @@ export function Timeline(props: TimelineProps) {
       PaymentRequestStatus.PAYMENT_RECEIVED_PENDING_DELIVERY,
       PaymentRequestStatus.COMPLETED,
       PaymentRequestStatus.EXPIRED,
-      PaymentRequestStatus.FAILED
+      PaymentRequestStatus.FAILED,
     ];
 
     const currentIdx = statusOrder.indexOf(props.currentStatus);
@@ -44,10 +46,9 @@ export function Timeline(props: TimelineProps) {
     else return "upcoming";
   };
 
-
   return (
     <Card>
-      <h3 className="text-lg font-medium text-gray-900 mb-4">Status Transaksi</h3>
+      {props.override?.title ?? <h3 className="mb-4 text-lg font-medium text-gray-900">Status Transaksi</h3>}
       <div className="flow-root">
         <ul role="list" className="-mb-8">
           {props.items.map((event, eventIdx) => {
@@ -69,7 +70,7 @@ export function Timeline(props: TimelineProps) {
                       aria-hidden="true"
                       className={classNames(
                         "absolute top-4 left-4 -ml-px h-full w-0.5",
-                        stepStatus === "upcoming" ? "bg-gray-200" : "bg-primary-default"
+                        stepStatus === "upcoming" ? "bg-gray-200" : "bg-primary-default",
                       )}
                     />
                   )}
@@ -78,21 +79,23 @@ export function Timeline(props: TimelineProps) {
                       <span
                         className={classNames(
                           stepStatus === "upcoming" ? "bg-gray-300" : bgColor,
-                          "flex size-8 items-center justify-center rounded-full ring-8 ring-white"
+                          "flex size-8 items-center justify-center rounded-full ring-8 ring-white",
                         )}
                       >
                         {React.createElement(iconToUse, {
                           className: "size-5 text-white",
-                          "aria-hidden": true
+                          "aria-hidden": true,
                         })}
                       </span>
                     </div>
                     <div className="flex min-w-0 flex-1 justify-between pt-1.5">
                       <div>
-                        <p className={classNames(
-                          "text-sm",
-                          stepStatus === "upcoming" ? "text-gray-500" : "text-gray-900 font-medium"
-                        )}>
+                        <p
+                          className={classNames(
+                            "text-sm",
+                            stepStatus === "upcoming" ? "text-gray-500" : "font-medium text-gray-900",
+                          )}
+                        >
                           {event.content}
                         </p>
                       </div>

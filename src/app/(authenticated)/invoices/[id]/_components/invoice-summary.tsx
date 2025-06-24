@@ -20,7 +20,7 @@ export function InvoiceSummary(props: InvoiceSummaryProps) {
       <div className="flex flex-col space-y-4">
         <DetailItem label="ID Faktur">{props.id}</DetailItem>
         <div className="flex flex-row justify-between space-x-4 text-left">
-          <DetailItem label="ID Faktur">
+          <DetailItem label="Status Faktur">
             <InvoiceStatusChip status={props.status} />
           </DetailItem>
           <DetailItem label="Jenis Faktur">
