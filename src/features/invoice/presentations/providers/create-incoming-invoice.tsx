@@ -1,29 +1,29 @@
 "use client";
 
-import React, {useState} from "react";
-import {PartnerEntity} from "@/features/partner/domain/entities/partner";
-import {BankAccountEntity} from "@/features/bank/domain/entities/bank-account";
-import {DateTime} from "luxon";
-import {PaymentGatewayEntity} from "@/features/payment/domain/entities/payment-gateway";
-import {PaymentSchemeEntity} from "@/features/payment/domain/entities/payment-scheme";
-import {DataFailed} from "@/core/resources/data-state";
-import {ErrorCodes, ServerError} from "@/core/resources/server-error";
-import {SessionRepositoryImpl} from "@/features/authentication/data/repositories/session";
-import {LocalStorageSessionService} from "@/features/authentication/data/sources/local-storage-session";
+import React, { useEffect, useState } from "react";
+import { PartnerEntity } from "@/features/partner/domain/entities/partner";
+import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
+import { DateTime } from "luxon";
+import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
+import { PaymentSchemeEntity } from "@/features/payment/domain/entities/payment-scheme";
+import { DataFailed } from "@/core/resources/data-state";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
+import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import {
   CreatePaymentRequestUseCase,
-  CreatePaymentRequestUseCaseParams
+  CreatePaymentRequestUseCaseParams,
 } from "@/features/payment/domain/usecases/create-payment-request";
-import {PaymentRequestRepositoryImpl} from "@/features/payment/data/repositories/payment-request";
-import {PaymentRequestServiceImpl} from "@/features/payment/data/sources/payment-request";
-import {BankServiceImpl} from "@/features/bank/data/sources/bank";
-import {PaymentGatewayServiceImpl} from "@/features/payment/data/sources/payment-gateway";
-import {PartnerServiceImpl} from "@/features/partner/data/sources/partner";
+import { PaymentRequestRepositoryImpl } from "@/features/payment/data/repositories/payment-request";
+import { PaymentRequestServiceImpl } from "@/features/payment/data/sources/payment-request";
+import { BankServiceImpl } from "@/features/bank/data/sources/bank";
+import { PaymentGatewayServiceImpl } from "@/features/payment/data/sources/payment-gateway";
+import { PartnerServiceImpl } from "@/features/partner/data/sources/partner";
 import {
   UploadPaymentRequestInvoicesUseCase,
-  UploadPaymentRequestInvoicesUseCaseParams
+  UploadPaymentRequestInvoicesUseCaseParams,
 } from "@/features/payment/domain/usecases/upload-payment-request-invoices";
-import {PaymentRequestEntity} from "@/features/payment/domain/entities/payment-request";
+import { PaymentRequestEntity } from "@/features/payment/domain/entities/payment-request";
 
 export interface InvoiceDocument {
   file: File;
@@ -50,24 +50,30 @@ interface CreateIncomingInvoiceContextProps {
 }
 
 const CreateIncomingInvoiceContext = React.createContext<CreateIncomingInvoiceContextProps>({
-  invoiceDocuments: []
+  invoiceDocuments: [],
 });
 
-export function CreateIncomingInvoiceProvider({children}: { children: React.ReactNode }) {
+export function CreateIncomingInvoiceProvider({ children }: { children: React.ReactNode }) {
   const [receiver, setReceiver] = useState<PartnerEntity>();
   const [bankAccount, setBankAccount] = useState<BankAccountEntity>();
   const [invoiceDocuments, setInvoiceDocuments] = useState<InvoiceDocument[]>([]);
   const [paymentGateway, setPaymentGateway] = useState<PaymentGatewayEntity>();
   const [paymentScheme, setPaymentScheme] = useState<PaymentSchemeEntity>();
 
+  useEffect(() => {
+    // When invoiceDocuments change, we will set the PaymentGateway and PaymentScheme to undefined
+    setPaymentGateway(undefined);
+    setPaymentScheme(undefined);
+  }, [invoiceDocuments]);
+
   const addInvoiceDocument = (document: InvoiceDocument) => {
     // Check the invoiceDate should not be greater than dueDate
     if (document.invoiceDate > document.dueDate) throw new ServerError(ErrorCodes.INVALID_INVOICE_DATE);
-    setInvoiceDocuments(prev => [...prev, document]);
+    setInvoiceDocuments((prev) => [...prev, document]);
   };
 
   const removeInvoiceDocument = (index: number) => {
-    setInvoiceDocuments(prev => prev.filter((_, i) => i !== index));
+    setInvoiceDocuments((prev) => prev.filter((_, i) => i !== index));
   };
 
   const createPaymentRequest = async () => {
@@ -77,7 +83,8 @@ export function CreateIncomingInvoiceProvider({children}: { children: React.Reac
       if (!bankAccount) throw new ServerError(ErrorCodes.EMPTY_BANK_ACCOUNT);
       if (!invoiceDocuments) throw new ServerError(ErrorCodes.EMPTY_INVOICES);
       if (!paymentGateway) throw new ServerError(ErrorCodes.EMPTY_PAYMENT_METHOD);
-      if (paymentGateway.requiresSchemeSelection && !paymentScheme) throw new ServerError(ErrorCodes.EMPTY_PAYMENT_SCHEME);
+      if (paymentGateway.requiresSchemeSelection && !paymentScheme)
+        throw new ServerError(ErrorCodes.EMPTY_PAYMENT_SCHEME);
 
       const sessionService = new LocalStorageSessionService();
       const partnerService = new PartnerServiceImpl();
@@ -92,7 +99,7 @@ export function CreateIncomingInvoiceProvider({children}: { children: React.Reac
         bankAccount: bankAccount,
         invoices: invoiceDocuments,
         paymentMethod: paymentGateway,
-        paymentScheme: paymentScheme
+        paymentScheme: paymentScheme,
       });
 
       const result = await create.execute(createParams);
@@ -103,7 +110,7 @@ export function CreateIncomingInvoiceProvider({children}: { children: React.Reac
       const upload = new UploadPaymentRequestInvoicesUseCase(paymentRequestRepository, sessionRepository);
       const uploadParams = new UploadPaymentRequestInvoicesUseCaseParams({
         paymentRequest: result.data,
-        invoices: invoiceDocuments
+        invoices: invoiceDocuments,
       });
 
       const uploadResult = await upload.execute(uploadParams);
@@ -129,7 +136,7 @@ export function CreateIncomingInvoiceProvider({children}: { children: React.Reac
         setPaymentScheme,
         addInvoiceDocument,
         removeInvoiceDocument,
-        createPaymentRequest
+        createPaymentRequest,
       }}
     >
       {children}

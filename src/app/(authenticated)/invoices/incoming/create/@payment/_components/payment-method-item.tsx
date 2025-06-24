@@ -1,69 +1,83 @@
-import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
+import React from "react";
+import clsx from "clsx";
 import { PaymentIcon } from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/payment-icon";
 import { Label, Radio } from "@headlessui/react";
-import React from "react";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import {
-  AvailableSchemeDescription
-} from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/available-scheme-description";
+import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 
-export function PaymentMethodItem({ payment }: { payment: PaymentGatewayEntity }) {
+interface PaymentMethodItemProps {
+  value: PaymentGatewayEntity;
+  type: string;
+  pricing: { base: number; percentage: number };
+  title: string;
+  description: string;
+  disabled?: boolean;
+}
 
-  const formatFeeText = (gateway: PaymentGatewayEntity) => {
-    const hasBaseFee = gateway.pricing.baseFee > 0;
-    const hasPercentageFee = gateway.pricing.percentageFee > 0;
+export function PaymentMethodItem(props: PaymentMethodItemProps) {
+  const formatFeeText = (pricing: { base: number; percentage: number }) => {
+    const hasBaseFee = pricing.base > 0;
+    const hasPercentageFee = pricing.percentage > 0;
 
     if (hasBaseFee && hasPercentageFee) {
-      return `${IDRFormatter.toCurrency(gateway.pricing.baseFee)} + ${gateway.pricing.percentageFee}%`;
+      return `${IDRFormatter.toCurrency(pricing.base)} + ${pricing.percentage}%`;
     } else if (hasBaseFee) {
-      return IDRFormatter.toCurrency(gateway.pricing.baseFee);
+      return IDRFormatter.toCurrency(pricing.base);
     } else if (hasPercentageFee) {
-      return `${gateway.pricing.percentageFee}%`;
+      return `${pricing.percentage}%`;
     } else {
       return "Gratis";
     }
   };
 
   return (
-    <Radio value={payment} className="group">
-      <div
-        className="rounded-lg border p-4 cursor-pointer focus:outline-none border-gray-200 group-data-checked:border-primary-default group-data-checked:ring-1 group-data-checked:ring-primary-default"
-      >
-        <div className="flex items-center">
-          {/* Left: Icon/Logo */}
-          <div className="flex-shrink-0 mr-4">
-            <PaymentIcon payment={payment} />
-          </div>
-
-          {/* Center: Payment method info */}
-          <div className="flex-1 min-w-0">
-            <Label as="h3" className="text-base font-medium text-gray-900">
-              {payment.title}
-            </Label>
-            <div className="mt-1 flex flex-wrap items-center">
-              <AvailableSchemeDescription schemes={payment.schemes} />
+    <Radio value={props.value} disabled={props.disabled}>
+      {({ checked, disabled }) => (
+        <div
+          className={clsx(
+            "rounded-sm p-4",
+            checked && "border-primary-default ring-primary-default cursor-pointer border ring-1 focus:outline-none",
+            !disabled && "cursor-pointer border border-gray-200",
+            disabled && "cursor-not-allowed bg-gray-100",
+          )}
+        >
+          <div className="flex items-center">
+            {/* Left: Icon/Logo */}
+            <div className="mr-4 flex-shrink-0">
+              <PaymentIcon type={props.type} />
             </div>
-            <p className="mt-1 text-xs text-gray-500">Estimasi Pencairan: 1 hari kerja</p>
-          </div>
 
-          {/* Right: Fees */}
-          <div className="flex-shrink-0 ml-4 text-right">
-            <p className="text-sm font-medium text-gray-900">Fee</p>
-            <p className="text-sm text-gray-700">
-              {formatFeeText(payment)}
-            </p>
-          </div>
+            {/* Center: Payment method info */}
+            <div className="min-w-0 flex-1">
+              <Label as="h3" className="text-base font-medium text-gray-900">
+                {props.title}
+              </Label>
+              <div className="mt-1 flex flex-wrap items-center text-xs text-gray-500">{props.description}</div>
+              <p className="mt-1 text-xs text-gray-500">Estimasi Pencairan: 1 hari kerja</p>
+            </div>
 
-          {/* Radio button */}
-          <div className="flex-shrink-0 ml-4">
-            <span
-              className="bg-white border-gray-300 rounded-full h-5 w-5 flex items-center justify-center border group-data-checked:bg-primary-default group-data-checked:border-transparent"
-            >
-              <span className="hidden rounded-full bg-white h-2 w-2 group-data-checked:block" />
-            </span>
+            {/* Right: Fees */}
+            <div className="ml-4 flex-shrink-0 text-right">
+              <p className="text-sm font-medium text-gray-900">Fee</p>
+              <p className="text-sm text-gray-700">{formatFeeText(props.pricing)}</p>
+            </div>
+
+            {/* Radio button */}
+            <div className="ml-4 flex-shrink-0">
+              <span
+                className={clsx(
+                  "flex h-5 w-5 items-center justify-center rounded-full border",
+                  // (!checked && !disabled) && "border-gray-300 bg-white",
+                  !checked && disabled && "border-gray-300 bg-gray-300",
+                  checked && "bg-primary-default border-transparent",
+                )}
+              >
+                {checked && <span className="block h-2 w-2 rounded-full bg-white" />}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </Radio>
   );
 }

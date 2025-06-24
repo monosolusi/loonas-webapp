@@ -6,6 +6,7 @@ import { PaymentMethodItem } from "@/app/(authenticated)/invoices/incoming/creat
 import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { useListPaymentMethod } from "@/features/payment/presentations/hooks/use-list-payment-method";
+import { PaymentMethodItemImpl } from "./payment-method-item-impl";
 
 export function PaymentMethod() {
   const { paymentMethods } = useListPaymentMethod();
@@ -19,10 +20,13 @@ export function PaymentMethod() {
     setPaymentScheme(undefined);
   };
 
+  if (!paymentMethods) return null;
   return (
     <RadioGroup value={paymentGateway || null} onChange={handleSelectGateway}>
       <div className="flex flex-col space-y-4">
-        {paymentMethods?.map((gateway) => <PaymentMethodItem key={gateway.id} payment={gateway} />)}
+        {paymentMethods.map((gateway) => (
+          <PaymentMethodItemImpl key={gateway.id} method={gateway} />
+        ))}
       </div>
     </RadioGroup>
   );
