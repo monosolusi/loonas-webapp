@@ -26,7 +26,9 @@ export default function OutgoingInvoiceDetailPage() {
         <div className="flex-1">
           <ErrorDisplayImpl />
         </div>
-        <InvoiceSummaryImpl />
+        <div className="flex-1">
+          <InvoiceSummaryImpl />
+        </div>
         <div className="flex flex-1">
           <InvoicePreviewImpl />
         </div>

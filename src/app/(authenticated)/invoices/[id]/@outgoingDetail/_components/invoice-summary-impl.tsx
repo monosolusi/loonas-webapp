@@ -1,6 +1,6 @@
 "use client";
 
-import { InvoiceSummary } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/invoice-summary";
+import { InvoiceSummary } from "@/app/(authenticated)/invoices/[id]/_components/invoice-summary";
 import { useGetOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-outgoing-invoice";
 import { useParams } from "next/navigation";
 import { LoadingInvoiceSummary } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/loading-invoice-summary";

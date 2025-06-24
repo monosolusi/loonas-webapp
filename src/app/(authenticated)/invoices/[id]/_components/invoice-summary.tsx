@@ -2,13 +2,13 @@ import { DetailItem } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/
 import { InvoiceStatusChip } from "@/app/(authenticated)/invoices/_components/invoice-status-chip";
 import { Card } from "@/core/presentations/components/card";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
-import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 import { DateTime } from "luxon";
 
 interface InvoiceSummaryProps {
   id: string;
-  status: OutgoingInvoiceStatus;
+  status: InvoiceStatus;
   total: number;
   createdAt: DateTime;
   type: InvoiceType;
