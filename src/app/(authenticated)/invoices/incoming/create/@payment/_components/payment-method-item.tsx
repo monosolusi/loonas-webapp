@@ -12,6 +12,7 @@ interface PaymentMethodItemProps {
   title: string;
   description: string;
   disabled?: boolean;
+  limit?: { min: number; max: number };
 }
 
 export function PaymentMethodItem(props: PaymentMethodItemProps) {
@@ -54,6 +55,16 @@ export function PaymentMethodItem(props: PaymentMethodItemProps) {
               </Label>
               <div className="mt-1 flex flex-wrap items-center text-xs text-gray-500">{props.description}</div>
               <p className="mt-1 text-xs text-gray-500">Estimasi Pencairan: 1 hari kerja</p>
+              {props.limit && (
+                <>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Minimum Nominal: {IDRFormatter.toCurrency(props.limit.min)}
+                  </p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Maximum Nominal: {IDRFormatter.toCurrency(props.limit.max)}
+                  </p>
+                </>
+              )}
             </div>
 
             {/* Right: Fees */}

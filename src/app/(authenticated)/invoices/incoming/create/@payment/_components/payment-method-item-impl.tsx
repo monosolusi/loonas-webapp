@@ -19,6 +19,7 @@ export function PaymentMethodItemImpl(props: { method: PaymentGatewayEntity }) {
       pricing: { base: props.method.pricing.baseFee, percentage: props.method.pricing.percentageFee },
       title: props.method.title,
       description: props.method.schemes.map((scheme) => scheme.name).join(" • "),
+      limit: limit && limit?.payIn.isSupported ? { min: limit.payIn.min, max: limit.payIn.max } : undefined,
       disabled: !limit
         ? true
         : limit.payIn.isSupported
