@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { PageContent } from "@/core/presentations/components/page-content";
 import { PageHeading } from "@/core/presentations/components/page-heading";
-import { PaymentDetail } from "@/app/(authenticated)/invoices/[id]/@incomingDetail/_components/payment-detail";
+import { PaymentDetail } from "@/app/(authenticated)/invoices/_components/payment-detail";
 import { usePaymentRequest } from "@/features/payment/presentations/providers/payment-request";
 import { useCreditCardFullRedirectPayInDetail } from "@/features/payment/presentations/providers/cc-full-redirect-pay-in-detail";
 

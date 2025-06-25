@@ -2,11 +2,10 @@ import { BackButton } from "@/core/presentations/components/back-button";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { PageContent } from "@/core/presentations/components/page-content";
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
-import { InvoiceSummary } from "@/app/(authenticated)/invoices/[id]/_components/invoice-summary";
 import { DateTime } from "luxon";
 import { v4 as uuid } from "uuid";
-import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
-import { PaymentDetail } from "@/app/(authenticated)/invoices/[id]/@incomingDetail/_components/payment-detail";
+import { InvoiceSummaryImpl } from "@/app/(authenticated)/invoices/[id]/@incomingDetail/_components/invoice-summary-impl";
+import { PaymentDetail } from "@/app/(authenticated)/invoices/_components/payment-detail";
 import { Card } from "@/core/presentations/components/card";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { Timeline } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/timeline";
@@ -29,13 +28,7 @@ export default function IncomingInvoiceDetailPage() {
           </div>
         </div>
         <div className="flex-1">
-          <InvoiceSummary
-            createdAt={DateTime.now()}
-            id={uuid()}
-            status={PaymentRequestStatus.COMPLETED}
-            total={10000}
-            type={InvoiceType.INCOMING}
-          />
+          <InvoiceSummaryImpl />
         </div>
         <div className="flex flex-1 flex-row space-x-4">
           <div className="flex-2">

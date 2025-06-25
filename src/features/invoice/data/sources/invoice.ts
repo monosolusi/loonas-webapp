@@ -148,35 +148,13 @@ export class InvoiceServiceImpl implements InvoiceService {
     session: SessionEntity,
   ): Promise<InvoiceModel> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-      if (!filter.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
-      if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
-      const url = new URL(`${baseUrl}/invoices/${filter.id}`);
-      if (params.includes) url.searchParams.set("include", params.includes);
-
+      const path = `/invoices/${filter.id}`;
       const method = "GET";
-      const headers = {
-        Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id,
-      };
+      const searchParams = (params.includes && { include: params.includes }) || undefined;
 
-      const response = await fetch(url, { method, headers });
-      if (!response.ok) {
-        const data = await response.json();
-        if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
-
-        const ErrorCode = ErrorCodes.find(data.code);
-        if (ErrorCode) throw new ServerError(ErrorCode);
-
-        throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
-      }
-
-      const data = await response.json();
-      if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return InvoiceModel.fromJson(data);
+      const result = await this.http.request({ path, method, searchParams, session });
+      if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      return InvoiceModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

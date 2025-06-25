@@ -28,7 +28,7 @@ export function InvoiceSummary(props: InvoiceSummaryProps) {
           </DetailItem>
           <DetailItem label="Nilai Faktur">{IDRFormatter.toCurrency(props.total)}</DetailItem>
           <DetailItem label="Tanggal Dibuat">
-            {props.createdAt.setLocale("id-ID").toFormat("dd MMMM yyyy hh:mm")}
+            {props.createdAt.setLocale("id-ID").toFormat("dd MMMM yyyy HH:mm")}
           </DetailItem>
         </div>
       </div>

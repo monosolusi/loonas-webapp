@@ -59,16 +59,16 @@ export class InvoiceModel implements AbstractModel {
       id: doc["id"],
       receiver: PartnerModel.fromJson(doc["receiver"]),
       bankAccount: BankAccountModel.fromJson(doc["bank_account"]),
-      amount: doc["amount"],
-      fee: doc["fee"],
-      total: doc["total"],
+      amount: Number(doc["amount"]),
+      fee: Number(doc["fee"]),
+      total: Number(doc["total"]),
       paymentMethod: PaymentGatewayModel.fromJson(doc["payment_method"]),
       status: doc["status"],
       type: doc["type"],
       documents: doc["documents"]?.map((doc: Record<string, any>) => InvoiceSummaryDocumentModel.fromJson(doc)),
       createdAt: DateTime.fromISO(doc["created_at"]),
       updatedAt: DateTime.fromISO(doc["updated_at"]),
-      deletedAt: doc["deleted_at"] ? DateTime.fromISO(doc["deleted_at"]) : undefined
+      deletedAt: doc["deleted_at"] ? DateTime.fromISO(doc["deleted_at"]) : undefined,
     });
   }
 
@@ -83,10 +83,10 @@ export class InvoiceModel implements AbstractModel {
       paymentMethod: this.paymentMethod.toEntity(),
       status: this.status,
       type: this.type,
-      documents: this.documents?.map(doc => doc.toEntity()),
+      documents: this.documents?.map((doc) => doc.toEntity()),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
-      deletedAt: this.deletedAt
+      deletedAt: this.deletedAt,
     });
   }
 }
