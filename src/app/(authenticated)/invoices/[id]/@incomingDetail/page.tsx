@@ -10,10 +10,7 @@ import { Card } from "@/core/presentations/components/card";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { Timeline } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/timeline";
 import { BanknotesIcon, ClockIcon, CreditCardIcon } from "@heroicons/react/20/solid";
-import { TableContainer } from "@/core/presentations/components/table-container";
-import { Table } from "@/core/presentations/components/table";
-import { TableHeader } from "@/core/presentations/components/table-header";
-import { TableBody } from "@/core/presentations/components/table-body";
+import { DocumentTableImpl } from "./_components/document-table-impl";
 
 export default function IncomingInvoiceDetailPage() {
   return (
@@ -32,90 +29,7 @@ export default function IncomingInvoiceDetailPage() {
         </div>
         <div className="flex flex-1 flex-row space-x-4">
           <div className="flex-2">
-            <TableContainer>
-              <Table>
-                <TableHeader
-                  items={[
-                    { node: "Dokumen", hideOnMobile: false },
-                    { node: "Tanggal Faktur", hideOnMobile: true },
-                    { node: "Tanggal Jatuh Tempo", hideOnMobile: true },
-                    { node: "Jumlah", hideOnMobile: true },
-                  ]}
-                />
-                <TableBody
-                  items={[
-                    {
-                      row: [
-                        {
-                          node: (
-                            <div className="flex flex-col space-y-1">
-                              <div className="text-xs text-gray-500">INV/2025/06/001</div>
-                              <div className="font-semibold text-gray-900">
-                                <div className="max-w-[220px] overflow-hidden overflow-ellipsis">
-                                  Dokumen Faktur Pertama.pdf
-                                </div>
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                <div className="max-w-[220px] overflow-hidden overflow-ellipsis">
-                                  Catatan untuk dokumen ini
-                                </div>
-                              </div>
-                            </div>
-                          ),
-                          hideOnMobile: false,
-                        },
-                        {
-                          node: DateTime.now().setLocale("id-id").toLocaleString(DateTime.DATE_FULL),
-                          hideOnMobile: true,
-                        },
-                        {
-                          node: DateTime.now().plus({ days: 30 }).setLocale("id-id").toLocaleString(DateTime.DATE_FULL),
-                          hideOnMobile: true,
-                        },
-                        {
-                          node: IDRFormatter.toCurrency(100000),
-                          hideOnMobile: true,
-                        },
-                      ],
-                    },
-                    {
-                      row: [
-                        {
-                          node: (
-                            <div className="flex flex-col space-y-1">
-                              <div className="text-xs text-gray-500">INV/2025/06/001</div>
-                              <div className="font-semibold text-gray-900">
-                                <div className="max-w-[220px] overflow-hidden overflow-ellipsis">
-                                  Dokumen Faktur Kedua Cukup Panjang.pdf
-                                </div>
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                <div className="max-w-[220px] overflow-hidden overflow-ellipsis">
-                                  Catatan untuk dokumen ini yang cukup panjang sekali
-                                </div>
-                              </div>
-                            </div>
-                          ),
-                          hideOnMobile: false,
-                        },
-                        {
-                          node: DateTime.now().setLocale("id-id").toLocaleString(DateTime.DATE_FULL),
-                          hideOnMobile: true,
-                        },
-                        {
-                          node: DateTime.now().plus({ days: 30 }).setLocale("id-id").toLocaleString(DateTime.DATE_FULL),
-                          hideOnMobile: true,
-                        },
-                        {
-                          node: IDRFormatter.toCurrency(100000),
-                          hideOnMobile: true,
-                        },
-                      ],
-                    },
-                  ]}
-                />
-              </Table>
-            </TableContainer>
+            <DocumentTableImpl />
           </div>
           <div className="flex flex-1 flex-col space-y-4">
             <div className="flex-1">
