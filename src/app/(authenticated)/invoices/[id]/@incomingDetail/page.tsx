@@ -10,6 +10,7 @@ import { Timeline } from "@/app/(authenticated)/invoices/[id]/disbursement-statu
 import { BanknotesIcon, ClockIcon, CreditCardIcon } from "@heroicons/react/20/solid";
 import { DocumentTableImpl } from "./_components/document-table-impl";
 import { PaymentDetailImpl } from "./_components/payment-detail-impl";
+import { TimelineImpl } from "./_components/timeline-impl";
 
 export default function IncomingInvoiceDetailPage() {
   return (
@@ -35,33 +36,7 @@ export default function IncomingInvoiceDetailPage() {
               <PaymentDetailImpl />
             </div>
             <div className="flex-1">
-              <Timeline
-                currentStatus={PaymentRequestStatus.COMPLETED}
-                override={{ title: <h3 className="mb-4 text-lg font-semibold">Status Transaksis</h3> }}
-                items={[
-                  {
-                    id: 1,
-                    content: "Silakan lakukan pembayaran, kami siap memprosesnya.",
-                    status: PaymentRequestStatus.PENDING_PAYMENT,
-                    icon: ClockIcon,
-                    iconBackground: "bg-yellow-400",
-                  },
-                  {
-                    id: 2,
-                    content: "Terima kasih! Pembayaran masuk, faktur kamu sedang kami urus.",
-                    status: PaymentRequestStatus.PAYMENT_RECEIVED_PENDING_DELIVERY,
-                    icon: CreditCardIcon,
-                    iconBackground: "bg-yellow-500",
-                  },
-                  {
-                    id: 4,
-                    content: "Dana kamu sukses diteruskan ke bank penerima, sekarang tinggal proses di pihak mereka.",
-                    status: PaymentRequestStatus.COMPLETED,
-                    icon: BanknotesIcon,
-                    iconBackground: "bg-green-500",
-                  },
-                ]}
-              />
+              <TimelineImpl />
             </div>
             <div className="flex flex-col">
               <Card>

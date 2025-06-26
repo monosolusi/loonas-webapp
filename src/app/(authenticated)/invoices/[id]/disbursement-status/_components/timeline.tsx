@@ -2,6 +2,8 @@ import React from "react";
 import { Card } from "@/core/presentations/components/card";
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { CheckIcon } from "@heroicons/react/20/solid";
+import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
+import clsx from "clsx";
 
 interface TimelineProps {
   items: {
@@ -11,14 +13,10 @@ interface TimelineProps {
     icon: any;
     iconBackground: string;
   }[];
-  currentStatus: PaymentRequestStatus;
+  currentStatus: InvoiceStatus;
   override?: {
     title?: React.ReactNode;
   };
-}
-
-function classNames(...classes: any[]) {
-  return classes.filter(Boolean).join(" ");
 }
 
 export function Timeline(props: TimelineProps) {
@@ -29,15 +27,8 @@ export function Timeline(props: TimelineProps) {
    *          "current" if the step matches current status
    *          "upcoming" if the step is after current status
    */
-  const getStepStatus = (stepStatus: PaymentRequestStatus): "completed" | "current" | "upcoming" => {
-    const statusOrder = [
-      PaymentRequestStatus.PENDING_PAYMENT,
-      PaymentRequestStatus.PAYMENT_RECEIVED_PENDING_DELIVERY,
-      PaymentRequestStatus.COMPLETED,
-      PaymentRequestStatus.EXPIRED,
-      PaymentRequestStatus.FAILED,
-    ];
-
+  const getStepStatus = (stepStatus: InvoiceStatus): "completed" | "current" | "upcoming" => {
+    const statusOrder: InvoiceStatus[] = props.items.map((item) => item.status);
     const currentIdx = statusOrder.indexOf(props.currentStatus);
     const stepIdx = statusOrder.indexOf(stepStatus);
 
@@ -68,7 +59,7 @@ export function Timeline(props: TimelineProps) {
                   {eventIdx !== props.items.length - 1 && (
                     <span
                       aria-hidden="true"
-                      className={classNames(
+                      className={clsx(
                         "absolute top-4 left-4 -ml-px h-full w-0.5",
                         stepStatus === "upcoming" ? "bg-gray-200" : "bg-primary-default",
                       )}
@@ -77,7 +68,7 @@ export function Timeline(props: TimelineProps) {
                   <div className="relative flex space-x-3">
                     <div>
                       <span
-                        className={classNames(
+                        className={clsx(
                           stepStatus === "upcoming" ? "bg-gray-300" : bgColor,
                           "flex size-8 items-center justify-center rounded-full ring-8 ring-white",
                         )}
@@ -91,7 +82,7 @@ export function Timeline(props: TimelineProps) {
                     <div className="flex min-w-0 flex-1 justify-between pt-1.5">
                       <div>
                         <p
-                          className={classNames(
+                          className={clsx(
                             "text-sm",
                             stepStatus === "upcoming" ? "text-gray-500" : "font-medium text-gray-900",
                           )}
