@@ -3,14 +3,13 @@ import { FilledButton } from "@/core/presentations/components/filled-button";
 import { PageContent } from "@/core/presentations/components/page-content";
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { DateTime } from "luxon";
-import { v4 as uuid } from "uuid";
 import { InvoiceSummaryImpl } from "@/app/(authenticated)/invoices/[id]/@incomingDetail/_components/invoice-summary-impl";
-import { PaymentDetail } from "@/app/(authenticated)/invoices/_components/payment-detail";
 import { Card } from "@/core/presentations/components/card";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { Timeline } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/timeline";
 import { BanknotesIcon, ClockIcon, CreditCardIcon } from "@heroicons/react/20/solid";
 import { DocumentTableImpl } from "./_components/document-table-impl";
+import { PaymentDetailImpl } from "./_components/payment-detail-impl";
 
 export default function IncomingInvoiceDetailPage() {
   return (
@@ -28,10 +27,13 @@ export default function IncomingInvoiceDetailPage() {
           <InvoiceSummaryImpl />
         </div>
         <div className="flex flex-1 flex-row space-x-4">
-          <div className="flex-2">
+          <div className="flex flex-2 flex-col space-y-4">
             <DocumentTableImpl />
           </div>
           <div className="flex flex-1 flex-col space-y-4">
+            <div className="flex-1">
+              <PaymentDetailImpl />
+            </div>
             <div className="flex-1">
               <Timeline
                 currentStatus={PaymentRequestStatus.COMPLETED}
@@ -103,17 +105,6 @@ export default function IncomingInvoiceDetailPage() {
                 </div>
               </div>
             </Card>
-            <PaymentDetail
-              invoiceId={uuid()}
-              receiverName="Frans Siswanto"
-              bankName="Bank Mandiri"
-              accountNumber="1234567890"
-              accountHolderName="Frans Siswanto"
-              total={10000}
-              fee={500}
-              totalPayment={10500}
-              showActions={false}
-            />
           </div>
         </div>
       </div>
