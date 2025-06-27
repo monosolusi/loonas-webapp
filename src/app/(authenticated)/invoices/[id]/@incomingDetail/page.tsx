@@ -29,20 +29,22 @@ export default function IncomingInvoiceDetailPage() {
         </div>
         <div className="flex flex-1 flex-row space-x-4">
           <div className="flex flex-2 flex-col space-y-4">
-            <DocumentTableImpl />
-          </div>
-          <div className="flex flex-1 flex-col space-y-4">
             <div className="flex-1">
               <PaymentDetailImpl />
             </div>
             <div className="flex-1">
-              <TimelineImpl />
+              <DocumentTableImpl />
+            </div>
+          </div>
+          <div className="flex flex-1 flex-col space-y-4">
+            <div className="flex-1">
+              <VirtualAccountPaymentInstructionImpl />
             </div>
             <div className="flex-1">
               <CreditCardPaymentInstruction />
             </div>
             <div className="flex-1">
-              <VirtualAccountPaymentInstructionImpl />
+              <TimelineImpl />
             </div>
           </div>
         </div>
