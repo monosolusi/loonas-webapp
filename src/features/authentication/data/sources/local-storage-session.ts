@@ -43,7 +43,7 @@ export class LocalStorageSessionService implements SessionService {
       address: account.address,
       createdAt: account.createdAt,
       updatedAt: account.updatedAt,
-      deletedAt: account.deletedAt
+      deletedAt: account.deletedAt,
     });
   }
 
@@ -67,7 +67,7 @@ export class LocalStorageSessionService implements SessionService {
       address: account.address,
       createdAt: account.createdAt,
       updatedAt: account.updatedAt,
-      deletedAt: account.deletedAt
+      deletedAt: account.deletedAt,
     });
   }
 

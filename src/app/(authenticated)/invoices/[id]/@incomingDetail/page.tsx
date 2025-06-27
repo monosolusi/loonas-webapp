@@ -12,6 +12,8 @@ import { DocumentTableImpl } from "./_components/document-table-impl";
 import { PaymentDetailImpl } from "./_components/payment-detail-impl";
 import { TimelineImpl } from "./_components/timeline-impl";
 import { CreditCardPaymentInstruction } from "./_components/cc-payment-instruction";
+import { VirtualAccountPaymentInstruction } from "./_components/va-payment-instruction";
+import { VirtualAccountPaymentInstructionImpl } from "./_components/va-payment-instruction-impl";
 
 export default function IncomingInvoiceDetailPage() {
   return (
@@ -36,35 +38,12 @@ export default function IncomingInvoiceDetailPage() {
             <div className="flex-1">
               <TimelineImpl />
             </div>
-            <div className="flex flex-col">
+            <div className="flex-1">
               <CreditCardPaymentInstruction />
             </div>
-            <Card>
-              <div className="flex flex-col">
-                <div className="mb-4 text-lg font-semibold">Petunjuk Pembayaran</div>
-                <div className="space-y-4">
-                  <div className="flex flex-col">
-                    <div className="text-sm text-gray-600">Metode Pembayaran</div>
-                    <div className="font-bold">BRI Virtual Account</div>
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="text-sm text-gray-600">Nomor Virtual Account</div>
-                    <div className="font-bold">1234567890</div>
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="text-sm text-gray-600">Nominal Pembayaran</div>
-                    <div className="font-bold">{IDRFormatter.toCurrency(100000)}</div>
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="text-sm text-gray-600">Bayar Sebelum</div>
-                    <div className="font-bold">{DateTime.now().plus({ days: 1 }).toFormat("dd LLLL yyyy hh:mm")}</div>
-                  </div>
-                  <div className="flex-1">
-                    <FilledButton>Sudah Bayar</FilledButton>
-                  </div>
-                </div>
-              </div>
-            </Card>
+            <div className="flex-1">
+              <VirtualAccountPaymentInstructionImpl />
+            </div>
           </div>
         </div>
       </div>
