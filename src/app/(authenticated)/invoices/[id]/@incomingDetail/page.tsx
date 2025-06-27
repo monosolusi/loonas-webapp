@@ -21,9 +21,6 @@ export default function IncomingInvoiceDetailPage() {
           <div className="flex">
             <BackButton />
           </div>
-          <div className="flex self-end">
-            <FilledButton>Lihat Status</FilledButton>
-          </div>
         </div>
         <div className="flex-1">
           <InvoiceSummaryImpl />
