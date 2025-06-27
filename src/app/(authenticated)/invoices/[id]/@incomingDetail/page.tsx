@@ -11,6 +11,7 @@ import { BanknotesIcon, ClockIcon, CreditCardIcon } from "@heroicons/react/20/so
 import { DocumentTableImpl } from "./_components/document-table-impl";
 import { PaymentDetailImpl } from "./_components/payment-detail-impl";
 import { TimelineImpl } from "./_components/timeline-impl";
+import { CreditCardPaymentInstruction } from "./_components/cc-payment-instruction";
 
 export default function IncomingInvoiceDetailPage() {
   return (
@@ -39,20 +40,7 @@ export default function IncomingInvoiceDetailPage() {
               <TimelineImpl />
             </div>
             <div className="flex flex-col">
-              <Card>
-                <div className="flex flex-col">
-                  <div className="mb-4 text-lg font-semibold">Petunjuk Pembayaran</div>
-                  <div className="space-y-4">
-                    <div className="flex flex-col">
-                      <div className="text-sm text-gray-600">Metode Pembayaran</div>
-                      <div className="font-bold">Credit Card</div>
-                    </div>
-                    <div className="flex-1">
-                      <FilledButton>Lakukan Pembayaran</FilledButton>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+              <CreditCardPaymentInstruction />
             </div>
             <Card>
               <div className="flex flex-col">
