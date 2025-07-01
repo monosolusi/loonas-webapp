@@ -8,16 +8,16 @@ import { PayInService } from "@/features/payment/data/sources/pay-in";
 import { VirtualAccountPayInService } from "@/features/payment/data/sources/va-pay-in";
 
 export class VirtualAccountPayInRepository implements PayInRepository {
-  constructor(
-    private readonly payInService: PayInService
-  ) {
-  }
+  constructor(private readonly payInService: PayInService) {}
 
-  public async getDetail(params: {
-    requestId: string;
-  }, session: SessionEntity): Promise<DataState<VirtualAccountPayInDetailEntity>> {
+  public async getDetail(
+    params: { requestId: string },
+    session: SessionEntity,
+  ): Promise<DataState<VirtualAccountPayInDetailEntity>> {
     try {
-      if (!(this.payInService instanceof VirtualAccountPayInService)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      if (!(this.payInService instanceof VirtualAccountPayInService)) {
+        throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      }
 
       const vaDetail = await this.payInService.getDetail({ requestId: params.requestId }, session);
       if (vaDetail instanceof VirtualAccountPayInDetailModel) return new DataSuccess(vaDetail.toEntity());
@@ -27,5 +27,4 @@ export class VirtualAccountPayInRepository implements PayInRepository {
       return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
     }
   }
-
 }

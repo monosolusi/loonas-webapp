@@ -9,11 +9,11 @@ interface VirtualAccountPayInDetailModelConstructor {
   accountNumber: string;
   recipientName: string;
   paymentScheme: PaymentSchemeModel;
-  expirationTime: string;
+  expirationTime: DateTime;
   amount: number;
   status: PayInStatus;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: DateTime;
+  updatedAt: DateTime;
 }
 
 export class VirtualAccountPayInDetailModel implements AbstractModel {
@@ -21,11 +21,11 @@ export class VirtualAccountPayInDetailModel implements AbstractModel {
   public accountNumber: string;
   public recipientName: string;
   public paymentScheme: PaymentSchemeModel;
-  public expirationTime: string;
+  public expirationTime: DateTime;
   public amount: number;
   public status: PayInStatus;
-  public createdAt: string;
-  public updatedAt: string;
+  public createdAt: DateTime;
+  public updatedAt: DateTime;
 
   constructor(args: VirtualAccountPayInDetailModelConstructor) {
     this.id = args.id;
@@ -45,11 +45,11 @@ export class VirtualAccountPayInDetailModel implements AbstractModel {
       accountNumber: json.account_number,
       recipientName: json.recipient_name,
       paymentScheme: PaymentSchemeModel.fromJson(json.payment_scheme),
-      expirationTime: json.expiration_time,
+      expirationTime: DateTime.fromISO(json.expiration_time),
       amount: json.amount,
       status: json.status,
-      createdAt: json.created_at,
-      updatedAt: json.updated_at
+      createdAt: DateTime.fromISO(json.created_at),
+      updatedAt: DateTime.fromISO(json.updated_at),
     });
   }
 
@@ -59,12 +59,11 @@ export class VirtualAccountPayInDetailModel implements AbstractModel {
       accountNumber: this.accountNumber,
       recipientName: this.recipientName,
       paymentScheme: this.paymentScheme.toEntity(),
-      expirationTime: DateTime.fromISO(this.expirationTime),
+      expirationTime: this.expirationTime,
       amount: this.amount,
       status: this.status,
-      createdAt: DateTime.fromISO(this.createdAt),
-      updatedAt: DateTime.fromISO(this.updatedAt)
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     });
   }
-
 }

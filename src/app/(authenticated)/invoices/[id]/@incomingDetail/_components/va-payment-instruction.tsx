@@ -32,7 +32,7 @@ export function VirtualAccountPaymentInstruction(props: VirtualAccountPaymentIns
           </div>
           <div className="flex flex-col">
             <div className="text-sm text-gray-600">Bayar Sebelum</div>
-            <div className="font-bold">{props.expireAt.toFormat("dd LLLL yyyy hh:mm")}</div>
+            <div className="font-bold">{props.expireAt.toFormat("dd LLLL yyyy HH:mm")}</div>
           </div>
         </div>
       </div>

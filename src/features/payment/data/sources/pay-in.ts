@@ -6,11 +6,8 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 type GetDetailReturnType = VirtualAccountPayInDetailModel | CreditCardFullRedirectPayInDetailModel;
 
 export abstract class PayInService {
-  public abstract getDetail(params: {
-    requestId: string
-  }, session: SessionEntity): Promise<GetDetailReturnType>
+  public abstract getDetail(params: { requestId: string }, session: SessionEntity): Promise<GetDetailReturnType>;
 }
-
 
 export class PayInServiceImpl implements PayInService {
   public async getDetail(params: { requestId: string }, session: SessionEntity): Promise<GetDetailReturnType> {
@@ -27,9 +24,9 @@ export class PayInServiceImpl implements PayInService {
     const response = await fetch(url, {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id
-      }
+        Authorization: `Bearer ${session.accessToken}`,
+        "X-Account-Id": session.selectedAccount.id,
+      },
     });
 
     if (!response.ok) {
@@ -46,5 +43,4 @@ export class PayInServiceImpl implements PayInService {
     if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
     return data;
   }
-
 }
