@@ -13,9 +13,23 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { InvoiceService } from "@/features/invoice/domain/sources/invoice";
 import { OutgoingInvoiceEntity } from "../../domain/entities/outgoing-invoice";
 import { CombinedInvoiceSummaryEntity } from "../../domain/entities/combined-invoice-summary";
+import { PublicOutgoingInvoiceEntity } from "../../domain/entities/public-outgoing-invoice";
 
 export class InvoiceRepositoryImpl implements InvoiceRepository {
   constructor(private readonly invoiceService: InvoiceService) {}
+
+  public async getPublicOutgoing(
+    filter: { invoiceId: string },
+    session: SessionEntity,
+  ): Promise<DataState<PublicOutgoingInvoiceEntity>> {
+    try {
+      const invoice = await this.invoiceService.getPublicOutgoing(filter, session);
+      return new DataSuccess(invoice.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
 
   public async getOutgoing(
     filter: OutgoingInvoiceFilter,

@@ -10,6 +10,7 @@ import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { InvoiceSendChannel } from "@/features/invoice/domain/enums/invoice-send-channel";
 import { CombinedInvoiceSummaryEntity } from "@/features/invoice/domain/entities/combined-invoice-summary";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
+import { PublicOutgoingInvoiceEntity } from "../entities/public-outgoing-invoice";
 
 export interface InvoiceItem {
   name: string;
@@ -83,4 +84,9 @@ export interface InvoiceRepository {
     filter: CombinedInvoiceSummaryFilter,
     session: SessionEntity,
   ): Promise<DataState<CombinedInvoiceSummaryEntity>>;
+
+  getPublicOutgoing(
+    filter: { invoiceId: string },
+    session: SessionEntity,
+  ): Promise<DataState<PublicOutgoingInvoiceEntity>>;
 }

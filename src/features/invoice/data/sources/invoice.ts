@@ -17,9 +17,20 @@ import { CombinedInvoiceSummaryModel } from "../models/combined-invoice-summary"
 import { InvoiceItemSummaryModel } from "@/features/invoice/data/models/invoice-item-summary";
 import { InvoiceSenderModel } from "@/features/invoice/data/models/invoice-sender";
 import { InvoiceRecipientModel } from "@/features/invoice/data/models/invoice-recipient";
+import { PublicOutgoingInvoiceModel } from "../models/public-outgoing-invoice";
 
 export class InvoiceServiceImpl implements InvoiceService {
   constructor(private readonly http: HttpRequest) {}
+
+  public async getPublicOutgoing(
+    filter: { invoiceId: string },
+    session: SessionEntity,
+  ): Promise<PublicOutgoingInvoiceModel> {
+    const path = `/public/invoices/outgoing/${filter.invoiceId}`;
+    const method = "GET";
+    const result = await this.http.request({ path, method, session });
+    return PublicOutgoingInvoiceModel.fromJson(result);
+  }
 
   public async getOutgoing(filter: OutgoingInvoiceFilter, session: SessionEntity): Promise<OutgoingInvoiceModel> {
     if (!filter.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
