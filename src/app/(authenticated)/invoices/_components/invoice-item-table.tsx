@@ -3,11 +3,11 @@
 import { Table } from "@/core/presentations/components/table";
 import { TableHeader } from "@/core/presentations/components/table-header";
 import { TableBody } from "@/core/presentations/components/table-body";
-import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { TableContainer } from "@/core/presentations/components/table-container";
 import React, { useMemo } from "react";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
+import { CurrencyDisplay } from "@/core/presentations/components/currency-display";
 
 interface InvoiceItemTableProps {
   items: {
@@ -44,7 +44,7 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
   const generateDiscountString = (discountType?: DiscountType, discount?: number) => {
     if (!discountType || !discount) return "-";
     if (discountType === DiscountType.PERCENTAGE) return `${discount}%`;
-    if (discountType === DiscountType.FIXED) return IDRFormatter.toCurrency(discount);
+    if (discountType === DiscountType.FIXED) return <CurrencyDisplay value={discount} />;
     return "-";
   };
 
@@ -62,7 +62,11 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
           hideOnMobile: false,
         },
         {
-          node: `${item.qty} / ${IDRFormatter.toCurrency(item.price)}`,
+          node: (
+            <span>
+              {item.qty} / <CurrencyDisplay value={item.price} />
+            </span>
+          ),
           hideOnMobile: false,
           className: "text-right",
         },
@@ -72,16 +76,16 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
           className: "text-right",
         },
         {
-          node: !item.taxBase ? "-" : IDRFormatter.toCurrency(item.taxBase),
+          node: !item.taxBase ? "-" : <CurrencyDisplay value={item.taxBase} />,
           hideOnMobile: false,
           className: "text-right",
         },
         {
-          node: !item.tax ? "-" : IDRFormatter.toCurrency(item.tax),
+          node: !item.tax ? "-" : <CurrencyDisplay value={item.tax} />,
           hideOnMobile: false,
           className: "text-right",
         },
-        { node: IDRFormatter.toCurrency(item.total), hideOnMobile: false, className: "text-right" },
+        { node: <CurrencyDisplay value={item.total} />, hideOnMobile: false, className: "text-right" },
       ],
     }));
   }, [props.items]);
@@ -106,7 +110,7 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
               Dasar Pengenaan Pajak (DPP)
             </td>
             <td className="px-3 pt-4 pb-2 text-right text-sm">
-              {totalTaxBase === 0 ? "-" : IDRFormatter.toCurrency(totalTaxBase)}
+              {totalTaxBase === 0 ? "-" : <CurrencyDisplay value={totalTaxBase} />}
             </td>
             <td></td>
           </tr>
@@ -114,7 +118,9 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
             <td colSpan={5} className="px-3 py-2 text-right text-sm">
               Total Pajak
             </td>
-            <td className="px-3 py-2 text-right text-sm">{totalTax === 0 ? "-" : IDRFormatter.toCurrency(totalTax)}</td>
+            <td className="px-3 py-2 text-right text-sm">
+              {totalTax === 0 ? "-" : <CurrencyDisplay value={totalTax} />}
+            </td>
             <td></td>
           </tr>
           <tr>
@@ -122,7 +128,7 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
               Total Non-Pajak
             </td>
             <td className="px-3 py-2 text-right text-sm">
-              {nonTaxableAmount === 0 ? "-" : IDRFormatter.toCurrency(nonTaxableAmount)}
+              {nonTaxableAmount === 0 ? "-" : <CurrencyDisplay value={nonTaxableAmount} />}
             </td>
             <td></td>
           </tr>
@@ -131,7 +137,7 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
               Grand Total Faktur
             </td>
             <td className="px-3 pt-2 pb-4 text-right text-sm font-bold underline">
-              {totalAmount === 0 ? "-" : IDRFormatter.toCurrency(totalAmount)}
+              {totalAmount === 0 ? "-" : <CurrencyDisplay value={totalAmount} />}
             </td>
           </tr>
         </tfoot>
