@@ -2,7 +2,6 @@
 
 import { InvoicePreview } from "@/app/(authenticated)/invoices/_components/invoice-preview";
 import { useGetPublicOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-outgoing-invoice";
-import { DateTime } from "luxon";
 import { useParams } from "next/navigation";
 
 export function InvoicePreviewImpl() {
@@ -17,7 +16,8 @@ export function InvoicePreviewImpl() {
         invoiceNumber: invoice.invoiceNumber,
         invoiceDate: invoice.invoiceDate,
         dueDate: invoice.dueDate.setZone("Asia/Jakarta").plus({ days: 30 }),
-        note: invoice.invoiceDate,
+        note: invoice.note,
+        tnc: invoice.tnc,
       }}
       items={invoice.items.map((item) => ({
         name: item.name,

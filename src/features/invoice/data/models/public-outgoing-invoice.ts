@@ -29,6 +29,8 @@ interface PublicOutgoingInvoiceModelConstructor {
   };
   dueDate: DateTime;
   createdAt: DateTime;
+  note?: string;
+  tnc?: string;
 }
 
 export class PublicOutgoingInvoiceModel implements AbstractModel {
@@ -56,6 +58,8 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
   };
   public dueDate: DateTime;
   public createdAt: DateTime;
+  public note?: string;
+  public tnc?: string;
 
   constructor(args: PublicOutgoingInvoiceModelConstructor) {
     this.id = args.id;
@@ -68,6 +72,8 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
     this.summary = args.summary;
     this.dueDate = args.dueDate;
     this.createdAt = args.createdAt;
+    this.note = args.note;
+    this.tnc = args.tnc;
   }
 
   public static fromJson(json: Record<string, any>): PublicOutgoingInvoiceModel {
@@ -103,6 +109,8 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
       summary: { total: json.summary.total },
       dueDate: DateTime.fromISO(json.due_date),
       createdAt: DateTime.fromISO(json.created_at),
+      note: json.note,
+      tnc: json.tnc,
     });
   }
 
@@ -118,6 +126,8 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
       summary: this.summary,
       dueDate: this.dueDate,
       createdAt: this.createdAt,
+      note: this.note,
+      tnc: this.tnc,
     });
   }
 }

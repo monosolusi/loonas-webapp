@@ -28,6 +28,8 @@ interface PublicOutgoingInvoiceEntityConstructor {
     signerName: string;
     url?: string;
   };
+  note?: string;
+  tnc?: string;
 }
 
 export class PublicOutgoingInvoiceEntity implements AbstractEntity {
@@ -55,6 +57,8 @@ export class PublicOutgoingInvoiceEntity implements AbstractEntity {
   };
   public dueDate: DateTime;
   public createdAt: DateTime;
+  public note?: string;
+  public tnc?: string;
 
   constructor(args: PublicOutgoingInvoiceEntityConstructor) {
     this.id = args.id;
@@ -67,5 +71,7 @@ export class PublicOutgoingInvoiceEntity implements AbstractEntity {
     this.summary = args.summary;
     this.dueDate = args.dueDate;
     this.createdAt = args.createdAt;
+    this.note = args.note;
+    this.tnc = args.tnc;
   }
 }
