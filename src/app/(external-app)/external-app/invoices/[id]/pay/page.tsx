@@ -1,9 +1,5 @@
-import { InvoicePreview } from "@/app/(authenticated)/invoices/_components/invoice-preview";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { LogoImage } from "@/core/presentations/components/logo-image";
-import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
-import { TaxType } from "@/features/tax/domain/enums/tax-type";
-import { DateTime } from "luxon";
 import { InvoiceMetadataImpl } from "./_components/invoice-metadata-impl";
 import { InvoicePreviewImpl } from "./_components/invoice-preview-impl";
 

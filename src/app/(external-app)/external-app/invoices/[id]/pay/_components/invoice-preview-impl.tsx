@@ -15,7 +15,7 @@ export function InvoicePreviewImpl() {
         id: invoice.id,
         invoiceNumber: invoice.invoiceNumber,
         invoiceDate: invoice.invoiceDate,
-        dueDate: invoice.dueDate.setZone("Asia/Jakarta").plus({ days: 30 }),
+        dueDate: invoice.dueDate,
         note: invoice.note,
         tnc: invoice.tnc,
       }}
