@@ -34,8 +34,8 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
       sender: { name: json.sender.name },
       recipient: { name: json.recipient.name },
       summary: { total: json.summary.total },
-      dueDate: DateTime.fromISO(json.dueDate),
-      createdAt: DateTime.fromISO(json.createdAt),
+      dueDate: DateTime.fromISO(json.due_date),
+      createdAt: DateTime.fromISO(json.created_at),
     });
   }
 

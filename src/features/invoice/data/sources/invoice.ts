@@ -26,7 +26,7 @@ export class InvoiceServiceImpl implements InvoiceService {
     filter: { invoiceId: string },
     session: SessionEntity,
   ): Promise<PublicOutgoingInvoiceModel> {
-    const path = `/public/invoices/outgoing/${filter.invoiceId}`;
+    const path = `/invoices/public-outgoing/${filter.invoiceId}`;
     const method = "GET";
     const result = await this.http.request({ path, method, session });
     return PublicOutgoingInvoiceModel.fromJson(result);
