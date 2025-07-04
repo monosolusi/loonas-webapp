@@ -30,6 +30,14 @@ interface PublicOutgoingInvoiceEntityConstructor {
   };
   note?: string;
   tnc?: string;
+  paymentMethods: Array<{
+    id: string;
+    isActive: boolean;
+    title: string;
+    schemes: Array<{ name: string }>;
+    limit: { min: number; max: number };
+    pricing: { base: number; percentage: number };
+  }>;
 }
 
 export class PublicOutgoingInvoiceEntity implements AbstractEntity {
@@ -59,6 +67,14 @@ export class PublicOutgoingInvoiceEntity implements AbstractEntity {
   public createdAt: DateTime;
   public note?: string;
   public tnc?: string;
+  public paymentMethods: Array<{
+    id: string;
+    isActive: boolean;
+    title: string;
+    schemes: Array<{ name: string }>;
+    limit: { min: number; max: number };
+    pricing: { base: number; percentage: number };
+  }>;
 
   constructor(args: PublicOutgoingInvoiceEntityConstructor) {
     this.id = args.id;
@@ -73,5 +89,6 @@ export class PublicOutgoingInvoiceEntity implements AbstractEntity {
     this.createdAt = args.createdAt;
     this.note = args.note;
     this.tnc = args.tnc;
+    this.paymentMethods = args.paymentMethods;
   }
 }

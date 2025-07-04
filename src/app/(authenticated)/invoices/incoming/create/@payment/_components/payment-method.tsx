@@ -2,7 +2,6 @@
 
 import React from "react";
 import { RadioGroup } from "@headlessui/react";
-import { PaymentMethodItem } from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/payment-method-item";
 import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { useListPaymentMethod } from "@/features/payment/presentations/hooks/use-list-payment-method";

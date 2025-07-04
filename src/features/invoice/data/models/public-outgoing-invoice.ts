@@ -31,6 +31,14 @@ interface PublicOutgoingInvoiceModelConstructor {
   createdAt: DateTime;
   note?: string;
   tnc?: string;
+  paymentMethods: Array<{
+    id: string;
+    isActive: boolean;
+    title: string;
+    schemes: Array<{ name: string }>;
+    limit: { min: number; max: number };
+    pricing: { base: number; percentage: number };
+  }>;
 }
 
 export class PublicOutgoingInvoiceModel implements AbstractModel {
@@ -60,6 +68,14 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
   public createdAt: DateTime;
   public note?: string;
   public tnc?: string;
+  public paymentMethods: Array<{
+    id: string;
+    isActive: boolean;
+    title: string;
+    schemes: Array<{ name: string }>;
+    limit: { min: number; max: number };
+    pricing: { base: number; percentage: number };
+  }>;
 
   constructor(args: PublicOutgoingInvoiceModelConstructor) {
     this.id = args.id;
@@ -74,6 +90,7 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
     this.createdAt = args.createdAt;
     this.note = args.note;
     this.tnc = args.tnc;
+    this.paymentMethods = args.paymentMethods;
   }
 
   public static fromJson(json: Record<string, any>): PublicOutgoingInvoiceModel {
@@ -111,6 +128,14 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
       createdAt: DateTime.fromISO(json.created_at),
       note: json.note,
       tnc: json.tnc,
+      paymentMethods: json.payment_methods.map((method: any) => ({
+        id: method.id,
+        isActive: method.is_active,
+        title: method.title,
+        schemes: method.schemes.map((scheme: any) => ({ name: scheme.name })),
+        limit: { min: method.limit.min, max: method.limit.max },
+        pricing: { base: method.pricing.base, percentage: method.pricing.percentage },
+      })),
     });
   }
 
@@ -128,6 +153,7 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
       createdAt: this.createdAt,
       note: this.note,
       tnc: this.tnc,
+      paymentMethods: this.paymentMethods,
     });
   }
 }
