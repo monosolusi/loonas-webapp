@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 import { PublicOutgoingInvoiceEntity } from "../../domain/entities/public-outgoing-invoice";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { DiscountType } from "../../domain/enums/discount-type";
+import { ChargeFeeOn } from "../../domain/enums/charge-fee-on";
 
 interface PublicOutgoingInvoiceModelConstructor {
   id: string;
@@ -38,6 +39,7 @@ interface PublicOutgoingInvoiceModelConstructor {
     schemes: Array<{ name: string }>;
     limit: { min: number; max: number };
     pricing: { base: number; percentage: number };
+    chargeFeeOn: ChargeFeeOn;
   }>;
 }
 
@@ -135,6 +137,7 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
         schemes: method.schemes.map((scheme: any) => ({ name: scheme.name })),
         limit: { min: method.limit.min, max: method.limit.max },
         pricing: { base: method.pricing.base, percentage: method.pricing.percentage },
+        chargeFeeOn: method.charge_fee_on as ChargeFeeOn,
       })),
     });
   }
