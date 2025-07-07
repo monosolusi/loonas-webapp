@@ -4,11 +4,26 @@ import React from "react";
 import { useGetPublicOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-outgoing-invoice";
 import { useParams } from "next/navigation";
 import { SelectPaymentMethod } from "./select-payment-method";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 interface SelectPaymentMethodImplProps {
-  selectedPaymentMethod: string | undefined;
-  setSelectedPaymentMethod: React.Dispatch<React.SetStateAction<string | undefined>>;
+  selectedPaymentMethod?: {
+    id: string;
+    title: string;
+    requiresSchemeSelection: boolean;
+    schemes?: { id: string; imageUrl: string; name: string }[];
+  };
+  setSelectedPaymentMethod?: React.Dispatch<
+    React.SetStateAction<
+      | {
+          id: string;
+          title: string;
+          requiresSchemeSelection: boolean;
+          schemes?: { id: string; imageUrl: string; name: string }[];
+        }
+      | undefined
+    >
+  >;
 }
 
 export function SelectPaymentMethodImpl(props: SelectPaymentMethodImplProps) {
@@ -33,12 +48,22 @@ export function SelectPaymentMethodImpl(props: SelectPaymentMethodImplProps) {
   const handlePaymentMethodChange = (value: string) => {
     // Find the paymentMethod from the invoice by its id
     if (!invoice) return;
+    if (!setSelectedPaymentMethod) return;
 
     const paymentMethod = invoice.paymentMethods.find((method) => method.id === value);
     if (!paymentMethod) return;
 
-    setSelectedPaymentMethod(paymentMethod.id);
+    setSelectedPaymentMethod({
+      id: paymentMethod.id,
+      title: paymentMethod.title,
+      requiresSchemeSelection: paymentMethod.requiresSchemeSelection,
+      schemes: paymentMethod.schemes.map((scheme) => ({
+        id: scheme.id,
+        imageUrl: scheme.imageUrl,
+        name: scheme.name,
+      })),
+    });
   };
 
-  return <SelectPaymentMethod data={data} value={selectedPaymentMethod} onChange={handlePaymentMethodChange} />;
+  return <SelectPaymentMethod data={data} value={selectedPaymentMethod?.id} onChange={handlePaymentMethodChange} />;
 }

@@ -34,7 +34,8 @@ interface PublicOutgoingInvoiceEntityConstructor {
     id: string;
     isActive: boolean;
     title: string;
-    schemes: Array<{ name: string }>;
+    requiresSchemeSelection: boolean;
+    schemes: Array<{ id: string; imageUrl: string; name: string }>;
     limit: { min: number; max: number };
     pricing: { base: number; percentage: number };
   }>;
@@ -71,7 +72,8 @@ export class PublicOutgoingInvoiceEntity implements AbstractEntity {
     id: string;
     isActive: boolean;
     title: string;
-    schemes: Array<{ name: string }>;
+    requiresSchemeSelection: boolean;
+    schemes: Array<{ id: string; imageUrl: string; name: string }>;
     limit: { min: number; max: number };
     pricing: { base: number; percentage: number };
   }>;

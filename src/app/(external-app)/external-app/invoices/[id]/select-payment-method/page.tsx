@@ -4,10 +4,17 @@ import { LogoImage } from "@/core/presentations/components/logo-image";
 import { InvoiceMetadataImpl } from "./_components/invoice-metadata-impl";
 import { SelectPaymentMethodImpl } from "./_components/select-payment-method-impl";
 import { useState } from "react";
+import { Card } from "@/core/presentations/components/card";
+import { SelectSchemeImpl } from "./_components/select-scheme-impl";
 
 export default function SelectPaymentMethodPage() {
-  // Move the useState inside SelectPaymentMethodImpl here.
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>();
+  const [selectedScheme, setSelectedScheme] = useState<string | undefined>(undefined);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<{
+    id: string;
+    title: string;
+    requiresSchemeSelection: boolean;
+    schemes?: { id: string; imageUrl: string; name: string }[];
+  }>();
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -31,8 +38,23 @@ export default function SelectPaymentMethodPage() {
                 selectedPaymentMethod={selectedPaymentMethod}
                 setSelectedPaymentMethod={setSelectedPaymentMethod}
               />
+              <SelectSchemeImpl
+                selectedMethod={selectedPaymentMethod}
+                selectedScheme={selectedScheme}
+                setSelectedScheme={setSelectedScheme}
+              />
             </div>
-            <div className="flex-1"></div>
+            <div className="flex-1">
+              <Card>
+                <div className="flex flex-col space-y-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Ringkasan Pembayaran</h2>
+                  <p className="text-sm text-gray-700">
+                    Metode pembayaran yang dipilih: {selectedPaymentMethod?.title || "Belum dipilih"}
+                  </p>
+                  <p className="text-sm text-gray-700">Pastikan untuk memeriksa detail sebelum melanjutkan.</p>
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
       </div>

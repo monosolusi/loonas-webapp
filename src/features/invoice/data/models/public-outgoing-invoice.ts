@@ -36,7 +36,8 @@ interface PublicOutgoingInvoiceModelConstructor {
     id: string;
     isActive: boolean;
     title: string;
-    schemes: Array<{ name: string }>;
+    requiresSchemeSelection: boolean;
+    schemes: Array<{ id: string; imageUrl: string; name: string }>;
     limit: { min: number; max: number };
     pricing: { base: number; percentage: number };
     chargeFeeOn: ChargeFeeOn;
@@ -74,7 +75,8 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
     id: string;
     isActive: boolean;
     title: string;
-    schemes: Array<{ name: string }>;
+    requiresSchemeSelection: boolean;
+    schemes: Array<{ id: string; imageUrl: string; name: string }>;
     limit: { min: number; max: number };
     pricing: { base: number; percentage: number };
   }>;
@@ -134,7 +136,12 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
         id: method.id,
         isActive: method.is_active,
         title: method.title,
-        schemes: method.schemes.map((scheme: any) => ({ name: scheme.name })),
+        requiresSchemeSelection: method.requires_scheme_selection,
+        schemes: method.schemes.map((scheme: any) => ({
+          id: scheme.id,
+          imageUrl: scheme.logo_url,
+          name: scheme.name,
+        })),
         limit: { min: method.limit.min, max: method.limit.max },
         pricing: { base: method.pricing.base, percentage: method.pricing.percentage },
         chargeFeeOn: method.charge_fee_on as ChargeFeeOn,
