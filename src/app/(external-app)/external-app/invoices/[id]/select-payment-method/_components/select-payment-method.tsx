@@ -33,7 +33,7 @@ export function SelectPaymentMethod(props: SelectPaymentMethodProps) {
   );
 
   return (
-    <RadioGroup value={props.value || null} className="flex flex-col space-y-4">
+    <RadioGroup value={props.value || null} onChange={props.onChange} className="flex flex-col space-y-4">
       {methodItemData.map((item) => (
         <PaymentMethodItem {...item} key={item.value} />
       ))}

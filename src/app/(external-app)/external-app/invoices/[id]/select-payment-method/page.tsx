@@ -1,9 +1,14 @@
+"use client";
+
 import { LogoImage } from "@/core/presentations/components/logo-image";
 import { InvoiceMetadataImpl } from "./_components/invoice-metadata-impl";
-import { SelectPaymentMethod } from "./_components/select-payment-method";
 import { SelectPaymentMethodImpl } from "./_components/select-payment-method-impl";
+import { useState } from "react";
 
 export default function SelectPaymentMethodPage() {
+  // Move the useState inside SelectPaymentMethodImpl here.
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>();
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="flex flex-col space-y-4">
@@ -22,7 +27,10 @@ export default function SelectPaymentMethodPage() {
           </div>
           <div className="flex flex-row space-x-4">
             <div className="flex-2">
-              <SelectPaymentMethodImpl />
+              <SelectPaymentMethodImpl
+                selectedPaymentMethod={selectedPaymentMethod}
+                setSelectedPaymentMethod={setSelectedPaymentMethod}
+              />
             </div>
             <div className="flex-1"></div>
           </div>
