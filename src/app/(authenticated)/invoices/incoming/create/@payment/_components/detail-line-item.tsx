@@ -1,6 +1,6 @@
 import React from "react";
 
-export function DetailLineItem({ title, description }: { title: string, description: string }) {
+export function DetailLineItem({ title, description }: { title: string; description: string | React.ReactNode }) {
   return (
     <div className="mb-4">
       <h3 className="text-xs font-medium text-gray-500">{title}</h3>

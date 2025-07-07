@@ -5,9 +5,10 @@ import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-fo
 
 interface CurrencyDisplayProps {
   value: number;
+  className?: string;
 }
 
-export function CurrencyDisplay({ value }: CurrencyDisplayProps) {
+export function CurrencyDisplay({ value, className }: CurrencyDisplayProps) {
   const [formatted, setFormatted] = useState<string | null>(null);
 
   useEffect(() => {
@@ -15,5 +16,5 @@ export function CurrencyDisplay({ value }: CurrencyDisplayProps) {
   }, [value]);
 
   if (formatted === null) return null;
-  return <span>{formatted}</span>;
+  return <span className={className}>{formatted}</span>;
 }

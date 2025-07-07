@@ -12,8 +12,8 @@ interface SelectSchemeImplProps {
     requiresSchemeSelection: boolean;
     schemes?: { id: string; imageUrl: string; name: string }[];
   };
-  selectedScheme?: string;
-  setSelectedScheme?: React.Dispatch<React.SetStateAction<string | undefined>>;
+  value?: string;
+  onChange?: (value: string | undefined) => void;
 }
 
 export function SelectSchemeImpl(props: SelectSchemeImplProps) {
@@ -27,8 +27,8 @@ export function SelectSchemeImpl(props: SelectSchemeImplProps) {
     <SelectScheme
       title={`Pilih ${props.selectedMethod.title}`}
       data={props.selectedMethod.schemes}
-      value={props.selectedScheme}
-      onChange={props.setSelectedScheme}
+      value={props.value}
+      onChange={props.onChange}
     />
   );
 }
