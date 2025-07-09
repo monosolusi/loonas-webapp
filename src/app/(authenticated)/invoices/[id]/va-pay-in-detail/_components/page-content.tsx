@@ -2,8 +2,8 @@
 
 import { DateTime } from "luxon";
 import { PageHeading } from "@/core/presentations/components/page-heading";
-import { RemainingPaymentTime } from "@/app/(authenticated)/invoices/[id]/va-pay-in-detail/_components/remaining-payment-time";
-import { VirtualAccountDetailBox } from "@/app/(authenticated)/invoices/[id]/va-pay-in-detail/_components/va-detail";
+import { RemainingPaymentTime } from "@/core/presentations/components/remaining-payment-time";
+import { VirtualAccountDetailBox } from "@/core/presentations/components/va-detail";
 import { PaymentDetail } from "@/app/(authenticated)/invoices/_components/payment-detail";
 import React, { useEffect, useState } from "react";
 import { PageContent } from "@/core/presentations/components/page-content";

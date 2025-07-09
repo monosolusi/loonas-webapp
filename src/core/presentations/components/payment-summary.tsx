@@ -9,9 +9,15 @@ interface PaymentSummaryProps {
   fee: number;
   totalPayable: number;
   isDisabled: boolean;
+  onClick?: () => void;
 }
 
 export function PaymentSummary(props: PaymentSummaryProps) {
+  const handleClick = () => {
+    if (props.isDisabled) return;
+    props.onClick?.();
+  };
+
   return (
     <Card>
       <div className="flex flex-col space-y-4">
@@ -25,7 +31,11 @@ export function PaymentSummary(props: PaymentSummaryProps) {
             <CurrencyDisplay className="text-primary-default text-lg font-semibold" value={props.totalPayable} />
           }
         />
-        <FilledButton disabled={props.isDisabled}>Bayar Sekarang</FilledButton>
+        {props.onClick && (
+          <FilledButton disabled={props.isDisabled} onClick={handleClick}>
+            Bayar Sekarang
+          </FilledButton>
+        )}
       </div>
     </Card>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { FilledButton } from "@/core/presentations/components/filled-button";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export function PayButton() {
   const router = useRouter();
