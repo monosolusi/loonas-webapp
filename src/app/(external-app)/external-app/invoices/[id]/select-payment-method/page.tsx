@@ -12,6 +12,7 @@ interface SelectedPaymentMethod {
   title: string;
   requiresSchemeSelection: boolean;
   schemes?: { id: string; imageUrl: string; name: string }[];
+  pricing: { base: number; percentage: number };
 }
 
 export default function SelectPaymentMethodPage() {

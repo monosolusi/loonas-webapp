@@ -18,6 +18,7 @@ interface SelectPaymentMethodImplProps {
     title: string;
     requiresSchemeSelection: boolean;
     schemes?: { id: string; imageUrl: string; name: string }[];
+    pricing: { base: number; percentage: number };
   }) => void;
 }
 
@@ -57,6 +58,7 @@ export function SelectPaymentMethodImpl(props: SelectPaymentMethodImplProps) {
         imageUrl: scheme.imageUrl,
         name: scheme.name,
       })),
+      pricing: paymentMethod.pricing,
     });
   };
 
