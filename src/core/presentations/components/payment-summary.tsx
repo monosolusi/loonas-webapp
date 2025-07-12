@@ -9,13 +9,13 @@ interface PaymentSummaryProps {
   fee: number;
   totalPayable: number;
   isDisabled: boolean;
-  onClick?: () => void;
+  onClick?: () => void | Promise<void>;
 }
 
 export function PaymentSummary(props: PaymentSummaryProps) {
-  const handleClick = () => {
+  const handleClick = async () => {
     if (props.isDisabled) return;
-    props.onClick?.();
+    await props.onClick?.();
   };
 
   return (

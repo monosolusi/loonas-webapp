@@ -14,9 +14,29 @@ import { InvoiceService } from "@/features/invoice/domain/sources/invoice";
 import { OutgoingInvoiceEntity } from "../../domain/entities/outgoing-invoice";
 import { CombinedInvoiceSummaryEntity } from "../../domain/entities/combined-invoice-summary";
 import { PublicOutgoingInvoiceEntity } from "../../domain/entities/public-outgoing-invoice";
+import { PayInEntity } from "../../domain/entities/pay-in";
 
 export class InvoiceRepositoryImpl implements InvoiceRepository {
   constructor(private readonly invoiceService: InvoiceService) {}
+
+  public async createPayInForOutgoingInvoice(params: {
+    invoiceId: string;
+    paymentMethodId: string;
+    paymentSchemeId?: string | null;
+  }): Promise<DataState<PayInEntity>> {
+    try {
+      const payIn = await this.invoiceService.createPayInForOutgoingInvoice({
+        invoiceId: params.invoiceId,
+        paymentMethodId: params.paymentMethodId,
+        paymentSchemeId: params.paymentSchemeId || null,
+      });
+
+      return new DataSuccess(payIn.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
 
   public async getPublicOutgoing(
     filter: { invoiceId: string },

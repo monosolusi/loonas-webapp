@@ -11,6 +11,7 @@ import { InvoiceSendChannel } from "@/features/invoice/domain/enums/invoice-send
 import { CombinedInvoiceSummaryEntity } from "@/features/invoice/domain/entities/combined-invoice-summary";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { PublicOutgoingInvoiceEntity } from "../entities/public-outgoing-invoice";
+import { PayInEntity } from "../entities/pay-in";
 
 export interface InvoiceItem {
   name: string;
@@ -89,4 +90,10 @@ export interface InvoiceRepository {
     filter: { invoiceId: string },
     session: SessionEntity,
   ): Promise<DataState<PublicOutgoingInvoiceEntity>>;
+
+  createPayInForOutgoingInvoice(params: {
+    invoiceId: string;
+    paymentMethodId: string;
+    paymentSchemeId?: string | null;
+  }): Promise<DataState<PayInEntity>>;
 }

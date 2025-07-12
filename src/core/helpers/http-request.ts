@@ -6,7 +6,7 @@ interface FetchParams {
   method: "POST" | "GET" | "PUT" | "DELETE" | "PATH";
   body?: Record<string, any> | FormData;
   searchParams?: Record<string, any>;
-  session: SessionEntity;
+  session?: SessionEntity;
 }
 
 interface FetchConfig {
@@ -27,14 +27,17 @@ export class HttpRequest {
     },
   ) {
     const mergedConfig = {
-      requireAuth: config.requireAuth || true,
-      requireAccount: config.requireAccount || true,
+      requireAuth: config.requireAuth ?? true,
+      requireAccount: config.requireAccount ?? true,
       contentType: config.contentType ? config.contentType : config.inferContentType ? "application/json" : undefined,
     };
 
-    if (mergedConfig.requireAuth && !params.session.accessToken) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
-    if (mergedConfig.requireAccount && !params.session.selectedAccount) {
-      throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
+    if (mergedConfig.requireAuth || mergedConfig.requireAccount) {
+      if (!params.session) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+      if (!params.session.accessToken) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+      if (mergedConfig.requireAccount && !params.session.selectedAccount) {
+        throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
+      }
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
@@ -46,9 +49,9 @@ export class HttpRequest {
     }
 
     const headers: Record<string, string> = {};
-    if (mergedConfig.requireAuth) headers["Authorization"] = `Bearer ${params.session.accessToken}`;
+    if (mergedConfig.requireAuth && params.session) headers["Authorization"] = `Bearer ${params.session.accessToken}`;
     if (mergedConfig.contentType) headers["Content-Type"] = mergedConfig.contentType;
-    if (mergedConfig.requireAccount && params.session.selectedAccount) {
+    if (mergedConfig.requireAccount && params.session && params.session.selectedAccount) {
       headers["X-Account-Id"] = params.session.selectedAccount.id;
     }
 

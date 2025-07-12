@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { PaymentSummary } from "../../../../../../../core/presentations/components/payment-summary";
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useCreateOutgoingInvoicePayIn } from "@/features/invoice/presentations/hooks/use-create-outgoing-invoice-pay-in";
 
 interface PaymentSummaryImplProps {
   selectedPaymentMethod?: {
@@ -21,6 +22,7 @@ export function PaymentSummaryImpl(props: PaymentSummaryImplProps) {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const { invoice, loading } = useGetPublicOutgoingInvoice({ id });
+  const { trigger, isMutating } = useCreateOutgoingInvoicePayIn();
 
   const fee = useMemo(() => {
     if (!invoice || !props.selectedPaymentMethod) return 0;
@@ -35,13 +37,20 @@ export function PaymentSummaryImpl(props: PaymentSummaryImplProps) {
     return invoice.summary.total + fee;
   }, [invoice, fee]);
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!props.selectedPaymentMethod) return;
+    if (isMutating) return;
 
-    const searchParams = new URLSearchParams();
-    searchParams.set("payment_method", props.selectedPaymentMethod.id);
-    if (props.selectedScheme) searchParams.set("payment_scheme", props.selectedScheme);
-    router.push("./pay-in-detail?" + searchParams.toString());
+    await trigger({
+      invoiceId: id,
+      paymentMethodId: props.selectedPaymentMethod.id,
+      paymentScheme: props.selectedScheme || null,
+    });
+
+    // const searchParams = new URLSearchParams();
+    // searchParams.set("payment_method", props.selectedPaymentMethod.id);
+    // if (props.selectedScheme) searchParams.set("payment_scheme", props.selectedScheme);
+    // router.push("./pay-in-detail?" + searchParams.toString());
   };
 
   if (loading || !invoice) return null;

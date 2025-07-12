@@ -10,6 +10,7 @@ import { InvoiceSendChannel } from "@/features/invoice/domain/enums/invoice-send
 import { CombinedInvoiceSummaryModel } from "@/features/invoice/data/models/combined-invoice-summary";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { PublicOutgoingInvoiceModel } from "../../data/models/public-outgoing-invoice";
+import { PayInModel } from "../../data/models/pay-in";
 
 export interface InvoiceServiceFilter {
   id?: string;
@@ -85,4 +86,10 @@ export interface InvoiceService {
   ): Promise<CombinedInvoiceSummaryModel>;
 
   getPublicOutgoing(filter: { invoiceId: string }, session: SessionEntity): Promise<PublicOutgoingInvoiceModel>;
+
+  createPayInForOutgoingInvoice(params: {
+    invoiceId: string;
+    paymentMethodId: string;
+    paymentSchemeId?: string | null;
+  }): Promise<PayInModel>;
 }
