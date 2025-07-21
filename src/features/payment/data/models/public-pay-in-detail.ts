@@ -33,6 +33,7 @@ export class PublicPayInDetailModel implements AbstractModel {
   }
 
   public static fromJson(json: Record<string, any>): PublicPayInDetailModel {
+    console.log(json);
     return new PublicPayInDetailModel({
       payIn: {
         type: json.pay_in.type as PayInType,
