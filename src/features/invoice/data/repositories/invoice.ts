@@ -38,12 +38,9 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
     }
   }
 
-  public async getPublicOutgoing(
-    filter: { invoiceId: string },
-    session: SessionEntity,
-  ): Promise<DataState<PublicOutgoingInvoiceEntity>> {
+  public async getPublicOutgoing(filter: { invoiceId: string }): Promise<DataState<PublicOutgoingInvoiceEntity>> {
     try {
-      const invoice = await this.invoiceService.getPublicOutgoing(filter, session);
+      const invoice = await this.invoiceService.getPublicOutgoing(filter);
       return new DataSuccess(invoice.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);

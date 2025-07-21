@@ -43,13 +43,10 @@ export class InvoiceServiceImpl implements InvoiceService {
     return PayInModel.fromJson(result);
   }
 
-  public async getPublicOutgoing(
-    filter: { invoiceId: string },
-    session: SessionEntity,
-  ): Promise<PublicOutgoingInvoiceModel> {
+  public async getPublicOutgoing(filter: { invoiceId: string }): Promise<PublicOutgoingInvoiceModel> {
     const path = `/invoices/public-outgoing/${filter.invoiceId}`;
     const method = "GET";
-    const result = await this.http.request({ path, method, session });
+    const result = await this.http.request({ path, method });
     return PublicOutgoingInvoiceModel.fromJson(result);
   }
 

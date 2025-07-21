@@ -1,14 +1,19 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { PayInRepository } from "@/features/payment/domain/repositories/pay-in";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { VirtualAccountPayInDetailModel } from "@/features/payment/data/models/va-pay-in-detail";
 import { VirtualAccountPayInDetailEntity } from "@/features/payment/domain/entities/va-pay-in-detail";
-import { PayInService } from "@/features/payment/data/sources/pay-in";
 import { VirtualAccountPayInService } from "@/features/payment/data/sources/va-pay-in";
+import { PayInDetailRepository } from "@/features/payment/domain/repositories/pay-in-detail";
+import { PayInDetailService } from "@/features/payment/domain/sources/pay-in-detail";
+import { PublicPayInDetailEntity } from "../../domain/entities/public-pay-in-detail";
 
-export class VirtualAccountPayInRepository implements PayInRepository {
-  constructor(private readonly payInService: PayInService) {}
+export class VirtualAccountPayInRepository implements PayInDetailRepository {
+  constructor(private readonly payInService: PayInDetailService) {}
+
+  public async getPublic(params: { invoiceId: string }): Promise<DataState<PublicPayInDetailEntity>> {
+    throw new Error("Method not implemented.");
+  }
 
   public async getDetail(
     params: { requestId: string },

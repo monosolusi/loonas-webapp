@@ -1,12 +1,15 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { PayInServiceImpl } from "@/features/payment/data/sources/pay-in";
+import { PayInDetailServiceImpl } from "@/features/payment/data/sources/pay-in-detail";
 import { VirtualAccountPayInDetailModel } from "../models/va-pay-in-detail";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
-export class VirtualAccountPayInService extends PayInServiceImpl {
-  public override async getDetail(params: {
-    requestId: string;
-  }, session: SessionEntity): Promise<VirtualAccountPayInDetailModel> {
+export class VirtualAccountPayInService extends PayInDetailServiceImpl {
+  public override async getDetail(
+    params: {
+      requestId: string;
+    },
+    session: SessionEntity,
+  ): Promise<VirtualAccountPayInDetailModel> {
     try {
       const data = await this.getDetailImpl(params, session);
       return VirtualAccountPayInDetailModel.fromJson(data);
@@ -15,5 +18,4 @@ export class VirtualAccountPayInService extends PayInServiceImpl {
       throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
     }
   }
-
 }

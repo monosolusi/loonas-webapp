@@ -85,7 +85,7 @@ export interface InvoiceService {
     session: SessionEntity,
   ): Promise<CombinedInvoiceSummaryModel>;
 
-  getPublicOutgoing(filter: { invoiceId: string }, session: SessionEntity): Promise<PublicOutgoingInvoiceModel>;
+  getPublicOutgoing(filter: { invoiceId: string }): Promise<PublicOutgoingInvoiceModel>;
 
   createPayInForOutgoingInvoice(params: {
     invoiceId: string;

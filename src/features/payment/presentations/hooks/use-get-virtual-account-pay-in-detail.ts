@@ -9,15 +9,17 @@ import {
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import useSWR from "swr";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 interface GetVirtualAccountPayInDetailParams {
   requestId: string;
 }
 
 async function GetVirtualAccountPayInDetailFetcher([_, params]: [string, GetVirtualAccountPayInDetailParams]) {
+  const http = new HttpRequest();
   const sessionService = new LocalStorageSessionService();
   const sessionRepository = new SessionRepositoryImpl(sessionService);
-  const payInService = new VirtualAccountPayInService();
+  const payInService = new VirtualAccountPayInService(http);
   const payInRepository = new VirtualAccountPayInRepository(payInService);
   const retrieve = new RetrieveVirtualAccountPayInDetailUseCase(sessionRepository, payInRepository);
   const retrieveParams = new RetrieveVirtualAccountPayInDetailUseCaseParams({ requestId: params.requestId });

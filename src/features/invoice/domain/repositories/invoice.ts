@@ -86,10 +86,7 @@ export interface InvoiceRepository {
     session: SessionEntity,
   ): Promise<DataState<CombinedInvoiceSummaryEntity>>;
 
-  getPublicOutgoing(
-    filter: { invoiceId: string },
-    session: SessionEntity,
-  ): Promise<DataState<PublicOutgoingInvoiceEntity>>;
+  getPublicOutgoing(filter: { invoiceId: string }): Promise<DataState<PublicOutgoingInvoiceEntity>>;
 
   createPayInForOutgoingInvoice(params: {
     invoiceId: string;

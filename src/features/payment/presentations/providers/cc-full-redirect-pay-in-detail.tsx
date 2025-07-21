@@ -5,15 +5,14 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { DataFailed } from "@/core/resources/data-state";
-import {
-  CreditCardFullRedirectPayInDetailEntity
-} from "@/features/payment/domain/entities/cc-full-redirect-pay-in-detail";
+import { CreditCardFullRedirectPayInDetailEntity } from "@/features/payment/domain/entities/cc-full-redirect-pay-in-detail";
 import {
   RetrieveCreditCardFullRedirectPayInDetailUseCase,
-  RetrieveCreditCardFullRedirectPayInDetailUseCaseParams
+  RetrieveCreditCardFullRedirectPayInDetailUseCaseParams,
 } from "@/features/payment/domain/usecases/retrieve-cc-full-redirect-pay-in-detail";
 import { CreditCardFullRedirectPayInRepository } from "@/features/payment/data/repositories/cc-full-redirect-pay-in";
 import { CreditCardFullRedirectPayInService } from "@/features/payment/data/sources/cc-full-redirect-pay-in";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 interface CreditCardFullRedirectPayInDetailContextProps {
   ccDetail?: CreditCardFullRedirectPayInDetailEntity;
@@ -22,17 +21,18 @@ interface CreditCardFullRedirectPayInDetailContextProps {
 }
 
 const CreditCardFullRedirectPayInDetailContext = React.createContext<CreditCardFullRedirectPayInDetailContextProps>({
-  loading: false
+  loading: false,
 });
 
-export function CreditCardFullRedirectPayInDetailProvider(props: { children: React.ReactNode, requestId: string }) {
+export function CreditCardFullRedirectPayInDetailProvider(props: { children: React.ReactNode; requestId: string }) {
   const [ccDetail, setCcDetail] = useState<CreditCardFullRedirectPayInDetailEntity>();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<ServerError>();
 
   async function fetchCreditCardFullRedirectPayInDetail(requestId: string) {
+    const http = new HttpRequest();
     const sessionService = new LocalStorageSessionService();
-    const payInService = new CreditCardFullRedirectPayInService();
+    const payInService = new CreditCardFullRedirectPayInService(http);
 
     const payInRepository = new CreditCardFullRedirectPayInRepository(payInService);
     const sessionRepository = new SessionRepositoryImpl(sessionService);
@@ -52,9 +52,7 @@ export function CreditCardFullRedirectPayInDetailProvider(props: { children: Rea
   }, [props.requestId]);
 
   return (
-    <CreditCardFullRedirectPayInDetailContext.Provider
-      value={{ ccDetail, loading, error }}
-    >
+    <CreditCardFullRedirectPayInDetailContext.Provider value={{ ccDetail, loading, error }}>
       {props.children}
     </CreditCardFullRedirectPayInDetailContext.Provider>
   );

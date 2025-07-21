@@ -16,18 +16,11 @@ export class GetPublicOutgoingInvoiceUseCaseParams {
 export class GetPublicOutgoingInvoiceUseCase
   implements UseCase<DataState<PublicOutgoingInvoiceEntity>, GetPublicOutgoingInvoiceUseCaseParams>
 {
-  constructor(
-    private readonly invoiceRepository: InvoiceRepository,
-    private readonly sessionRepository: SessionRepository,
-  ) {}
+  constructor(private readonly invoiceRepository: InvoiceRepository) {}
 
   public async execute(params: GetPublicOutgoingInvoiceUseCaseParams): Promise<DataState<PublicOutgoingInvoiceEntity>> {
     try {
-      const session = await this.sessionRepository.retrieve();
-      if (session instanceof DataFailed) return session;
-      if (!session.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
-      return this.invoiceRepository.getPublicOutgoing({ invoiceId: params.invoiceId }, session.data);
+      return this.invoiceRepository.getPublicOutgoing({ invoiceId: params.invoiceId });
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

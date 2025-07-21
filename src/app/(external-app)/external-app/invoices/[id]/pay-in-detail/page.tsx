@@ -8,15 +8,9 @@ import { RemainingPaymentTime } from "@/core/presentations/components/remaining-
 import { DateTime } from "luxon";
 import { VirtualAccountDetailBox } from "@/core/presentations/components/va-detail";
 import { PaymentSummary } from "@/core/presentations/components/payment-summary";
+import { PaymentSummaryImpl } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/payment-summary-impl";
 
 export default function PayInDetailPage() {
-  const searchParams = useSearchParams();
-  const paymentMethod = searchParams.get("payment_method");
-  const paymentScheme = searchParams.get("payment_scheme");
-
-  console.log("Payment Method:", paymentMethod);
-  console.log("Payment Scheme:", paymentScheme);
-
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="flex flex-col space-y-4">
@@ -48,13 +42,7 @@ export default function PayInDetailPage() {
               </Card>
             </div>
             <div className="flex-1">
-              <PaymentSummary
-                selectedPaymentMethod={{ title: "Virtual Account" }}
-                invoiceValue={1000000}
-                fee={5000}
-                totalPayable={1005000}
-                isDisabled={false}
-              />
+              <PaymentSummaryImpl />
             </div>
           </div>
         </div>

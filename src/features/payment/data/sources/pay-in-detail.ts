@@ -1,19 +1,32 @@
-import { VirtualAccountPayInDetailModel } from "@/features/payment/data/models/va-pay-in-detail";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { CreditCardFullRedirectPayInDetailModel } from "@/features/payment/data/models/cc-full-redirect-pay-in-detail";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { GetDetailReturnType, PayInDetailService } from "@/features/payment/domain/sources/pay-in-detail";
+import { PublicPayInDetailModel } from "../models/public-pay-in-detail";
+import { HttpRequest } from "@/core/helpers/http-request";
 
-type GetDetailReturnType = VirtualAccountPayInDetailModel | CreditCardFullRedirectPayInDetailModel;
+export class PayInDetailServiceImpl implements PayInDetailService {
+  constructor(private readonly http: HttpRequest) {}
 
-export abstract class PayInService {
-  public abstract getDetail(params: { requestId: string }, session: SessionEntity): Promise<GetDetailReturnType>;
-}
+  public async getPublic(params: { invoiceId: string }): Promise<PublicPayInDetailModel> {
+    try {
+      const method = "GET";
+      const path = `/invoices/public-outgoing/${params.invoiceId}/pay-in`;
+      const config = { requireAuth: false, requireAccount: false };
+      const result = await this.http.request({ path, method }, config);
+      if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-export class PayInServiceImpl implements PayInService {
+      return PublicPayInDetailModel.fromJson(result);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
   public async getDetail(params: { requestId: string }, session: SessionEntity): Promise<GetDetailReturnType> {
     throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
   }
 
+  // TODO: the below is weird implementation. Please change this in the future.
   protected async getDetailImpl(params: { requestId: string }, session: SessionEntity): Promise<Record<string, any>> {
     if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
 

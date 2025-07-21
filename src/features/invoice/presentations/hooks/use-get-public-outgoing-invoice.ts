@@ -20,13 +20,10 @@ async function GetPublicOutgoingInvoiceFetcher([_, params]: [
   string,
   GetPublicOutgoingInvoiceFetcherParams,
 ]): Promise<PublicOutgoingInvoiceEntity> {
-  const sessionService = new LocalStorageSessionService();
-  const sessionRepository = new SessionRepositoryImpl(sessionService);
-
   const http = new HttpRequest();
   const invoiceService = new InvoiceServiceImpl(http);
   const invoiceRepository = new InvoiceRepositoryImpl(invoiceService);
-  const get = new GetPublicOutgoingInvoiceUseCase(invoiceRepository, sessionRepository);
+  const get = new GetPublicOutgoingInvoiceUseCase(invoiceRepository);
   const getParams = new GetPublicOutgoingInvoiceUseCaseParams({ invoiceid: params.id });
 
   const result = await get.execute(getParams);
