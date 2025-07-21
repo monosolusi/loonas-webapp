@@ -4,7 +4,7 @@ import { Card } from "@/core/presentations/components/card";
 import { useGetPublicOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-outgoing-invoice";
 import { useParams } from "next/navigation";
 import { PaymentSummary } from "../../../../../../../core/presentations/components/payment-summary";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useCreateOutgoingInvoicePayIn } from "@/features/invoice/presentations/hooks/use-create-outgoing-invoice-pay-in";
 
@@ -22,7 +22,7 @@ export function PaymentSummaryImpl(props: PaymentSummaryImplProps) {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const { invoice, loading } = useGetPublicOutgoingInvoice({ id });
-  const { trigger, isMutating } = useCreateOutgoingInvoicePayIn();
+  const { data, trigger, isMutating } = useCreateOutgoingInvoicePayIn();
 
   const fee = useMemo(() => {
     if (!invoice || !props.selectedPaymentMethod) return 0;
@@ -48,10 +48,7 @@ export function PaymentSummaryImpl(props: PaymentSummaryImplProps) {
       paymentScheme: props.selectedScheme || null,
     });
 
-    // const searchParams = new URLSearchParams();
-    // searchParams.set("payment_method", props.selectedPaymentMethod.id);
-    // if (props.selectedScheme) searchParams.set("payment_scheme", props.selectedScheme);
-    // router.push("./pay-in-detail?" + searchParams.toString());
+    router.push("./pay-in-detail");
   };
 
   if (loading || !invoice) return null;
