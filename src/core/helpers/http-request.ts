@@ -3,7 +3,7 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 interface FetchParams {
   path: string;
-  method: "POST" | "GET" | "PUT" | "DELETE" | "PATH";
+  method: "POST" | "GET" | "PUT" | "DELETE" | "PATCH";
   body?: Record<string, any> | FormData;
   searchParams?: Record<string, any>;
   session?: SessionEntity;
@@ -22,14 +22,13 @@ export class HttpRequest {
     config: FetchConfig = {
       requireAuth: true,
       requireAccount: true,
-      inferContentType: false,
       contentType: "application/json",
     },
   ) {
     const mergedConfig = {
       requireAuth: config.requireAuth ?? true,
       requireAccount: config.requireAccount ?? true,
-      contentType: config.contentType ? config.contentType : config.inferContentType ? "application/json" : undefined,
+      contentType: config.contentType,
     };
 
     if (mergedConfig.requireAuth || mergedConfig.requireAccount) {

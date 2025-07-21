@@ -35,7 +35,9 @@ export class InvoiceServiceImpl implements InvoiceService {
       payment_scheme_id: params.paymentSchemeId || null,
     };
 
-    const result = await this.http.request({ path, method, body }, { requireAuth: false, requireAccount: false });
+    const config = { requireAuth: false, requireAccount: false, contentType: "application/json" };
+    const result = await this.http.request({ path, method, body }, config);
+
     if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
     if (!result.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
     return PayInModel.fromJson(result);
@@ -147,7 +149,7 @@ export class InvoiceServiceImpl implements InvoiceService {
             body: signatureBody,
             session,
           },
-          { inferContentType: false },
+          { contentType: undefined },
         );
 
         if (!signatureResult) throw new ServerError(ErrorCodes.INVALID_INSTANCE);

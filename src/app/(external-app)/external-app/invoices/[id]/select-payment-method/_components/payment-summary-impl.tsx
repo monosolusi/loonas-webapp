@@ -26,16 +26,17 @@ export function PaymentSummaryImpl(props: PaymentSummaryImplProps) {
 
   const fee = useMemo(() => {
     if (!invoice || !props.selectedPaymentMethod) return 0;
+    if (props.selectedPaymentMethod.requiresSchemeSelection && !props.selectedScheme) return 0;
 
     const { base, percentage } = props.selectedPaymentMethod.pricing;
     return base + (invoice.summary.total * percentage) / 100;
-  }, [props.selectedPaymentMethod, invoice]);
+  }, [props.selectedPaymentMethod, props.selectedScheme, invoice]);
 
   const totalPayable = useMemo(() => {
     if (!invoice || !props.selectedPaymentMethod) return 0;
 
     return invoice.summary.total + fee;
-  }, [invoice, fee]);
+  }, [invoice, props.selectedPaymentMethod, fee]);
 
   const handleClick = async () => {
     if (!props.selectedPaymentMethod) return;
