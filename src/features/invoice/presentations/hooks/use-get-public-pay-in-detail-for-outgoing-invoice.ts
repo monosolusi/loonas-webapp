@@ -34,7 +34,7 @@ async function GetPublicPayInDetailForOutgoingInvoiceFetcher([_, params]: [
 }
 
 export function useGetPublicPayInDetailForOutgoingInvoice(params: GetPublicPayInDetailForOutgoingInvoiceFetcherParams) {
-  const { data, isLoading, error } = useSWR(
+  const { data, isLoading, error, mutate } = useSWR(
     ["get-public-pay-in-detail-for-outgoing-invoice", params],
     GetPublicPayInDetailForOutgoingInvoiceFetcher,
   );
@@ -43,5 +43,6 @@ export function useGetPublicPayInDetailForOutgoingInvoice(params: GetPublicPayIn
     payIn: data,
     loading: isLoading,
     error: error,
+    refresh: mutate,
   };
 }

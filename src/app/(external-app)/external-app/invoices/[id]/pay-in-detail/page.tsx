@@ -11,11 +11,15 @@ import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
 
 export default function PayInDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { payIn, loading } = useGetPublicPayInDetailForOutgoingInvoice({ invoiceId: id });
+  const { payIn, loading, error } = useGetPublicPayInDetailForOutgoingInvoice({ invoiceId: id });
   const router = useRouter();
 
   useEffect(() => {
-    if (!payIn) return;
+    // Go to pay; we assume there might be an error in the network call.
+    // Therefore, we need to go back to first flow
+    if (!payIn && error) router.replace("pay");
+
+    if (!payIn) return; // Do nothing if no payIn but is not loading. By right, maybe network error?
     if (payIn.status === PayInStatus.PENDING_PAYMENT) return; // The current page is for payment
 
     const routerMap = {

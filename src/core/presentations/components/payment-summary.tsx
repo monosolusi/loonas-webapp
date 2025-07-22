@@ -9,6 +9,7 @@ interface PaymentSummaryProps {
   fee: number;
   totalPayable: number;
   isDisabled: boolean;
+  isLoading?: boolean;
   onClick?: () => void | Promise<void>;
 }
 
@@ -32,7 +33,7 @@ export function PaymentSummary(props: PaymentSummaryProps) {
           }
         />
         {props.onClick && (
-          <FilledButton disabled={props.isDisabled} onClick={handleClick}>
+          <FilledButton disabled={props.isDisabled} onClick={handleClick} loading={props.isLoading}>
             Bayar Sekarang
           </FilledButton>
         )}

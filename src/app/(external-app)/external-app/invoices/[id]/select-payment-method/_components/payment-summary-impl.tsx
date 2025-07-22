@@ -2,11 +2,11 @@
 
 import { Card } from "@/core/presentations/components/card";
 import { useGetPublicOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-outgoing-invoice";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { PaymentSummary } from "../../../../../../../core/presentations/components/payment-summary";
-import { useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 import { useCreateOutgoingInvoicePayIn } from "@/features/invoice/presentations/hooks/use-create-outgoing-invoice-pay-in";
+import { useGetPublicPayInDetailForOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";
 
 interface PaymentSummaryImplProps {
   selectedPaymentMethod?: {
@@ -22,7 +22,8 @@ export function PaymentSummaryImpl(props: PaymentSummaryImplProps) {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const { invoice, loading } = useGetPublicOutgoingInvoice({ id });
-  const { data, trigger, isMutating } = useCreateOutgoingInvoicePayIn();
+  const { trigger, isMutating } = useCreateOutgoingInvoicePayIn();
+  const { refresh } = useGetPublicPayInDetailForOutgoingInvoice({ invoiceId: id });
 
   const fee = useMemo(() => {
     if (!invoice || !props.selectedPaymentMethod) return 0;
@@ -48,6 +49,9 @@ export function PaymentSummaryImpl(props: PaymentSummaryImplProps) {
       paymentScheme: props.selectedScheme || null,
     });
 
+    // Before navigating to the ./pay-in-detail, let's try to mutate the new PayIn, so we don't face any issue later
+    await refresh();
+
     router.push("./pay-in-detail");
   };
 
@@ -66,7 +70,8 @@ export function PaymentSummaryImpl(props: PaymentSummaryImplProps) {
       invoiceValue={invoice.summary.total}
       fee={fee}
       totalPayable={totalPayable}
-      isDisabled={props.selectedPaymentMethod.requiresSchemeSelection && !props.selectedScheme}
+      isDisabled={(props.selectedPaymentMethod.requiresSchemeSelection && !props.selectedScheme) || isMutating}
+      isLoading={isMutating}
       onClick={handleClick}
     />
   );
