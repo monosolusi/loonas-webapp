@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { AbstractModel } from "@/core/resources/model";
 import { PayInType } from "@/features/payment/domain/enums/pay-in-type";
 import { PublicPayInDetailEntity } from "@/features/payment/domain/entities/public-pay-in-detail";
+import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
 
 interface CreditCardFullRedirectPayInDetail {
   type: PayInType.CREDIT_CARD_FULL_REDIRECT;
@@ -19,17 +20,20 @@ interface PublicPayInDetailModelConstructor {
   payIn: VirtualAccountPayInDetail | CreditCardFullRedirectPayInDetail;
   summary: { invoiceValue: number; fee: number; totalPayable: number };
   paymentMethod: { title: string };
+  status: PayInStatus;
 }
 
 export class PublicPayInDetailModel implements AbstractModel {
   public payIn: VirtualAccountPayInDetail | CreditCardFullRedirectPayInDetail;
   public summary: { invoiceValue: number; fee: number; totalPayable: number };
   public paymentMethod: { title: string };
+  public status: PayInStatus;
 
   constructor(args: PublicPayInDetailModelConstructor) {
     this.payIn = args.payIn;
     this.summary = args.summary;
     this.paymentMethod = args.paymentMethod;
+    this.status = args.status;
   }
 
   public static fromJson(json: Record<string, any>): PublicPayInDetailModel {
@@ -49,9 +53,8 @@ export class PublicPayInDetailModel implements AbstractModel {
         fee: json.summary.fee,
         totalPayable: json.summary.total_payable,
       },
-      paymentMethod: {
-        title: json.payment_method.title,
-      },
+      paymentMethod: { title: json.payment_method.title },
+      status: json.status,
     });
   }
 
@@ -60,6 +63,7 @@ export class PublicPayInDetailModel implements AbstractModel {
       payIn: this.payIn,
       summary: this.summary,
       paymentMethod: this.paymentMethod,
+      status: this.status,
     });
   }
 }
