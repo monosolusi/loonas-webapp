@@ -19,10 +19,10 @@ export default function PayInDetailPage() {
     if (payIn.status === PayInStatus.PENDING_PAYMENT) return; // The current page is for payment
 
     const routerMap = {
-      [PayInStatus.EXPIRED]: "/expired-failed",
-      [PayInStatus.FAILED]: "/expired-failed",
-      [PayInStatus.PAID]: "/paid",
-      [PayInStatus.PENDING_CREATION]: "/pending-creation",
+      [PayInStatus.EXPIRED]: "expired-failed",
+      [PayInStatus.FAILED]: "expired-failed",
+      [PayInStatus.PAID]: "paid",
+      [PayInStatus.PENDING_CREATION]: "pending-creation",
     };
 
     const path = routerMap[payIn.status];
