@@ -5,8 +5,12 @@ import { LogoImage } from "@/core/presentations/components/logo-image";
 import { InvoiceMetadataImpl } from "@/app/(external-app)/external-app/invoices/[id]/pay/_components/invoice-metadata-impl";
 import { PaymentSummaryImpl } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/payment-summary-impl";
 import { Card } from "@/core/presentations/components/card";
-import { Player } from "@lottiefiles/react-lottie-player";
 import React from "react";
+import dynamic from "next/dynamic";
+
+const Player = dynamic(() => import("@lottiefiles/react-lottie-player").then((mod) => ({ default: mod.Player })), {
+  ssr: false,
+});
 
 export default function PaidPage() {
   return (
