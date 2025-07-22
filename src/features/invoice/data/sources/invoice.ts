@@ -46,7 +46,9 @@ export class InvoiceServiceImpl implements InvoiceService {
   public async getPublicOutgoing(filter: { invoiceId: string }): Promise<PublicOutgoingInvoiceModel> {
     const path = `/invoices/public-outgoing/${filter.invoiceId}`;
     const method = "GET";
-    const result = await this.http.request({ path, method });
+
+    const config = { requireAuth: false, requireAccount: false };
+    const result = await this.http.request({ path, method }, config);
     return PublicOutgoingInvoiceModel.fromJson(result);
   }
 

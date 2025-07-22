@@ -1,15 +1,14 @@
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { UseCase } from "@/core/resources/use-case";
 import { InvoiceRepository } from "../repositories/invoice";
-import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { PublicOutgoingInvoiceEntity } from "../entities/public-outgoing-invoice";
 
 export class GetPublicOutgoingInvoiceUseCaseParams {
   public readonly invoiceId: string;
 
-  constructor(props: { invoiceid: string }) {
-    this.invoiceId = props.invoiceid;
+  constructor(props: { invoiceId: string }) {
+    this.invoiceId = props.invoiceId;
   }
 }
 

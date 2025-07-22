@@ -8,8 +8,6 @@ export function PaymentSummaryImpl() {
   const { id } = useParams<{ id: string }>();
   const { payIn, loading } = useGetPublicPayInDetailForOutgoingInvoice({ invoiceId: id });
 
-  console.log(payIn);
-
   if (!payIn || loading) return null;
   return (
     <PaymentSummary

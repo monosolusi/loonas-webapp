@@ -1,8 +1,6 @@
 import { HttpRequest } from "@/core/helpers/http-request";
 import { InvoiceRepositoryImpl } from "../../data/repositories/invoice";
 import { InvoiceServiceImpl } from "../../data/sources/invoice";
-import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { DataFailed } from "@/core/resources/data-state";
 import useSWR from "swr";
 import { PublicOutgoingInvoiceEntity } from "../../domain/entities/public-outgoing-invoice";
@@ -24,7 +22,7 @@ async function GetPublicOutgoingInvoiceFetcher([_, params]: [
   const invoiceService = new InvoiceServiceImpl(http);
   const invoiceRepository = new InvoiceRepositoryImpl(invoiceService);
   const get = new GetPublicOutgoingInvoiceUseCase(invoiceRepository);
-  const getParams = new GetPublicOutgoingInvoiceUseCaseParams({ invoiceid: params.id });
+  const getParams = new GetPublicOutgoingInvoiceUseCaseParams({ invoiceId: params.id });
 
   const result = await get.execute(getParams);
   if (result instanceof DataFailed) throw result.error;
@@ -34,7 +32,7 @@ async function GetPublicOutgoingInvoiceFetcher([_, params]: [
 
 export function useGetPublicOutgoingInvoice(Params: GetPublicOutgoingInvoiceFetcherParams) {
   const { data, isLoading, error } = useSWR(["get-public-outgoing-invoice", Params], GetPublicOutgoingInvoiceFetcher);
-
+  
   return {
     invoice: data,
     loading: isLoading,

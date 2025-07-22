@@ -8,6 +8,7 @@ import {
 import { PayInDetailRepositoryImpl } from "@/features/payment/data/repositories/pay-in-detail";
 import { PayInDetailServiceImpl } from "@/features/payment/data/sources/pay-in-detail";
 import { HttpRequest } from "@/core/helpers/http-request";
+import { PublicPayInDetailEntity } from "@/features/payment/domain/entities/public-pay-in-detail";
 
 interface GetPublicPayInDetailForOutgoingInvoiceFetcherParams {
   invoiceId: string;
@@ -16,7 +17,7 @@ interface GetPublicPayInDetailForOutgoingInvoiceFetcherParams {
 async function GetPublicPayInDetailForOutgoingInvoiceFetcher([_, params]: [
   string,
   GetPublicPayInDetailForOutgoingInvoiceFetcherParams,
-]) {
+]): Promise<PublicPayInDetailEntity> {
   const http = new HttpRequest();
   const payInDetailService = new PayInDetailServiceImpl(http);
   const payInDetailRepository = new PayInDetailRepositoryImpl(payInDetailService);
