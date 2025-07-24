@@ -17,7 +17,7 @@ export default function InvoiceLayoutPage(props: { children: React.ReactNode }) 
       [OutgoingInvoiceStatus.DRAFT]: undefined,
       [OutgoingInvoiceStatus.READY_TO_SEND]: undefined,
       [OutgoingInvoiceStatus.SENT]: undefined,
-      [OutgoingInvoiceStatus.PAYMENT_RECEIVED_PENDING_DELIVERY]: "paid",
+      [OutgoingInvoiceStatus.PENDING_BANK_TRANSFER]: "paid",
       [OutgoingInvoiceStatus.PAID]: "paid",
       [OutgoingInvoiceStatus.CANCELLED]: undefined,
     };

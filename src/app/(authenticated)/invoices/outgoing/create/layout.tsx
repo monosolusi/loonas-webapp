@@ -8,6 +8,7 @@ import { PageContent } from "@/core/presentations/components/page-content";
 import { CreateOutgoingInvoiceProgressStepper } from "@/app/(authenticated)/invoices/outgoing/create/_components/create-outgoing-invoice-progress-stepper";
 import { CreateOutgoingInvoiceProvider } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { BackButton } from "@/app/(authenticated)/invoices/outgoing/create/_components/back-button";
+import { PageHeading } from "@/core/presentations/components/page-heading";
 
 interface CreateOutgoingInvoiceLayoutProps {
   children: React.ReactNode;
@@ -32,6 +33,7 @@ export default function CreateOutgoingInvoiceLayout(props: CreateOutgoingInvoice
   if (!loading && !error) {
     return (
       <CreateOutgoingInvoiceProvider maxStep={4}>
+        <PageHeading>Faktur Keluaran</PageHeading>
         <PageContent>
           <div className="flex flex-col space-y-12">
             <div className="flex flex-col space-y-2">
