@@ -5,9 +5,10 @@ import { useMemo } from "react";
 import { useCombinedInvoiceSummary } from "@/features/invoice/presentations/hooks/use-combined-invoice-summary";
 
 export function RecentInvoiceTableImpl() {
-  const { invoices } = useCombinedInvoiceSummary();
+  const { invoices, error } = useCombinedInvoiceSummary();
 
   const formattedInvoices: InvoiceRow[] = useMemo(() => {
+    if (error) return [];
     return invoices.slice(0, 5).map((invoice) => ({
       id: invoice.id,
       type: invoice.type,
@@ -16,7 +17,7 @@ export function RecentInvoiceTableImpl() {
       total: invoice.total,
       createdAt: invoice.createdAt,
     }));
-  }, [invoices]);
+  }, [invoices, error]);
 
   return <RecentInvoicesTable data={formattedInvoices} />;
 }
