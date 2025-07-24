@@ -32,7 +32,7 @@ export class InvoiceServiceImpl implements InvoiceService {
     const method = "POST";
     const body = {
       payment_method_id: params.paymentMethodId,
-      payment_scheme_id: params.paymentSchemeId || null,
+      ...(params.paymentSchemeId && { payment_scheme_id: params.paymentSchemeId }),
     };
 
     const config = { requireAuth: false, requireAccount: false, contentType: "application/json" };
