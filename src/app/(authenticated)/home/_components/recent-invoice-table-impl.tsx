@@ -2,22 +2,21 @@
 
 import { InvoiceRow, RecentInvoicesTable } from "@/app/(authenticated)/home/_components/recent-invoices-table";
 import { useMemo } from "react";
-import { useInvoice } from "@/features/invoice/presentations/providers/invoice";
+import { useCombinedInvoiceSummary } from "@/features/invoice/presentations/hooks/use-combined-invoice-summary";
 
 export function RecentInvoiceTableImpl() {
-  const { invoices } = useInvoice();
+  const { invoices } = useCombinedInvoiceSummary();
 
   const formattedInvoices: InvoiceRow[] = useMemo(() => {
-    return invoices.map((invoice) => ({
+    return invoices.slice(0, 5).map((invoice) => ({
       id: invoice.id,
-      receiverName: invoice.receiver.name,
+      type: invoice.type,
+      partnerName: invoice.partnerName,
       status: invoice.status,
-      total: invoice.amount,
-      createdAt: invoice.createdAt
+      total: invoice.total,
+      createdAt: invoice.createdAt,
     }));
   }, [invoices]);
 
-  return (
-    <RecentInvoicesTable data={formattedInvoices} />
-  );
+  return <RecentInvoicesTable data={formattedInvoices} />;
 }
