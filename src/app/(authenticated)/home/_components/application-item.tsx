@@ -18,7 +18,7 @@ export function ApplicationItem(props: ApplicationItemProps) {
   const handleNavigate = () => router.push(props.route.path);
 
   return (
-    <Card className={clsx(props.className, "cursor-pointer")} onClick={handleNavigate}>
+    <Card className={clsx(props.className)} onClick={handleNavigate} effect={{ hover: true, selectable: true }}>
       <div className="flex flex-col space-y-1">
         <div className="text-sm font-semibold">{props.title}</div>
         <div className="text-xs text-gray-500">{props.description}</div>
