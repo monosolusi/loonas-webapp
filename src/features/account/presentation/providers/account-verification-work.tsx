@@ -8,7 +8,7 @@ import { AccountServiceImpl } from "../../data/sources/account";
 import { AccountRepositoryImpl } from "../../data/repositories/account";
 import {
   RetrieveAccountVerificationWorkUseCase,
-  RetrieveAccountVerificationWorkUseCaseParams
+  RetrieveAccountVerificationWorkUseCaseParams,
 } from "../../domain/usecases/retrieve-account-verification-work";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
@@ -17,7 +17,11 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 type AccountVerificationWorkContextProps = [AccountVerificationWorkEntity | undefined, boolean];
 const AccountVerificationWorkContext = createContext<AccountVerificationWorkContextProps>([undefined, true]);
 
-export function AccountVerificationWorkProvider({ children, id }: { children: any, id: string }) {
+/**
+ * @deprecated This component is being phased out in favor of a new verification system.
+ * Please use useGetAccountVerificationWork() hook if you just want to get the data.
+ */
+export function AccountVerificationWorkProvider({ children, id }: { children: any; id: string }) {
   const [accountVerificationWork, setAccountVerificationWork] = useState<AccountVerificationWorkEntity>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error>();
@@ -53,9 +57,7 @@ export function AccountVerificationWorkProvider({ children, id }: { children: an
   }
 
   return (
-    <AccountVerificationWorkContext.Provider
-      value={[accountVerificationWork, loading]}
-    >
+    <AccountVerificationWorkContext.Provider value={[accountVerificationWork, loading]}>
       {children}
     </AccountVerificationWorkContext.Provider>
   );
