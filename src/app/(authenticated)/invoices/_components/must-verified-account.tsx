@@ -11,11 +11,11 @@ export function MustVerifiedAccount(props: { children: React.ReactNode }) {
   const router = useRouter();
   const { selectedAccount } = useSelectedAccountProvider();
   const { verificationWork, loading, error } = useGetAccountVerificationWork({ accountId: selectedAccount?.id });
-  
+
   useEffect(() => {
     if (!verificationWork) return;
     if (verificationWork.latestStatus !== VerificationStatus.COMPLETED) {
-      router.replace(`/invoices/account-not-verified`);
+      router.replace(`/accounts/account-not-verified`);
     }
   }, [verificationWork]);
 
@@ -23,8 +23,8 @@ export function MustVerifiedAccount(props: { children: React.ReactNode }) {
     if (!error) return;
     if (error instanceof ServerError) {
       if (error.code === ErrorCodes.ACCOUNT_NOT_VERIFIED.code) {
-        router.replace(`/invoices/account-not-verified`);
-      } else if (error.code === ErrorCodes.NOT_FOUND.code) router.replace("invoices/no-account");
+        router.replace(`/accounts/account-not-verified`);
+      } else if (error.code === ErrorCodes.NOT_FOUND.code) router.replace("/accounts/no-account");
     } else throw error;
   }, [error]);
 
