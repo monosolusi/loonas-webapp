@@ -1,16 +1,28 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { CheckBadgeIcon, UserIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useSelectedAccountProvider } from "@/features/authentication/presentation/providers/selected-account";
 import { PageContent } from "@/core/presentations/components/page-content";
 import clsx from "clsx";
+import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
+import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
+import { useRouter } from "next/navigation";
 
 export default function AccountNotVerifiedPage() {
   const { selectedAccount } = useSelectedAccountProvider();
+  const { verificationWork, loading } = useGetAccountVerificationWork({ accountId: selectedAccount?.id });
+  const router = useRouter();
 
+  useEffect(() => {
+    if (!verificationWork) return;
+    if (verificationWork.latestStatus === VerificationStatus.COMPLETED) router.replace("/home");
+  }, [verificationWork]);
+
+  if (!verificationWork || loading) return null;
+  if (verificationWork.latestStatus === VerificationStatus.COMPLETED) return null;
   return (
     <PageContent>
       <div className="flex h-full w-full items-center justify-center">
