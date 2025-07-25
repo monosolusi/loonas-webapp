@@ -5,7 +5,7 @@ import { XCircleIcon } from "@heroicons/react/20/solid";
 import React, { useRef } from "react";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 
-type AcceptedFormat = "image/png" | "image/jpeg" | "image/pdf";
+type AcceptedFormat = "image/png" | "image/jpeg" | "application/pdf";
 
 interface ImageFileUploadProps {
   title: string;
@@ -14,6 +14,7 @@ interface ImageFileUploadProps {
   onChange?: (file: File | null) => void | Promise<void>;
   acceptedFormatDescription?: string;
   acceptedFormat: AcceptedFormat[];
+  className?: string;
 }
 
 interface FullStateImageProps {
@@ -127,7 +128,7 @@ export function ImageOrDocumentFileUpload(props: ImageFileUploadProps) {
   };
 
   return (
-    <div className="col-span-full">
+    <div className={props.className}>
       <Label title={props.title} description={props.description} />
       <FullStateImage file={props.file} onDeleteFile={handleDeleteFile} />
       <FullStatePdf file={props.file} onDeleteFile={handleDeleteFile} />
