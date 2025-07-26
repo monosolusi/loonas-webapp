@@ -4,6 +4,7 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/re
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import React from "react";
+import { OutlinedButton } from "@/core/presentations/components/outlined-button";
 
 interface CreateAccountConfirmationDialogProps {
   open: boolean;
@@ -58,13 +59,9 @@ export function CreateAccountConfirmationDialog(props: CreateAccountConfirmation
                   Setuju & Lanjutkan
                 </FilledButton>
               </div>
-              <button
-                type="button"
-                onClick={props.onCloseClick}
-                className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-              >
+              <OutlinedButton type="button" onClick={props.onCloseClick} disabled={props.loading}>
                 Cek Lagi
-              </button>
+              </OutlinedButton>
             </div>
           </DialogPanel>
         </div>

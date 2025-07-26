@@ -26,6 +26,7 @@ interface CreateBusinessAccountContextProps {
   companyBankStatement?: File | null;
   openConfirmationDialog: boolean;
   errorList: ServerError[];
+  isCreating: boolean;
   setCompanyName?: React.Dispatch<React.SetStateAction<string>>;
   setCompanyEmail?: React.Dispatch<React.SetStateAction<string>>;
   setCompanyPhoneNumber?: React.Dispatch<React.SetStateAction<string>>;
@@ -47,11 +48,12 @@ interface CreateBusinessAccountContextProps {
 
 const CreateBusinessAccountContext = React.createContext<CreateBusinessAccountContextProps>({
   openConfirmationDialog: false,
+  isCreating: false,
   errorList: [],
 });
 
 export function CreateBusinessAccountProvider(props: { children: React.ReactNode }) {
-  const { trigger, data: createResult, error: createError } = useCreateBusinessAccount();
+  const { trigger, data: createResult, error: createError, isMutating: isCreating } = useCreateBusinessAccount();
   const router = useRouter();
 
   const [companyName, setCompanyName] = React.useState<string>("");
@@ -180,6 +182,7 @@ export function CreateBusinessAccountProvider(props: { children: React.ReactNode
         companyBankStatement,
         openConfirmationDialog,
         errorList,
+        isCreating,
         setCompanyName,
         setCompanyEmail,
         setCompanyPhoneNumber,

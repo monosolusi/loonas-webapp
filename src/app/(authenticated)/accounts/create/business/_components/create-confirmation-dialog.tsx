@@ -2,11 +2,10 @@
 
 import { CreateAccountConfirmationDialog } from "@/features/account/presentation/components/create-account-confirmation-dialog";
 import { useCreateBusinessAccountState } from "@/features/account/presentation/providers/create-business-account";
-import { useRouter } from "next/navigation";
 
 export function CreateConfirmationDialog() {
-  const { openConfirmationDialog, setOpenConfirmationDialog, createAccount } = useCreateBusinessAccountState();
-  const router = useRouter();
+  const { openConfirmationDialog, setOpenConfirmationDialog, createAccount, isCreating } =
+    useCreateBusinessAccountState();
 
   const handleCreateAccount = async () => {
     if (!createAccount) return;
@@ -18,6 +17,7 @@ export function CreateConfirmationDialog() {
       open={openConfirmationDialog}
       onCloseClick={() => setOpenConfirmationDialog?.(false)}
       onConfirm={handleCreateAccount}
+      loading={isCreating}
     />
   );
 }
