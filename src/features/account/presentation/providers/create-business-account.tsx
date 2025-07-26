@@ -6,6 +6,8 @@ import { ProvinceEntity } from "@/core/utilities/address/domain/entities/provinc
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
 import React, { useEffect } from "react";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { useRouter } from "next/navigation";
+import { useCreateBusinessAccount } from "@/features/account/presentation/hooks/use-create-business-account";
 
 interface CreateBusinessAccountContextProps {
   companyName?: string;
@@ -49,7 +51,8 @@ const CreateBusinessAccountContext = React.createContext<CreateBusinessAccountCo
 });
 
 export function CreateBusinessAccountProvider(props: { children: React.ReactNode }) {
-  // const { trigger } = useCreateBusinessAccountState();
+  const { trigger, data: createResult, error: createError } = useCreateBusinessAccount();
+  const router = useRouter();
 
   const [companyName, setCompanyName] = React.useState<string>("");
   const [companyEmail, setCompanyEmail] = React.useState<string>("");
@@ -98,6 +101,50 @@ export function CreateBusinessAccountProvider(props: { children: React.ReactNode
     setErrorList(errorList);
     return errorList.length === 0;
   };
+
+  const createAccount = async () => {
+    if (!isInputClean()) return;
+
+    // Double-check the address.province, address.city, address.district, address.subdistrict
+    if (!companyProvince) throw new ServerError(ErrorCodes.COMPANY_PROVINCE_EMPTY);
+    if (!companyCity) throw new ServerError(ErrorCodes.COMPANY_CITY_EMPTY);
+    if (!companyDistrict) throw new ServerError(ErrorCodes.COMPANY_DISTRICT_EMPTY);
+    if (!companySubdistrict) throw new ServerError(ErrorCodes.COMPANY_SUBDISTRICT_EMPTY);
+    if (!companyDeedOfEstablishment) throw new ServerError(ErrorCodes.COMPANY_DEED_OF_ESTABLISHMENT_EMPTY);
+    if (!companyBusinessIdentificationNumber) {
+      throw new ServerError(ErrorCodes.COMPANY_BUSINESS_IDENTIFICATION_NUMBER_EMPTY);
+    }
+    if (!directorNationalIdentityCard) throw new ServerError(ErrorCodes.DIRECTOR_NATIONAL_IDENTITY_CARD_EMPTY);
+
+    await trigger({
+      company: {
+        name: companyName,
+        email: companyEmail,
+        phoneNumber: companyPhoneNumber,
+        address: {
+          province: companyProvince,
+          city: companyCity,
+          district: companyDistrict,
+          subdistrict: companySubdistrict,
+          address: companyAddress,
+        },
+        deedOfEstablishment: companyDeedOfEstablishment,
+        mostRecentDeedOfAmendment:
+          companyMostRecentDeedOfAmendment === null ? undefined : companyMostRecentDeedOfAmendment,
+        businessIdentificationNumber: companyBusinessIdentificationNumber,
+        financial: {
+          statement: companyFinancialStatement === null ? undefined : companyFinancialStatement,
+          bankStatement: companyBankStatement === null ? undefined : companyBankStatement,
+        },
+      },
+      director: { nationalIdentityCard: directorNationalIdentityCard },
+    });
+  };
+
+  useEffect(() => {
+    if (createError) setErrorList([new ServerError(ErrorCodes.ACCOUNT_CREATION_FAILED)]);
+    if (createResult && !createError) router.replace(`/accounts/${createResult.id}/verifications`);
+  }, [createError, createResult]);
 
   useEffect(() => {
     setCompanyCity(undefined);
@@ -149,6 +196,7 @@ export function CreateBusinessAccountProvider(props: { children: React.ReactNode
         setCompanyBankStatement,
         setOpenConfirmationDialog,
         isInputClean,
+        createAccount,
       }}
     >
       {props.children}

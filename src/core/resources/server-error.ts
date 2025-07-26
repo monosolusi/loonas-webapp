@@ -7,6 +7,12 @@ export class ErrorCodes {
     message: "Kamu belum menyetujui Kebijakan Privasi dan Syarat & Ketentuan.",
   };
 
+  public static readonly ACCOUNT_CREATION_FAILED = {
+    code: "ACCOUNT_CREATION_FAILED",
+    httpCode: 400,
+    message: "Oh tidak! Pembuatan akun kamu gagal. Silakan coba lagi.",
+  };
+
   public static readonly ACCOUNT_HAS_NO_BANK_ACCOUNT = {
     code: "ACCOUNT_HAS_NO_BANK_ACCOUNT",
     httpCode: 403,
