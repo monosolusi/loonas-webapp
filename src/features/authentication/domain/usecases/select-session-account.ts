@@ -1,20 +1,18 @@
 import { UseCase } from "@/core/resources/use-case";
 import { DataState } from "@/core/resources/data-state";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
+import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
 export class SelectSessionAccountUseCaseParams {
-  constructor(public readonly newAccount: PersonalAccountEntity) {
-  }
+  constructor(public readonly newAccount: AccountTypeEntity) {}
 }
 
-export class SelectSessionAccountUseCase implements UseCase<DataState<PersonalAccountEntity>, SelectSessionAccountUseCaseParams> {
+export class SelectSessionAccountUseCase
+  implements UseCase<DataState<AccountTypeEntity>, SelectSessionAccountUseCaseParams>
+{
+  constructor(private sessionRepository: SessionRepository) {}
 
-  constructor(private sessionRepository: SessionRepository) {
-  }
-
-  public async execute(params: SelectSessionAccountUseCaseParams): Promise<DataState<PersonalAccountEntity>> {
+  public async execute(params: SelectSessionAccountUseCaseParams): Promise<DataState<AccountTypeEntity>> {
     return this.sessionRepository.selectAccount(params.newAccount);
   }
-
 }

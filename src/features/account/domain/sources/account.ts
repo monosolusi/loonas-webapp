@@ -9,6 +9,7 @@ import { PersonalAccountModel } from "@/features/account/data/models/personal-ac
 import { AccountVerificationWorkModel } from "@/features/account/data/models/account-verification-work";
 import { AccountBankAccountModel } from "@/features/account/data/models/account-bank-account";
 import { BusinessAccountModel } from "@/features/account/data/models/business-account";
+import { AccountTypeModel } from "@/features/account/domain/types/account-type";
 
 export interface CreateBusinessParams {
   company: {
@@ -56,7 +57,7 @@ export interface AccountService {
 
   retrieveVerificationWork(accountId: string, session: SessionEntity): Promise<AccountVerificationWorkModel>;
 
-  list(session: SessionEntity): Promise<PersonalAccountModel[]>;
+  list(session: SessionEntity): Promise<AccountTypeModel[]>;
 
   listBankAccount(
     params: {

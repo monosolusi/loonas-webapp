@@ -4,10 +4,10 @@ import { SessionService } from "../sources/local-storage-session";
 import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "../../domain/entities/session";
+import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
 export class SessionRepositoryImpl implements SessionRepository {
-  constructor(private sessionService: SessionService) {
-  }
+  constructor(private sessionService: SessionService) {}
 
   public async retrieveAccount(): Promise<DataState<PersonalAccountEntity>> {
     try {
@@ -19,7 +19,7 @@ export class SessionRepositoryImpl implements SessionRepository {
     }
   }
 
-  public async selectAccount(account: PersonalAccountEntity): Promise<DataState<PersonalAccountEntity>> {
+  public async selectAccount(account: AccountTypeEntity): Promise<DataState<AccountTypeEntity>> {
     try {
       const newAccount = await this.sessionService.selectAccount(account);
       return new DataSuccess(newAccount.toEntity());
@@ -58,5 +58,4 @@ export class SessionRepositoryImpl implements SessionRepository {
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
     }
   }
-
 }

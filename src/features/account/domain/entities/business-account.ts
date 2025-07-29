@@ -8,10 +8,10 @@ interface BusinessAccountEntityConstructor {
     email: string;
     phoneNumber: string;
     address: {
-      province: { id: string };
-      city: { id: string };
-      district: { id: string };
-      subdistrict: { id: string };
+      province: { id: string; label: string };
+      city: { id: string; label: string };
+      district: { id: string; label: string };
+      subdistrict: { id: string; label: string };
       address: string;
     };
   };
@@ -27,10 +27,10 @@ export class BusinessAccountEntity implements AbstractEntity {
     email: string;
     phoneNumber: string;
     address: {
-      province: { id: string };
-      city: { id: string };
-      district: { id: string };
-      subdistrict: { id: string };
+      province: { id: string; label: string };
+      city: { id: string; label: string };
+      district: { id: string; label: string };
+      subdistrict: { id: string; label: string };
       address: string;
     };
   };
@@ -44,5 +44,17 @@ export class BusinessAccountEntity implements AbstractEntity {
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
+  }
+
+  public get fullAddress() {
+    return `${this.company.address.address}, ${this.company.address.subdistrict.label}, ${this.company.address.district.label}, ${this.company.address.province.label}`;
+  }
+
+  public get fullName() {
+    return this.company.name;
+  }
+
+  public generateShortAccountId() {
+    return this.id.substring(0, 6).toUpperCase();
   }
 }

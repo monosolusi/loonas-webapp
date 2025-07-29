@@ -10,6 +10,7 @@ import { PersonalAccountEntity } from "../entities/personal-account";
 import { AccountVerificationWorkEntity } from "../entities/account-verification-work";
 import { AccountBankAccountEntity } from "@/features/account/domain/entities/account-bank-account";
 import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
+import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
 export interface CreateBusinessParams {
   company: {
@@ -60,7 +61,7 @@ export interface AccountRepository {
     session: SessionEntity,
   ): Promise<DataState<AccountVerificationWorkEntity>>;
 
-  list(session: SessionEntity): Promise<DataState<PersonalAccountEntity[]>>;
+  list(session: SessionEntity): Promise<DataState<AccountTypeEntity[]>>;
 
   listBankAccount(
     account: PersonalAccountEntity,

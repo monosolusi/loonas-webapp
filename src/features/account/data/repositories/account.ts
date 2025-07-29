@@ -13,6 +13,7 @@ import { AccountBankAccountEntity } from "../../domain/entities/account-bank-acc
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { BusinessAccountEntity } from "../../domain/entities/business-account";
 import { AccountService } from "@/features/account/domain/sources/account";
+import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
 export class AccountRepositoryImpl implements AccountRepository {
   constructor(private readonly accountService: AccountService) {}
@@ -43,7 +44,7 @@ export class AccountRepositoryImpl implements AccountRepository {
     }
   }
 
-  public async list(session: SessionEntity): Promise<DataState<PersonalAccountEntity[]>> {
+  public async list(session: SessionEntity): Promise<DataState<AccountTypeEntity[]>> {
     try {
       const accounts = await this.accountService.list(session);
       return new DataSuccess(accounts.map((account) => account.toEntity()));

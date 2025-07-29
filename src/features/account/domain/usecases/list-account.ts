@@ -3,17 +3,15 @@ import { DataFailed, DataState } from "@/core/resources/data-state";
 import { AccountRepository } from "../repositories/account";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { PersonalAccountEntity } from "../entities/personal-account";
+import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
-export class ListAccountUseCase implements UseCase<DataState<PersonalAccountEntity[]>, void> {
-
+export class ListAccountUseCase implements UseCase<DataState<AccountTypeEntity[]>, void> {
   constructor(
     private readonly accountRepository: AccountRepository,
-    private readonly sessionRepository: SessionRepository
-  ) {
-  }
+    private readonly sessionRepository: SessionRepository,
+  ) {}
 
-  public async execute(params: void): Promise<DataState<PersonalAccountEntity[]>> {
+  public async execute(params: void): Promise<DataState<AccountTypeEntity[]>> {
     try {
       const session = await this.sessionRepository.retrieve();
       if (session instanceof DataFailed) throw session.error;
@@ -29,5 +27,4 @@ export class ListAccountUseCase implements UseCase<DataState<PersonalAccountEnti
       return new DataFailed(err);
     }
   }
-
 }

@@ -9,10 +9,10 @@ interface BusinessAccountModelConstructor {
     email: string;
     phoneNumber: string;
     address: {
-      province: { id: string };
-      city: { id: string };
-      district: { id: string };
-      subdistrict: { id: string };
+      province: { id: string; label: string };
+      city: { id: string; label: string };
+      district: { id: string; label: string };
+      subdistrict: { id: string; label: string };
       address: string;
     };
   };
@@ -28,10 +28,10 @@ export class BusinessAccountModel implements AbstractModel {
     email: string;
     phoneNumber: string;
     address: {
-      province: { id: string };
-      city: { id: string };
-      district: { id: string };
-      subdistrict: { id: string };
+      province: { id: string; label: string };
+      city: { id: string; label: string };
+      district: { id: string; label: string };
+      subdistrict: { id: string; label: string };
       address: string;
     };
   };
@@ -55,10 +55,22 @@ export class BusinessAccountModel implements AbstractModel {
         email: doc["company"]["email"],
         phoneNumber: doc["company"]["phone_number"],
         address: {
-          province: { id: doc["company"]["address"]["province"]["id"] },
-          city: { id: doc["company"]["address"]["city"]["id"] },
-          district: { id: doc["company"]["address"]["district"]["id"] },
-          subdistrict: { id: doc["company"]["address"]["subdistrict"]["id"] },
+          province: {
+            id: doc["company"]["address"]["province"]["id"],
+            label: doc["company"]["address"]["province"]["label"],
+          },
+          city: {
+            id: doc["company"]["address"]["city"]["id"],
+            label: doc["company"]["address"]["city"]["label"],
+          },
+          district: {
+            id: doc["company"]["address"]["district"]["id"],
+            label: doc["company"]["address"]["district"]["label"],
+          },
+          subdistrict: {
+            id: doc["company"]["address"]["subdistrict"]["id"],
+            label: doc["company"]["address"]["subdistrict"]["label"],
+          },
           address: doc["company"]["address"]["address"],
         },
       },

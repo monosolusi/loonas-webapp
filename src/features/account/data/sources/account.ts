@@ -12,6 +12,8 @@ import { AccountBankAccountModel } from "../models/account-bank-account";
 import { AccountService, CreateBusinessParams } from "@/features/account/domain/sources/account";
 import { BusinessAccountModel } from "../models/business-account";
 import { HttpRequest } from "@/core/helpers/http-request";
+import { AccountTypeModel } from "@/features/account/domain/types/account-type";
+import { AccountType } from "@/features/account/domain/enums/account-type";
 
 export class AccountServiceImpl implements AccountService {
   constructor(private readonly http: HttpRequest) {}
@@ -101,25 +103,19 @@ export class AccountServiceImpl implements AccountService {
     }
   }
 
-  public async list(session: SessionEntity): Promise<PersonalAccountModel[]> {
+  public async list(session: SessionEntity): Promise<AccountTypeModel[]> {
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
-      if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      const path = "/accounts";
+      const method = "GET";
+      const result = await this.http.request({ path, method, session }, { requireAccount: false });
 
-      const url = `${baseUrl}/accounts`;
-      const headers = { Authorization: `Bearer ${session.accessToken}` };
-      const response = await fetch(url, { headers });
-
-      if (!response.ok) {
-        const data = await response.json();
-        if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
-        else if (data.code === ErrorCodes.NOT_FOUND.code)
-          throw new ServerError(ErrorCodes.NOT_FOUND, { message: data.message });
-        throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
-      }
-
-      const data = await response.json();
-      return data.map(PersonalAccountModel.fromJson);
+      // The result will be an array, therefore, we need to check if it is a personal or business account
+      if (!Array.isArray(result)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      return result.map((data): AccountTypeModel => {
+        if (data.type === AccountType.PERSONAL) return PersonalAccountModel.fromJson(data);
+        else if (data.type === AccountType.BUSINESS) return BusinessAccountModel.fromJson(data);
+        else throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      });
     } catch (err: any) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
