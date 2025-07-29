@@ -10,6 +10,8 @@ import { useGetAccountVerificationWork } from "@/features/account/presentation/h
 import clsx from "clsx";
 import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
+import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
+import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
 
 export function Accounts({ onAccountChanged }: { onAccountChanged?: () => void }) {
   const { accounts } = useListAccount();
@@ -65,7 +67,13 @@ function AccountCard({ account, onAccountChanged }: { account: AccountTypeEntity
             </div>
             <VerificationStatusBadge accountId={account.id} />
           </div>
-          <p className="truncate text-sm text-gray-500">Akun Personal</p>
+          <p className="truncate text-sm text-gray-500">
+            {account instanceof PersonalAccountEntity
+              ? "Akun Personal"
+              : account instanceof BusinessAccountEntity
+                ? "Akun Bisnis"
+                : "Tidak Diketahui"}
+          </p>
           <p className="text-sm text-gray-500">{account.fullAddress}</p>
         </div>
       </div>
