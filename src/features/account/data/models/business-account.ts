@@ -1,9 +1,11 @@
 import { DateTime } from "luxon";
 import { AbstractModel } from "@/core/resources/model";
 import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
+import { AccountType } from "@/features/account/domain/enums/account-type";
 
 interface BusinessAccountModelConstructor {
   id: string;
+  type: AccountType;
   company: {
     name: string;
     email: string;
@@ -23,6 +25,7 @@ interface BusinessAccountModelConstructor {
 
 export class BusinessAccountModel implements AbstractModel {
   public id: string;
+  public type: AccountType;
   public company: {
     name: string;
     email: string;
@@ -41,6 +44,7 @@ export class BusinessAccountModel implements AbstractModel {
 
   constructor(args: BusinessAccountModelConstructor) {
     this.id = args.id;
+    this.type = args.type;
     this.company = args.company;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
@@ -50,6 +54,7 @@ export class BusinessAccountModel implements AbstractModel {
   public static fromJson(doc: Record<string, any>): BusinessAccountModel {
     return new BusinessAccountModel({
       id: doc["id"],
+      type: doc["type"] as AccountType,
       company: {
         name: doc["company"]["name"],
         email: doc["company"]["email"],
@@ -80,9 +85,35 @@ export class BusinessAccountModel implements AbstractModel {
     });
   }
 
+  public static fromLocalStorage(encodedData: string): BusinessAccountModel {
+    const jsonAccount = atob(encodedData);
+    const data = JSON.parse(jsonAccount);
+
+    return new BusinessAccountModel({
+      id: data.id,
+      type: data.type,
+      company: data.company,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      deletedAt: data.deletedAt,
+    });
+  }
+
+  public static fromEntity(entity: BusinessAccountEntity) {
+    return new BusinessAccountModel({
+      id: entity.id,
+      type: entity.type,
+      company: entity.company,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+      deletedAt: entity.deletedAt,
+    });
+  }
+
   toEntity(): BusinessAccountEntity {
     return new BusinessAccountEntity({
       id: this.id,
+      type: this.type,
       company: {
         name: this.company.name,
         email: this.company.email,

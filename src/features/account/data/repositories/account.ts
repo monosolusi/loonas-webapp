@@ -32,7 +32,7 @@ export class AccountRepositoryImpl implements AccountRepository {
   }
 
   public async listBankAccount(
-    account: PersonalAccountEntity,
+    account: { id: string },
     session: SessionEntity,
   ): Promise<DataState<AccountBankAccountEntity[]>> {
     try {

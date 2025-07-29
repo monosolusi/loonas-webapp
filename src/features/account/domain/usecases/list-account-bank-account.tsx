@@ -6,12 +6,10 @@ import { AccountRepository } from "@/features/account/domain/repositories/accoun
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 export class ListAccountBankAccountUseCase implements UseCase<DataState<AccountBankAccountEntity[]>, void> {
-
   constructor(
     private readonly accountRepository: AccountRepository,
-    private readonly sessionRepository: SessionRepository
-  ) {
-  }
+    private readonly sessionRepository: SessionRepository,
+  ) {}
 
   public async execute(params: void): Promise<DataState<AccountBankAccountEntity[]>> {
     try {
@@ -22,7 +20,7 @@ export class ListAccountBankAccountUseCase implements UseCase<DataState<AccountB
       const account = session.data.selectedAccount;
       if (!account) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      const bankAccounts = await this.accountRepository.listBankAccount(account, session.data);
+      const bankAccounts = await this.accountRepository.listBankAccount({ id: account.id }, session.data);
       if (bankAccounts instanceof DataFailed) throw bankAccounts.error;
       if (!bankAccounts.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
       if (bankAccounts.data.length === 0) throw new ServerError(ErrorCodes.ACCOUNT_HAS_NO_BANK_ACCOUNT);
@@ -30,10 +28,10 @@ export class ListAccountBankAccountUseCase implements UseCase<DataState<AccountB
     } catch (err) {
       if (err instanceof ServerError) {
         // Expecting when we have NOT_FOUND error
-        if (err.code === ErrorCodes.NOT_FOUND.code) return new DataFailed(new ServerError(ErrorCodes.ACCOUNT_HAS_NO_BANK_ACCOUNT));
+        if (err.code === ErrorCodes.NOT_FOUND.code)
+          return new DataFailed(new ServerError(ErrorCodes.ACCOUNT_HAS_NO_BANK_ACCOUNT));
         else return new DataFailed(err);
       } else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
     }
   }
-
 }

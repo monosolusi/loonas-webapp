@@ -6,24 +6,28 @@ import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account"
 import { BankRepository } from "@/features/bank/domain/repositories/bank";
 import { BankEntity } from "@/features/bank/domain/entities/bank";
 import { AccountBankAccountEntity } from "@/features/account/domain/entities/account-bank-account";
-import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
 import { BankService } from "@/features/bank/domain/sources/bank";
 
 export class BankRepositoryImpl implements BankRepository {
-  constructor(private bankService: BankService) {
-  }
+  constructor(private bankService: BankService) {}
 
-  public async createBankAccountForAccount(params: {
-    bankId: string;
-    accountNumber: string;
-    account: PersonalAccountEntity
-  }, session: SessionEntity): Promise<DataState<AccountBankAccountEntity>> {
+  public async createBankAccountForAccount(
+    params: {
+      bankId: string;
+      accountNumber: string;
+      account: { id: string };
+    },
+    session: SessionEntity,
+  ): Promise<DataState<AccountBankAccountEntity>> {
     try {
-      const bankAccount = await this.bankService.createBankAccountForAccount({
-        bankId: params.bankId,
-        accountNumber: params.accountNumber,
-        accountId: params.account.id
-      }, session);
+      const bankAccount = await this.bankService.createBankAccountForAccount(
+        {
+          bankId: params.bankId,
+          accountNumber: params.accountNumber,
+          accountId: params.account.id,
+        },
+        session,
+      );
 
       return new DataSuccess(bankAccount.toEntity());
     } catch (err) {
@@ -35,7 +39,7 @@ export class BankRepositoryImpl implements BankRepository {
   async listBanks(session: SessionEntity): Promise<DataState<BankEntity[]>> {
     try {
       const banks = await this.bankService.listBanks(session);
-      return new DataSuccess(banks.map(bank => bank.toEntity()));
+      return new DataSuccess(banks.map((bank) => bank.toEntity()));
     } catch (error) {
       if (error instanceof ServerError) return new DataFailed(error);
       return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: error as Error }));
@@ -45,14 +49,18 @@ export class BankRepositoryImpl implements BankRepository {
   async listBankAccounts(partnerId: string, session: SessionEntity): Promise<DataState<BankAccountEntity[]>> {
     try {
       const bankAccounts = await this.bankService.listBankAccounts(partnerId, session);
-      return new DataSuccess(bankAccounts.map(bankAccount => bankAccount.toEntity()));
+      return new DataSuccess(bankAccounts.map((bankAccount) => bankAccount.toEntity()));
     } catch (error) {
       if (error instanceof ServerError) return new DataFailed(error);
       return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: error as Error }));
     }
   }
 
-  async verifyAccountHolder(bankId: string, accountNumber: string, session: SessionEntity): Promise<DataState<AccountInquiryResultEntity>> {
+  async verifyAccountHolder(
+    bankId: string,
+    accountNumber: string,
+    session: SessionEntity,
+  ): Promise<DataState<AccountInquiryResultEntity>> {
     try {
       const inquiryResult = await this.bankService.verifyAccountHolder(bankId, accountNumber, session);
       return new DataSuccess(inquiryResult.toEntity());
@@ -62,9 +70,21 @@ export class BankRepositoryImpl implements BankRepository {
     }
   }
 
-  async createBankAccount(bankId: string, accountNumber: string, accountHolderName: string, partnerId: string, session: SessionEntity): Promise<DataState<BankAccountEntity>> {
+  async createBankAccount(
+    bankId: string,
+    accountNumber: string,
+    accountHolderName: string,
+    partnerId: string,
+    session: SessionEntity,
+  ): Promise<DataState<BankAccountEntity>> {
     try {
-      const bankAccount = await this.bankService.createBankAccount(bankId, accountNumber, accountHolderName, partnerId, session);
+      const bankAccount = await this.bankService.createBankAccount(
+        bankId,
+        accountNumber,
+        accountHolderName,
+        partnerId,
+        session,
+      );
       return new DataSuccess(bankAccount.toEntity());
     } catch (error) {
       if (error instanceof ServerError) return new DataFailed(error);

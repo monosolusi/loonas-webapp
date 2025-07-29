@@ -10,12 +10,16 @@ import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import useSWR from "swr";
 import { HttpRequest } from "@/core/helpers/http-request";
+import { AccountVerificationWorkEntity } from "@/features/account/domain/entities/account-verification-work";
 
 interface GetAccountVerificationWorkFetcherParams {
   accountId?: string;
 }
 
-async function GetAccountVerificationWorkFetcher([_, params]: [string, GetAccountVerificationWorkFetcherParams]) {
+async function GetAccountVerificationWorkFetcher([_, params]: [
+  string,
+  GetAccountVerificationWorkFetcherParams,
+]): Promise<AccountVerificationWorkEntity> {
   if (!params.accountId) throw new ServerError(ErrorCodes.NOT_FOUND);
 
   const sessionService = new LocalStorageSessionService();

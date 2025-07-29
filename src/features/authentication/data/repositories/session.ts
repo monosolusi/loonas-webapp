@@ -1,15 +1,14 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { SessionRepository } from "../../domain/repositories/session";
-import { SessionService } from "../sources/local-storage-session";
-import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "../../domain/entities/session";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
+import { SessionService } from "@/features/authentication/domain/sources/session";
 
 export class SessionRepositoryImpl implements SessionRepository {
   constructor(private sessionService: SessionService) {}
 
-  public async retrieveAccount(): Promise<DataState<PersonalAccountEntity>> {
+  public async retrieveAccount(): Promise<DataState<AccountTypeEntity>> {
     try {
       const selectedAccount = await this.sessionService.retrieveSelectedAccount();
       return new DataSuccess(selectedAccount.toEntity());

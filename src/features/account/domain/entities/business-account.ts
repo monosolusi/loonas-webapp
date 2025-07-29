@@ -1,8 +1,10 @@
 import { AbstractEntity } from "@/core/resources/entity";
 import { DateTime } from "luxon";
+import { AccountType } from "@/features/account/domain/enums/account-type";
 
 interface BusinessAccountEntityConstructor {
   id: string;
+  type: AccountType;
   company: {
     name: string;
     email: string;
@@ -22,6 +24,7 @@ interface BusinessAccountEntityConstructor {
 
 export class BusinessAccountEntity implements AbstractEntity {
   public id: string;
+  public type: AccountType;
   public company: {
     name: string;
     email: string;
@@ -40,6 +43,7 @@ export class BusinessAccountEntity implements AbstractEntity {
 
   constructor(args: BusinessAccountEntityConstructor) {
     this.id = args.id;
+    this.type = args.type;
     this.company = args.company;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;

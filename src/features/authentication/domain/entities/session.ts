@@ -1,14 +1,14 @@
 import { AbstractEntity } from "@/core/resources/entity";
-import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
+import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
 interface SessionEntityConstructor {
   accessToken: string;
-  selectedAccount?: PersonalAccountEntity;
+  selectedAccount?: AccountTypeEntity;
 }
 
 export class SessionEntity implements AbstractEntity {
   public accessToken: string;
-  public selectedAccount?: PersonalAccountEntity;
+  public selectedAccount?: AccountTypeEntity;
 
   constructor(args: SessionEntityConstructor) {
     this.accessToken = args.accessToken;

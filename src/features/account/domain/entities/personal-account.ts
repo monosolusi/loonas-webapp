@@ -5,9 +5,11 @@ import { ProvinceEntity } from "@/core/utilities/address/domain/entities/provinc
 import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
+import { AccountType } from "@/features/account/domain/enums/account-type";
 
 interface PersonalAccountEntityConstructor {
   id: string;
+  type: AccountType;
   nationality: string;
   idNumber: string;
   fullName: string;
@@ -26,6 +28,7 @@ interface PersonalAccountEntityConstructor {
 
 export class PersonalAccountEntity implements AbstractEntity {
   public id: string;
+  public type: AccountType;
   public nationality: string;
   public idNumber: string;
   public fullName: string;
@@ -43,6 +46,7 @@ export class PersonalAccountEntity implements AbstractEntity {
 
   constructor(args: PersonalAccountEntityConstructor) {
     this.id = args.id;
+    this.type = args.type;
     this.nationality = args.nationality;
     this.idNumber = args.idNumber;
     this.fullName = args.fullName;

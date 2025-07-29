@@ -4,6 +4,8 @@ import React, { useMemo } from "react";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
 import { useParams } from "next/navigation";
+import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
+import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
 
 export function VerificationData() {
   const { id } = useParams<{ id: string }>();
@@ -18,33 +20,44 @@ export function VerificationData() {
   const data = useMemo(() => {
     if (!verificationWork) return [];
 
-    const account = verificationWork.account;
-    return [
-      {
-        label: "Kewarganegaraan",
-        value: inferNationality(account.nationality),
-      },
-      {
-        label: "Nomor Kartu Identitas",
-        value: `KTP - ${account.idNumber}`,
-      },
-      {
-        label: "Nama Lengkap",
-        value: account.fullName,
-      },
-      {
-        label: "Pekerjaan",
-        value: account.occupation.label,
-      },
-      {
-        label: "Tempat & Tanggal Lahir",
-        value: `${account.pob}, ${account.dob.setLocale("id").toFormat("dd MMMM yyyy")}`,
-      },
-      {
-        label: "Alamat",
-        value: `${account.address}, ${account.subdistrict.label}, ${account.district.label}, ${account.city.label}, ${account.province.label}`,
-      },
-    ];
+    if (verificationWork.account instanceof PersonalAccountEntity) {
+      return [
+        {
+          label: "Kewarganegaraan",
+          value: inferNationality(verificationWork.account.nationality),
+        },
+        {
+          label: "Nomor Kartu Identitas",
+          value: `KTP - ${verificationWork.account.idNumber}`,
+        },
+        {
+          label: "Nama Lengkap",
+          value: verificationWork.account.fullName,
+        },
+        {
+          label: "Pekerjaan",
+          value: verificationWork.account.occupation.label,
+        },
+        {
+          label: "Tempat & Tanggal Lahir",
+          value: `${verificationWork.account.pob}, ${verificationWork.account.dob.setLocale("id").toFormat("dd MMMM yyyy")}`,
+        },
+        {
+          label: "Alamat",
+          value: verificationWork.account.fullAddress,
+        },
+      ];
+    } else if (verificationWork.account instanceof BusinessAccountEntity) {
+      return [
+        { label: "Nama Perusahaan", value: verificationWork.account.fullName },
+        { label: "Email Perusahaan", value: verificationWork.account.company.email },
+        { label: "Nomor Telepon Perusahaan", value: verificationWork.account.company.phoneNumber },
+        {
+          label: "Alamat",
+          value: verificationWork.account.fullAddress,
+        },
+      ];
+    } else throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
   }, [verificationWork]);
 
   return (

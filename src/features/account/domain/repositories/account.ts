@@ -63,8 +63,5 @@ export interface AccountRepository {
 
   list(session: SessionEntity): Promise<DataState<AccountTypeEntity[]>>;
 
-  listBankAccount(
-    account: PersonalAccountEntity,
-    session: SessionEntity,
-  ): Promise<DataState<AccountBankAccountEntity[]>>;
+  listBankAccount(account: { id: string }, session: SessionEntity): Promise<DataState<AccountBankAccountEntity[]>>;
 }
