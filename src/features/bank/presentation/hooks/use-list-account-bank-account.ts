@@ -6,11 +6,13 @@ import { ListAccountBankAccountUseCase } from "@/features/account/domain/usecase
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import useSWR from "swr";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 async function listAccountBankAccountFetcher() {
   const sessionService = new LocalStorageSessionService();
   const sessionRepository = new SessionRepositoryImpl(sessionService);
-  const accountService = new AccountServiceImpl();
+  const http = new HttpRequest();
+  const accountService = new AccountServiceImpl(http);
   const accountRepository = new AccountRepositoryImpl(accountService);
   const retrieve = new ListAccountBankAccountUseCase(accountRepository, sessionRepository);
   const accountBankAccount = await retrieve.execute();
@@ -24,6 +26,6 @@ export function useListAccountBankAccout() {
   return {
     bankAccounts: data ?? [],
     loading: isLoading,
-    error: error
+    error: error,
   };
 }

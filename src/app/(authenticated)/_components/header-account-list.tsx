@@ -7,12 +7,12 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ArrowLeftStartOnRectangleIcon, ChevronDownIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { AccountListProvider, useAccountListProvider } from "@/features/account/presentation/providers/account-list";
 import { useSelectedAccountProvider } from "@/features/authentication/presentation/providers/selected-account";
-import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { UserSignOutUseCase } from "@/features/authentication/domain/usecases/user-sign-out";
 import { DataFailed } from "@/core/resources/data-state";
 import { Cog8ToothIcon } from "@heroicons/react/24/outline";
+import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
 export function HeaderAccountList() {
   return (
@@ -26,7 +26,11 @@ function HeaderAccountListComponent() {
   const router = useRouter();
   const [accounts] = useAccountListProvider();
   const [error, setError] = useState<Error>();
-  const { selectedAccount, changeAccount, states: [selectAccountLoading] } = useSelectedAccountProvider();
+  const {
+    selectedAccount,
+    changeAccount,
+    states: [selectAccountLoading],
+  } = useSelectedAccountProvider();
 
   useEffect(() => {
     if (error) throw error;
@@ -39,7 +43,7 @@ function HeaderAccountListComponent() {
     if (!selectedAccount && accounts?.length) changeAccount?.(accounts[0]);
   }, [selectAccountLoading, selectedAccount, accounts]);
 
-  function generateSelectedAccountLabel(selectedAccount?: PersonalAccountEntity) {
+  function generateSelectedAccountLabel(selectedAccount?: AccountTypeEntity) {
     if (!selectedAccount) return "Pilih Akun";
     else return `${selectedAccount.fullName} (ID: ${selectedAccount.generateShortAccountId()})`;
   }
@@ -58,10 +62,9 @@ function HeaderAccountListComponent() {
   }
 
   return (
-    <Menu as="div" className="relative sm:inline-block text-left">
+    <Menu as="div" className="relative text-left sm:inline-block">
       <div>
-        <MenuButton
-          className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">
+        <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50">
           {generateSelectedAccountLabel(selectedAccount)}
           <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-gray-400" />
         </MenuButton>
@@ -69,7 +72,7 @@ function HeaderAccountListComponent() {
 
       <MenuItems
         transition
-        className="absolute cursor-pointer sm:right-0 z-10 mt-2 w-full sm:w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white ring-1 shadow-lg ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+        className="absolute z-10 mt-2 w-full origin-top-right cursor-pointer divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in sm:right-0 sm:w-56"
       >
         <div className="py-1">
           <MenuItem>
@@ -77,10 +80,7 @@ function HeaderAccountListComponent() {
               href="/accounts/create"
               className="group flex items-center px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
             >
-              <PlusIcon
-                aria-hidden="true"
-                className="mr-3 size-5 text-gray-400 group-data-focus:text-gray-500"
-              />
+              <PlusIcon aria-hidden="true" className="mr-3 size-5 text-gray-400 group-data-focus:text-gray-500" />
               Buat Akun Baru
             </Link>
           </MenuItem>
@@ -89,22 +89,21 @@ function HeaderAccountListComponent() {
           {/** The selected account will always be first **/}
           {selectedAccount && (
             <MenuItem disabled>
-              <div
-                className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed"
-              >
+              <div className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50">
                 <p>{selectedAccount.fullName}</p>
                 <p className="text-xs/5 text-gray-500">ID: {selectedAccount.generateShortAccountId()}</p>
               </div>
             </MenuItem>
           )}
 
-          {accounts?.filter((account) => account.id !== selectedAccount?.id)
+          {accounts
+            ?.filter((account) => account.id !== selectedAccount?.id)
             .slice(0, 2)
             .map((account) => (
               <MenuItem disabled={account.id === selectedAccount?.id} key={account.id}>
                 <div
                   onClick={() => changeAccount?.(account)}
-                  className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed"
+                  className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                 >
                   <p>{account.fullName}</p>
                   <p className="text-xs/5 text-gray-500">ID: {account.generateShortAccountId()}</p>
@@ -119,10 +118,7 @@ function HeaderAccountListComponent() {
               href="/settings"
               className="group flex items-center px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
             >
-              <Cog8ToothIcon
-                aria-hidden="true"
-                className="mr-3 size-5 text-gray-400 group-data-focus:text-gray-500"
-              />
+              <Cog8ToothIcon aria-hidden="true" className="mr-3 size-5 text-gray-400 group-data-focus:text-gray-500" />
               Pengaturan
             </Link>
           </MenuItem>

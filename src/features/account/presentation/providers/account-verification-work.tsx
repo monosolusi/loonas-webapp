@@ -12,6 +12,7 @@ import {
 } from "../../domain/usecases/retrieve-account-verification-work";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 // entity, loading
 type AccountVerificationWorkContextProps = [AccountVerificationWorkEntity | undefined, boolean];
@@ -40,7 +41,8 @@ export function AccountVerificationWorkProvider({ children, id }: { children: an
 
       const sessionService = new LocalStorageSessionService();
       const sessionRepository = new SessionRepositoryImpl(sessionService);
-      const accountService = new AccountServiceImpl();
+      const http = new HttpRequest();
+      const accountService = new AccountServiceImpl(http);
       const accountRepository = new AccountRepositoryImpl(accountService);
       const retrieve = new RetrieveAccountVerificationWorkUseCase(accountRepository, sessionRepository);
       const retrieveParams = new RetrieveAccountVerificationWorkUseCaseParams(id);

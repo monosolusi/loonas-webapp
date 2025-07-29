@@ -9,6 +9,7 @@ import {
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import useSWR from "swr";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 interface GetAccountVerificationWorkFetcherParams {
   accountId?: string;
@@ -19,7 +20,8 @@ async function GetAccountVerificationWorkFetcher([_, params]: [string, GetAccoun
 
   const sessionService = new LocalStorageSessionService();
   const sessionRepository = new SessionRepositoryImpl(sessionService);
-  const accountService = new AccountServiceImpl();
+  const http = new HttpRequest();
+  const accountService = new AccountServiceImpl(http);
   const accountRepository = new AccountRepositoryImpl(accountService);
   const retrieve = new RetrieveAccountVerificationWorkUseCase(accountRepository, sessionRepository);
   const retrieveParams = new RetrieveAccountVerificationWorkUseCaseParams(params.accountId);

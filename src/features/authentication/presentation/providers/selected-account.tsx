@@ -21,6 +21,8 @@ import { VerificationOutcome } from "@/features/account/domain/enums/verificatio
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 import { HttpRequest } from "@/core/helpers/http-request";
+import { useRouter } from "next/navigation";
+import { FilledButton } from "@/core/presentations/components/filled-button";
 
 interface SelectedAccountContextProps {
   states: [boolean]; // loading
@@ -131,8 +133,15 @@ export function useSelectedAccountProvider() {
 }
 
 function RejectedDialog({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
+  const router = useRouter();
+
+  const onAcknowledged = () => {
+    router.replace("/accounts/select");
+    setOpen(false);
+  };
+
   return (
-    <Dialog open={open} onClose={setOpen} className="relative z-10">
+    <Dialog open={open} onClose={() => {}} className="relative z-10">
       <DialogBackdrop
         transition
         className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
@@ -160,13 +169,7 @@ function RejectedDialog({ open, setOpen }: { open: boolean; setOpen: (open: bool
               </div>
             </div>
             <div className="mt-5 sm:mt-6">
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="bg-primary-default hover:bg-primary-500 focus-visible:outline-primary-default inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2"
-              >
-                Mengerti
-              </button>
+              <FilledButton onClick={onAcknowledged}>Mengerti</FilledButton>
             </div>
           </DialogPanel>
         </div>

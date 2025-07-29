@@ -9,6 +9,7 @@ import { AccountRepositoryImpl } from "@/features/account/data/repositories/acco
 import { ListAccountUseCase } from "@/features/account/domain/usecases/list-account";
 import { DataFailed } from "@/core/resources/data-state";
 import { useRouter } from "next/navigation";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 export function MustHaveAccount(props: { children: React.ReactNode }) {
   const [loading, setLoading] = useState<boolean>(true);
@@ -18,7 +19,8 @@ export function MustHaveAccount(props: { children: React.ReactNode }) {
   const checkIfUserHasAccount = async () => {
     const sessionService = new LocalStorageSessionService();
     const sessionRepository = new SessionRepositoryImpl(sessionService);
-    const accountService = new AccountServiceImpl();
+    const http = new HttpRequest();
+    const accountService = new AccountServiceImpl(http);
     const accountRepository = new AccountRepositoryImpl(accountService);
     const listAccount = new ListAccountUseCase(accountRepository, sessionRepository);
     const accounts = await listAccount.execute();
