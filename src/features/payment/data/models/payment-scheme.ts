@@ -1,5 +1,6 @@
 import { AbstractModel } from "@/core/resources/model";
 import { PaymentSchemeEntity } from "../../domain/entities/payment-scheme";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 interface PaymentSchemeModelConstructor {
   id: string;
@@ -22,20 +23,16 @@ export class PaymentSchemeModel implements AbstractModel {
   }
 
   public static fromJson(json: Record<string, any>): PaymentSchemeModel {
+    if (!json) throw new ServerError(ErrorCodes.EMPTY_RESPONSE);
     return new PaymentSchemeModel({
       id: json["id"],
       name: json["name"],
       logoUrl: json["logo_url"],
-      isActive: json["is_active"]
+      isActive: json["is_active"],
     });
   }
 
   toEntity(): PaymentSchemeEntity {
-    return new PaymentSchemeEntity(
-      this.id,
-      this.name,
-      this.logoUrl,
-      this.isActive
-    );
+    return new PaymentSchemeEntity(this.id, this.name, this.logoUrl, this.isActive);
   }
 }

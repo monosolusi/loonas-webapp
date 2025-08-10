@@ -1,6 +1,12 @@
 type ErrorStructureType = { code: string; httpCode: number; message: string };
 
 export class ErrorCodes {
+  public static readonly EMPTY_RESPONSE = {
+    code: "EMPTY_RESPONSE",
+    httpCode: 400,
+    message: "Ups! Response-nya kosong",
+  };
+
   public static readonly NOT_AGREED = {
     code: "NOT_AGREED",
     httpCode: 400,

@@ -26,8 +26,9 @@ export class RetrieveVirtualAccountPayInDetailUseCase
     params: RetrieveVirtualAccountPayInDetailUseCaseParams,
   ): Promise<DataState<VirtualAccountPayInDetailEntity>> {
     try {
-      if (!(this.payInRepository instanceof VirtualAccountPayInRepository))
+      if (!(this.payInRepository instanceof VirtualAccountPayInRepository)) {
         throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      }
 
       const session = await this.sessionRepository.retrieve();
       if (session instanceof DataFailed) throw session.error;
