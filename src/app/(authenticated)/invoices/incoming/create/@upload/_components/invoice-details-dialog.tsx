@@ -10,13 +10,13 @@ import { ServerError } from "@/core/resources/server-error";
 import { ErrorCard } from "@/core/presentations/components/error-card";
 import { DateInput } from "@/core/presentations/components/date-input";
 
-export interface InvoiceDetailsDialogOnSubmitParams {
+export type InvoiceDetailsDialogOnSubmitParams = {
   invoiceNumber: string;
   amount: number;
   dueDate: DateTime;
   invoiceDate: DateTime;
   note: string;
-}
+};
 
 interface InvoiceDetailsDialogProps {
   open: boolean;
@@ -29,8 +29,8 @@ interface InvoiceDetailsDialogProps {
 export function InvoiceDetailsDialog(props: InvoiceDetailsDialogProps) {
   const [invoiceNumber, setInvoiceNumber] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const [dueDate, setDueDate] = useState<string>("");
-  const [invoiceDate, setInvoiceDate] = useState<string>("");
+  const [dueDate, setDueDate] = useState<DateTime>(DateTime.now());
+  const [invoiceDate, setInvoiceDate] = useState<DateTime>(DateTime.now());
   const [note, setNote] = useState<string>("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -39,9 +39,9 @@ export function InvoiceDetailsDialog(props: InvoiceDetailsDialogProps) {
     const isSuccess = props.onSubmit({
       invoiceNumber: invoiceNumber,
       amount: IDRFormatter.toNumber(amount),
-      dueDate: DateTime.fromFormat(dueDate, "yyyy-MM-dd"),
-      invoiceDate: DateTime.fromFormat(invoiceDate, "yyyy-MM-dd"),
-      note: note
+      dueDate: dueDate,
+      invoiceDate: invoiceDate,
+      note: note,
     });
 
     if (!isSuccess) return;
@@ -62,11 +62,10 @@ export function InvoiceDetailsDialog(props: InvoiceDetailsDialogProps) {
   const resetForm = () => {
     setInvoiceNumber("");
     setAmount("");
-    setDueDate("");
-    setInvoiceDate("");
+    setDueDate(DateTime.now());
+    setInvoiceDate(DateTime.now());
     setNote("");
   };
-
 
   return (
     <Dialog as="form" open={props.open} onClose={props.setOpen} className="relative z-50" onSubmit={handleSubmit}>
@@ -79,10 +78,10 @@ export function InvoiceDetailsDialog(props: InvoiceDetailsDialogProps) {
         <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
           <DialogPanel
             transition
-            className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 w-full sm:max-w-sm sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
+            className="relative w-full transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:max-w-sm sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
           >
             <div className="sm:flex sm:items-start">
-              <div className="flex-1 mt-3 sm:mt-0 sm:ml-4 sm:text-left">
+              <div className="mt-3 flex-1 sm:mt-0 sm:ml-4 sm:text-left">
                 <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
                   Detail Faktur
                 </DialogTitle>
@@ -107,31 +106,25 @@ export function InvoiceDetailsDialog(props: InvoiceDetailsDialogProps) {
                     <DateInput
                       title="Tanggal Faktur"
                       htmlFor="invoice-date"
-                      value={DateTime.fromFormat(invoiceDate, "yyyy-MM-dd")}
-                      onChange={(value) => setInvoiceDate(value.toFormat("yyyy-MM-dd"))}
+                      value={invoiceDate}
+                      onChange={setInvoiceDate}
                       required
                     />
                     <DateInput
                       title="Tanggal Jatuh Tempo"
                       htmlFor="due-date"
-                      value={DateTime.fromFormat(dueDate, "yyyy-MM-dd")}
-                      onChange={(value) => setDueDate(value.toFormat("yyyy-MM-dd"))}
+                      value={dueDate}
+                      onChange={setDueDate}
                       required
                     />
-                    <TextInput
-                      title="Catatan (Optional)"
-                      value={note}
-                      onChange={setNote}
-                    />
+                    <TextInput title="Catatan (Optional)" value={note} onChange={setNote} />
                   </div>
                 </div>
               </div>
             </div>
             <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
               <div className="ml-3">
-                <FilledButton>
-                  Simpan
-                </FilledButton>
+                <FilledButton>Simpan</FilledButton>
               </div>
               <button
                 type="button"
