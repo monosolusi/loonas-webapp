@@ -11,9 +11,7 @@ const MASK = "__/__/____"; // dd/MM/yyyy
 const MAX_DIGITS = 8; // ddMMYYYY
 // Index posisi karakter digit di dalam mask (bukan slash)
 const DIGIT_SLOTS = [0, 1, 3, 4, 6, 7, 8, 9];
-
 const digitsOnly = (s: string) => s.replace(/\D/g, "");
-
 const applyMask = (digits: string) => {
   const d = digits.padEnd(MAX_DIGITS, "_").slice(0, MAX_DIGITS);
   return `${d[0]}${d[1]}/${d[2]}${d[3]}/${d[4]}${d[5]}${d[6]}${d[7]}`;
@@ -36,13 +34,15 @@ const digitIndexToMaskedCaret = (digitIdx: number) => {
   return DIGIT_SLOTS[digitIdx] ?? DIGIT_SLOTS[DIGIT_SLOTS.length - 1] + 1;
 };
 
-const parseIfComplete = (digits: string): DateTime | null => {
-  if (digits.length !== MAX_DIGITS) return null;
+// Selalu hasilkan DateTime (valid/invalid) dari digits saat ini
+const toDateTime = (digits: string): DateTime => {
+  if (digits.length !== MAX_DIGITS) {
+    return DateTime.invalid("incomplete-date");
+  }
   const day = digits.slice(0, 2);
   const month = digits.slice(2, 4);
   const year = digits.slice(4, 8);
-  const dt = DateTime.fromFormat(`${day}/${month}/${year}`, "dd/LL/yyyy");
-  return dt.isValid ? dt.startOf("day") : null;
+  return DateTime.fromFormat(`${day}/${month}/${year}`, "dd/LL/yyyy").startOf("day");
 };
 
 export function DateInput(props: DateInputProps) {
@@ -50,25 +50,24 @@ export function DateInput(props: DateInputProps) {
 
   const [rawDigits, setRawDigits] = useState<string>("");
 
-  // Sinkronisasi dari value luar
+  // Sinkronisasi dari value luar: hanya jika valid.
+  // Jika invalid, biarkan input mempertahankan apa yang sedang diketik user.
   useEffect(() => {
     if (value?.isValid) {
       setRawDigits(value.toFormat("ddLLyyyy"));
-    } else {
+    } else if (value === undefined) {
+      // Jika value dihilangkan (undefined), kosongkan input
       setRawDigits("");
     }
   }, [value]);
 
   const masked = useMemo(() => (rawDigits ? applyMask(rawDigits) : MASK), [rawDigits]);
-
   const inputEl = useRef<HTMLInputElement | null>(null);
 
   // Dapatkan elemen input berdasarkan htmlFor atau simpan saat first interaction
   const ensureInputEl = useCallback(() => {
     if (inputEl.current) return inputEl.current;
-    if (htmlFor) {
-      inputEl.current = document.getElementById(htmlFor) as HTMLInputElement | null;
-    }
+    if (htmlFor) inputEl.current = document.getElementById(htmlFor) as HTMLInputElement | null;
     return inputEl.current;
   }, [htmlFor]);
 
@@ -76,6 +75,7 @@ export function DateInput(props: DateInputProps) {
     (digitIdx: number) => {
       const el = ensureInputEl();
       if (!el) return;
+
       const pos = digitIndexToMaskedCaret(digitIdx);
       requestAnimationFrame(() => {
         try {
@@ -96,16 +96,13 @@ export function DateInput(props: DateInputProps) {
     const dStart = maskedCaretToDigitIndex(start);
     const dEnd = maskedCaretToDigitIndex(end);
     return { dStart, dEnd };
-    // dStart/dEnd berada dalam rentang [0..rawDigits.length]
   }, [ensureInputEl]);
 
-  const emitIfValid = useCallback(
+  // Selalu emit ke parent (valid/invalid)
+  const emit = useCallback(
     (digits: string) => {
       if (!onChange) return;
-      if (digits.length === MAX_DIGITS) {
-        const parsed = parseIfComplete(digits);
-        if (parsed) onChange(parsed);
-      }
+      onChange(toDateTime(digits));
     },
     [onChange],
   );
@@ -114,12 +111,12 @@ export function DateInput(props: DateInputProps) {
   const applyDigitsEdit = useCallback(
     (nextDigits: string, nextCaretDigitIdx?: number) => {
       setRawDigits(nextDigits);
-      emitIfValid(nextDigits);
+      emit(nextDigits);
       if (typeof nextCaretDigitIdx === "number") {
         setCaret(Math.min(nextCaretDigitIdx, nextDigits.length));
       }
     },
-    [emitIfValid, setCaret],
+    [emit, setCaret],
   );
 
   // Replace selection [dStart..dEnd) dengan textDigits
@@ -237,7 +234,8 @@ export function DateInput(props: DateInputProps) {
   };
 
   const handleBlur = () => {
-    emitIfValid(rawDigits);
+    // Pastikan parent menerima state terakhir (valid/invalid)
+    emit(rawDigits);
   };
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { TextInput } from "@/core/presentations/components/text-input";
@@ -33,8 +33,25 @@ export function InvoiceDetailsDialog(props: InvoiceDetailsDialogProps) {
   const [invoiceDate, setInvoiceDate] = useState<DateTime>(DateTime.now());
   const [note, setNote] = useState<string>("");
 
+  const isClean = useMemo(() => {
+    if (!amount) return false;
+    if (!dueDate) return false;
+    if (!invoiceDate) return false;
+
+    if (!dueDate.isValid) return false;
+    if (!invoiceDate.isValid) return false;
+    if (dueDate < invoiceDate) return false;
+
+    const amountNumber = IDRFormatter.toNumber(amount);
+    if (isNaN(amountNumber)) return false;
+    if (amountNumber <= 0) return false;
+
+    return true;
+  }, [amount, dueDate, invoiceDate]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isClean) return;
 
     const isSuccess = props.onSubmit({
       invoiceNumber: invoiceNumber,
@@ -124,7 +141,7 @@ export function InvoiceDetailsDialog(props: InvoiceDetailsDialogProps) {
             </div>
             <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
               <div className="ml-3">
-                <FilledButton>Simpan</FilledButton>
+                <FilledButton disabled={!isClean}>Simpan</FilledButton>
               </div>
               <button
                 type="button"
