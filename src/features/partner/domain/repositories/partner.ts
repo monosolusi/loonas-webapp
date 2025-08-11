@@ -3,7 +3,6 @@ import { DataState } from "@/core/resources/data-state";
 import { PartnerEntity } from "../entities/partner";
 import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
 
-
 export interface PartnerRepositorySearchParams {
   limit?: number;
 }
@@ -19,29 +18,22 @@ export interface PartnerRepositoryUpdateFields {
   phone?: string;
 }
 
-export abstract class PartnerRepository {
-  public abstract create(
-    name: string,
-    email: string,
-    phone: string,
-    session: SessionEntity
-  ): Promise<DataState<boolean>>;
+export interface PartnerRepository {
+  create(name: string, email: string, phone: string, session: SessionEntity): Promise<DataState<boolean>>;
 
-  public abstract list(
-    session: SessionEntity
-  ): Promise<DataState<PartnerEntity[]>>;
+  list(session: SessionEntity): Promise<DataState<PartnerEntity[]>>;
 
-  public abstract listInvoice(
-    filter: { partnerId: string },
+  listInvoice(
+    filter: { partner: { id: string } },
     params: PartnerRepositorySearchParams,
-    session: SessionEntity
-  ): Promise<DataState<InvoiceEntity[]>>
+    session: SessionEntity,
+  ): Promise<DataState<InvoiceEntity[]>>;
 
-  public abstract get(filter: PartnerRepositoryFilter, session: SessionEntity): Promise<DataState<PartnerEntity>>
+  get(filter: PartnerRepositoryFilter, session: SessionEntity): Promise<DataState<PartnerEntity>>;
 
-  public abstract update(
+  update(
     filter: Pick<PartnerRepositoryFilter, "id">,
     updateData: PartnerRepositoryUpdateFields,
-    session: SessionEntity
-  ): Promise<DataState<PartnerEntity>>
+    session: SessionEntity,
+  ): Promise<DataState<PartnerEntity>>;
 }

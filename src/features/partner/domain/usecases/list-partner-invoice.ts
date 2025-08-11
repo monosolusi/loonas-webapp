@@ -6,26 +6,27 @@ import { PartnerRepository } from "@/features/partner/domain/repositories/partne
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 
 interface ListPartnerInvoiceUseCaseParamsConstructor {
-  partnerId: string;
+  partner: { id: string };
   searchParams?: { limit?: number };
 }
 
 export class ListPartnerInvoiceUseCaseParams {
-  public partnerId: string;
-  public searchParams?: { limit?: number };
+  public readonly partner: { id: string };
+  public readonly searchParams?: { limit?: number };
 
   constructor(args: ListPartnerInvoiceUseCaseParamsConstructor) {
-    this.partnerId = args.partnerId;
+    this.partner = args.partner;
     this.searchParams = args.searchParams;
+    Object.freeze(this);
   }
 }
-
 
 export class ListPartnerInvoiceUseCase implements UseCase<DataState<InvoiceEntity[]>, ListPartnerInvoiceUseCaseParams> {
   constructor(
     private readonly partnerRepository: PartnerRepository,
-    private readonly sessionRepository: SessionRepository
+    private readonly sessionRepository: SessionRepository,
   ) {
+    Object.freeze(this);
   }
 
   public async execute(params: ListPartnerInvoiceUseCaseParams): Promise<DataState<InvoiceEntity[]>> {
@@ -35,14 +36,13 @@ export class ListPartnerInvoiceUseCase implements UseCase<DataState<InvoiceEntit
       if (!session.data) return new DataFailed(new ServerError(ErrorCodes.INVALID_INSTANCE));
 
       return this.partnerRepository.listInvoice(
-        { partnerId: params.partnerId },
+        { partner: { id: params.partner.id } },
         { limit: params.searchParams?.limit },
-        session.data
+        session.data,
       );
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
     }
   }
-
 }

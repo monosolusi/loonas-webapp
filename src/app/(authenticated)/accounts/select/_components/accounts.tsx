@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { VerificationStatusBadge } from "@/app/(authenticated)/accounts/select/_components/verification-status-badge";
 import { useSelectedAccountProvider } from "@/features/authentication/presentation/providers/selected-account";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
@@ -12,12 +12,17 @@ import { useListAccount } from "@/features/account/presentation/hooks/use-list-a
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
 import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
+import { ChangedDialog } from "@/app/(authenticated)/accounts/select/_components/changed-dialog";
 
-export function Accounts({ onAccountChanged }: { onAccountChanged?: () => void }) {
+export function Accounts() {
+  const [changedDialog, setChangedDialog] = useState<boolean>(false);
   const { accounts } = useListAccount();
+
+  const onAccountChanged = () => setChangedDialog(true);
 
   return (
     <>
+      <ChangedDialog open={changedDialog} setOpen={setChangedDialog} />
       {accounts?.map((account) => (
         <AccountCard key={account.id} account={account} onAccountChanged={onAccountChanged} />
       ))}

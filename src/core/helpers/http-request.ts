@@ -76,7 +76,6 @@ export class HttpRequest {
       throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
     }
 
-    const data = await response.json();
-    return data;
+    return response.json();
   }
 }

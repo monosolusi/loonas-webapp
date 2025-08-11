@@ -2,10 +2,14 @@
 
 import React from "react";
 
-export function PasswordInput({ label, value, onChange }: {
-  label?: string,
-  value?: string,
-  onChange?: (value: string) => void
+export function PasswordInput({
+  label,
+  value,
+  onChange,
+}: {
+  label?: string;
+  value?: string;
+  onChange?: React.Dispatch<React.SetStateAction<string>>;
 }) {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (onChange) onChange(e.target.value);
@@ -24,7 +28,7 @@ export function PasswordInput({ label, value, onChange }: {
           autoComplete="current-password"
           value={value}
           onChange={handleChange}
-          className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+          className="focus:outline-primary-600 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6"
           required
         />
       </div>

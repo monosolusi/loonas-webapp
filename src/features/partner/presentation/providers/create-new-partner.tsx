@@ -9,6 +9,7 @@ import { DataFailed } from "@/core/resources/data-state";
 import { CreatePartnerUseCase, CreatePartnerUseCaseParams } from "@/features/partner/domain/usecases/create-partner";
 import { PartnerRepositoryImpl } from "@/features/partner/data/repositories/partner";
 import { PartnerServiceImpl } from "@/features/partner/data/sources/partner";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 interface CreateNewPartnerContextProps {
   name: string;
@@ -28,7 +29,7 @@ const CreateNewPartnerContext = React.createContext<CreateNewPartnerContextProps
   name: "",
   email: "",
   phone: "",
-  loading: false
+  loading: false,
 });
 
 export function CreateNewPartnerProvider({ children }: { children: React.ReactNode }) {
@@ -66,16 +67,13 @@ export function CreateNewPartnerProvider({ children }: { children: React.ReactNo
       if (!parsedPhoneNumber || !parsedPhoneNumber.isValid()) throw new ServerError(ErrorCodes.INVALID_PHONE_NUMBER);
 
       // The phone number is correct here, now it is time to insert the database
-      const partnerService = new PartnerServiceImpl();
+      const http = new HttpRequest();
+      const partnerService = new PartnerServiceImpl(http);
       const sessionService = new LocalStorageSessionService();
       const sessionRepository = new SessionRepositoryImpl(sessionService);
       const partnerRepository = new PartnerRepositoryImpl(partnerService);
       const createPartner = new CreatePartnerUseCase(partnerRepository, sessionRepository);
-      const createPartnerParams = new CreatePartnerUseCaseParams(
-        name,
-        email,
-        parsedPhoneNumber.number.toString()
-      );
+      const createPartnerParams = new CreatePartnerUseCaseParams(name, email, parsedPhoneNumber.number.toString());
 
       const result = await createPartner.execute(createPartnerParams);
       if (result instanceof DataFailed) throw result.error;
@@ -106,7 +104,7 @@ export function CreateNewPartnerProvider({ children }: { children: React.ReactNo
         setPhone,
         createPartner,
         clearError,
-        clearInput
+        clearInput,
       }}
     >
       {children}
