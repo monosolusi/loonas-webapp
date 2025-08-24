@@ -2,15 +2,13 @@
 
 import React from "react";
 
-export function PasswordInput({
-  label,
-  value,
-  onChange,
-}: {
+interface PasswordInputProps {
   label?: string;
   value?: string;
   onChange?: React.Dispatch<React.SetStateAction<string>>;
-}) {
+}
+
+export function PasswordInput({ label, value, onChange }: PasswordInputProps) {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (onChange) onChange(e.target.value);
   }

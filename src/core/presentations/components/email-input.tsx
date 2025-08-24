@@ -3,15 +3,23 @@
 import React from "react";
 import { TextInput } from "@/core/presentations/components/text-input";
 
-export function EmailInput({ value, onChange, className, bold = false, required = false, placeholder }: {
-  value?: string,
-  onChange?: (value: string) => void,
-  className?: string
-  bold?: boolean
-  required?: boolean
-  placeholder?: string
-}) {
+interface EmailInputProps {
+  value?: string;
+  onChange?: (value: string) => void;
+  className?: string;
+  bold?: boolean;
+  required?: boolean;
+  placeholder?: string;
+}
 
+export function EmailInput({
+  value,
+  onChange,
+  className,
+  bold = false,
+  required = false,
+  placeholder,
+}: EmailInputProps) {
   return (
     <TextInput
       title="Alamat Email"
@@ -26,5 +34,4 @@ export function EmailInput({ value, onChange, className, bold = false, required 
       placeholder={placeholder}
     />
   );
-
 }
