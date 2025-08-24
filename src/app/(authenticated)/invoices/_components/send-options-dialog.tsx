@@ -13,6 +13,7 @@ interface SendOptionsDialogProps {
   onClose?: () => void;
   recipient: { email: string; phoneNumber: string; name: string };
   onSendClick?: (channels: NotificationChannel[]) => Promise<void>;
+  availableChannels: NotificationChannel[];
 }
 
 export function SendOptionsDialog(props: SendOptionsDialogProps) {
@@ -60,12 +61,14 @@ export function SendOptionsDialog(props: SendOptionsDialogProps) {
             onChange={(checked) => setSendEmail(checked)}
             disabled={isLoading}
             recipient={props.recipient}
+            isAvailable={props.availableChannels.includes(NotificationChannel.EMAIL)}
           />
           <SendViaWhatsappCheckbox
             checked={sendWhatsApp}
             onChange={(checked) => setSendWhatsApp(checked)}
             disabled={isLoading}
             recipient={props.recipient}
+            isAvailable={props.availableChannels.includes(NotificationChannel.WHATSAPP)}
           />
         </div>
         <div className="flex flex-row justify-end space-x-2">
