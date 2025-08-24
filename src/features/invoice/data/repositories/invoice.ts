@@ -15,9 +15,26 @@ import { OutgoingInvoiceEntity } from "../../domain/entities/outgoing-invoice";
 import { CombinedInvoiceSummaryEntity } from "../../domain/entities/combined-invoice-summary";
 import { PublicOutgoingInvoiceEntity } from "../../domain/entities/public-outgoing-invoice";
 import { PayInEntity } from "../../domain/entities/pay-in";
+import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 
 export class InvoiceRepositoryImpl implements InvoiceRepository {
   constructor(private readonly invoiceService: InvoiceService) {}
+
+  public async send(
+    params: {
+      id: string;
+      sendChannel: NotificationChannel[];
+    },
+    session: SessionEntity,
+  ): Promise<DataState<boolean>> {
+    try {
+      await this.invoiceService.send({ id: params.id, sendChannel: params.sendChannel }, session);
+      return new DataSuccess(true);
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
 
   public async createPayInForOutgoingInvoice(params: {
     invoiceId: string;

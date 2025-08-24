@@ -93,4 +93,6 @@ export interface InvoiceRepository {
     paymentMethodId: string;
     paymentSchemeId?: string | null;
   }): Promise<DataState<PayInEntity>>;
+
+  send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<DataState<boolean>>;
 }

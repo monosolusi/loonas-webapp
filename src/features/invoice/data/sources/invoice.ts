@@ -19,9 +19,18 @@ import { InvoiceSenderModel } from "@/features/invoice/data/models/invoice-sende
 import { InvoiceRecipientModel } from "@/features/invoice/data/models/invoice-recipient";
 import { PublicOutgoingInvoiceModel } from "../models/public-outgoing-invoice";
 import { PayInModel } from "../models/pay-in";
+import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 
 export class InvoiceServiceImpl implements InvoiceService {
   constructor(private readonly http: HttpRequest) {}
+
+  public async send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void> {
+    const path = `/invoices/outgoing/${params.id}/send`;
+    const body = { channels: params.sendChannel };
+    const method = "POST";
+
+    await this.http.request({ path, method, body, session });
+  }
 
   public async createPayInForOutgoingInvoice(params: {
     invoiceId: string;

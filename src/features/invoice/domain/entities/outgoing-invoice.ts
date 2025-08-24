@@ -6,6 +6,7 @@ import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-
 import { InvoiceItemSummaryEntity } from "@/features/invoice/domain/entities/invoice-item-summary";
 import { InvoiceSenderEntity } from "@/features/invoice/domain/entities/invoice-sender";
 import { InvoiceRecipientEntity } from "@/features/invoice/domain/entities/invoice-recipient";
+import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 
 interface OutgoingInvoiceEntityConstructor {
   id: string;
@@ -20,6 +21,7 @@ interface OutgoingInvoiceEntityConstructor {
   status: OutgoingInvoiceStatus;
   summary: InvoiceItemSummaryEntity;
   sender: InvoiceSenderEntity;
+  sendChannel: NotificationChannel[];
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
@@ -38,6 +40,7 @@ export class OutgoingInvoiceEntity implements AbstractEntity {
   public status: OutgoingInvoiceStatus;
   public summary: InvoiceItemSummaryEntity;
   public sender: InvoiceSenderEntity;
+  public sendChannel: NotificationChannel[];
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
@@ -55,6 +58,7 @@ export class OutgoingInvoiceEntity implements AbstractEntity {
     this.status = args.status;
     this.summary = args.summary;
     this.sender = args.sender;
+    this.sendChannel = args.sendChannel;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;

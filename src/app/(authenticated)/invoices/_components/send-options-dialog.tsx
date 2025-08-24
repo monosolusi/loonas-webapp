@@ -11,7 +11,7 @@ import { NotificationChannel } from "@/features/notification/domain/enums/notifi
 interface SendOptionsDialogProps {
   open: boolean;
   onClose?: () => void;
-  recipient: { email: string; phoneNumber: string; name: string };
+  recipient: { email?: string; phoneNumber?: string; name: string };
   onSendClick?: (channels: NotificationChannel[]) => Promise<void>;
   availableChannels: NotificationChannel[];
 }

@@ -7,12 +7,13 @@ export interface SendViaEmailCheckboxProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
   disabled?: boolean;
-  recipient: { email: string; name: string };
+  recipient: { email?: string; name: string };
   isAvailable: boolean;
 }
 
 export function SendViaEmailCheckbox(props: SendViaEmailCheckboxProps) {
   if (!props.isAvailable) return null;
+  if (!props.recipient.email) return null;
   return (
     <LoonasCheckbox checked={props.checked} onChange={props.onChange} disabled={props.disabled}>
       <div className="flex flex-col space-y-1">
