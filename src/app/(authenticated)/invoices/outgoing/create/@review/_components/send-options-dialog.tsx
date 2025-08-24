@@ -1,6 +1,5 @@
 "use client";
 
-import { LoonasCheckbox } from "@/core/presentations/components/loonas-checkbox";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import React, { useMemo, useState } from "react";
 import { OutlinedButton } from "@/core/presentations/components/outlined-button";
@@ -9,7 +8,8 @@ import { useCreateOutgoingInvoice } from "@/features/invoice/presentations/hooks
 import { useCreateOutgoingInvoice as useCreateOutgoingInvoiceProvider } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { InvoiceSendChannel } from "@/features/invoice/domain/enums/invoice-send-channel";
-import { useSelectedAccountProvider } from "@/features/authentication/presentation/providers/selected-account";
+import { SendViaEmailCheckbox } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/send-via-email-checkbox";
+import { SendViaWhatsappCheckbox } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/send-via-whatsapp-checkbox";
 
 interface SendOptionsDialogProps {
   open: boolean;
@@ -20,7 +20,6 @@ interface SendOptionsDialogProps {
 export function SendOptionsDialog(props: SendOptionsDialogProps) {
   const [sendEmail, setSendEmail] = useState<boolean>(false);
   const [sendWhatsApp, setSendWhatsApp] = useState<boolean>(false);
-  const { selectedAccount } = useSelectedAccountProvider();
   const { trigger, isMutating } = useCreateOutgoingInvoice();
   const { recipient, invoiceNumber, invoiceDate, dueDate, items, note, tnc, paymentConfiguration, signature } =
     useCreateOutgoingInvoiceProvider();
@@ -76,26 +75,18 @@ export function SendOptionsDialog(props: SendOptionsDialogProps) {
           </div>
         </div>
         <div className="flex flex-col space-y-2">
-          <LoonasCheckbox checked={sendEmail} onChange={(checked) => setSendEmail(checked)} disabled={isMutating}>
-            <div className="flex flex-col space-y-1">
-              <div className="text-base font-semibold text-gray-900">Kirim Email</div>
-              <div className="text-sm text-gray-500">
-                Faktur akan dikirimkan ke <span className="underline">{recipient.email}</span> dan{" "}
-                <span className="underline">{recipient.name}</span> dapat membayar melalui link yang akan dkirimkan via
-                email.
-              </div>
-            </div>
-          </LoonasCheckbox>
-          <LoonasCheckbox checked={sendWhatsApp} onChange={(checked) => setSendWhatsApp(checked)} disabled={isMutating}>
-            <div className="flex flex-col space-y-1">
-              <div className="text-base font-semibold text-gray-900">Kirim WhatsApp</div>
-              <div className="text-sm text-gray-500">
-                Faktur akan dikirimkan ke <span className="underline">{recipient.phoneNumber}</span> dan{" "}
-                <span className="underline">{recipient.name}</span> dapat membayar melalui link yang akan dkirimkan via
-                WhatsApp.
-              </div>
-            </div>
-          </LoonasCheckbox>
+          <SendViaEmailCheckbox
+            checked={sendEmail}
+            onChange={(checked) => setSendEmail(checked)}
+            disabled={isMutating}
+            recipient={recipient}
+          />
+          <SendViaWhatsappCheckbox
+            checked={sendWhatsApp}
+            onChange={(checked) => setSendWhatsApp(checked)}
+            disabled={isMutating}
+            recipient={recipient}
+          />
         </div>
         <div className="flex flex-row justify-end space-x-2">
           <OutlinedButton onClick={handleCancelClick} disabled={isMutating}>
