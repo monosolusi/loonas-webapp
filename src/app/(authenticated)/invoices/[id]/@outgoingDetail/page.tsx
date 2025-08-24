@@ -1,10 +1,10 @@
 import { PageContent } from "@/core/presentations/components/page-content";
 import { BackButton } from "@/core/presentations/components/back-button";
 import { OutlinedButton } from "@/core/presentations/components/outlined-button";
-import { FilledButton } from "@/core/presentations/components/filled-button";
 import { InvoiceSummaryImpl } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/invoice-summary-impl";
 import { InvoicePreviewImpl } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/invoice-preview-impl";
 import { ErrorDisplayImpl } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/error-display-impl";
+import { SendInvoiceButton } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/send-invoice-button";
 
 export default function OutgoingInvoiceDetailPage() {
   return (
@@ -19,7 +19,7 @@ export default function OutgoingInvoiceDetailPage() {
               <OutlinedButton>Download PDF</OutlinedButton>
             </div>
             <div className="flex">
-              <FilledButton>Kirim Faktur</FilledButton>
+              <SendInvoiceButton />
             </div>
           </div>
         </div>
