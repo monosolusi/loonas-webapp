@@ -19,6 +19,7 @@ interface OutgoingInvoiceModelConstructor {
   note?: string;
   tnc?: string;
   signature?: FileModel;
+  pdf?: FileModel;
   status: OutgoingInvoiceStatus;
   summary: InvoiceItemSummaryModel;
   sender: InvoiceSenderModel;
@@ -32,6 +33,7 @@ interface OutgoingInvoiceModelFromJsonParams {
   recipient: InvoiceRecipientModel;
   items: InvoiceItemModel[];
   signature?: FileModel;
+  pdf?: FileModel;
   summary: InvoiceItemSummaryModel;
   sender: InvoiceSenderModel;
 }
@@ -46,6 +48,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
   public note?: string;
   public tnc?: string;
   public signature?: FileModel;
+  public pdf?: FileModel;
   public status: OutgoingInvoiceStatus;
   public summary: InvoiceItemSummaryModel;
   public sender: InvoiceSenderModel;
@@ -64,6 +67,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
     this.note = args.note;
     this.tnc = args.tnc;
     this.signature = args.signature;
+    this.pdf = args.pdf;
     this.status = args.status;
     this.summary = args.summary;
     this.sender = args.sender;
@@ -84,6 +88,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
       note: data.note,
       tnc: data.tnc,
       signature: params.signature,
+      pdf: params.pdf,
       status: data.status as OutgoingInvoiceStatus,
       summary: params.summary,
       sender: params.sender,
@@ -105,6 +110,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
       note: this.note,
       tnc: this.tnc,
       signature: this.signature?.toEntity(),
+      pdf: this.pdf?.toEntity(),
       status: this.status,
       summary: this.summary.toEntity(),
       sender: this.sender.toEntity(),

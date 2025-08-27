@@ -7,7 +7,7 @@ import {
   InvoiceService,
   InvoiceServiceFilter,
   InvoiceServiceFilterParams,
-  OutgoingInvoiceFilter,
+  OutgoingInvoiceFilter
 } from "@/features/invoice/domain/sources/invoice";
 import { OutgoingInvoiceModel } from "../models/outgoing-invoice";
 import { HttpRequest } from "@/core/helpers/http-request";
@@ -72,7 +72,9 @@ export class InvoiceServiceImpl implements InvoiceService {
     if (!result.items) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
     if (!result.recipient) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
     if (!result.summary) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
     if (result.signature) result.signature = FileModel.fromJson(result.signature);
+    if (result.pdf) result.pdf = FileModel.fromJson(result.pdf);
     result.items = result.items.map(InvoiceItemModel.fromJson);
     result.recipient = InvoiceRecipientModel.fromJson(result.recipient);
     result.summary = InvoiceItemSummaryModel.fromJson(result.summary);
@@ -84,6 +86,7 @@ export class InvoiceServiceImpl implements InvoiceService {
       signature: result.signature,
       summary: result.summary,
       sender: result.sender,
+      pdf: result.pdf,
     });
   }
 
@@ -175,7 +178,10 @@ export class InvoiceServiceImpl implements InvoiceService {
       const summary = InvoiceItemSummaryModel.fromJson(finaliseResult.summary);
       const sender = InvoiceSenderModel.fromJson(finaliseResult.sender);
 
-      return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature, summary, sender });
+      let pdf: FileModel | undefined;
+      if (finaliseResult.pdf) pdf = FileModel.fromJson(finaliseResult.pdf);
+
+      return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature, summary, sender, pdf });
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

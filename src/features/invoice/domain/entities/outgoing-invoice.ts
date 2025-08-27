@@ -18,6 +18,7 @@ interface OutgoingInvoiceEntityConstructor {
   note?: string;
   tnc?: string;
   signature?: FileEntity;
+  pdf?: FileEntity;
   status: OutgoingInvoiceStatus;
   summary: InvoiceItemSummaryEntity;
   sender: InvoiceSenderEntity;
@@ -37,6 +38,7 @@ export class OutgoingInvoiceEntity implements AbstractEntity {
   public note?: string;
   public tnc?: string;
   public signature?: FileEntity;
+  public pdf?: FileEntity;
   public status: OutgoingInvoiceStatus;
   public summary: InvoiceItemSummaryEntity;
   public sender: InvoiceSenderEntity;
@@ -55,6 +57,7 @@ export class OutgoingInvoiceEntity implements AbstractEntity {
     this.note = args.note;
     this.tnc = args.tnc;
     this.signature = args.signature;
+    this.pdf = args.pdf;
     this.status = args.status;
     this.summary = args.summary;
     this.sender = args.sender;
