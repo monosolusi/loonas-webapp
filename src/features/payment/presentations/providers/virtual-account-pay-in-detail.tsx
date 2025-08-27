@@ -7,11 +7,12 @@ import { LocalStorageSessionService } from "@/features/authentication/data/sourc
 import { DataFailed } from "@/core/resources/data-state";
 import {
   RetrieveVirtualAccountPayInDetailUseCase,
-  RetrieveVirtualAccountPayInDetailUseCaseParams
+  RetrieveVirtualAccountPayInDetailUseCaseParams,
 } from "@/features/payment/domain/usecases/retrieve-virtual-account-pay-in-detail";
 import { VirtualAccountPayInDetailEntity } from "@/features/payment/domain/entities/va-pay-in-detail";
 import { VirtualAccountPayInRepository } from "@/features/payment/data/repositories/va-pay-in";
 import { VirtualAccountPayInService } from "@/features/payment/data/sources/va-pay-in";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 interface VirtualAccountPayInDetailContextProps {
   vaDetail?: VirtualAccountPayInDetailEntity;
@@ -20,10 +21,10 @@ interface VirtualAccountPayInDetailContextProps {
 }
 
 const VirtualAccountPayInDetailContext = React.createContext<VirtualAccountPayInDetailContextProps>({
-  loading: false
+  loading: false,
 });
 
-export function VirtualAccountPayInDetailProvider(props: { children: React.ReactNode, requestId: string }) {
+export function VirtualAccountPayInDetailProvider(props: { children: React.ReactNode; requestId: string }) {
   const [vaDetail, setVaDetail] = useState<VirtualAccountPayInDetailEntity>();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | undefined>(undefined);
@@ -33,8 +34,9 @@ export function VirtualAccountPayInDetailProvider(props: { children: React.React
     setError(undefined);
 
     try {
+      const http = new HttpRequest();
       const sessionService = new LocalStorageSessionService();
-      const payInService = new VirtualAccountPayInService();
+      const payInService = new VirtualAccountPayInService(http);
 
       const payInRepository = new VirtualAccountPayInRepository(payInService);
       const sessionRepository = new SessionRepositoryImpl(sessionService);
@@ -57,11 +59,8 @@ export function VirtualAccountPayInDetailProvider(props: { children: React.React
     fetchVirtualAccountPayInDetail(props.requestId);
   }, [props.requestId]);
 
-
   return (
-    <VirtualAccountPayInDetailContext.Provider
-      value={{ vaDetail, loading, error }}
-    >
+    <VirtualAccountPayInDetailContext.Provider value={{ vaDetail, loading, error }}>
       {props.children}
     </VirtualAccountPayInDetailContext.Provider>
   );

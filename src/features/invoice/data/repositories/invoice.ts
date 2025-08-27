@@ -14,16 +14,50 @@ import { InvoiceService } from "@/features/invoice/domain/sources/invoice";
 import { OutgoingInvoiceEntity } from "../../domain/entities/outgoing-invoice";
 import { CombinedInvoiceSummaryEntity } from "../../domain/entities/combined-invoice-summary";
 import { PublicOutgoingInvoiceEntity } from "../../domain/entities/public-outgoing-invoice";
+import { PayInEntity } from "../../domain/entities/pay-in";
+import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 
 export class InvoiceRepositoryImpl implements InvoiceRepository {
   constructor(private readonly invoiceService: InvoiceService) {}
 
-  public async getPublicOutgoing(
-    filter: { invoiceId: string },
+  public async send(
+    params: {
+      id: string;
+      sendChannel: NotificationChannel[];
+    },
     session: SessionEntity,
-  ): Promise<DataState<PublicOutgoingInvoiceEntity>> {
+  ): Promise<DataState<boolean>> {
     try {
-      const invoice = await this.invoiceService.getPublicOutgoing(filter, session);
+      await this.invoiceService.send({ id: params.id, sendChannel: params.sendChannel }, session);
+      return new DataSuccess(true);
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async createPayInForOutgoingInvoice(params: {
+    invoiceId: string;
+    paymentMethodId: string;
+    paymentSchemeId?: string | null;
+  }): Promise<DataState<PayInEntity>> {
+    try {
+      const payIn = await this.invoiceService.createPayInForOutgoingInvoice({
+        invoiceId: params.invoiceId,
+        paymentMethodId: params.paymentMethodId,
+        paymentSchemeId: params.paymentSchemeId || null,
+      });
+
+      return new DataSuccess(payIn.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async getPublicOutgoing(filter: { invoiceId: string }): Promise<DataState<PublicOutgoingInvoiceEntity>> {
+    try {
+      const invoice = await this.invoiceService.getPublicOutgoing(filter);
       return new DataSuccess(invoice.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);

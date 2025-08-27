@@ -15,9 +15,10 @@ import { SessionRepositoryImpl } from "@/features/authentication/data/repositori
 import { AccountRepositoryImpl } from "../../data/repositories/account";
 import {
   CreatePersonalAccountUseCase,
-  CreatePersonalAccountUseCaseParams
+  CreatePersonalAccountUseCaseParams,
 } from "../../domain/usecases/create-personal-account";
 import { DataFailed } from "@/core/resources/data-state";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 interface CreatePersonalAccountContextProps {
   nationality: string;
@@ -63,7 +64,7 @@ const CreatePersonalAccountContext = createContext<CreatePersonalAccountContextP
   dobError: false,
   errorList: [],
   openConfirmationDialog: false,
-  loading: false
+  loading: false,
 });
 
 export function CreatePersonalAccountProvider({ children }: { children: any }) {
@@ -114,7 +115,6 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
     } catch (err) {
       setDobError(true);
     }
-
   }, [dobDay, dobMonth, dobYear]);
 
   async function createAccount() {
@@ -150,7 +150,8 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
       if (!subdistrict) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       // We are sure we don't have any error, so we can proceed to create the account
-      const accountService = new AccountServiceImpl();
+      const http = new HttpRequest();
+      const accountService = new AccountServiceImpl(http);
       const sessionService = new LocalStorageSessionService();
       const sessionRepository = new SessionRepositoryImpl(sessionService);
       const accountRepository = new AccountRepositoryImpl(accountService);
@@ -167,9 +168,8 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
         city,
         district,
         subdistrict,
-        address
+        address,
       );
-
 
       const account = await createAccount.execute(createAccountParams);
       if (account instanceof DataFailed) throw account.error;
@@ -219,7 +219,7 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
         setSubdistrict,
         setAddress,
         setOpenConfirmationDialog,
-        createAccount
+        createAccount,
       }}
     >
       {children}

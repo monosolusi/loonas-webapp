@@ -9,12 +9,13 @@ import { ListPartnerUseCase } from "@/features/partner/domain/usecases/list-part
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
-
+import { HttpRequest } from "@/core/helpers/http-request";
 
 async function listPartnerFetcher(): Promise<PartnerEntity[]> {
+  const http = new HttpRequest();
   const sessionService = new LocalStorageSessionService();
   const sessionRepository = new SessionRepositoryImpl(sessionService);
-  const partnerService = new PartnerServiceImpl();
+  const partnerService = new PartnerServiceImpl(http);
   const partnerRepository = new PartnerRepositoryImpl(partnerService);
   const listPartners = new ListPartnerUseCase(partnerRepository, sessionRepository);
 
@@ -33,6 +34,6 @@ export function useListPartner() {
     partners: data ?? [],
     loading: isLoading,
     error: error,
-    refreshPartners: mutate
+    refreshPartners: mutate,
   };
 }

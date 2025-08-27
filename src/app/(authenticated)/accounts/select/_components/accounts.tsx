@@ -1,64 +1,66 @@
 "use client";
 
-import React from "react";
-import { useAccountListProvider } from "@/features/account/presentation/providers/account-list";
-import {
-  AccountVerificationWorkProvider,
-  useAccountVerificationWork
-} from "@/features/account/presentation/providers/account-verification-work";
+import React, { useMemo, useState } from "react";
 import { VerificationStatusBadge } from "@/app/(authenticated)/accounts/select/_components/verification-status-badge";
 import { useSelectedAccountProvider } from "@/features/authentication/presentation/providers/selected-account";
-import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 import { AccountVerificationWorkEntity } from "@/features/account/domain/entities/account-verification-work";
+import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
+import clsx from "clsx";
+import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
+import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
+import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
+import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
+import { ChangedDialog } from "@/app/(authenticated)/accounts/select/_components/changed-dialog";
 
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ");
-}
+export function Accounts() {
+  const [changedDialog, setChangedDialog] = useState<boolean>(false);
+  const { accounts } = useListAccount();
 
-export function Accounts({ onAccountChanged }: { onAccountChanged?: () => void }) {
-  const [accounts] = useAccountListProvider();
+  const onAccountChanged = () => setChangedDialog(true);
 
   return (
     <>
+      <ChangedDialog open={changedDialog} setOpen={setChangedDialog} />
       {accounts?.map((account) => (
-        <AccountVerificationWorkProvider id={account.id} key={account.id}>
-          <AccountCard account={account} onAccountChanged={onAccountChanged} />
-        </AccountVerificationWorkProvider>
+        <AccountCard key={account.id} account={account} onAccountChanged={onAccountChanged} />
       ))}
     </>
   );
 }
 
-function AccountCard({ account, onAccountChanged }: { account: PersonalAccountEntity, onAccountChanged?: () => void }) {
+function AccountCard({ account, onAccountChanged }: { account: AccountTypeEntity; onAccountChanged?: () => void }) {
   const { changeAccount } = useSelectedAccountProvider();
-  const [verification] = useAccountVerificationWork();
+  const { verificationWork } = useGetAccountVerificationWork({ accountId: account.id });
 
-  const handleChangeAccount = async (account: PersonalAccountEntity, verification?: AccountVerificationWorkEntity) => {
-    // Cannot change account if verification is completed and rejected
-    if (!verification) return;
+  const isDisabled = useMemo(() => {
+    if (!verificationWork) return true;
+    if (
+      verificationWork.latestStatus === VerificationStatus.COMPLETED &&
+      verificationWork.verificationOutcome === VerificationOutcome.REJECTED
+    )
+      return true;
+    return false;
+  }, [verificationWork]);
+
+  const handleChangeAccount = async (account: AccountTypeEntity, verification?: AccountVerificationWorkEntity) => {
+    // Cannot change an account if verification is completed and rejected
+    if (isDisabled) return;
     if (!changeAccount) return;
-    if (verification.latestStatus === VerificationStatus.COMPLETED && verification.verificationOutcome === VerificationOutcome.REJECTED) return;
 
     await changeAccount(account, false);
     onAccountChanged?.();
   };
 
-  function isDisabled(verification?: AccountVerificationWorkEntity): boolean {
-    if (!verification) return true;
-    if (verification.latestStatus === VerificationStatus.COMPLETED && verification.verificationOutcome === VerificationOutcome.REJECTED) return true;
-    return false;
-  }
-
   return (
     <div
-      data-disabled={isDisabled(verification)}
-      onClick={() => handleChangeAccount(account, verification)}
-      className={classNames(
+      data-disabled={isDisabled}
+      onClick={() => handleChangeAccount(account, verificationWork)}
+      className={clsx(
         "cursor-pointer",
-        "data-[disabled=true]:bg-gray-100 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:border-transparent",
-        "relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-xs focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2 hover:border-gray-400"
+        "data-[disabled=true]:cursor-not-allowed data-[disabled=true]:border-transparent data-[disabled=true]:bg-gray-100",
+        "focus-within:ring-primary-500 relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-xs focus-within:ring-2 focus-within:ring-offset-2 hover:border-gray-400",
       )}
     >
       <div className="min-w-0 flex-1">
@@ -66,16 +68,18 @@ function AccountCard({ account, onAccountChanged }: { account: PersonalAccountEn
           <div className="flex">
             <div className="flex-1">
               <p className="text-xs text-gray-400">{account.generateShortAccountId()}</p>
-              <p className="text-sm font-medium text-black">
-                {account.fullName}
-              </p>
+              <p className="text-sm font-medium text-black">{account.fullName}</p>
             </div>
-            <VerificationStatusBadge />
+            <VerificationStatusBadge accountId={account.id} />
           </div>
-          <p className="truncate text-sm text-gray-500">Akun Personal</p>
-          <p className="text-sm text-gray-500">
-            {`${account.address}, Kel. ${account.subdistrict.label} Kec. ${account.district.label} ${account.city.label} ${account.province.label}`}
+          <p className="truncate text-sm text-gray-500">
+            {account instanceof PersonalAccountEntity
+              ? "Akun Personal"
+              : account instanceof BusinessAccountEntity
+                ? "Akun Bisnis"
+                : "Tidak Diketahui"}
           </p>
+          <p className="text-sm text-gray-500">{account.fullAddress}</p>
         </div>
       </div>
     </div>

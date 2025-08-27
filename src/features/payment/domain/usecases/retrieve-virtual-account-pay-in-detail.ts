@@ -3,8 +3,8 @@ import { SessionRepository } from "@/features/authentication/domain/repositories
 import { UseCase } from "@/core/resources/use-case";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { VirtualAccountPayInDetailEntity } from "@/features/payment/domain/entities/va-pay-in-detail";
-import { PayInRepository } from "@/features/payment/domain/repositories/pay-in";
 import { VirtualAccountPayInRepository } from "@/features/payment/data/repositories/va-pay-in";
+import { PayInDetailRepository } from "@/features/payment/domain/repositories/pay-in-detail";
 
 export class RetrieveVirtualAccountPayInDetailUseCaseParams {
   public requestId: string;
@@ -14,16 +14,21 @@ export class RetrieveVirtualAccountPayInDetailUseCaseParams {
   }
 }
 
-export class RetrieveVirtualAccountPayInDetailUseCase implements UseCase<DataState<VirtualAccountPayInDetailEntity>, RetrieveVirtualAccountPayInDetailUseCaseParams> {
+export class RetrieveVirtualAccountPayInDetailUseCase
+  implements UseCase<DataState<VirtualAccountPayInDetailEntity>, RetrieveVirtualAccountPayInDetailUseCaseParams>
+{
   constructor(
     private readonly sessionRepository: SessionRepository,
-    private readonly payInRepository: PayInRepository
-  ) {
-  }
+    private readonly payInRepository: PayInDetailRepository,
+  ) {}
 
-  public async execute(params: RetrieveVirtualAccountPayInDetailUseCaseParams): Promise<DataState<VirtualAccountPayInDetailEntity>> {
+  public async execute(
+    params: RetrieveVirtualAccountPayInDetailUseCaseParams,
+  ): Promise<DataState<VirtualAccountPayInDetailEntity>> {
     try {
-      if (!(this.payInRepository instanceof VirtualAccountPayInRepository)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      if (!(this.payInRepository instanceof VirtualAccountPayInRepository)) {
+        throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      }
 
       const session = await this.sessionRepository.retrieve();
       if (session instanceof DataFailed) throw session.error;

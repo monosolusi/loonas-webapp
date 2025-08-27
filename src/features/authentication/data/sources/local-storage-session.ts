@@ -1,74 +1,39 @@
 import { SessionModel } from "../models/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { OccupationModel } from "@/core/utilities/occupation/data/models/occupation";
-import { CityModel } from "@/core/utilities/address/data/model/city";
-import { ProvinceModel } from "@/core/utilities/address/data/model/province";
-import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
-import { PersonalAccountModel } from "@/features/account/data/models/personal-account";
-import { DistrictModel } from "@/core/utilities/address/data/model/district";
-import { SubdistrictModel } from "@/core/utilities/address/data/model/subdistrict";
 import { mutate } from "swr";
-
-export abstract class SessionService {
-  public abstract retrieve(): Promise<SessionModel>;
-
-  public abstract signOut(): Promise<void>;
-
-  public abstract saveSession(accessToken: string): Promise<SessionModel>;
-
-  public abstract selectAccount(account: PersonalAccountEntity): Promise<PersonalAccountModel>;
-
-  public abstract retrieveSelectedAccount(): Promise<PersonalAccountModel>;
-}
+import { AccountTypeEntity, AccountTypeModel } from "@/features/account/domain/types/account-type";
+import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
+import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
+import { BusinessAccountModel } from "@/features/account/data/models/business-account";
+import { SessionService } from "@/features/authentication/domain/sources/session";
+import { AccountType } from "@/features/account/domain/enums/account-type";
+import { PersonalAccountModel } from "@/features/account/data/models/personal-account";
 
 export class LocalStorageSessionService implements SessionService {
-  public async retrieveSelectedAccount(): Promise<PersonalAccountModel> {
+  public async retrieveSelectedAccount(): Promise<AccountTypeModel> {
     const encodedAccount = localStorage.getItem("selectedAccount");
     if (!encodedAccount) throw new ServerError(ErrorCodes.NOT_FOUND);
 
     const jsonAccount = atob(encodedAccount);
     const account = JSON.parse(jsonAccount);
-    return new PersonalAccountModel({
-      id: account.id,
-      nationality: account.nationality,
-      idNumber: account.idNumber,
-      fullName: account.fullName,
-      occupation: new OccupationModel({ id: account.occupation.id, label: account.occupation.label }),
-      pob: account.pob,
-      dob: account.dob,
-      province: new ProvinceModel({ id: account.province.id, label: account.province.label }),
-      city: new CityModel({ id: account.city.id, label: account.city.label }),
-      district: new DistrictModel({ id: account.district.id, label: account.district.label }),
-      subdistrict: new SubdistrictModel({ id: account.subdistrict.id, label: account.subdistrict.label }),
-      address: account.address,
-      createdAt: account.createdAt,
-      updatedAt: account.updatedAt,
-      deletedAt: account.deletedAt,
-    });
+
+    if (account.type === AccountType.PERSONAL) {
+      return PersonalAccountModel.fromLocalStorage(encodedAccount);
+    } else if (account.type === AccountType.BUSINESS) {
+      return BusinessAccountModel.fromLocalStorage(encodedAccount);
+    } else throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
   }
 
-  public async selectAccount(account: PersonalAccountEntity): Promise<PersonalAccountModel> {
+  public async selectAccount(account: AccountTypeEntity): Promise<AccountTypeModel> {
     const jsonAccount = JSON.stringify(account);
     const encodedAccount = btoa(jsonAccount);
     localStorage.setItem("selectedAccount", encodedAccount);
 
-    return new PersonalAccountModel({
-      id: account.id,
-      nationality: account.nationality,
-      idNumber: account.idNumber,
-      fullName: account.fullName,
-      occupation: new OccupationModel({ id: account.occupation.id, label: account.occupation.label }),
-      pob: account.pob,
-      dob: account.dob,
-      province: new ProvinceModel({ id: account.province.id, label: account.province.label }),
-      city: new CityModel({ id: account.city.id, label: account.city.label }),
-      district: new DistrictModel({ id: account.district.id, label: account.district.label }),
-      subdistrict: new SubdistrictModel({ id: account.subdistrict.id, label: account.subdistrict.label }),
-      address: account.address,
-      createdAt: account.createdAt,
-      updatedAt: account.updatedAt,
-      deletedAt: account.deletedAt,
-    });
+    if (account instanceof PersonalAccountEntity) {
+      return PersonalAccountModel.fromEntity(account);
+    } else if (account instanceof BusinessAccountEntity) {
+      return BusinessAccountModel.fromEntity(account);
+    } else throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
   }
 
   public saveSession(accessToken: string): Promise<SessionModel> {

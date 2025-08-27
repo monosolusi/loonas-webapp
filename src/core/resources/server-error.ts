@@ -1,10 +1,22 @@
 type ErrorStructureType = { code: string; httpCode: number; message: string };
 
 export class ErrorCodes {
+  public static readonly EMPTY_RESPONSE = {
+    code: "EMPTY_RESPONSE",
+    httpCode: 400,
+    message: "Ups! Response-nya kosong",
+  };
+
   public static readonly NOT_AGREED = {
     code: "NOT_AGREED",
     httpCode: 400,
     message: "Kamu belum menyetujui Kebijakan Privasi dan Syarat & Ketentuan.",
+  };
+
+  public static readonly ACCOUNT_CREATION_FAILED = {
+    code: "ACCOUNT_CREATION_FAILED",
+    httpCode: 400,
+    message: "Oh tidak! Pembuatan akun kamu gagal. Silakan coba lagi.",
   };
 
   public static readonly ACCOUNT_HAS_NO_BANK_ACCOUNT = {
@@ -77,6 +89,79 @@ export class ErrorCodes {
     code: "EMPTY_PAYMENT_SCHEME",
     httpCode: 400,
     message: "Ups! Metode pembayaran-nya belum diisi",
+  };
+
+  // New business account validation error codes
+  public static readonly COMPANY_NAME_EMPTY: ErrorStructureType = {
+    code: "COMPANY_NAME_EMPTY",
+    httpCode: 400,
+    message: "Ups! Nama perusahaan belum diisi",
+  };
+
+  public static readonly COMPANY_EMAIL_EMPTY: ErrorStructureType = {
+    code: "COMPANY_EMAIL_EMPTY",
+    httpCode: 400,
+    message: "Ups! Email perusahaan belum diisi",
+  };
+
+  public static readonly COMPANY_PHONE_NUMBER_EMPTY: ErrorStructureType = {
+    code: "COMPANY_PHONE_NUMBER_EMPTY",
+    httpCode: 400,
+    message: "Ups! Nomor telepon perusahaan belum diisi",
+  };
+
+  public static readonly COMPANY_PROVINCE_EMPTY: ErrorStructureType = {
+    code: "COMPANY_PROVINCE_EMPTY",
+    httpCode: 400,
+    message: "Ups! Provinsi perusahaan belum dipilih",
+  };
+
+  public static readonly COMPANY_CITY_EMPTY: ErrorStructureType = {
+    code: "COMPANY_CITY_EMPTY",
+    httpCode: 400,
+    message: "Ups! Kota perusahaan belum dipilih",
+  };
+
+  public static readonly COMPANY_DISTRICT_EMPTY: ErrorStructureType = {
+    code: "COMPANY_DISTRICT_EMPTY",
+    httpCode: 400,
+    message: "Ups! Kecamatan perusahaan belum dipilih",
+  };
+
+  public static readonly COMPANY_SUBDISTRICT_EMPTY: ErrorStructureType = {
+    code: "COMPANY_SUBDISTRICT_EMPTY",
+    httpCode: 400,
+    message: "Ups! Kelurahan perusahaan belum dipilih",
+  };
+
+  public static readonly COMPANY_ADDRESS_EMPTY: ErrorStructureType = {
+    code: "COMPANY_ADDRESS_EMPTY",
+    httpCode: 400,
+    message: "Ups! Alamat perusahaan belum diisi",
+  };
+
+  public static readonly COMPANY_DEED_OF_ESTABLISHMENT_EMPTY: ErrorStructureType = {
+    code: "COMPANY_DEED_OF_ESTABLISHMENT_EMPTY",
+    httpCode: 400,
+    message: "Ups! Akta Pendirian perusahaan belum diunggah",
+  };
+
+  public static readonly COMPANY_BUSINESS_IDENTIFICATION_NUMBER_EMPTY: ErrorStructureType = {
+    code: "COMPANY_BUSINESS_IDENTIFICATION_NUMBER_EMPTY",
+    httpCode: 400,
+    message: "Ups! NIB perusahaan belum diunggah",
+  };
+
+  public static readonly DIRECTOR_NATIONAL_IDENTITY_CARD_EMPTY: ErrorStructureType = {
+    code: "DIRECTOR_NATIONAL_IDENTITY_CARD_EMPTY",
+    httpCode: 400,
+    message: "Ups! KTP Direktur belum diunggah",
+  };
+
+  public static readonly COMPANY_FINANCIAL_OR_BANK_STATEMENT_REQUIRED: ErrorStructureType = {
+    code: "COMPANY_FINANCIAL_OR_BANK_STATEMENT_REQUIRED",
+    httpCode: 400,
+    message: "Ups! Laporan keuangan atau rekening koran perusahaan harus diunggah salah satu",
   };
 
   public static readonly HTTP_ERROR: ErrorStructureType = { code: "HTTP_ERROR", httpCode: 500, message: "HTTP error" };

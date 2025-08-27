@@ -10,11 +10,12 @@ import { PartnerServiceImpl } from "@/features/partner/data/sources/partner";
 import { DataFailed } from "@/core/resources/data-state";
 import {
   ListPartnerInvoiceUseCase,
-  ListPartnerInvoiceUseCaseParams
+  ListPartnerInvoiceUseCaseParams,
 } from "@/features/partner/domain/usecases/list-partner-invoice";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 interface ListPartnerInvoiceContextProps {
-  invoices: InvoiceEntity[],
+  invoices: InvoiceEntity[];
   loading: boolean;
   error?: ServerError;
 }
@@ -27,9 +28,14 @@ interface ListPartnerInvoiceProviderProps {
 
 const ListPartnerInvoiceContext = React.createContext<ListPartnerInvoiceContextProps>({
   invoices: [],
-  loading: false
+  loading: false,
 });
 
+/**
+ * @deprecated This component is being phase out. Use the hook instead. call `useListPartnerInvoice()` from hooks/use-list-partner-invoice.ts/
+ * @param props
+ * @constructor
+ */
 export function ListPartnerInvoiceProvider(props: ListPartnerInvoiceProviderProps) {
   const [invoices, setInvoices] = useState<InvoiceEntity[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -40,14 +46,15 @@ export function ListPartnerInvoiceProvider(props: ListPartnerInvoiceProviderProp
     setError(undefined);
 
     try {
+      const http = new HttpRequest();
       const sessionService = new LocalStorageSessionService();
-      const partnerService = new PartnerServiceImpl();
+      const partnerService = new PartnerServiceImpl(http);
       const sessionRepository = new SessionRepositoryImpl(sessionService);
       const partnerRepository = new PartnerRepositoryImpl(partnerService);
       const list = new ListPartnerInvoiceUseCase(partnerRepository, sessionRepository);
       const listParams = new ListPartnerInvoiceUseCaseParams({
-        partnerId: partnerId,
-        searchParams: { limit: limit }
+        partner: { id: partnerId },
+        searchParams: { limit: limit },
       });
 
       const result = await list.execute(listParams);
@@ -68,14 +75,15 @@ export function ListPartnerInvoiceProvider(props: ListPartnerInvoiceProviderProp
   }, [props.partnerId, props.limit]);
 
   return (
-    <ListPartnerInvoiceContext.Provider
-      value={{ invoices, loading, error }}
-    >
+    <ListPartnerInvoiceContext.Provider value={{ invoices, loading, error }}>
       {props.children}
     </ListPartnerInvoiceContext.Provider>
   );
 }
 
+/**
+ * @deprecated This component is being phase out. Use the hook instead. call `useListPartnerInvoice()` from hooks/use-list-partner-invoice.ts/
+ */
 export function useListPartnerInvoice() {
   return React.useContext(ListPartnerInvoiceContext);
 }

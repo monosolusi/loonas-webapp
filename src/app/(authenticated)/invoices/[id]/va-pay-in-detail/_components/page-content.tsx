@@ -29,6 +29,7 @@ export function VirtualAccountPayInDetailPageContent(props: { invoiceId: string 
   const { paymentRequest } = usePaymentRequest();
 
   useEffect(() => {
+    console.log(vaDetail, paymentRequest);
     if (!vaDetail || !paymentRequest) return;
     if (!paymentRequest.paymentScheme) return;
 

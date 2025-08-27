@@ -22,11 +22,7 @@ export function CreateAccountBankAccountButton(props: CreateAccountBankAccountBu
     if (!props.bank) return true;
     if (!props.inquiredAccount) return true;
     return false;
-  }, [
-    props.accountNumber,
-    props.bank,
-    props.inquiredAccount
-  ]);
+  }, [props.accountNumber, props.bank, props.inquiredAccount]);
 
   const handleSubmit = async () => {
     if (!props.bank || !props.accountNumber) return;
@@ -35,19 +31,16 @@ export function CreateAccountBankAccountButton(props: CreateAccountBankAccountBu
 
     await trigger({
       bankId: props.bank.id,
-      accountNumber: props.accountNumber
+      accountNumber: props.accountNumber,
     });
 
-    // Navigating to /settings/bank-accounts for this case
+    // Navigating to /home for this case
     // TODO: We should implement something like window.history
-    router.push("/settings/bank-accounts");
+    router.push("/");
   };
 
   return (
-    <FilledButton
-      disabled={isDisabled}
-      onClick={handleSubmit}
-    >
+    <FilledButton disabled={isDisabled} onClick={handleSubmit}>
       Tambah Rekening Baru
     </FilledButton>
   );

@@ -1,17 +1,17 @@
 import { DateTime } from "luxon";
-import { PersonalAccountEntity } from "./personal-account";
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
+import { AccountTypeEntity } from "../types/account-type";
 
 interface AccountVerificationWorkEntityConstructor {
-  account: PersonalAccountEntity;
+  account: AccountTypeEntity;
   latestStatus: VerificationStatus;
   verificationOutcome: VerificationOutcome;
   estimatedVerificationComplete: DateTime;
 }
 
 export class AccountVerificationWorkEntity {
-  public account: PersonalAccountEntity;
+  public account: AccountTypeEntity;
   public latestStatus: VerificationStatus;
   public verificationOutcome: VerificationOutcome;
   public estimatedVerificationComplete: DateTime;

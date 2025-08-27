@@ -1,8 +1,7 @@
 import { DateTime } from "luxon";
 import { AbstractEntity } from "@/core/resources/entity";
-import { PaymentSchemeEntity } from "./payment-scheme";
 import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
-
+import { PaymentSchemeEntity } from "@/features/payment/domain/entities/payment-scheme";
 
 interface VirtualAccountPayInDetailEntityConstructor {
   id: string;

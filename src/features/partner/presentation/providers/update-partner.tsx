@@ -8,6 +8,7 @@ import { SessionRepositoryImpl } from "@/features/authentication/data/repositori
 import { PartnerRepositoryImpl } from "@/features/partner/data/repositories/partner";
 import { DataFailed } from "@/core/resources/data-state";
 import { UpdatePartnerUseCase, UpdatePartnerUseCaseParams } from "@/features/partner/domain/usecases/update-partner";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 interface UpdatePartnerParams {
   name?: string;
@@ -27,7 +28,7 @@ interface UpdatePartnerContextProps {
 }
 
 const UpdatePartnerContext = React.createContext<UpdatePartnerContextProps>({
-  loading: false
+  loading: false,
 });
 
 export function UpdatePartnerProvider(props: UpdatePartnerProviderProps) {
@@ -42,8 +43,9 @@ export function UpdatePartnerProvider(props: UpdatePartnerProviderProps) {
       if (!props.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
       if (props.id !== filter.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
+      const http = new HttpRequest();
       const sessionService = new LocalStorageSessionService();
-      const partnerService = new PartnerServiceImpl();
+      const partnerService = new PartnerServiceImpl(http);
       const sessionRepository = new SessionRepositoryImpl(sessionService);
       const partnerRepository = new PartnerRepositoryImpl(partnerService);
       const update = new UpdatePartnerUseCase(partnerRepository, sessionRepository);
@@ -61,9 +63,7 @@ export function UpdatePartnerProvider(props: UpdatePartnerProviderProps) {
   };
 
   return (
-    <UpdatePartnerContext.Provider
-      value={{ loading, error, updatePartner }}
-    >
+    <UpdatePartnerContext.Provider value={{ loading, error, updatePartner }}>
       {props.children}
     </UpdatePartnerContext.Provider>
   );

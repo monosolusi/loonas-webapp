@@ -16,6 +16,8 @@ export function InvoicePreviewImpl() {
         invoiceNumber: invoice.invoiceNumber,
         invoiceDate: invoice?.invoiceDate,
         dueDate: invoice?.dueDate,
+        note: invoice?.note,
+        tnc: invoice?.tnc,
       }}
       items={invoice.items.map((item) => ({
         name: item.name,

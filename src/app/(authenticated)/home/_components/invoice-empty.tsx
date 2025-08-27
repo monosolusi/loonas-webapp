@@ -1,6 +1,11 @@
+"use client";
+
 import { PlusIcon } from "@heroicons/react/20/solid";
+import { useRouter } from "next/navigation";
 
 export function EmptyInvoiceState() {
+  const router = useRouter();
+
   return (
     <div className="my-8 text-center">
       <svg
@@ -23,7 +28,8 @@ export function EmptyInvoiceState() {
       <div className="mt-6">
         <button
           type="button"
-          className="inline-flex items-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+          className="bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2"
+          onClick={() => router.push("/invoices/create")}
         >
           <PlusIcon aria-hidden="true" className="mr-1.5 -ml-0.5 size-5" />
           Buat Faktur Baru

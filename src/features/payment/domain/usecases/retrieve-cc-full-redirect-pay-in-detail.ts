@@ -1,12 +1,10 @@
 import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
-import {
-  CreditCardFullRedirectPayInDetailEntity
-} from "@/features/payment/domain/entities/cc-full-redirect-pay-in-detail";
+import { CreditCardFullRedirectPayInDetailEntity } from "@/features/payment/domain/entities/cc-full-redirect-pay-in-detail";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { PayInRepository } from "@/features/payment/domain/repositories/pay-in";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { CreditCardFullRedirectPayInRepository } from "@/features/payment/data/repositories/cc-full-redirect-pay-in";
+import { PayInDetailRepository } from "@/features/payment/domain/repositories/pay-in-detail";
 
 export class RetrieveCreditCardFullRedirectPayInDetailUseCaseParams {
   public requestId: string;
@@ -16,16 +14,21 @@ export class RetrieveCreditCardFullRedirectPayInDetailUseCaseParams {
   }
 }
 
-export class RetrieveCreditCardFullRedirectPayInDetailUseCase implements UseCase<DataState<CreditCardFullRedirectPayInDetailEntity>, RetrieveCreditCardFullRedirectPayInDetailUseCaseParams> {
+export class RetrieveCreditCardFullRedirectPayInDetailUseCase
+  implements
+    UseCase<DataState<CreditCardFullRedirectPayInDetailEntity>, RetrieveCreditCardFullRedirectPayInDetailUseCaseParams>
+{
   constructor(
     private readonly sessionRepository: SessionRepository,
-    private readonly payInRepository: PayInRepository
-  ) {
-  }
+    private readonly payInRepository: PayInDetailRepository,
+  ) {}
 
-  public async execute(params: RetrieveCreditCardFullRedirectPayInDetailUseCaseParams): Promise<DataState<CreditCardFullRedirectPayInDetailEntity>> {
+  public async execute(
+    params: RetrieveCreditCardFullRedirectPayInDetailUseCaseParams,
+  ): Promise<DataState<CreditCardFullRedirectPayInDetailEntity>> {
     try {
-      if (!(this.payInRepository instanceof CreditCardFullRedirectPayInRepository)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      if (!(this.payInRepository instanceof CreditCardFullRedirectPayInRepository))
+        throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const session = await this.sessionRepository.retrieve();
       if (session instanceof DataFailed) throw session.error;
@@ -37,5 +40,4 @@ export class RetrieveCreditCardFullRedirectPayInDetailUseCase implements UseCase
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
     }
   }
-
 }

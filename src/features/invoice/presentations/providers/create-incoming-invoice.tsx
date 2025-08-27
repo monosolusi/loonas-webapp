@@ -24,6 +24,7 @@ import {
   UploadPaymentRequestInvoicesUseCaseParams,
 } from "@/features/payment/domain/usecases/upload-payment-request-invoices";
 import { PaymentRequestEntity } from "@/features/payment/domain/entities/payment-request";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 export interface InvoiceDocument {
   file: File;
@@ -86,8 +87,9 @@ export function CreateIncomingInvoiceProvider({ children }: { children: React.Re
       if (paymentGateway.requiresSchemeSelection && !paymentScheme)
         throw new ServerError(ErrorCodes.EMPTY_PAYMENT_SCHEME);
 
+      const http = new HttpRequest();
       const sessionService = new LocalStorageSessionService();
-      const partnerService = new PartnerServiceImpl();
+      const partnerService = new PartnerServiceImpl(http);
       const bankService = new BankServiceImpl();
       const paymentGatewayService = new PaymentGatewayServiceImpl();
       const paymentRequestService = new PaymentRequestServiceImpl(partnerService, bankService, paymentGatewayService);

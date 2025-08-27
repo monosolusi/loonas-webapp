@@ -13,8 +13,9 @@ import { BankServiceImpl } from "@/features/bank/data/sources/bank";
 import { PaymentGatewayServiceImpl } from "@/features/payment/data/sources/payment-gateway";
 import {
   RetrievePaymentRequestUseCase,
-  RetrievePaymentRequestUseCaseParams
+  RetrievePaymentRequestUseCaseParams,
 } from "@/features/payment/domain/usecases/retrieve-payment-request";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 interface PaymentRequestContextProps {
   paymentRequest?: PaymentRequestEntity;
@@ -23,10 +24,10 @@ interface PaymentRequestContextProps {
 }
 
 const PaymentRequestContext = React.createContext<PaymentRequestContextProps>({
-  loading: false
+  loading: false,
 });
 
-export function PaymentRequestProvider(props: { children: React.ReactNode, includes?: string, requestId: string }) {
+export function PaymentRequestProvider(props: { children: React.ReactNode; includes?: string; requestId: string }) {
   const [paymentRequest, setPaymentRequest] = useState<PaymentRequestEntity>();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | undefined>(undefined);
@@ -36,8 +37,9 @@ export function PaymentRequestProvider(props: { children: React.ReactNode, inclu
     setError(undefined);
 
     try {
+      const http = new HttpRequest();
       const sessionService = new LocalStorageSessionService();
-      const partnerService = new PartnerServiceImpl();
+      const partnerService = new PartnerServiceImpl(http);
       const bankService = new BankServiceImpl();
       const paymentGatewayService = new PaymentGatewayServiceImpl();
       const paymentRequestService = new PaymentRequestServiceImpl(partnerService, bankService, paymentGatewayService);
@@ -57,7 +59,6 @@ export function PaymentRequestProvider(props: { children: React.ReactNode, inclu
       else setError(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
     }
   }
-
 
   useEffect(() => {
     if (props.requestId === undefined) return;

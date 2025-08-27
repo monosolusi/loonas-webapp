@@ -3,11 +3,12 @@ import { Select, SelectProps } from "@/core/presentations/components/select";
 
 type SelectInputProps = {
   title?: string;
+  className?: string;
 } & SelectProps;
 
 export function SelectInput(props: SelectInputProps) {
   return (
-    <>
+    <div className={props.className}>
       {props.title && <Label title={props.title} />}
       <div className={`${props.title && "mt-2"}`}>
         <Select
@@ -19,6 +20,6 @@ export function SelectInput(props: SelectInputProps) {
           disabled={props.disabled}
         />
       </div>
-    </>
+    </div>
   );
 }

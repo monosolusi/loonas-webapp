@@ -4,12 +4,16 @@ import React, { useEffect, useState } from "react";
 import { DateTime } from "luxon";
 
 interface TimeLeft {
-  hours: number,
-  minutes: number,
-  seconds: number,
+  hours: number;
+  minutes: number;
+  seconds: number;
 }
 
-export function RemainingPaymentTime(props: { deadline: DateTime }) {
+interface RemainingPaymentTimeProps {
+  deadline: DateTime;
+}
+
+export function RemainingPaymentTime(props: RemainingPaymentTimeProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -24,7 +28,7 @@ export function RemainingPaymentTime(props: { deadline: DateTime }) {
         setTimeLeft({
           hours: Math.floor(diff.hours ?? 0),
           minutes: Math.floor(diff.minutes ?? 0),
-          seconds: Math.floor(diff.seconds ?? 0)
+          seconds: Math.floor(diff.seconds ?? 0),
         });
       }
     }, 1000);
@@ -40,12 +44,10 @@ export function RemainingPaymentTime(props: { deadline: DateTime }) {
   };
 
   return (
-    <div className="bg-red-50 border border-red-100 rounded-lg p-4 flex items-center justify-center">
+    <div className="flex items-center justify-center rounded-lg border border-red-100 bg-red-50 p-4">
       <div className="text-center">
-        <p className="text-red-600 font-medium mb-1">Batas Waktu Pembayaran</p>
-        <p className="text-red-700 text-2xl font-bold">
-          {generateTimeLeftString(timeLeft)}
-        </p>
+        <p className="mb-1 font-medium text-red-600">Batas Waktu Pembayaran</p>
+        <p className="text-2xl font-bold text-red-700">{generateTimeLeftString(timeLeft)}</p>
       </div>
     </div>
   );

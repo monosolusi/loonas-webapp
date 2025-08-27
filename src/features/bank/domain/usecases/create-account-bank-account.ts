@@ -20,12 +20,13 @@ export class CreateAccountBankAccountUseCaseParams {
   }
 }
 
-export class CreateAccountBankAccountUseCase implements UseCase<DataState<AccountBankAccountEntity>, CreateAccountBankAccountUseCaseParams> {
+export class CreateAccountBankAccountUseCase
+  implements UseCase<DataState<AccountBankAccountEntity>, CreateAccountBankAccountUseCaseParams>
+{
   constructor(
     public readonly bankRepository: BankRepository,
-    public readonly sessionRepository: SessionRepository
-  ) {
-  }
+    public readonly sessionRepository: SessionRepository,
+  ) {}
 
   public async execute(params: CreateAccountBankAccountUseCaseParams): Promise<DataState<AccountBankAccountEntity>> {
     try {
@@ -34,11 +35,14 @@ export class CreateAccountBankAccountUseCase implements UseCase<DataState<Accoun
       if (!session.data) return new DataFailed(new ServerError(ErrorCodes.INVALID_INSTANCE));
       if (!session.data.selectedAccount) return new DataFailed(new ServerError(ErrorCodes.INVALID_INSTANCE));
 
-      const cBankAccount = await this.bankRepository.createBankAccountForAccount({
-        bankId: params.bankId,
-        accountNumber: params.accountNumber,
-        account: session.data.selectedAccount
-      }, session.data);
+      const cBankAccount = await this.bankRepository.createBankAccountForAccount(
+        {
+          bankId: params.bankId,
+          accountNumber: params.accountNumber,
+          account: { id: session.data.selectedAccount.id },
+        },
+        session.data,
+      );
 
       if (cBankAccount instanceof DataFailed) throw cBankAccount.error;
       if (!cBankAccount.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);

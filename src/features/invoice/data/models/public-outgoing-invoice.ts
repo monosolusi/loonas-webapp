@@ -4,6 +4,7 @@ import { PublicOutgoingInvoiceEntity } from "../../domain/entities/public-outgoi
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { DiscountType } from "../../domain/enums/discount-type";
 import { ChargeFeeOn } from "../../domain/enums/charge-fee-on";
+import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 
 interface PublicOutgoingInvoiceModelConstructor {
   id: string;
@@ -42,6 +43,7 @@ interface PublicOutgoingInvoiceModelConstructor {
     pricing: { base: number; percentage: number };
     chargeFeeOn: ChargeFeeOn;
   }>;
+  status: OutgoingInvoiceStatus;
 }
 
 export class PublicOutgoingInvoiceModel implements AbstractModel {
@@ -80,6 +82,7 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
     limit: { min: number; max: number };
     pricing: { base: number; percentage: number };
   }>;
+  public status: OutgoingInvoiceStatus;
 
   constructor(args: PublicOutgoingInvoiceModelConstructor) {
     this.id = args.id;
@@ -95,6 +98,7 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
     this.note = args.note;
     this.tnc = args.tnc;
     this.paymentMethods = args.paymentMethods;
+    this.status = args.status;
   }
 
   public static fromJson(json: Record<string, any>): PublicOutgoingInvoiceModel {
@@ -146,6 +150,7 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
         pricing: { base: method.pricing.base, percentage: method.pricing.percentage },
         chargeFeeOn: method.charge_fee_on as ChargeFeeOn,
       })),
+      status: json.status as OutgoingInvoiceStatus,
     });
   }
 
@@ -164,6 +169,7 @@ export class PublicOutgoingInvoiceModel implements AbstractModel {
       note: this.note,
       tnc: this.tnc,
       paymentMethods: this.paymentMethods,
+      status: this.status,
     });
   }
 }
