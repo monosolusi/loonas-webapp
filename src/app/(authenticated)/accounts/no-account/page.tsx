@@ -11,49 +11,46 @@ const items = [
     href: "/accounts/create/personal",
     iconColor: "bg-primary-default",
     icon: UserIcon,
-    disabled: false
+    disabled: false,
   },
   {
     name: "Buat Akun Bisnis",
     description: "Akun untuk transaksi atas nama perusahaan yang memerlukan verifikasi dengan dokumen bisnis.",
-    href: "#",
+    href: "/accounts/create/business",
     iconColor: "bg-purple-500",
     icon: BuildingOffice2Icon,
-    disabled: true
-  }
+    disabled: false,
+  },
 ];
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
-
 export default function InvoiceNoAccountPage() {
   return (
     <PageContent>
-      <div className="w-full h-full flex items-center justify-center">
+      <div className="flex h-full w-full items-center justify-center">
         <div className="mx-auto max-w-lg">
           <h2 className="text-base font-semibold text-gray-900">Harus Punya Akun Dulu!</h2>
           <p className="mt-1 text-sm text-gray-500">
             Untuk mulai menggunakan fitur Faktur Digital, pastikan kamu sudah memiliki akun, ya. Kalau belum punya,
-            langsung
-            aja daftar lewat link berikut ini.
+            langsung aja daftar lewat link berikut ini.
           </p>
           <ul role="list" className="mt-6 divide-y divide-gray-200 border-t border-b border-gray-200">
             {items.map((item, itemIdx) => (
               <li key={itemIdx} className="group" data-disabled={item.disabled}>
-                <div
-                  className="group relative flex items-start space-x-3 py-4">
+                <div className="group relative flex items-start space-x-3 py-4">
                   <div className="shrink-0">
-                <span
-                  className={classNames(
-                    "group-data-[disabled=true]:grayscale",
-                    item.iconColor,
-                    "inline-flex size-10 items-center justify-center rounded-lg"
-                  )}
-                >
-                  <item.icon aria-hidden="true" className="size-6 text-white" />
-                </span>
+                    <span
+                      className={classNames(
+                        "group-data-[disabled=true]:grayscale",
+                        item.iconColor,
+                        "inline-flex size-10 items-center justify-center rounded-lg",
+                      )}
+                    >
+                      <item.icon aria-hidden="true" className="size-6 text-white" />
+                    </span>
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium text-gray-900 group-data-[disabled=true]:text-gray-400">
