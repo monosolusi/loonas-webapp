@@ -1,0 +1,20 @@
+# tools/config.yml
+# Nama image (case-insensitive: image atau Image diterima)
+image: "franziz/loonas-webapp"
+
+# Opsional
+platforms: "linux/amd64,linux/arm64"
+context: "."
+dockerfile: "Dockerfile"
+
+# Build args per build type (uat, prd, dll)
+env:
+  uat:
+    build_args:
+      NEXT_PUBLIC_BASE_API_URL: "https://uat-api.loonas.id"
+  prd:
+    build_args:
+      NEXT_PUBLIC_BASE_API_URL: "https://api.loonas.id"
+  default:
+    build_args:
+      NEXT_PUBLIC_BASE_API_URL: "https://dev-api.example.com"
