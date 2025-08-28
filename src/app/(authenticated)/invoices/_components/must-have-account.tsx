@@ -33,7 +33,7 @@ export function MustHaveAccount(props: { children: React.ReactNode }) {
   useEffect(() => {
     if (!error) return;
     if (error instanceof ServerError) {
-      if (error.code === ErrorCodes.NOT_FOUND.code) router.replace("/invoices/no-account");
+      if (error.code === ErrorCodes.NOT_FOUND.code) router.replace("/accounts/no-account");
       else throw error;
     } else throw error;
   }, [error]);
