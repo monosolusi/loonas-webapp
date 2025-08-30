@@ -30,6 +30,8 @@ FROM base AS runner
 RUN corepack enable
 # Non-root user
 RUN addgroup -S nextjs && adduser -S nextjs -G nextjs
+# Install curl untuk healthcheck
+RUN apk add --no-cache curl
 
 # Salin artefak build
 COPY --chown=nextjs:nextjs --from=build /app/package.json ./package.json
@@ -51,6 +53,10 @@ ENV HOSTNAME=0.0.0.0
 ENV NEXT_PUBLIC_BASE_API_URL=""
 
 EXPOSE 3000
+
+# Healthcheck untuk memonitor status aplikasi
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+  CMD curl -f http://localhost:3000/ || exit 1
 
 # Jalankan Next.js production server
 CMD ["yarn", "start"]
