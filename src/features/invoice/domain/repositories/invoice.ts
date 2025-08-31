@@ -7,10 +7,11 @@ import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { DateTime } from "luxon";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
-import { InvoiceSendChannel } from "@/features/invoice/domain/enums/invoice-send-channel";
 import { CombinedInvoiceSummaryEntity } from "@/features/invoice/domain/entities/combined-invoice-summary";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { PublicOutgoingInvoiceEntity } from "../entities/public-outgoing-invoice";
+import { PayInEntity } from "../entities/pay-in";
+import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 
 export interface InvoiceItem {
   name: string;
@@ -50,7 +51,7 @@ export interface CreateOutgoingParams {
   tnc?: string;
   signature?: File;
   paymentConfiguration: PaymentConfiguration[];
-  sendChannel: InvoiceSendChannel[];
+  sendChannel: NotificationChannel[];
 }
 
 export interface CombinedInvoiceSummaryFilter {
@@ -85,8 +86,13 @@ export interface InvoiceRepository {
     session: SessionEntity,
   ): Promise<DataState<CombinedInvoiceSummaryEntity>>;
 
-  getPublicOutgoing(
-    filter: { invoiceId: string },
-    session: SessionEntity,
-  ): Promise<DataState<PublicOutgoingInvoiceEntity>>;
+  getPublicOutgoing(filter: { invoiceId: string }): Promise<DataState<PublicOutgoingInvoiceEntity>>;
+
+  createPayInForOutgoingInvoice(params: {
+    invoiceId: string;
+    paymentMethodId: string;
+    paymentSchemeId?: string | null;
+  }): Promise<DataState<PayInEntity>>;
+
+  send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<DataState<boolean>>;
 }

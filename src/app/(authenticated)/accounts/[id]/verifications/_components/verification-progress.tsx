@@ -3,46 +3,48 @@
 import React from "react";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { useAccountVerificationWork } from "@/features/account/presentation/providers/account-verification-work";
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
-
+import { useParams } from "next/navigation";
+import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
 
 const steps = [
   {
     orderNumber: "01",
     id: "NEW",
     name: "Berkas Diterima",
-    description: "Berkasmu sudah diterima."
+    description: "Berkasmu sudah diterima.",
   },
   {
     orderNumber: "02",
     id: "PROCESSING",
     name: "Verifikasi Berlangsung",
-    description: "Tim Loonas sedang memverifikasi akunmu."
+    description: "Tim Loonas sedang memverifikasi akunmu.",
   },
   {
     orderNumber: "03",
     id: "COMPLETED",
     name: "Selesai",
-    description: "Diperkirakan selesai."
-  }
+    description: "Diperkirakan selesai.",
+  },
 ];
-
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
 export function VerificationProgress() {
-  const [accountVerificationWork] = useAccountVerificationWork();
+  const { id } = useParams<{ id: string }>();
+  const { verificationWork } = useGetAccountVerificationWork({ accountId: id });
 
   function generateDescription(stepId: string) {
     const step = steps.find((step) => step.id === stepId);
     if (!step) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-    if (!accountVerificationWork) return step.description;
+    if (!verificationWork) return step.description;
     if (stepId === "COMPLETED") {
-      const formattedCompleteDate = accountVerificationWork.estimatedVerificationComplete.toFormat("dd MMMM yyyy");
+      const formattedCompleteDate = verificationWork.estimatedVerificationComplete
+        .setLocale("id")
+        .toFormat("dd MMMM yyyy");
       return `${step.description} ${formattedCompleteDate}`;
     }
 
@@ -53,8 +55,8 @@ export function VerificationProgress() {
     const step = steps.find((step) => step.id === stepId);
     if (!step) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-    if (!accountVerificationWork) return "upcoming";
-    const latestStatus = accountVerificationWork.latestStatus;
+    if (!verificationWork) return "upcoming";
+    const latestStatus = verificationWork.latestStatus;
 
     if (stepId === latestStatus) return "current";
     if (stepId === VerificationStatus.NEW && latestStatus !== VerificationStatus.NEW) return "completed";
@@ -74,7 +76,7 @@ export function VerificationProgress() {
                 className={classNames(
                   stepIdx === 0 ? "rounded-t-md border-b-0" : "",
                   stepIdx === steps.length - 1 ? "rounded-b-md border-t-0" : "",
-                  "overflow-hidden border border-gray-200 lg:border-0"
+                  "overflow-hidden border border-gray-200 lg:border-0",
                 )}
               >
                 {inferStepStatus(step.id) === "completed" ? (
@@ -86,11 +88,11 @@ export function VerificationProgress() {
                     <span
                       className={classNames(
                         stepIdx !== 0 ? "lg:pl-9" : "",
-                        "flex items-start px-6 py-5 text-sm font-medium"
+                        "flex items-start px-6 py-5 text-sm font-medium",
                       )}
                     >
                       <span className="shrink-0">
-                        <span className="flex size-10 items-center justify-center rounded-full bg-primary-default">
+                        <span className="bg-primary-default flex size-10 items-center justify-center rounded-full">
                           <CheckIcon aria-hidden="true" className="size-6 text-white" />
                         </span>
                       </span>
@@ -104,22 +106,21 @@ export function VerificationProgress() {
                   <div aria-current="step">
                     <span
                       aria-hidden="true"
-                      className="absolute top-0 left-0 h-full w-1 bg-primary-default lg:top-auto lg:bottom-0 lg:h-1 lg:w-full"
+                      className="bg-primary-default absolute top-0 left-0 h-full w-1 lg:top-auto lg:bottom-0 lg:h-1 lg:w-full"
                     />
                     <span
                       className={classNames(
                         stepIdx !== 0 ? "lg:pl-9" : "",
-                        "flex items-start px-6 py-5 text-sm font-medium"
+                        "flex items-start px-6 py-5 text-sm font-medium",
                       )}
                     >
                       <span className="shrink-0">
-                        <span
-                          className="flex size-10 items-center justify-center rounded-full border-2 border-primary-default">
+                        <span className="border-primary-default flex size-10 items-center justify-center rounded-full border-2">
                           <span className="text-primary-default">{step.orderNumber}</span>
                         </span>
                       </span>
                       <span className="mt-0.5 ml-4 flex min-w-0 flex-col">
-                        <span className="text-sm font-medium text-primary-default">{step.name}</span>
+                        <span className="text-primary-default text-sm font-medium">{step.name}</span>
                         <span className="text-sm font-medium text-gray-500">{generateDescription(step.id)}</span>
                       </span>
                     </span>
@@ -133,12 +134,11 @@ export function VerificationProgress() {
                     <span
                       className={classNames(
                         stepIdx !== 0 ? "lg:pl-9" : "",
-                        "flex items-start px-6 py-5 text-sm font-medium"
+                        "flex items-start px-6 py-5 text-sm font-medium",
                       )}
                     >
                       <span className="shrink-0">
-                        <span
-                          className="flex size-10 items-center justify-center rounded-full border-2 border-gray-300">
+                        <span className="flex size-10 items-center justify-center rounded-full border-2 border-gray-300">
                           <span className="text-gray-500">{step.orderNumber}</span>
                         </span>
                       </span>
@@ -160,8 +160,7 @@ export function VerificationProgress() {
                         preserveAspectRatio="none"
                         className="size-full text-gray-300"
                       >
-                        <path d="M0.5 0V31L10.5 41L0.5 51V82" stroke="currentcolor"
-                              vectorEffect="non-scaling-stroke" />
+                        <path d="M0.5 0V31L10.5 41L0.5 51V82" stroke="currentcolor" vectorEffect="non-scaling-stroke" />
                       </svg>
                     </div>
                   </>
@@ -171,5 +170,6 @@ export function VerificationProgress() {
           ))}
         </ol>
       </nav>
-    </div>);
+    </div>
+  );
 }

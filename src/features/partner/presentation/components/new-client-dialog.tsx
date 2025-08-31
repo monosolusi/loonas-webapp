@@ -1,11 +1,12 @@
+"use client";
+
+import React from "react";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ErrorCard } from "@/core/presentations/components/error-card";
 import { TextInput } from "@/core/presentations/components/text-input";
 import { EmailInput } from "@/core/presentations/components/email-input";
 import { FilledButton } from "@/core/presentations/components/filled-button";
-import React from "react";
 import { useCreatePartner } from "@/features/partner/presentation/hooks/use-create-partner";
-
 
 interface NewClientDialogProps {
   open: boolean;
@@ -54,10 +55,10 @@ export function NewClientDialog(props: NewClientDialogProps) {
         <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
           <DialogPanel
             transition
-            className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 w-full sm:max-w-sm sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
+            className="relative w-full transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:max-w-sm sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
           >
             <div className="sm:flex sm:items-start">
-              <div className="flex-1 mt-3 sm:mt-0 sm:ml-4 sm:text-left">
+              <div className="mt-3 flex-1 sm:mt-0 sm:ml-4 sm:text-left">
                 <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
                   Buat Klien Baru
                 </DialogTitle>
@@ -96,9 +97,7 @@ export function NewClientDialog(props: NewClientDialogProps) {
             </div>
             <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
               <div className="ml-3">
-                <FilledButton disabled={isMutating}>
-                  Buat Klien Baru
-                </FilledButton>
+                <FilledButton disabled={isMutating}>Buat Klien Baru</FilledButton>
               </div>
               <button
                 type="button"

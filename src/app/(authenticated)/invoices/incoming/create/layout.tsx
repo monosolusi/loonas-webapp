@@ -4,6 +4,7 @@ import { CreateIncomingInvoiceProgressBar } from "@/app/(authenticated)/invoices
 import { CreateIncomingInvoiceProvider } from "@/features/invoice/presentations/providers/create-incoming-invoice";
 import { CreateIncomingInvoiceStepsProvider } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 import { CustomBackArrow } from "./_components/custom-back-arrow";
+import { PageHeading } from "@/core/presentations/components/page-heading";
 
 interface CreateIncomingInvoiceLayoutProps {
   children: React.ReactNode;
@@ -17,6 +18,7 @@ export default function CreateIncomingInvoiceLayout(props: CreateIncomingInvoice
   return (
     <CreateIncomingInvoiceProvider>
       <CreateIncomingInvoiceStepsProvider>
+        <PageHeading>Faktur Masukan</PageHeading>
         <PageContent>
           <div className="flex flex-col space-y-12">
             <div className="flex flex-col space-y-2">

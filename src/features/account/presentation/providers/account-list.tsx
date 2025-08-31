@@ -4,18 +4,22 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { PersonalAccountEntity } from "../../domain/entities/personal-account";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { AccountServiceImpl } from "../../data/sources/account";
 import { AccountRepositoryImpl } from "../../data/repositories/account";
 import { ListAccountUseCase } from "../../domain/usecases/list-account";
+import { HttpRequest } from "@/core/helpers/http-request";
+import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
-type AccountListContextProps = [PersonalAccountEntity[] | undefined, boolean];
+type AccountListContextProps = [AccountTypeEntity[] | undefined, boolean];
 const AccountListContext = createContext<AccountListContextProps>([[], true]);
 
+/**
+ * @deprecated
+ */
 export function AccountListProvider({ children }: { children: any }) {
-  const [accounts, setAccounts] = useState<PersonalAccountEntity[]>([]);
+  const [accounts, setAccounts] = useState<AccountTypeEntity[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error>();
 
@@ -35,9 +39,10 @@ export function AccountListProvider({ children }: { children: any }) {
     try {
       setLoading(true);
 
+      const http = new HttpRequest();
       const sessionService = new LocalStorageSessionService();
       const sessionRepository = new SessionRepositoryImpl(sessionService);
-      const accountService = new AccountServiceImpl();
+      const accountService = new AccountServiceImpl(http);
       const accountRepository = new AccountRepositoryImpl(accountService);
       const listAccount = new ListAccountUseCase(accountRepository, sessionRepository);
       const accounts = await listAccount.execute();
@@ -53,13 +58,7 @@ export function AccountListProvider({ children }: { children: any }) {
     }
   }
 
-  return (
-    <AccountListContext.Provider
-      value={[accounts, loading]}
-    >
-      {children}
-    </AccountListContext.Provider>
-  );
+  return <AccountListContext.Provider value={[accounts, loading]}>{children}</AccountListContext.Provider>;
 }
 
 export function useAccountListProvider() {

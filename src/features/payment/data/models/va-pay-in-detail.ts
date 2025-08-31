@@ -1,8 +1,8 @@
-import { PaymentSchemeModel } from "@/features/payment/data/models/payment-scheme";
 import { AbstractModel } from "@/core/resources/model";
 import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
 import { VirtualAccountPayInDetailEntity } from "@/features/payment/domain/entities/va-pay-in-detail";
 import { DateTime } from "luxon";
+import { PaymentSchemeModel } from "@/features/payment/data/models/payment-scheme";
 
 interface VirtualAccountPayInDetailModelConstructor {
   id: string;

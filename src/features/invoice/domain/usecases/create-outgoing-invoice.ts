@@ -9,8 +9,8 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
-import { InvoiceSendChannel } from "@/features/invoice/domain/enums/invoice-send-channel";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
+import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 
 interface InvoiceItem {
   name: string;
@@ -41,7 +41,7 @@ interface CreateOutgoingInvoiceUseCaseParamsConstructor {
   tnc?: string;
   signature?: File;
   paymentConfiguration: PaymentConfiguration[];
-  sendChannel: InvoiceSendChannel[];
+  sendChannel: NotificationChannel[];
 }
 
 export class CreateOutgoingInvoiceUseCaseParams {
@@ -54,7 +54,7 @@ export class CreateOutgoingInvoiceUseCaseParams {
   public tnc?: string;
   public signature?: File;
   public paymentConfiguration: PaymentConfiguration[];
-  public sendChannel: InvoiceSendChannel[];
+  public sendChannel: NotificationChannel[];
 
   constructor(args: CreateOutgoingInvoiceUseCaseParamsConstructor) {
     this.recipient = args.recipient;

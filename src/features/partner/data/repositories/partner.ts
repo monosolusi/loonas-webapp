@@ -3,19 +3,22 @@ import {
   PartnerRepository,
   PartnerRepositoryFilter,
   PartnerRepositorySearchParams,
-  PartnerRepositoryUpdateFields
+  PartnerRepositoryUpdateFields,
 } from "../../domain/repositories/partner";
-import { PartnerService } from "../sources/partner";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PartnerEntity } from "../../domain/entities/partner";
 import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
+import { PartnerService } from "@/features/partner/domain/sources/partner";
 
 export class PartnerRepositoryImpl implements PartnerRepository {
-  constructor(private partnerService: PartnerService) {
-  }
+  constructor(private partnerService: PartnerService) {}
 
-  public async update(filter: Pick<PartnerRepositoryFilter, "id">, updateData: PartnerRepositoryUpdateFields, session: SessionEntity): Promise<DataState<PartnerEntity>> {
+  public async update(
+    filter: Pick<PartnerRepositoryFilter, "id">,
+    updateData: PartnerRepositoryUpdateFields,
+    session: SessionEntity,
+  ): Promise<DataState<PartnerEntity>> {
     try {
       const uPartner = await this.partnerService.update(filter, updateData, session);
       return new DataSuccess(uPartner.toEntity());
@@ -35,29 +38,22 @@ export class PartnerRepositoryImpl implements PartnerRepository {
     }
   }
 
-  public async listInvoice(filter: {
-    partnerId: string
-  }, params: PartnerRepositorySearchParams, session: SessionEntity): Promise<DataState<InvoiceEntity[]>> {
+  public async listInvoice(
+    filter: { partner: { id: string } },
+    params: PartnerRepositorySearchParams,
+    session: SessionEntity,
+  ): Promise<DataState<InvoiceEntity[]>> {
     try {
-      const invoices = await this.partnerService.listInvoice(
-        { partnerId: filter.partnerId },
-        params,
-        session
-      );
+      const invoices = await this.partnerService.listInvoice({ partnerId: filter.partner.id }, params, session);
 
-      return new DataSuccess(invoices.map(invoice => invoice.toEntity()));
+      return new DataSuccess(invoices.map((invoice) => invoice.toEntity()));
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
     }
   }
 
-  public async create(
-    name: string,
-    email: string,
-    phone: string,
-    session: SessionEntity
-  ): Promise<DataState<boolean>> {
+  public async create(name: string, email: string, phone: string, session: SessionEntity): Promise<DataState<boolean>> {
     try {
       await this.partnerService.create(name, email, phone, session);
       return new DataSuccess(true);
@@ -70,7 +66,7 @@ export class PartnerRepositoryImpl implements PartnerRepository {
   public async list(session: SessionEntity): Promise<DataState<PartnerEntity[]>> {
     try {
       const partners = await this.partnerService.list(session);
-      return new DataSuccess(partners.map(partner => partner.toEntity()));
+      return new DataSuccess(partners.map((partner) => partner.toEntity()));
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

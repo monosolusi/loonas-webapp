@@ -9,9 +9,36 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { PersonalAccountEntity } from "../entities/personal-account";
 import { AccountVerificationWorkEntity } from "../entities/account-verification-work";
 import { AccountBankAccountEntity } from "@/features/account/domain/entities/account-bank-account";
+import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
+import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
-export abstract class AccountRepository {
-  public abstract createPersonal(
+export interface CreateBusinessParams {
+  company: {
+    name: string;
+    email: string;
+    phoneNumber: string;
+    address: {
+      province: { id: string };
+      city: { id: string };
+      district: { id: string };
+      subdistrict: { id: string };
+      address: string;
+    };
+    deedOfEstablishment: File;
+    mostRecentDeedOfAmendment?: File;
+    businessIdentificationNumber: File;
+    financial: {
+      statement?: File;
+      bankStatement?: File;
+    };
+  };
+  director: {
+    nationalIdentityCard: File;
+  };
+}
+
+export interface AccountRepository {
+  createPersonal(
     nationality: string,
     idNumber: string,
     idDocument: File,
@@ -24,12 +51,17 @@ export abstract class AccountRepository {
     district: DistrictEntity,
     subdistrict: SubdistrictEntity,
     address: string,
-    session: SessionEntity
-  ): Promise<DataState<PersonalAccountEntity>>
+    session: SessionEntity,
+  ): Promise<DataState<PersonalAccountEntity>>;
 
-  public abstract retrieveVerificationWork(accountId: string, session: SessionEntity): Promise<DataState<AccountVerificationWorkEntity>>
+  createBusiness(params: CreateBusinessParams, session: SessionEntity): Promise<DataState<BusinessAccountEntity>>;
 
-  public abstract list(session: SessionEntity): Promise<DataState<PersonalAccountEntity[]>>
+  retrieveVerificationWork(
+    accountId: string,
+    session: SessionEntity,
+  ): Promise<DataState<AccountVerificationWorkEntity>>;
 
-  public abstract listBankAccount(account: PersonalAccountEntity, session: SessionEntity): Promise<DataState<AccountBankAccountEntity[]>>
+  list(session: SessionEntity): Promise<DataState<AccountTypeEntity[]>>;
+
+  listBankAccount(account: { id: string }, session: SessionEntity): Promise<DataState<AccountBankAccountEntity[]>>;
 }

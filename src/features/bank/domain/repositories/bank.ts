@@ -4,20 +4,32 @@ import { AccountInquiryResultEntity } from "@/features/bank/domain/entities/acco
 import { BankEntity } from "@/features/bank/domain/entities/bank";
 import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
 import { AccountBankAccountEntity } from "@/features/account/domain/entities/account-bank-account";
-import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
 
 export interface BankRepository {
   listBanks(session: SessionEntity): Promise<DataState<BankEntity[]>>;
 
   listBankAccounts(partnerId: string, session: SessionEntity): Promise<DataState<BankAccountEntity[]>>;
 
-  verifyAccountHolder(bankId: string, accountNumber: string, session: SessionEntity): Promise<DataState<AccountInquiryResultEntity>>;
-
-  createBankAccount(bankId: string, accountNumber: string, accountHolderName: string, partnerId: string, session: SessionEntity): Promise<DataState<BankAccountEntity>>;
-
-  createBankAccountForAccount(params: {
+  verifyAccountHolder(
     bankId: string,
     accountNumber: string,
-    account: PersonalAccountEntity
-  }, session: SessionEntity): Promise<DataState<AccountBankAccountEntity>>;
+    session: SessionEntity,
+  ): Promise<DataState<AccountInquiryResultEntity>>;
+
+  createBankAccount(
+    bankId: string,
+    accountNumber: string,
+    accountHolderName: string,
+    partnerId: string,
+    session: SessionEntity,
+  ): Promise<DataState<BankAccountEntity>>;
+
+  createBankAccountForAccount(
+    params: {
+      bankId: string;
+      accountNumber: string;
+      account: { id: string };
+    },
+    session: SessionEntity,
+  ): Promise<DataState<AccountBankAccountEntity>>;
 }

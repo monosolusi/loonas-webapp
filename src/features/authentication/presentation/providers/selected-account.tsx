@@ -8,32 +8,35 @@ import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import {
   SelectSessionAccountUseCase,
-  SelectSessionAccountUseCaseParams
+  SelectSessionAccountUseCaseParams,
 } from "@/features/authentication/domain/usecases/select-session-account";
-import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
 import {
   RetrieveAccountVerificationWorkUseCase,
-  RetrieveAccountVerificationWorkUseCaseParams
+  RetrieveAccountVerificationWorkUseCaseParams,
 } from "@/features/account/domain/usecases/retrieve-account-verification-work";
 import { AccountServiceImpl } from "@/features/account/data/sources/account";
 import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
+import { HttpRequest } from "@/core/helpers/http-request";
+import { useRouter } from "next/navigation";
+import { FilledButton } from "@/core/presentations/components/filled-button";
 
 interface SelectedAccountContextProps {
   states: [boolean]; // loading
-  selectedAccount?: PersonalAccountEntity;
-  changeAccount?: (account: PersonalAccountEntity, reload?: boolean) => (void | Promise<void>);
+  selectedAccount?: AccountTypeEntity;
+  changeAccount?: (account: AccountTypeEntity, reload?: boolean) => void | Promise<void>;
 }
 
 const SelectedAccountContext = createContext<SelectedAccountContextProps>({
-  states: [true]
+  states: [true],
 });
 
 export function SelectedAccountProvider({ children }: { children: any }) {
   const [rejectedDialog, setRejectedDialog] = useState<boolean>(false);
-  const [selectedAccount, setSelectedAccount] = useState<PersonalAccountEntity>();
+  const [selectedAccount, setSelectedAccount] = useState<AccountTypeEntity>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error>();
 
@@ -73,7 +76,7 @@ export function SelectedAccountProvider({ children }: { children: any }) {
    * @param newAccount
    * @param reload
    */
-  async function changeAccount(newAccount: PersonalAccountEntity, reload: boolean = true) {
+  async function changeAccount(newAccount: AccountTypeEntity, reload: boolean = true) {
     try {
       const sessionService = new LocalStorageSessionService();
       const sessionRepository = new SessionRepositoryImpl(sessionService);
@@ -81,7 +84,8 @@ export function SelectedAccountProvider({ children }: { children: any }) {
       const selectAccountParams = new SelectSessionAccountUseCaseParams(newAccount);
 
       // Also, we need to check if the account verification is rejected or not
-      const accountService = new AccountServiceImpl();
+      const http = new HttpRequest();
+      const accountService = new AccountServiceImpl(http);
       const accountRepository = new AccountRepositoryImpl(accountService);
       const retrieveVerification = new RetrieveAccountVerificationWorkUseCase(accountRepository, sessionRepository);
       const retrieveVerificationParams = new RetrieveAccountVerificationWorkUseCaseParams(newAccount.id);
@@ -117,9 +121,7 @@ export function SelectedAccountProvider({ children }: { children: any }) {
   }
 
   return (
-    <SelectedAccountContext.Provider
-      value={{ selectedAccount, changeAccount, states: [loading] }}
-    >
+    <SelectedAccountContext.Provider value={{ selectedAccount, changeAccount, states: [loading] }}>
       <RejectedDialog open={rejectedDialog} setOpen={setRejectedDialog} />
       {children}
     </SelectedAccountContext.Provider>
@@ -131,8 +133,15 @@ export function useSelectedAccountProvider() {
 }
 
 function RejectedDialog({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
+  const router = useRouter();
+
+  const onAcknowledged = () => {
+    router.replace("/accounts/select");
+    setOpen(false);
+  };
+
   return (
-    <Dialog open={open} onClose={setOpen} className="relative z-10">
+    <Dialog open={open} onClose={() => {}} className="relative z-10">
       <DialogBackdrop
         transition
         className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
@@ -160,13 +169,7 @@ function RejectedDialog({ open, setOpen }: { open: boolean; setOpen: (open: bool
               </div>
             </div>
             <div className="mt-5 sm:mt-6">
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="inline-flex w-full justify-center rounded-md bg-primary-default px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-default"
-              >
-                Mengerti
-              </button>
+              <FilledButton onClick={onAcknowledged}>Mengerti</FilledButton>
             </div>
           </DialogPanel>
         </div>

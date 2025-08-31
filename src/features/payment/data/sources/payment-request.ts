@@ -1,7 +1,6 @@
 import { DateTime } from "luxon";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { PartnerService } from "@/features/partner/data/sources/partner";
 import { PaymentGatewayService } from "@/features/payment/data/sources/payment-gateway";
 import { PaymentRequestModel } from "../models/payment-request";
 import { PartnerModel } from "@/features/partner/data/models/partner";
@@ -9,6 +8,7 @@ import { BankAccountModel } from "@/features/bank/data/models/bank-account";
 import { PaymentGatewayModel } from "@/features/payment/data/models/payment-gateway";
 import { PaymentSchemeModel } from "@/features/payment/data/models/payment-scheme";
 import { BankService } from "@/features/bank/domain/sources/bank";
+import { PartnerService } from "@/features/partner/domain/sources/partner";
 
 interface InvoiceDocument {
   invoiceNumber?: string;
@@ -21,7 +21,7 @@ interface InvoiceDocument {
 interface PaymentRequestServiceCreateParams {
   receiverId: string;
   receiverBankAccountId: string;
-  invoices: InvoiceDocument[],
+  invoices: InvoiceDocument[];
   paymentMethodId: string;
   paymentSchemeId?: string;
 }
@@ -32,24 +32,28 @@ interface PaymentRequestServiceGetParams {
 }
 
 export abstract class PaymentRequestService {
-  public abstract create(params: PaymentRequestServiceCreateParams, session: SessionEntity): Promise<PaymentRequestModel>;
+  public abstract create(
+    params: PaymentRequestServiceCreateParams,
+    session: SessionEntity,
+  ): Promise<PaymentRequestModel>;
 
-  public abstract uploadInvoices(params: {
-    requestId: string,
-    invoiceDocuments: File[]
-  }, session: SessionEntity): Promise<void>;
+  public abstract uploadInvoices(
+    params: {
+      requestId: string;
+      invoiceDocuments: File[];
+    },
+    session: SessionEntity,
+  ): Promise<void>;
 
   public abstract get(params: PaymentRequestServiceGetParams, session: SessionEntity): Promise<PaymentRequestModel>;
 }
 
 export class PaymentRequestServiceImpl implements PaymentRequestService {
-
   constructor(
     private readonly partnerService: PartnerService,
     private readonly bankService: BankService,
-    private readonly paymentGatewayService: PaymentGatewayService
-  ) {
-  }
+    private readonly paymentGatewayService: PaymentGatewayService,
+  ) {}
 
   public async get(params: PaymentRequestServiceGetParams, session: SessionEntity): Promise<PaymentRequestModel> {
     try {
@@ -61,7 +65,7 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
       const url = `${baseUrl}/payment-requests/${params.id}${params.includes ? `?include=${params.includes}` : ""}`;
       const headers = {
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id
+        "X-Account-Id": session.selectedAccount.id,
       };
 
       const response = await fetch(url, { method: "GET", headers });
@@ -76,22 +80,31 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
 
       const data = await response.json();
       const receiver = await this.getPartnerOrFetch({ id: data.receiver_id, data: data.receiver }, session);
-      const bankAccount = await this.getBankAccountOrFetch({
-        id: data.receiver_bank_account_id,
-        partnerId: data.receiver_id,
-        data: data.receiver_bank_account
-      }, session);
+      const bankAccount = await this.getBankAccountOrFetch(
+        {
+          id: data.receiver_bank_account_id,
+          partnerId: data.receiver_id,
+          data: data.receiver_bank_account,
+        },
+        session,
+      );
 
-      const paymentMethod = await this.getPaymentMethodOrFetch({
-        id: data.payment_method_id,
-        data: data.payment_method
-      }, session);
+      const paymentMethod = await this.getPaymentMethodOrFetch(
+        {
+          id: data.payment_method_id,
+          data: data.payment_method,
+        },
+        session,
+      );
 
-      const paymentScheme = await this.getPaymentSchemeOrFetch({
-        id: data.payment_scheme_id,
-        gatewayId: data.payment_method_id,
-        data: data.payment_scheme
-      }, session);
+      const paymentScheme = await this.getPaymentSchemeOrFetch(
+        {
+          id: data.payment_scheme_id,
+          gatewayId: data.payment_method_id,
+          data: data.payment_scheme,
+        },
+        session,
+      );
 
       return PaymentRequestModel.fromJson(data, { receiver, bankAccount, paymentMethod, paymentScheme });
     } catch (err) {
@@ -100,10 +113,13 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
     }
   }
 
-  public async uploadInvoices(params: {
-    requestId: string;
-    invoiceDocuments: File[];
-  }, session: SessionEntity): Promise<void> {
+  public async uploadInvoices(
+    params: {
+      requestId: string;
+      invoiceDocuments: File[];
+    },
+    session: SessionEntity,
+  ): Promise<void> {
     try {
       if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
 
@@ -113,7 +129,7 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
       const url = `${baseUrl}/payment-requests/${params.requestId}/invoice-documents`;
       const headers = {
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id
+        "X-Account-Id": session.selectedAccount.id,
       };
 
       const formData = new FormData();
@@ -124,7 +140,7 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
       const response = await fetch(url, {
         method: "POST",
         headers,
-        body: formData
+        body: formData,
       });
 
       if (!response.ok) {
@@ -152,21 +168,21 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id
+        "X-Account-Id": session.selectedAccount.id,
       };
 
       const body = {
         receiver_id: params.receiverId,
         receiver_bank_account_id: params.receiverBankAccountId,
-        invoices: params.invoices.map(invoice => ({
-          ...invoice.invoiceNumber ? { invoice_number: invoice.invoiceNumber } : {}, // If empty, then don't include that to the request body
+        invoices: params.invoices.map((invoice) => ({
+          ...(invoice.invoiceNumber ? { invoice_number: invoice.invoiceNumber } : {}), // If empty, then don't include that to the request body
           amount: invoice.amount,
           due_date: invoice.dueDate.toISODate(),
           invoice_date: invoice.invoiceDate.toISODate(),
-          ...invoice.note ? { notes: invoice.note } : {}
+          ...(invoice.note ? { notes: invoice.note } : {}),
         })),
         payment_method_id: params.paymentMethodId,
-        payment_scheme_id: params.paymentSchemeId
+        payment_scheme_id: params.paymentSchemeId,
       };
 
       const response = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
@@ -181,17 +197,25 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
 
       const data = await response.json();
       // Looking for the PartnerModel, BankAccountModel, PaymentGatewayModel, PaymentSchemeModel from others
-      const bankAccount = await this.bankService.getBankAccount({
-        partnerId: data.receiver_id,
-        id: data.receiver_bank_account_id
-      }, session);
+      const bankAccount = await this.bankService.getBankAccount(
+        {
+          partnerId: data.receiver_id,
+          id: data.receiver_bank_account_id,
+        },
+        session,
+      );
 
       const receiver = await this.partnerService.get({ id: data.receiver_id }, session);
       const paymentMethod = await this.paymentGatewayService.get({ id: data.payment_method_id }, session);
-      const paymentScheme = paymentMethod.requiresSchemeSelection ? await this.paymentGatewayService.getScheme({
-        id: data.payment_scheme_id,
-        gatewayId: data.payment_method_id
-      }, session) : undefined;
+      const paymentScheme = paymentMethod.requiresSchemeSelection
+        ? await this.paymentGatewayService.getScheme(
+            {
+              id: data.payment_scheme_id,
+              gatewayId: data.payment_method_id,
+            },
+            session,
+          )
+        : undefined;
 
       return PaymentRequestModel.fromJson(data, { receiver, bankAccount, paymentMethod, paymentScheme });
     } catch (err) {
@@ -200,46 +224,62 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
     }
   }
 
-  private async getPartnerOrFetch(params: {
-    id: string,
-    data: Record<string, any>
-  }, session: SessionEntity): Promise<PartnerModel> {
+  private async getPartnerOrFetch(
+    params: {
+      id: string;
+      data: Record<string, any>;
+    },
+    session: SessionEntity,
+  ): Promise<PartnerModel> {
     if (params.data) return PartnerModel.fromJson(params.data);
     return this.partnerService.get({ id: params.id }, session);
   }
 
-  private async getBankAccountOrFetch(params: {
-    id: string,
-    partnerId: string,
-    data: Record<string, any>
-  }, session: SessionEntity): Promise<BankAccountModel> {
+  private async getBankAccountOrFetch(
+    params: {
+      id: string;
+      partnerId: string;
+      data: Record<string, any>;
+    },
+    session: SessionEntity,
+  ): Promise<BankAccountModel> {
     if (params.data) return BankAccountModel.fromJson(params.data);
-    return this.bankService.getBankAccount({
-      partnerId: params.partnerId,
-      id: params.id
-    }, session);
+    return this.bankService.getBankAccount(
+      {
+        partnerId: params.partnerId,
+        id: params.id,
+      },
+      session,
+    );
   }
 
-  private async getPaymentMethodOrFetch(params: {
-    id: string,
-    data: Record<string, any>
-  }, session: SessionEntity): Promise<PaymentGatewayModel> {
+  private async getPaymentMethodOrFetch(
+    params: {
+      id: string;
+      data: Record<string, any>;
+    },
+    session: SessionEntity,
+  ): Promise<PaymentGatewayModel> {
     if (params.data) return PaymentGatewayModel.fromJson(params.data);
     return this.paymentGatewayService.get({ id: params.id }, session);
   }
 
-  private async getPaymentSchemeOrFetch(params: {
-    id: string,
-    gatewayId: string,
-    data: Record<string, any>
-  }, session: SessionEntity): Promise<PaymentSchemeModel | undefined> {
+  private async getPaymentSchemeOrFetch(
+    params: {
+      id: string;
+      gatewayId: string;
+      data: Record<string, any>;
+    },
+    session: SessionEntity,
+  ): Promise<PaymentSchemeModel | undefined> {
     if (!params.id) return undefined; // It means it is not require to have PaymentScheme
     if (params.data) return PaymentSchemeModel.fromJson(params.data);
-    return this.paymentGatewayService.getScheme({
-      id: params.id,
-      gatewayId: params.gatewayId
-    }, session);
+    return this.paymentGatewayService.getScheme(
+      {
+        id: params.id,
+        gatewayId: params.gatewayId,
+      },
+      session,
+    );
   }
-
-
 }

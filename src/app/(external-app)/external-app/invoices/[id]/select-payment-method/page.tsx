@@ -3,9 +3,12 @@
 import { LogoImage } from "@/core/presentations/components/logo-image";
 import { InvoiceMetadataImpl } from "./_components/invoice-metadata-impl";
 import { SelectPaymentMethodImpl } from "./_components/select-payment-method-impl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SelectSchemeImpl } from "./_components/select-scheme-impl";
 import { PaymentSummaryImpl } from "./_components/payment-summary-impl";
+import { useGetPublicPayInDetailForOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";
+import { useParams, useRouter } from "next/navigation";
+import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
 
 interface SelectedPaymentMethod {
   id: string;
@@ -18,6 +21,24 @@ interface SelectedPaymentMethod {
 export default function SelectPaymentMethodPage() {
   const [selectedScheme, setSelectedScheme] = useState<string | undefined>(undefined);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<SelectedPaymentMethod>();
+  const { id } = useParams<{ id: string }>();
+  const { payIn } = useGetPublicPayInDetailForOutgoingInvoice({ invoiceId: id });
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!payIn) return;
+
+    const routeMap: Record<PayInStatus, string> = {
+      [PayInStatus.PENDING_PAYMENT]: "pay-in-detail",
+      [PayInStatus.PAID]: "paid",
+      [PayInStatus.PENDING_CREATION]: "pay-in-detail",
+      [PayInStatus.EXPIRED]: "expired-failed",
+      [PayInStatus.FAILED]: "expired-failed",
+    };
+
+    const path = routeMap[payIn.status];
+    if (path) router.replace(path);
+  }, [payIn]);
 
   const handleSelectedPaymentMethodChange = (paymentMethod: SelectedPaymentMethod) => {
     setSelectedPaymentMethod(paymentMethod);

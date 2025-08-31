@@ -5,7 +5,12 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/re
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
-export function ChangedDialog({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
+interface ChangeDialogProps {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export function ChangedDialog({ open, setOpen }: ChangeDialogProps) {
   const router = useRouter();
 
   function handleGoToHome() {
@@ -35,8 +40,7 @@ export function ChangedDialog({ open, setOpen }: { open: boolean; setOpen: (open
                 </DialogTitle>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Yeay! Akunmu berhasil diganti. Sekarang kamu bisa langsung melakukan transaksi pakai akun baru
-                    ini.
+                    Yeay! Akunmu berhasil diganti. Sekarang kamu bisa langsung melakukan transaksi pakai akun baru ini.
                   </p>
                 </div>
               </div>
@@ -45,7 +49,7 @@ export function ChangedDialog({ open, setOpen }: { open: boolean; setOpen: (open
               <button
                 type="button"
                 onClick={handleGoToHome}
-                className="inline-flex w-full justify-center rounded-md bg-primary-default px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-default"
+                className="bg-primary-default hover:bg-primary-500 focus-visible:outline-primary-default inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2"
               >
                 Kembali Ke Halaman Utama
               </button>

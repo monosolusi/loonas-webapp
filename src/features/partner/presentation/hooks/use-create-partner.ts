@@ -7,6 +7,7 @@ import { PartnerRepositoryImpl } from "@/features/partner/data/repositories/part
 import { CreatePartnerUseCase, CreatePartnerUseCaseParams } from "@/features/partner/domain/usecases/create-partner";
 import { DataFailed } from "@/core/resources/data-state";
 import useSWRMutation from "swr/mutation";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 interface CreatePartnerFetcherParams {
   arg: {
@@ -27,16 +28,13 @@ async function createPartnerFetcher(_: string, { arg }: CreatePartnerFetcherPara
   // If still not valid, throw an error
   if (!parsedPhoneNumber || !parsedPhoneNumber.isValid()) throw new ServerError(ErrorCodes.INVALID_PHONE_NUMBER);
 
-  const partnerService = new PartnerServiceImpl();
+  const http = new HttpRequest();
+  const partnerService = new PartnerServiceImpl(http);
   const sessionService = new LocalStorageSessionService();
   const sessionRepository = new SessionRepositoryImpl(sessionService);
   const partnerRepository = new PartnerRepositoryImpl(partnerService);
   const createPartner = new CreatePartnerUseCase(partnerRepository, sessionRepository);
-  const createPartnerParams = new CreatePartnerUseCaseParams(
-    arg.name,
-    arg.email,
-    parsedPhoneNumber.number.toString()
-  );
+  const createPartnerParams = new CreatePartnerUseCaseParams(arg.name, arg.email, parsedPhoneNumber.number.toString());
 
   const result = await createPartner.execute(createPartnerParams);
   if (result instanceof DataFailed) throw result.error;

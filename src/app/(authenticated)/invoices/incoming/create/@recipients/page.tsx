@@ -1,14 +1,10 @@
 "use client";
 
 import React from "react";
-import {
-  NewClientButton
-} from "@/app/(authenticated)/invoices/incoming/create/@recipients/_components/new-client-button";
 import { RowItem } from "@/app/(authenticated)/invoices/incoming/create/@recipients/_components/row-item";
-import {
-  useCreateIncomingInvoiceSteps
-} from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
+import { useCreateIncomingInvoiceSteps } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 import { useListPartner } from "@/features/partner/presentation/hooks/use-list-partner";
+import { NewClientButton } from "@/features/partner/presentation/components/new-client-button";
 
 function SelectRecipientContent() {
   const { partners, loading } = useListPartner();
@@ -18,12 +14,10 @@ function SelectRecipientContent() {
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-base font-semibold text-gray-900">Klien</h1>
-          <p className="mt-2 text-sm text-gray-700">
-            Pilih klien yang ingin kamu lakukan pembayaran, yuk!
-          </p>
+          <p className="mt-2 text-sm text-gray-700">Pilih klien yang ingin kamu lakukan pembayaran, yuk!</p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <NewClientButton />
+          <NewClientButton label="Buat Klien Baru" />
         </div>
       </div>
       <div className="mt-8 flow-root">
@@ -32,39 +26,37 @@ function SelectRecipientContent() {
             <div className="overflow-hidden shadow-sm ring-1 ring-black/5 sm:rounded-lg">
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                    Nama
-                  </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    Email
-                  </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    No. Telpon
-                  </th>
-                  <th scope="col" className="relative py-3.5 pr-4 pl-3 sm:pr-6">
-                    <span className="sr-only">Pilih</span>
-                  </th>
-                </tr>
+                  <tr>
+                    <th scope="col" className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                      Nama
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Email
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      No. Telpon
+                    </th>
+                    <th scope="col" className="relative py-3.5 pr-4 pl-3 sm:pr-6">
+                      <span className="sr-only">Pilih</span>
+                    </th>
+                  </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                {loading ? (
-                  <tr>
-                    <td colSpan={4} className="py-4 text-center text-sm text-gray-500">
-                      Loading...
-                    </td>
-                  </tr>
-                ) : partners.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="py-4 text-center text-sm text-gray-500">
-                      Tidak ada klien yang ditemukan
-                    </td>
-                  </tr>
-                ) : (
-                  partners.map((partner) => (
-                    <RowItem partner={partner} key={partner.id} />
-                  ))
-                )}
+                  {loading ? (
+                    <tr>
+                      <td colSpan={4} className="py-4 text-center text-sm text-gray-500">
+                        Loading...
+                      </td>
+                    </tr>
+                  ) : partners.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="py-4 text-center text-sm text-gray-500">
+                        Tidak ada klien yang ditemukan
+                      </td>
+                    </tr>
+                  ) : (
+                    partners.map((partner) => <RowItem partner={partner} key={partner.id} />)
+                  )}
                 </tbody>
               </table>
             </div>
@@ -80,5 +72,4 @@ export default function SelectRecipientPage() {
 
   if (currentStep !== 1) return null;
   return <SelectRecipientContent />;
-
 }

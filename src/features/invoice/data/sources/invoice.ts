@@ -7,7 +7,7 @@ import {
   InvoiceService,
   InvoiceServiceFilter,
   InvoiceServiceFilterParams,
-  OutgoingInvoiceFilter,
+  OutgoingInvoiceFilter
 } from "@/features/invoice/domain/sources/invoice";
 import { OutgoingInvoiceModel } from "../models/outgoing-invoice";
 import { HttpRequest } from "@/core/helpers/http-request";
@@ -18,17 +18,46 @@ import { InvoiceItemSummaryModel } from "@/features/invoice/data/models/invoice-
 import { InvoiceSenderModel } from "@/features/invoice/data/models/invoice-sender";
 import { InvoiceRecipientModel } from "@/features/invoice/data/models/invoice-recipient";
 import { PublicOutgoingInvoiceModel } from "../models/public-outgoing-invoice";
+import { PayInModel } from "../models/pay-in";
+import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 
 export class InvoiceServiceImpl implements InvoiceService {
   constructor(private readonly http: HttpRequest) {}
 
-  public async getPublicOutgoing(
-    filter: { invoiceId: string },
-    session: SessionEntity,
-  ): Promise<PublicOutgoingInvoiceModel> {
+  public async send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void> {
+    const path = `/invoices/outgoing/${params.id}/send`;
+    const body = { channels: params.sendChannel };
+    const method = "POST";
+
+    await this.http.request({ path, method, body, session });
+  }
+
+  public async createPayInForOutgoingInvoice(params: {
+    invoiceId: string;
+    paymentMethodId: string;
+    paymentSchemeId?: string | null;
+  }): Promise<PayInModel> {
+    const path = `/invoices/public-outgoing/${params.invoiceId}/pay-in`;
+    const method = "POST";
+    const body = {
+      payment_method_id: params.paymentMethodId,
+      ...(params.paymentSchemeId && { payment_scheme_id: params.paymentSchemeId }),
+    };
+
+    const config = { requireAuth: false, requireAccount: false, contentType: "application/json" };
+    const result = await this.http.request({ path, method, body }, config);
+
+    if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    if (!result.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    return PayInModel.fromJson(result);
+  }
+
+  public async getPublicOutgoing(filter: { invoiceId: string }): Promise<PublicOutgoingInvoiceModel> {
     const path = `/invoices/public-outgoing/${filter.invoiceId}`;
     const method = "GET";
-    const result = await this.http.request({ path, method, session });
+
+    const config = { requireAuth: false, requireAccount: false };
+    const result = await this.http.request({ path, method }, config);
     return PublicOutgoingInvoiceModel.fromJson(result);
   }
 
@@ -43,7 +72,9 @@ export class InvoiceServiceImpl implements InvoiceService {
     if (!result.items) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
     if (!result.recipient) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
     if (!result.summary) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
     if (result.signature) result.signature = FileModel.fromJson(result.signature);
+    if (result.pdf) result.pdf = FileModel.fromJson(result.pdf);
     result.items = result.items.map(InvoiceItemModel.fromJson);
     result.recipient = InvoiceRecipientModel.fromJson(result.recipient);
     result.summary = InvoiceItemSummaryModel.fromJson(result.summary);
@@ -55,6 +86,7 @@ export class InvoiceServiceImpl implements InvoiceService {
       signature: result.signature,
       summary: result.summary,
       sender: result.sender,
+      pdf: result.pdf,
     });
   }
 
@@ -128,7 +160,7 @@ export class InvoiceServiceImpl implements InvoiceService {
             body: signatureBody,
             session,
           },
-          { inferContentType: false },
+          { contentType: undefined },
         );
 
         if (!signatureResult) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
@@ -146,7 +178,10 @@ export class InvoiceServiceImpl implements InvoiceService {
       const summary = InvoiceItemSummaryModel.fromJson(finaliseResult.summary);
       const sender = InvoiceSenderModel.fromJson(finaliseResult.sender);
 
-      return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature, summary, sender });
+      let pdf: FileModel | undefined;
+      if (finaliseResult.pdf) pdf = FileModel.fromJson(finaliseResult.pdf);
+
+      return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature, summary, sender, pdf });
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

@@ -7,6 +7,7 @@ import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-
 import { InvoiceItemSummaryModel } from "@/features/invoice/data/models/invoice-item-summary";
 import { InvoiceSenderModel } from "@/features/invoice/data/models/invoice-sender";
 import { InvoiceRecipientModel } from "@/features/invoice/data/models/invoice-recipient";
+import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 
 interface OutgoingInvoiceModelConstructor {
   id: string;
@@ -18,9 +19,11 @@ interface OutgoingInvoiceModelConstructor {
   note?: string;
   tnc?: string;
   signature?: FileModel;
+  pdf?: FileModel;
   status: OutgoingInvoiceStatus;
   summary: InvoiceItemSummaryModel;
   sender: InvoiceSenderModel;
+  sendChannel: NotificationChannel[];
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
@@ -30,6 +33,7 @@ interface OutgoingInvoiceModelFromJsonParams {
   recipient: InvoiceRecipientModel;
   items: InvoiceItemModel[];
   signature?: FileModel;
+  pdf?: FileModel;
   summary: InvoiceItemSummaryModel;
   sender: InvoiceSenderModel;
 }
@@ -44,9 +48,11 @@ export class OutgoingInvoiceModel implements AbstractModel {
   public note?: string;
   public tnc?: string;
   public signature?: FileModel;
+  public pdf?: FileModel;
   public status: OutgoingInvoiceStatus;
   public summary: InvoiceItemSummaryModel;
   public sender: InvoiceSenderModel;
+  public sendChannel: NotificationChannel[];
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
@@ -61,9 +67,11 @@ export class OutgoingInvoiceModel implements AbstractModel {
     this.note = args.note;
     this.tnc = args.tnc;
     this.signature = args.signature;
+    this.pdf = args.pdf;
     this.status = args.status;
     this.summary = args.summary;
     this.sender = args.sender;
+    this.sendChannel = args.sendChannel;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
@@ -80,9 +88,11 @@ export class OutgoingInvoiceModel implements AbstractModel {
       note: data.note,
       tnc: data.tnc,
       signature: params.signature,
+      pdf: params.pdf,
       status: data.status as OutgoingInvoiceStatus,
       summary: params.summary,
       sender: params.sender,
+      sendChannel: data.send_channel,
       createdAt: DateTime.fromISO(data.created_at),
       updatedAt: DateTime.fromISO(data.updated_at),
       deletedAt: data.deleted_at ? DateTime.fromISO(data.deleted_at) : undefined,
@@ -100,9 +110,11 @@ export class OutgoingInvoiceModel implements AbstractModel {
       note: this.note,
       tnc: this.tnc,
       signature: this.signature?.toEntity(),
+      pdf: this.pdf?.toEntity(),
       status: this.status,
       summary: this.summary.toEntity(),
       sender: this.sender.toEntity(),
+      sendChannel: this.sendChannel,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,

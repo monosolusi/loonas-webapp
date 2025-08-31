@@ -6,9 +6,11 @@ import { OccupationModel } from "@/core/utilities/occupation/data/models/occupat
 import { ProvinceModel } from "@/core/utilities/address/data/model/province";
 import { CityModel } from "@/core/utilities/address/data/model/city";
 import { AbstractModel } from "@/core/resources/model";
+import { AccountType } from "@/features/account/domain/enums/account-type";
 
 interface PersonalAccountModelConstructor {
   id: string;
+  type: AccountType;
   nationality: string;
   idNumber: string;
   fullName: string;
@@ -27,6 +29,7 @@ interface PersonalAccountModelConstructor {
 
 export class PersonalAccountModel implements AbstractModel {
   public readonly id: string;
+  public readonly type: AccountType;
   public readonly nationality: string;
   public readonly idNumber: string;
   public readonly fullName: string;
@@ -44,6 +47,7 @@ export class PersonalAccountModel implements AbstractModel {
 
   constructor(args: PersonalAccountModelConstructor) {
     this.id = args.id;
+    this.type = args.type;
     this.nationality = args.nationality;
     this.idNumber = args.idNumber;
     this.fullName = args.fullName;
@@ -63,6 +67,7 @@ export class PersonalAccountModel implements AbstractModel {
   public static fromJson(data: Record<string, any>): PersonalAccountModel {
     return new PersonalAccountModel({
       id: data["id"],
+      type: data["type"] as AccountType,
       nationality: data["nationality"],
       idNumber: data["id_number"],
       fullName: data["full_name"],
@@ -76,13 +81,59 @@ export class PersonalAccountModel implements AbstractModel {
       address: data["address"],
       createdAt: DateTime.fromISO(data["created_at"]),
       updatedAt: DateTime.fromISO(data["updated_at"]),
-      deletedAt: data["deleted_at"] ? DateTime.fromISO(data["deleted_at"]) : undefined
+      deletedAt: data["deleted_at"] ? DateTime.fromISO(data["deleted_at"]) : undefined,
+    });
+  }
+
+  public static fromLocalStorage(encodedData: string): PersonalAccountModel {
+    const jsonAccount = atob(encodedData);
+    const data = JSON.parse(jsonAccount);
+
+    return new PersonalAccountModel({
+      id: data.id,
+      type: AccountType.PERSONAL,
+      nationality: data.nationality,
+      idNumber: data.idNumber,
+      fullName: data.fullName,
+      occupation: new OccupationModel({ id: data.occupation.id, label: data.occupation.label }),
+      pob: data.pob,
+      dob: data.dob,
+      province: new ProvinceModel({ id: data.province.id, label: data.province.label }),
+      city: new CityModel({ id: data.city.id, label: data.city.label }),
+      district: new DistrictModel({ id: data.district.id, label: data.district.label }),
+      subdistrict: new SubdistrictModel({ id: data.subdistrict.id, label: data.subdistrict.label }),
+      address: data.address,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      deletedAt: data.deletedAt,
+    });
+  }
+
+  public static fromEntity(entity: PersonalAccountEntity) {
+    return new PersonalAccountModel({
+      id: entity.id,
+      type: entity.type,
+      nationality: entity.nationality,
+      idNumber: entity.idNumber,
+      fullName: entity.fullName,
+      occupation: new OccupationModel({ id: entity.occupation.id, label: entity.occupation.label }),
+      pob: entity.pob,
+      dob: entity.dob,
+      province: new ProvinceModel({ id: entity.province.id, label: entity.province.label }),
+      city: new CityModel({ id: entity.city.id, label: entity.city.label }),
+      district: new DistrictModel({ id: entity.district.id, label: entity.district.label }),
+      subdistrict: new SubdistrictModel({ id: entity.subdistrict.id, label: entity.subdistrict.label }),
+      address: entity.address,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+      deletedAt: entity.deletedAt,
     });
   }
 
   toEntity(): PersonalAccountEntity {
     return new PersonalAccountEntity({
       id: this.id,
+      type: this.type,
       nationality: this.nationality,
       idNumber: this.idNumber,
       fullName: this.fullName,
@@ -96,8 +147,7 @@ export class PersonalAccountModel implements AbstractModel {
       address: this.address,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
-      deletedAt: this.deletedAt
+      deletedAt: this.deletedAt,
     });
   }
-
 }

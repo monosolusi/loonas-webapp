@@ -9,11 +9,12 @@ import { SessionRepositoryImpl } from "@/features/authentication/data/repositori
 import { PartnerRepositoryImpl } from "@/features/partner/data/repositories/partner";
 import { DataFailed } from "@/core/resources/data-state";
 import { GetPartnerUseCase, GetPartnerUseCaseParams } from "@/features/partner/domain/usecases/get-partner";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 interface GetPartnerContextProps {
-  partner?: PartnerEntity,
-  loading: boolean,
-  error?: ServerError,
+  partner?: PartnerEntity;
+  loading: boolean;
+  error?: ServerError;
   refresh?: () => Promise<void>;
 }
 
@@ -23,7 +24,7 @@ interface GetPartnerProviderProps {
 }
 
 const GetPartnerContext = React.createContext<GetPartnerContextProps>({
-  loading: false
+  loading: false,
 });
 
 export function GetPartnerProvider(props: GetPartnerProviderProps) {
@@ -38,8 +39,9 @@ export function GetPartnerProvider(props: GetPartnerProviderProps) {
     try {
       if (!props.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
+      const http = new HttpRequest();
       const sessionService = new LocalStorageSessionService();
-      const partnerService = new PartnerServiceImpl();
+      const partnerService = new PartnerServiceImpl(http);
       const sessionRepository = new SessionRepositoryImpl(sessionService);
       const partnerRepository = new PartnerRepositoryImpl(partnerService);
       const retrieve = new GetPartnerUseCase(partnerRepository, sessionRepository);
@@ -66,9 +68,7 @@ export function GetPartnerProvider(props: GetPartnerProviderProps) {
   }, [props.id]);
 
   return (
-    <GetPartnerContext.Provider
-      value={{ partner, loading, refresh, error }}
-    >
+    <GetPartnerContext.Provider value={{ partner, loading, refresh, error }}>
       {props.children}
     </GetPartnerContext.Provider>
   );

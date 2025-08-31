@@ -9,13 +9,14 @@ interface PaymentSummaryProps {
   fee: number;
   totalPayable: number;
   isDisabled: boolean;
-  onClick?: () => void;
+  isLoading?: boolean;
+  onClick?: () => void | Promise<void>;
 }
 
 export function PaymentSummary(props: PaymentSummaryProps) {
-  const handleClick = () => {
+  const handleClick = async () => {
     if (props.isDisabled) return;
-    props.onClick?.();
+    await props.onClick?.();
   };
 
   return (
@@ -32,7 +33,7 @@ export function PaymentSummary(props: PaymentSummaryProps) {
           }
         />
         {props.onClick && (
-          <FilledButton disabled={props.isDisabled} onClick={handleClick}>
+          <FilledButton disabled={props.isDisabled} onClick={handleClick} loading={props.isLoading}>
             Bayar Sekarang
           </FilledButton>
         )}

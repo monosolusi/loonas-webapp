@@ -6,10 +6,11 @@ import { DateTime } from "luxon";
 import { OutgoingInvoiceModel } from "@/features/invoice/data/models/outgoing-invoice";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
-import { InvoiceSendChannel } from "@/features/invoice/domain/enums/invoice-send-channel";
 import { CombinedInvoiceSummaryModel } from "@/features/invoice/data/models/combined-invoice-summary";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { PublicOutgoingInvoiceModel } from "../../data/models/public-outgoing-invoice";
+import { PayInModel } from "../../data/models/pay-in";
+import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 
 export interface InvoiceServiceFilter {
   id?: string;
@@ -49,7 +50,7 @@ export interface CreateOutgoingParams {
   tnc?: string;
   signature?: File;
   paymentConfiguration: PaymentConfiguration[];
-  sendChannel: InvoiceSendChannel[];
+  sendChannel: NotificationChannel[];
 }
 
 export interface CombinedInvoiceSummaryFilter {
@@ -84,5 +85,13 @@ export interface InvoiceService {
     session: SessionEntity,
   ): Promise<CombinedInvoiceSummaryModel>;
 
-  getPublicOutgoing(filter: { invoiceId: string }, session: SessionEntity): Promise<PublicOutgoingInvoiceModel>;
+  getPublicOutgoing(filter: { invoiceId: string }): Promise<PublicOutgoingInvoiceModel>;
+
+  createPayInForOutgoingInvoice(params: {
+    invoiceId: string;
+    paymentMethodId: string;
+    paymentSchemeId?: string | null;
+  }): Promise<PayInModel>;
+
+  send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void>;
 }

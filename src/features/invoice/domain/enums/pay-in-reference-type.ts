@@ -1,0 +1,4 @@
+export enum PayInReferenceType {
+  PAYMENT_REQUEST = "PAYMENT_REQUEST",
+  OUTGOING_INVOICE = "OUTGOING_INVOICE",
+}

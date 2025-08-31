@@ -2,21 +2,38 @@
 
 import { LogoImage } from "@/core/presentations/components/logo-image";
 import { InvoiceMetadataImpl } from "../pay/_components/invoice-metadata-impl";
-import { useSearchParams } from "next/navigation";
-import { Card } from "@/core/presentations/components/card";
-import { RemainingPaymentTime } from "@/core/presentations/components/remaining-payment-time";
-import { DateTime } from "luxon";
-import { VirtualAccountDetailBox } from "@/core/presentations/components/va-detail";
-import { PaymentSummary } from "@/core/presentations/components/payment-summary";
+import { PaymentSummaryImpl } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/payment-summary-impl";
+import { VirtualAccountPayInDetail } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/va-pay-in-detail";
+import { useGetPublicPayInDetailForOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
 
 export default function PayInDetailPage() {
-  const searchParams = useSearchParams();
-  const paymentMethod = searchParams.get("payment_method");
-  const paymentScheme = searchParams.get("payment_scheme");
+  const { id } = useParams<{ id: string }>();
+  const { payIn, loading, error } = useGetPublicPayInDetailForOutgoingInvoice({ invoiceId: id });
+  const router = useRouter();
 
-  console.log("Payment Method:", paymentMethod);
-  console.log("Payment Scheme:", paymentScheme);
+  useEffect(() => {
+    // Go to pay; we assume there might be an error in the network call.
+    // Therefore, we need to go back to first flow
+    if (!payIn && error) router.replace("pay");
 
+    if (!payIn) return; // Do nothing if no payIn but is not loading. By right, maybe network error?
+    if (payIn.status === PayInStatus.PENDING_PAYMENT) return; // The current page is for payment
+
+    const routerMap = {
+      [PayInStatus.EXPIRED]: "expired-failed",
+      [PayInStatus.FAILED]: "expired-failed",
+      [PayInStatus.PAID]: "paid",
+      [PayInStatus.PENDING_CREATION]: "pending-creation",
+    };
+
+    const path = routerMap[payIn.status];
+    if (path) router.replace(path);
+  }, [payIn]);
+
+  if (!payIn || loading) return null;
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="flex flex-col space-y-4">
@@ -35,26 +52,10 @@ export default function PayInDetailPage() {
           </div>
           <div className="flex flex-row space-x-4">
             <div className="flex-2">
-              <Card>
-                <div className="flex flex-col space-y-4">
-                  <RemainingPaymentTime deadline={DateTime.now().plus({ hours: 1 })} />
-                  <VirtualAccountDetailBox
-                    logoUrl="https://res.cloudinary.com/monosolusi/image/upload/v1746106618/loonas/web-assets/bca-bank-central-asia-logo_hloxg2.png"
-                    bankName="BCA Virtual Account"
-                    accountNumber="1234567890"
-                    totalPayment={1000000}
-                  />
-                </div>
-              </Card>
+              <VirtualAccountPayInDetail />
             </div>
             <div className="flex-1">
-              <PaymentSummary
-                selectedPaymentMethod={{ title: "Virtual Account" }}
-                invoiceValue={1000000}
-                fee={5000}
-                totalPayable={1005000}
-                isDisabled={false}
-              />
+              <PaymentSummaryImpl />
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { AbstractEntity } from "@/core/resources/entity";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { DateTime } from "luxon";
 import { DiscountType } from "../enums/discount-type";
+import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 
 interface PublicOutgoingInvoiceEntityConstructor {
   id: string;
@@ -39,6 +40,7 @@ interface PublicOutgoingInvoiceEntityConstructor {
     limit: { min: number; max: number };
     pricing: { base: number; percentage: number };
   }>;
+  status: OutgoingInvoiceStatus;
 }
 
 export class PublicOutgoingInvoiceEntity implements AbstractEntity {
@@ -77,6 +79,7 @@ export class PublicOutgoingInvoiceEntity implements AbstractEntity {
     limit: { min: number; max: number };
     pricing: { base: number; percentage: number };
   }>;
+  public status: OutgoingInvoiceStatus;
 
   constructor(args: PublicOutgoingInvoiceEntityConstructor) {
     this.id = args.id;
@@ -92,5 +95,6 @@ export class PublicOutgoingInvoiceEntity implements AbstractEntity {
     this.note = args.note;
     this.tnc = args.tnc;
     this.paymentMethods = args.paymentMethods;
+    this.status = args.status;
   }
 }

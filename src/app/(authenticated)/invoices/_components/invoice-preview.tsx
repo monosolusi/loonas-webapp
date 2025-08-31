@@ -10,8 +10,10 @@ import { Note } from "@/app/(authenticated)/invoices/_components/note";
 import { Tnc } from "@/app/(authenticated)/invoices/_components/tnc";
 import { Signature } from "@/app/(authenticated)/invoices/_components/signature";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
+import clsx from "clsx";
 
 interface InvoicePreviewProps {
+  className?: string;
   sender: { name: string; address: string };
   recipient: { name: string; phoneNumber: string; email: string };
   invoice: {
@@ -43,7 +45,7 @@ interface InvoicePreviewProps {
 
 export function InvoicePreview(props: InvoicePreviewProps) {
   return (
-    <Card className="w-full rounded-xs text-sm shadow-md">
+    <Card className={clsx("w-full rounded-xs text-sm shadow-md", props.className)}>
       <div className="flex flex-col space-y-4">
         <div className="flex flex-1 flex-row space-x-4">
           <div className="flex-1">
