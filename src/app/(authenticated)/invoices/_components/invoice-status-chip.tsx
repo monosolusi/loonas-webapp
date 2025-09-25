@@ -18,7 +18,7 @@ export function InvoiceStatusChip(props: InvoiceStatusChipProps) {
     READY_TO_SEND: { label: "Dalam Antrian Kirim", className: "bg-gray-100 text-gray-500" },
     PENDING_BANK_TRANSFER: { label: "Menunggu Transfer", className: "bg-gray-100 text-gray-500" },
     SENT: { label: "Invoice Terkirim", className: "bg-gray-100 text-gray-500" },
-    PAID: { label: "Sudah Dibayar", className: "bg-gray-100 text-gray-500" },
+    PAID: { label: "Selesai", className: "bg-emerald-100 text-emerald-700" },
   };
 
   return (

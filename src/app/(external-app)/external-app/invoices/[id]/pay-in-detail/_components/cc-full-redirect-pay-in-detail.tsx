@@ -1,11 +1,16 @@
+import { useParams } from "next/navigation";
+import { useGetPublicPayInDetailForOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";
+import { PayInType } from "@/features/payment/domain/enums/pay-in-type";
+
 export function CreditCardFullRedirectPayInDetail() {
+  const { id } = useParams<{ id: string }>();
+  const { payIn, loading } = useGetPublicPayInDetailForOutgoingInvoice({ invoiceId: id });
+
+  if (!payIn || loading) return null;
+  if (payIn.payIn.type !== PayInType.CREDIT_CARD_FULL_REDIRECT) return null;
   return (
     <div>
-      <iframe
-        src="https://sandbox.doku.com/wt-frontend-transaction/dynamic-payment-page?signature=HMACSHA256%3DIFbbu4gJkzlLhnfiBXCeyAE0hMJMqQZelPagBA%2BQez4%3D&clientId=BRN-0271-1747612485660&invoiceNumber=9fd68cb8-9f41-4ca6-82e9-d1b9e277e00d&requestId=a1a0f6f4-3d4e-48df-974f-476164e6c14a&backgroundColor=fcfcfc&fontColor=171717&buttonBackgroundColor=0050ac&buttonFontColor=f5f5f5&transactionType=S"
-        className="min-h-[500px] w-full"
-        allowFullScreen
-      />
+      <iframe src={payIn.payIn.paymentUrl} className="min-h-[500px] w-full" allowFullScreen />
     </div>
   );
 }
