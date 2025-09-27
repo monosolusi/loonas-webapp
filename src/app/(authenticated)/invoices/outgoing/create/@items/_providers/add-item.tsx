@@ -37,6 +37,7 @@ interface AddItemContextProps {
   mustRecalculateTax: boolean;
   recalculated?: () => void;
   clearInput?: () => void;
+  setInput?: (data: InitialItem) => void;
   setName?: React.Dispatch<React.SetStateAction<string>>;
   setDescription?: React.Dispatch<React.SetStateAction<string>>;
   setQty?: React.Dispatch<React.SetStateAction<number>>;
@@ -97,6 +98,19 @@ export function AddItemProvider(props: AddItemProviderProps) {
     setMustRecalculateTax(true);
   };
 
+  const setInput = (data: InitialItem) => {
+    setName(data.name);
+    setDescription(data.description ?? "");
+    setQty(data.qty);
+    setPrice(data.price);
+    setDiscountType(data.discountType);
+    setDiscount(data.discount);
+    setTaxType(data.taxType);
+    setTax(data.tax);
+    setTaxBase(data.taxBase);
+    setTotal(data.total);
+  };
+
   useEffect(() => {
     if (taxType === TaxType.NON_TAXABLE) setMustRecalculateTax(false);
     else setMustRecalculateTax(true);
@@ -131,6 +145,7 @@ export function AddItemProvider(props: AddItemProviderProps) {
         mustRecalculateTax,
         recalculated,
         clearInput,
+        setInput,
         setName,
         setDescription,
         setQty,
