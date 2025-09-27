@@ -20,7 +20,7 @@ export function DeleteRowButton() {
           <OutlinedButton type="button" onClick={toggleDialog}>
             Batal
           </OutlinedButton>
-          <FilledButton type="button" onClick={toggleDialog}>
+          <FilledButton type="button" onClick={toggleDialog} color="danger">
             Hapus
           </FilledButton>
         </div>
