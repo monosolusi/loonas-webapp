@@ -4,7 +4,11 @@ import { PayInType } from "../enums/pay-in-type";
 import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
 
 interface CreditCardFullRedirectPayInDetail {
-  type: PayInType.CREDIT_CARD_FULL_REDIRECT;
+  type:
+    | PayInType.CREDIT_CARD_FULL_REDIRECT
+    | PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_3_MONTHS
+    | PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_6_MONTHS
+    | PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_12_MONTHS;
   paymentUrl: string;
 }
 
