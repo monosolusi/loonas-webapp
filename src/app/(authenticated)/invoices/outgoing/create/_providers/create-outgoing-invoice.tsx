@@ -52,6 +52,7 @@ interface CreateOutgoingInvoiceContextProps {
   setRecipient?: React.Dispatch<React.SetStateAction<PartnerEntity | undefined>>;
   addInvoiceItem?: (item: InvoiceItem) => void;
   updateInvoiceItem?: (params: { index: number; newData: InvoiceItem }) => void;
+  deleteInvoiceItem?: (params: { index: number }) => void;
 }
 
 interface CreateOutgoingInvoiceProviderProps {
@@ -138,6 +139,11 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
     });
   };
 
+  const deleteInvoiceItem = (param: { index: number }) => {
+    if (!setItems) return;
+    setItems((prev) => prev.filter((_, index) => index !== param.index));
+  };
+
   return (
     <CreateOutgoingInvoiceContext.Provider
       value={{
@@ -164,6 +170,7 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
         setRecipient,
         addInvoiceItem,
         updateInvoiceItem,
+        deleteInvoiceItem,
       }}
     >
       {props.children}
