@@ -9,13 +9,9 @@ import { DiscountInput } from "@/app/(authenticated)/invoices/outgoing/create/@i
 import { TaxTypeSelect } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/tax-type";
 import { TaxInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/tax-input";
 import { TaxBaseField } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/tax-base-field";
-import {
-  TotalWithTaxField
-} from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/total-with-tax-field";
+import { TotalWithTaxField } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/total-with-tax-field";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
-import {
-  CalculateTaxButton
-} from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/calculate-tax-button";
+import { CalculateTaxButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/calculate-tax-button";
 import { AddItemProvider } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 import { NameInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/name-input";
 import { DescriptionInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/description-input";
