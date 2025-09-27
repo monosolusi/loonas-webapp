@@ -11,6 +11,7 @@ interface PaymentGatewayModelConstructor {
   requiresSchemeSelection: boolean;
   pricing: PricingModel;
   schemes: PaymentSchemeModel[];
+  type: string;
 }
 
 export class PaymentGatewayModel implements AbstractModel {
@@ -21,6 +22,7 @@ export class PaymentGatewayModel implements AbstractModel {
   public requiresSchemeSelection: boolean;
   public pricing: PricingModel;
   public schemes: PaymentSchemeModel[];
+  public type: string;
 
   constructor(args: PaymentGatewayModelConstructor) {
     this.id = args.id;
@@ -30,6 +32,7 @@ export class PaymentGatewayModel implements AbstractModel {
     this.requiresSchemeSelection = args.requiresSchemeSelection;
     this.pricing = args.pricing;
     this.schemes = args.schemes;
+    this.type = args.type;
   }
 
   public static fromJson(json: Record<string, any>): PaymentGatewayModel {
@@ -40,19 +43,21 @@ export class PaymentGatewayModel implements AbstractModel {
       isActive: json["is_active"],
       requiresSchemeSelection: json["requires_scheme_selection"],
       pricing: PricingModel.fromJson(json["pricing"]),
-      schemes: json["schemes"].map((scheme: any) => PaymentSchemeModel.fromJson(scheme))
+      schemes: json["schemes"].map((scheme: any) => PaymentSchemeModel.fromJson(scheme)),
+      type: json["type"],
     });
   }
 
   toEntity(): PaymentGatewayEntity {
-    return new PaymentGatewayEntity(
-      this.id,
-      this.title,
-      this.description,
-      this.isActive,
-      this.requiresSchemeSelection,
-      this.pricing.toEntity(),
-      this.schemes.map(scheme => scheme.toEntity())
-    );
+    return new PaymentGatewayEntity({
+      id: this.id,
+      title: this.title,
+      description: this.description,
+      isActive: this.isActive,
+      requiresSchemeSelection: this.requiresSchemeSelection,
+      pricing: this.pricing.toEntity(),
+      schemes: this.schemes.map((scheme) => scheme.toEntity()),
+      type: this.type,
+    });
   }
 }

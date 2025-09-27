@@ -8,8 +8,7 @@ export function SaveItemButton() {
   const { name, mustRecalculateTax } = useAddItem();
 
   const isDisabled: boolean = useMemo(() => {
-    if (name.trim() === "" || mustRecalculateTax) return true;
-    else return false;
+    return name.trim() === "" || mustRecalculateTax;
   }, [name, mustRecalculateTax]);
 
   return (

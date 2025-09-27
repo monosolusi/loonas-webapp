@@ -5,7 +5,11 @@ import { PublicPayInDetailEntity } from "@/features/payment/domain/entities/publ
 import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
 
 interface CreditCardFullRedirectPayInDetail {
-  type: PayInType.CREDIT_CARD_FULL_REDIRECT;
+  type:
+    | PayInType.CREDIT_CARD_FULL_REDIRECT
+    | PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_3_MONTHS
+    | PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_6_MONTHS
+    | PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_12_MONTHS;
   paymentUrl: string;
 }
 
@@ -39,6 +43,8 @@ export class PublicPayInDetailModel implements AbstractModel {
   public static fromJson(json: Record<string, any>): PublicPayInDetailModel {
     return new PublicPayInDetailModel({
       payIn: {
+        // TODO: Fix this in the future
+        // @ts-ignore
         type: json.pay_in.type as PayInType,
         bank: json.pay_in.bank && {
           name: json.pay_in.bank.name,

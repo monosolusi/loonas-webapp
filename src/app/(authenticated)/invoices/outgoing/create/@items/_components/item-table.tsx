@@ -1,21 +1,22 @@
 import { Table } from "@/core/presentations/components/table";
 import { TableHeader } from "@/core/presentations/components/table-header";
 import { TableBody } from "@/core/presentations/components/table-body";
-import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { TableContainer } from "@/core/presentations/components/table-container";
 import React, { useMemo } from "react";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { AddItemTableButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/add-item-table-button";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
+import { EditRowButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/edit-row-button";
+import { DeleteRowButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/delete-row-button";
 
 export interface ItemRow {
   name: string;
   description?: string;
   qty: number;
   price: number;
-  discountType?: DiscountType;
-  discount?: number;
+  discountType: DiscountType;
+  discount: number;
   taxBase: number;
   tax: number;
   taxType: TaxType;
@@ -51,41 +52,48 @@ export function ItemTable(props: ItemTableProps) {
   };
 
   const formattedData = useMemo(() => {
-    return props.data.map((row) => ({
-      className: "group hover:bg-gray-50 cursor-pointer",
-      row: [
-        {
-          node: (
-            <div className="flex flex-col space-y-1">
-              <div className="font-bold text-gray-900 group-hover:underline">{row.name}</div>
-              {row.description && <span className="text-xs text-gray-500">{row.description}</span>}
-            </div>
-          ),
-          hideOnMobile: false,
-        },
-        { node: `${row.qty} / ${IDRFormatter.toCurrency(row.price)}`, hideOnMobile: false, className: "text-right" },
-        {
-          node: generateDiscountString(row.discountType, row.discount),
-          hideOnMobile: false,
-          className: "text-right",
-        },
-        {
-          node: row.taxBase === 0 ? "-" : IDRFormatter.toCurrency(row.taxBase),
-          hideOnMobile: false,
-          className: "text-right",
-        },
-        { node: row.tax === 0 ? "-" : IDRFormatter.toCurrency(row.tax), hideOnMobile: false, className: "text-right" },
-        { node: IDRFormatter.toCurrency(row.total), hideOnMobile: false, className: "text-right" },
-        {
-          node: (
-            <div className="flex justify-center">
-              <PencilSquareIcon className="size-5 text-gray-500" />
-            </div>
-          ),
-          hideOnMobile: false,
-        },
-      ],
-    }));
+    return props.data.map((row, index) => {
+      return {
+        className: "group hover:bg-gray-50 cursor-pointer",
+        row: [
+          {
+            node: (
+              <div className="flex flex-col space-y-1">
+                <div className="font-bold text-gray-900 group-hover:underline">{row.name}</div>
+                {row.description && <span className="text-xs text-gray-500">{row.description}</span>}
+              </div>
+            ),
+            hideOnMobile: false,
+          },
+          { node: `${row.qty} / ${IDRFormatter.toCurrency(row.price)}`, hideOnMobile: false, className: "text-right" },
+          {
+            node: generateDiscountString(row.discountType, row.discount),
+            hideOnMobile: false,
+            className: "text-right",
+          },
+          {
+            node: row.taxBase === 0 ? "-" : IDRFormatter.toCurrency(row.taxBase),
+            hideOnMobile: false,
+            className: "text-right",
+          },
+          {
+            node: row.tax === 0 ? "-" : IDRFormatter.toCurrency(row.tax),
+            hideOnMobile: false,
+            className: "text-right",
+          },
+          { node: IDRFormatter.toCurrency(row.total), hideOnMobile: false, className: "text-right" },
+          {
+            node: (
+              <div className="flex justify-center gap-x-2">
+                <EditRowButton data={row} dataIndex={index} />
+                <DeleteRowButton data={{ name: row.name }} dataIndex={index} />
+              </div>
+            ),
+            hideOnMobile: false,
+          },
+        ],
+      };
+    });
   }, [props.data]);
 
   return (
