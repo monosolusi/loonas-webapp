@@ -9,9 +9,13 @@ import { DiscountInput } from "@/app/(authenticated)/invoices/outgoing/create/@i
 import { TaxTypeSelect } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/tax-type";
 import { TaxInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/tax-input";
 import { TaxBaseField } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/tax-base-field";
-import { TotalWithTaxField } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/total-with-tax-field";
+import {
+  TotalWithTaxField
+} from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/total-with-tax-field";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
-import { CalculateTaxButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/calculate-tax-button";
+import {
+  CalculateTaxButton
+} from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/calculate-tax-button";
 import { AddItemProvider } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 import { NameInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/name-input";
 import { DescriptionInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/description-input";
@@ -36,6 +40,8 @@ interface AddItemDialogProps {
   open: boolean;
   onClose?: () => void;
   onSubmit?: (item: ItemDetail) => void | Promise<void>;
+  title?: string;
+  description?: string;
 }
 
 export function AddItemDialog(props: AddItemDialogProps) {
@@ -45,7 +51,7 @@ export function AddItemDialog(props: AddItemDialogProps) {
 
   return (
     <AddItemProvider>
-      <LoonasDialog title="Tambah Item" width="lg" open={props.open} onClose={handleClose}>
+      <LoonasDialog title={props.title ?? "Tambah Item"} width="lg" open={props.open} onClose={handleClose}>
         <AddItemForm onSubmit={props.onSubmit}>
           <p className="text-sm text-gray-500">Yuk, isi detail barang yang mau kamu cantumkan di faktur.</p>
           <div className="my-4 flex flex-col space-y-4">
