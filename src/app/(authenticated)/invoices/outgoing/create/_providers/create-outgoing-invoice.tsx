@@ -17,8 +17,8 @@ export interface InvoiceItem {
   taxType: TaxType;
   tax: number;
   taxBase: number;
-  discountType?: DiscountType;
-  discount?: number;
+  discountType: DiscountType;
+  discount: number;
   total: number;
 }
 
@@ -51,6 +51,8 @@ interface CreateOutgoingInvoiceContextProps {
   setInvoiceNumber?: React.Dispatch<React.SetStateAction<string>>;
   setRecipient?: React.Dispatch<React.SetStateAction<PartnerEntity | undefined>>;
   addInvoiceItem?: (item: InvoiceItem) => void;
+  updateInvoiceItem?: (params: { index: number; newData: InvoiceItem }) => void;
+  deleteInvoiceItem?: (params: { index: number }) => void;
 }
 
 interface CreateOutgoingInvoiceProviderProps {
@@ -126,6 +128,22 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
     });
   };
 
+  const updateInvoiceItem = (params: { index: number; newData: InvoiceItem }) => {
+    if (!setItems) return;
+
+    setItems((prev) => {
+      return prev.map((item, index) => {
+        if (index === params.index) return params.newData;
+        return item;
+      });
+    });
+  };
+
+  const deleteInvoiceItem = (param: { index: number }) => {
+    if (!setItems) return;
+    setItems((prev) => prev.filter((_, index) => index !== param.index));
+  };
+
   return (
     <CreateOutgoingInvoiceContext.Provider
       value={{
@@ -151,6 +169,8 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
         setInvoiceNumber,
         setRecipient,
         addInvoiceItem,
+        updateInvoiceItem,
+        deleteInvoiceItem,
       }}
     >
       {props.children}

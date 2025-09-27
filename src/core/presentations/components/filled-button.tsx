@@ -1,39 +1,43 @@
-import React from "react";
+import React, { useMemo } from "react";
+import clsx from "clsx";
 
 type HTMLButtonType = "button" | "reset" | "submit" | undefined;
 
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ");
-}
-
-export function FilledButton({
-  children,
-  loading,
-  type,
-  onClick,
-  disabled = false,
-  className,
-}: {
+type FilledButtonProps = {
   children?: any;
   loading?: boolean;
   disabled?: boolean;
   type?: HTMLButtonType;
   onClick?: () => void;
   className?: string;
-}) {
+  color?: "primary" | "secondary" | "danger";
+};
+
+export function FilledButton(props: FilledButtonProps) {
+  const buttonColor = useMemo(() => {
+    const colors = {
+      primary: "bg-primary-default hover:bg-primary-500 focus-visible:outline-primary-default text-white",
+      secondary: "bg-gray-200 hover:bg-gray-300 focus-visible:outline-gray-300 text-gray-900",
+      danger: "bg-red-500 hover:bg-red-600 focus-visible:outline-red-600 text-white",
+    };
+
+    return colors[props.color ?? "primary"];
+  }, [props.color]);
+
   return (
     <div className="group">
       <button
-        type={type || "submit"}
-        className={classNames(
-          "bg-primary-default hover:bg-primary-500 focus-visible:outline-primary-default inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 disabled:border-gray-200 disabled:bg-gray-200 disabled:text-gray-500 disabled:shadow-none",
-          className,
+        type={props.type || "submit"}
+        className={clsx(
+          "inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 disabled:border-gray-200 disabled:bg-gray-200 disabled:text-gray-500 disabled:shadow-none",
+          buttonColor,
+          props.className,
         )}
-        disabled={loading || disabled}
-        data-loading={loading}
-        onClick={onClick}
+        disabled={props.loading || (props.disabled ?? false)}
+        data-loading={props.loading}
+        onClick={props.onClick}
       >
-        {loading && (
+        {props.loading && (
           <svg
             className="mr-3 ml-3 size-5 animate-spin text-white"
             xmlns="http://www.w3.org/2000/svg"
@@ -49,7 +53,7 @@ export function FilledButton({
           </svg>
         )}
 
-        {!loading && children}
+        {!props.loading && props.children}
       </button>
     </div>
   );

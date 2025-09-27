@@ -11,7 +11,6 @@ import { LocalStorageSessionService } from "@/features/authentication/data/sourc
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { UserSignOutUseCase } from "@/features/authentication/domain/usecases/user-sign-out";
 import { DataFailed } from "@/core/resources/data-state";
-import { Cog8ToothIcon } from "@heroicons/react/24/outline";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
 export function HeaderAccountList() {
@@ -113,15 +112,6 @@ function HeaderAccountListComponent() {
           {(accounts?.length || 0) > 3 && <ShowAllAccountButton />}
         </div>
         <div className="py-1">
-          <MenuItem>
-            <Link
-              href="/settings"
-              className="group flex items-center px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
-            >
-              <Cog8ToothIcon aria-hidden="true" className="mr-3 size-5 text-gray-400 group-data-focus:text-gray-500" />
-              Pengaturan
-            </Link>
-          </MenuItem>
           <MenuItem>
             <div
               onClick={handleSignOutClick}

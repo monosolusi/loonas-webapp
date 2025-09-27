@@ -27,8 +27,8 @@ export interface ItemDetail {
   taxType: TaxType;
   tax: number;
   taxBase: number;
-  discountType?: DiscountType;
-  discount?: number;
+  discountType: DiscountType;
+  discount: number;
   total: number;
 }
 
@@ -36,6 +36,9 @@ interface AddItemDialogProps {
   open: boolean;
   onClose?: () => void;
   onSubmit?: (item: ItemDetail) => void | Promise<void>;
+  title?: string;
+  description?: string;
+  initialValue?: ItemDetail;
 }
 
 export function AddItemDialog(props: AddItemDialogProps) {
@@ -44,10 +47,12 @@ export function AddItemDialog(props: AddItemDialogProps) {
   };
 
   return (
-    <AddItemProvider>
-      <LoonasDialog title="Tambah Item" width="lg" open={props.open} onClose={handleClose}>
+    <AddItemProvider key={String(props.open)} initialValue={props.initialValue}>
+      <LoonasDialog title={props.title ?? "Tambah Item"} width="lg" open={props.open} onClose={handleClose}>
         <AddItemForm onSubmit={props.onSubmit}>
-          <p className="text-sm text-gray-500">Yuk, isi detail barang yang mau kamu cantumkan di faktur.</p>
+          <p className="text-sm text-gray-500">
+            {props.description ?? "Yuk, isi detail barang yang mau kamu cantumkan di faktur."}
+          </p>
           <div className="my-4 flex flex-col space-y-4">
             <NameInput />
             <DescriptionInput />
