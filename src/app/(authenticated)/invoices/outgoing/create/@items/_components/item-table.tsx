@@ -4,7 +4,9 @@ import { TableBody } from "@/core/presentations/components/table-body";
 import { TableContainer } from "@/core/presentations/components/table-container";
 import React, { useMemo } from "react";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import { AddItemTableButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/add-item-table-button";
+import {
+  AddItemTableButton
+} from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/add-item-table-button";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { EditRowButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/edit-row-button";
@@ -82,7 +84,11 @@ export function ItemTable(props: ItemTableProps) {
           },
           { node: IDRFormatter.toCurrency(row.total), hideOnMobile: false, className: "text-right" },
           {
-            node: <EditRowButton data={row} dataIndex={index} />,
+            node: (
+              <div className="flex justify-center">
+                <EditRowButton data={row} dataIndex={index} />,
+              </div>
+            ),
             hideOnMobile: false,
           },
         ],

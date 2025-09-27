@@ -44,9 +44,7 @@ export function EditRowButton(props: EditRowButtonProps) {
         initialValue={props.data}
         onSubmit={onSubmit}
       />
-      <div className="flex justify-center" onClick={() => toggleDialog()}>
-        <PencilSquareIcon className="size-5 text-gray-500" />
-      </div>
+      <PencilSquareIcon className="size-5 text-gray-500" onClick={() => toggleDialog()} />
     </>
   );
 }
