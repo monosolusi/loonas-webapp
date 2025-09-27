@@ -1,6 +1,6 @@
 "use client";
 
-import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";

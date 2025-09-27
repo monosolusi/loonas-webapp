@@ -10,6 +10,7 @@ import {
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { EditRowButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/edit-row-button";
+import { DeleteRowButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/delete-row-button";
 
 export interface ItemRow {
   name: string;
@@ -85,8 +86,9 @@ export function ItemTable(props: ItemTableProps) {
           { node: IDRFormatter.toCurrency(row.total), hideOnMobile: false, className: "text-right" },
           {
             node: (
-              <div className="flex justify-center">
-                <EditRowButton data={row} dataIndex={index} />,
+              <div className="flex justify-center gap-x-2">
+                <EditRowButton data={row} dataIndex={index} />
+                <DeleteRowButton />
               </div>
             ),
             hideOnMobile: false,
