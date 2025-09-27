@@ -51,7 +51,7 @@ export function ItemTable(props: ItemTableProps) {
   };
 
   const formattedData = useMemo(() => {
-    return props.data.map((row) => {
+    return props.data.map((row, index) => {
       return {
         className: "group hover:bg-gray-50 cursor-pointer",
         row: [
@@ -82,7 +82,7 @@ export function ItemTable(props: ItemTableProps) {
           },
           { node: IDRFormatter.toCurrency(row.total), hideOnMobile: false, className: "text-right" },
           {
-            node: <EditRowButton data={row} />,
+            node: <EditRowButton data={row} dataIndex={index} />,
             hideOnMobile: false,
           },
         ],
