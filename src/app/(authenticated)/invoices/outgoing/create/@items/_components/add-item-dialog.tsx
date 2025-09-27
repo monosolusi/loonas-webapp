@@ -9,13 +9,9 @@ import { DiscountInput } from "@/app/(authenticated)/invoices/outgoing/create/@i
 import { TaxTypeSelect } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/tax-type";
 import { TaxInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/tax-input";
 import { TaxBaseField } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/tax-base-field";
-import {
-  TotalWithTaxField
-} from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/total-with-tax-field";
+import { TotalWithTaxField } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/total-with-tax-field";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
-import {
-  CalculateTaxButton
-} from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/calculate-tax-button";
+import { CalculateTaxButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/calculate-tax-button";
 import { AddItemProvider } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 import { NameInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/name-input";
 import { DescriptionInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/description-input";
@@ -31,8 +27,8 @@ export interface ItemDetail {
   taxType: TaxType;
   tax: number;
   taxBase: number;
-  discountType?: DiscountType;
-  discount?: number;
+  discountType: DiscountType;
+  discount: number;
   total: number;
 }
 
@@ -42,6 +38,7 @@ interface AddItemDialogProps {
   onSubmit?: (item: ItemDetail) => void | Promise<void>;
   title?: string;
   description?: string;
+  initialValue?: ItemDetail;
 }
 
 export function AddItemDialog(props: AddItemDialogProps) {
@@ -50,10 +47,12 @@ export function AddItemDialog(props: AddItemDialogProps) {
   };
 
   return (
-    <AddItemProvider>
+    <AddItemProvider initialValue={props.initialValue}>
       <LoonasDialog title={props.title ?? "Tambah Item"} width="lg" open={props.open} onClose={handleClose}>
         <AddItemForm onSubmit={props.onSubmit}>
-          <p className="text-sm text-gray-500">Yuk, isi detail barang yang mau kamu cantumkan di faktur.</p>
+          <p className="text-sm text-gray-500">
+            {props.description ?? "Yuk, isi detail barang yang mau kamu cantumkan di faktur."}
+          </p>
           <div className="my-4 flex flex-col space-y-4">
             <NameInput />
             <DescriptionInput />

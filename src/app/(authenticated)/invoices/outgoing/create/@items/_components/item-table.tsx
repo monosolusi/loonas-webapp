@@ -14,8 +14,8 @@ export interface ItemRow {
   description?: string;
   qty: number;
   price: number;
-  discountType?: DiscountType;
-  discount?: number;
+  discountType: DiscountType;
+  discount: number;
   taxBase: number;
   tax: number;
   taxType: TaxType;

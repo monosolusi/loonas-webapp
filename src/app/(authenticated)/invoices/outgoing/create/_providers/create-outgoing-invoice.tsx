@@ -17,8 +17,8 @@ export interface InvoiceItem {
   taxType: TaxType;
   tax: number;
   taxBase: number;
-  discountType?: DiscountType;
-  discount?: number;
+  discountType: DiscountType;
+  discount: number;
   total: number;
 }
 

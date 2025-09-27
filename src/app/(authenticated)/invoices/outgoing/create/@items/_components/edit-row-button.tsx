@@ -1,3 +1,5 @@
+"use client";
+
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import React from "react";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
@@ -9,8 +11,8 @@ type Data = {
   description?: string;
   qty: number;
   price: number;
-  discountType?: DiscountType;
-  discount?: number;
+  discountType: DiscountType;
+  discount: number;
   taxBase: number;
   tax: number;
   taxType: TaxType;
@@ -28,7 +30,7 @@ export function EditRowButton(props: EditRowButtonProps) {
 
   return (
     <>
-      <AddItemDialog open={dialogOpen} onClose={toggleDialog} title={"Ubah Detail Item"} />
+      <AddItemDialog open={dialogOpen} onClose={toggleDialog} title={"Ubah Detail Item"} initialValue={props.data} />
       <div className="flex justify-center" onClick={() => toggleDialog()}>
         <PencilSquareIcon className="size-5 text-gray-500" />
       </div>
