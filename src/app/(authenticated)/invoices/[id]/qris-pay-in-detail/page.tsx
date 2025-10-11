@@ -3,8 +3,8 @@
 import { PageContent } from "@/core/presentations/components/page-content";
 import { TextHeadingWithUnderline } from "@/core/presentations/components/text-heading-with-underline";
 import { PaymentDetail } from "@/app/(authenticated)/invoices/_components/payment-detail";
-import { QrisPayInDetailBox } from "@/app/(authenticated)/invoices/[id]/qris-pay-in-detail/_components/qris-pay-in-detail-box";
 import { RemainingPaymentTimeImpl } from "@/app/(authenticated)/invoices/[id]/qris-pay-in-detail/_components/remaining-payment-time-impl";
+import { QrisPayInDetailBoxImpl } from "@/app/(authenticated)/invoices/[id]/qris-pay-in-detail/_components/qris-pay-in-detail-box-impl";
 
 export default function QrisPayInDetailPage() {
   return (
@@ -15,11 +15,7 @@ export default function QrisPayInDetailPage() {
           <div className="flex flex-1 flex-col gap-y-4">
             {/*  RemainingPaymentTime dan QrisPayInDetailBox */}
             <RemainingPaymentTimeImpl />
-            <QrisPayInDetailBox
-              payInDetail={{ id: "3728ac60-dad9-4215-a0f5-e6b637bf7939" }}
-              merchant={{ name: "PT. Tumbuh Adidaya Perkasa" }}
-              qrString="some-random-string"
-            />
+            <QrisPayInDetailBoxImpl />
           </div>
           <div className="flex flex-1">
             {/*  PaymentDetail */}
