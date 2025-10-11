@@ -9,6 +9,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
 import { CreditCardFullRedirectPayInDetail } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/cc-full-redirect-pay-in-detail";
+import { QrisPayInDetail } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/qris-pay-in-detail";
 
 export default function PayInDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -55,6 +56,7 @@ export default function PayInDetailPage() {
             <div className="flex-2">
               <CreditCardFullRedirectPayInDetail />
               <VirtualAccountPayInDetail />
+              <QrisPayInDetail />
             </div>
             <div className="flex-1">
               <PaymentSummaryImpl />
