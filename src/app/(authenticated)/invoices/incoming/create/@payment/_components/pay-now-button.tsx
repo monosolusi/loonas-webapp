@@ -3,14 +3,12 @@
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import React, { useState } from "react";
 import { useCreateIncomingInvoice } from "@/features/invoice/presentations/providers/create-incoming-invoice";
-import { useCreateIncomingInvoiceSteps } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 import { useRouter } from "next/navigation";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { PayInType } from "@/features/payment/domain/enums/pay-in-type";
 
 export function PayNowButton() {
   const { paymentGateway, paymentScheme, createPaymentRequest } = useCreateIncomingInvoice();
-  const { nextStep } = useCreateIncomingInvoiceSteps();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
