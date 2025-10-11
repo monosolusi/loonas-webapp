@@ -10,6 +10,7 @@ import {
   GetOutgoingInvoiceUseCase,
   GetOutgoingInvoiceUseCaseParams,
 } from "@/features/invoice/domain/usecases/get-outgoing-invoice";
+import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 
 interface GetOutgoingInvoiceFetcherParams {
   id: string;
@@ -21,7 +22,7 @@ async function GetOutgoingInvoiceFetcher([_, param]: [string, GetOutgoingInvoice
 
   const http = new HttpRequest();
   const invoiceService = new InvoiceServiceImpl(http);
-  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService);
+  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService, new PayInDetailFactory());
   const retrieve = new GetOutgoingInvoiceUseCase(invoiceRepository, sessionRepository);
   const retrieveParams = new GetOutgoingInvoiceUseCaseParams({ id: param.id });
 
@@ -33,7 +34,7 @@ async function GetOutgoingInvoiceFetcher([_, param]: [string, GetOutgoingInvoice
 
 export function useGetOutgoingInvoice(props: GetOutgoingInvoiceFetcherParams) {
   const { data, isLoading, error, mutate } = useSWR(["get-outgoing-invoice", props], GetOutgoingInvoiceFetcher);
-  
+
   return {
     invoice: data,
     loading: isLoading,

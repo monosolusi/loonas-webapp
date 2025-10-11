@@ -8,6 +8,7 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SendInvoiceUseCase, SendInvoiceUseCaseParams } from "@/features/invoice/domain/usecases/send-invoice";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import useSWRMutation from "swr/mutation";
+import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 
 interface SendInvoiceFetcherParams {
   invoice: { id: string };
@@ -20,7 +21,7 @@ async function SendInvoiceFetcher(_: string, { arg }: { arg: SendInvoiceFetcherP
 
   const http = new HttpRequest();
   const invoiceService = new InvoiceServiceImpl(http);
-  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService);
+  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService, new PayInDetailFactory());
   const send = new SendInvoiceUseCase(invoiceRepository, sessionRepository);
   const sendParams = new SendInvoiceUseCaseParams({
     invoice: { id: arg.invoice.id },

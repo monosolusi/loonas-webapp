@@ -7,6 +7,7 @@ import { GetInvoiceUseCase, GetInvoiceUseCaseParams } from "../../domain/usecase
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { DataFailed } from "@/core/resources/data-state";
 import useSWR from "swr";
+import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 
 interface GetIncomingInvoiceFetcherParams {
   id: string;
@@ -17,7 +18,7 @@ async function GetIncomingInvoiceFetcher([_, params]: [string, GetIncomingInvoic
   const http = new HttpRequest();
   const sessionService = new LocalStorageSessionService();
   const invoiceService = new InvoiceServiceImpl(http);
-  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService);
+  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService, new PayInDetailFactory());
   const sessionRepository = new SessionRepositoryImpl(sessionService);
 
   const get = new GetInvoiceUseCase(invoiceRepository, sessionRepository);

@@ -2,10 +2,9 @@
 
 import { PageContent } from "@/core/presentations/components/page-content";
 import { TextHeadingWithUnderline } from "@/core/presentations/components/text-heading-with-underline";
-import { RemainingPaymentTime } from "@/core/presentations/components/remaining-payment-time";
-import { DateTime } from "luxon";
 import { PaymentDetail } from "@/app/(authenticated)/invoices/_components/payment-detail";
 import { QrisPayInDetailBox } from "@/app/(authenticated)/invoices/[id]/qris-pay-in-detail/_components/qris-pay-in-detail-box";
+import { RemainingPaymentTimeImpl } from "@/app/(authenticated)/invoices/[id]/qris-pay-in-detail/_components/remaining-payment-time-impl";
 
 export default function QrisPayInDetailPage() {
   return (
@@ -15,7 +14,7 @@ export default function QrisPayInDetailPage() {
         <div className="flex flex-row gap-x-4">
           <div className="flex flex-1 flex-col gap-y-4">
             {/*  RemainingPaymentTime dan QrisPayInDetailBox */}
-            <RemainingPaymentTime deadline={DateTime.now().plus({ days: 1 })} />
+            <RemainingPaymentTimeImpl />
             <QrisPayInDetailBox
               payInDetail={{ id: "3728ac60-dad9-4215-a0f5-e6b637bf7939" }}
               merchant={{ name: "PT. Tumbuh Adidaya Perkasa" }}

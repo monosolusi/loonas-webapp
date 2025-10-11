@@ -12,6 +12,7 @@ import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { PublicOutgoingInvoiceEntity } from "../entities/public-outgoing-invoice";
 import { PayInEntity } from "../entities/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
+import { PaymentMethodPayInDetailEntity } from "@/features/payment/domain/entities/payment-method-pay-in-detail-entity";
 
 export interface InvoiceItem {
   name: string;
@@ -95,4 +96,9 @@ export interface InvoiceRepository {
   }): Promise<DataState<PayInEntity>>;
 
   send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<DataState<boolean>>;
+
+  getPayInDetail(
+    params: { invoice: { id: string } },
+    session: SessionEntity,
+  ): Promise<DataState<PaymentMethodPayInDetailEntity>>;
 }

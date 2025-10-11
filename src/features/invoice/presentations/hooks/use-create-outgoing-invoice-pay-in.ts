@@ -1,16 +1,15 @@
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { InvoiceServiceImpl } from "../../data/sources/invoice";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { InvoiceRepositoryImpl } from "../../data/repositories/invoice";
-import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { PayInEntity } from "../../domain/entities/pay-in";
 import {
   CreateOutgoingInvoicePayInUseCase,
   CreateOutgoingInvoicePayInUseCaseParams,
 } from "../../domain/usecases/create-outgoing-invoice-pay-in";
 import useSWRMutation from "swr/mutation";
+import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 
 interface CreateOutgoingInvoicePayInParams {
   invoiceId: string;
@@ -24,7 +23,7 @@ async function CreateOutgoingInvoicePayInFetcher(
 ): Promise<PayInEntity> {
   const http = new HttpRequest();
   const invoiceService = new InvoiceServiceImpl(http);
-  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService);
+  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService, new PayInDetailFactory());
 
   const create = new CreateOutgoingInvoicePayInUseCase(invoiceRepository);
   const createParams = new CreateOutgoingInvoicePayInUseCaseParams({
