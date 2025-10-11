@@ -4,11 +4,8 @@ import { QRCodeSVG } from "qrcode.react";
 export function QrisPayInDetailBox() {
   return (
     <Card className="relative overflow-hidden">
-      {/* aksen merah */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-0">
-        {/* kiri-atas */}
         <div className="absolute top-[25%] left-[-25%] h-[220px] w-[220px] rotate-45 bg-[#e7413a]"></div>
-        {/* kanan-bawah */}
         <div className="absolute right-[-25%] bottom-[-25%] h-[250px] w-[250px] rotate-45 bg-[#e7413a]"></div>
       </div>
 
@@ -26,7 +23,9 @@ export function QrisPayInDetailBox() {
           </div>
           <div className="text-center text-xl font-semibold">PT. Tumbuh Adidaya Perkasa</div>
           <div className="flex flex-col items-center gap-y-4">
-            <QRCodeSVG value="some-random-text" size={256} />
+            <div className="bg-white p-2">
+              <QRCodeSVG value="some-random-text" size={256} />
+            </div>
             <div className="flex flex-col gap-y-1 text-center">
               <div className="uppercase">SATU QRIS Untuk Semua</div>
               <div className="text-sm">Cek aplikasi penyelenggara</div>
