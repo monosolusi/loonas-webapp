@@ -2,9 +2,9 @@
 
 import { PageContent } from "@/core/presentations/components/page-content";
 import { TextHeadingWithUnderline } from "@/core/presentations/components/text-heading-with-underline";
-import { PaymentDetail } from "@/app/(authenticated)/invoices/_components/payment-detail";
 import { RemainingPaymentTimeImpl } from "@/app/(authenticated)/invoices/[id]/qris-pay-in-detail/_components/remaining-payment-time-impl";
 import { QrisPayInDetailBoxImpl } from "@/app/(authenticated)/invoices/[id]/qris-pay-in-detail/_components/qris-pay-in-detail-box-impl";
+import { PaymentDetailImpl } from "@/app/(authenticated)/invoices/[id]/qris-pay-in-detail/_components/payment-detail-impl";
 
 export default function QrisPayInDetailPage() {
   return (
@@ -13,23 +13,11 @@ export default function QrisPayInDetailPage() {
         <TextHeadingWithUnderline>Harap Lakukan Pembayaran</TextHeadingWithUnderline>
         <div className="flex flex-row gap-x-4">
           <div className="flex flex-1 flex-col gap-y-4">
-            {/*  RemainingPaymentTime dan QrisPayInDetailBox */}
             <RemainingPaymentTimeImpl />
             <QrisPayInDetailBoxImpl />
           </div>
           <div className="flex flex-1">
-            {/*  PaymentDetail */}
-            <PaymentDetail
-              invoiceId="1234567890"
-              receiverName="Test"
-              bankName="BCA"
-              accountNumber="1234567890"
-              accountHolderName="AAa"
-              total={100000}
-              fee={1000}
-              totalPayment={101000}
-              showActions={false}
-            />
+            <PaymentDetailImpl />
           </div>
         </div>
       </div>
