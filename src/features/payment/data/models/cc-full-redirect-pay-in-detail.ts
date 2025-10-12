@@ -1,9 +1,6 @@
-import { AbstractModel } from "@/core/resources/model";
 import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
 import { DateTime } from "luxon";
-import {
-  CreditCardFullRedirectPayInDetailEntity
-} from "@/features/payment/domain/entities/cc-full-redirect-pay-in-detail";
+import { CreditCardFullRedirectPayInDetailEntity } from "@/features/payment/domain/entities/cc-full-redirect-pay-in-detail";
 
 interface CreditCardFullRedirectPayInDetailModelConstructor {
   id: string;
@@ -16,7 +13,7 @@ interface CreditCardFullRedirectPayInDetailModelConstructor {
   updatedAt: DateTime;
 }
 
-export class CreditCardFullRedirectPayInDetailModel implements AbstractModel {
+export class CreditCardFullRedirectPayInDetailModel {
   public id: string;
   public redirectUrl: string;
   public providerId: string;
@@ -46,7 +43,7 @@ export class CreditCardFullRedirectPayInDetailModel implements AbstractModel {
       status: data["status"],
       amount: Number(data["amount"]),
       createdAt: DateTime.fromISO(data["created_at"]),
-      updatedAt: DateTime.fromISO(data["updated_at"])
+      updatedAt: DateTime.fromISO(data["updated_at"]),
     });
   }
 
@@ -59,7 +56,7 @@ export class CreditCardFullRedirectPayInDetailModel implements AbstractModel {
       status: this.status,
       amount: this.amount,
       createdAt: this.createdAt,
-      updatedAt: this.updatedAt
+      updatedAt: this.updatedAt,
     });
   }
 }

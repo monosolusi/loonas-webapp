@@ -17,6 +17,7 @@ import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
+import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 
 interface InvoiceItem {
   name: string;
@@ -64,7 +65,7 @@ async function createOutgoingInvoiceFetcher(_: string, { arg }: CreateOutgoingIn
   const sessionService = new LocalStorageSessionService();
   const sessionRepository = new SessionRepositoryImpl(sessionService);
   const invoiceService = new InvoiceServiceImpl(httpRequest);
-  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService);
+  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService, new PayInDetailFactory());
   const create = new CreateOutgoingInvoiceUseCase(invoiceRepository, sessionRepository);
   const createParams = new CreateOutgoingInvoiceUseCaseParams({
     recipient: arg.recipient,

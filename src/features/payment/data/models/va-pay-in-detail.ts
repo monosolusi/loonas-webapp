@@ -1,4 +1,3 @@
-import { AbstractModel } from "@/core/resources/model";
 import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
 import { VirtualAccountPayInDetailEntity } from "@/features/payment/domain/entities/va-pay-in-detail";
 import { DateTime } from "luxon";
@@ -16,7 +15,7 @@ interface VirtualAccountPayInDetailModelConstructor {
   updatedAt: DateTime;
 }
 
-export class VirtualAccountPayInDetailModel implements AbstractModel {
+export class VirtualAccountPayInDetailModel {
   public id: string;
   public accountNumber: string;
   public recipientName: string;

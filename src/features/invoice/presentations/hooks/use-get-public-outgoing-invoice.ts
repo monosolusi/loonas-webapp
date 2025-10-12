@@ -9,6 +9,7 @@ import {
   GetPublicOutgoingInvoiceUseCaseParams,
 } from "../../domain/usecases/get-public-outgoing-invoice";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 
 interface GetPublicOutgoingInvoiceFetcherParams {
   id: string;
@@ -20,7 +21,7 @@ async function GetPublicOutgoingInvoiceFetcher([_, params]: [
 ]): Promise<PublicOutgoingInvoiceEntity> {
   const http = new HttpRequest();
   const invoiceService = new InvoiceServiceImpl(http);
-  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService);
+  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService, new PayInDetailFactory());
   const get = new GetPublicOutgoingInvoiceUseCase(invoiceRepository);
   const getParams = new GetPublicOutgoingInvoiceUseCaseParams({ invoiceId: params.id });
 
@@ -32,7 +33,7 @@ async function GetPublicOutgoingInvoiceFetcher([_, params]: [
 
 export function useGetPublicOutgoingInvoice(Params: GetPublicOutgoingInvoiceFetcherParams) {
   const { data, isLoading, error } = useSWR(["get-public-outgoing-invoice", Params], GetPublicOutgoingInvoiceFetcher);
-  
+
   return {
     invoice: data,
     loading: isLoading,

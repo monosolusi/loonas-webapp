@@ -8,8 +8,9 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { DataFailed } from "@/core/resources/data-state";
 import {
   GetCombinedInvoiceSummaryUseCase,
-  GetCombinedInvoiceSummaryUseCaseParams,
+  GetCombinedInvoiceSummaryUseCaseParams
 } from "@/features/invoice/domain/usecases/get-combined-invoice-summary";
+import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 
 interface UseGetCombinedInvoiceSummaryProps {
   id: string;
@@ -21,7 +22,7 @@ async function getCombinedInvoiceSummaryFetcher([_, id]: [string, string]) {
 
   const http = new HttpRequest();
   const invoiceService = new InvoiceServiceImpl(http);
-  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService);
+  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService, new PayInDetailFactory());
   const retrieve = new GetCombinedInvoiceSummaryUseCase(invoiceRepository, sessionRepository);
   const retrieveParams = new GetCombinedInvoiceSummaryUseCaseParams({ id });
 

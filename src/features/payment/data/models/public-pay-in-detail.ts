@@ -10,25 +10,34 @@ interface CreditCardFullRedirectPayInDetail {
     | PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_3_MONTHS
     | PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_6_MONTHS
     | PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_12_MONTHS;
+  id: string;
   paymentUrl: string;
 }
 
 interface VirtualAccountPayInDetail {
   type: PayInType.VIRTUAL_ACCOUNT;
+  id: string;
   bank: { name: string; logoUrl: string };
   accountNumber: string;
   expirationTime: DateTime;
 }
 
+interface QrisPayInDetail {
+  type: PayInType.QRIS;
+  id: string;
+  qrString: string;
+  expirationTime: DateTime;
+}
+
 interface PublicPayInDetailModelConstructor {
-  payIn: VirtualAccountPayInDetail | CreditCardFullRedirectPayInDetail;
+  payIn: VirtualAccountPayInDetail | CreditCardFullRedirectPayInDetail | QrisPayInDetail;
   summary: { invoiceValue: number; fee: number; totalPayable: number };
   paymentMethod: { title: string };
   status: PayInStatus;
 }
 
 export class PublicPayInDetailModel implements AbstractModel {
-  public payIn: VirtualAccountPayInDetail | CreditCardFullRedirectPayInDetail;
+  public payIn: VirtualAccountPayInDetail | CreditCardFullRedirectPayInDetail | QrisPayInDetail;
   public summary: { invoiceValue: number; fee: number; totalPayable: number };
   public paymentMethod: { title: string };
   public status: PayInStatus;
@@ -42,10 +51,11 @@ export class PublicPayInDetailModel implements AbstractModel {
 
   public static fromJson(json: Record<string, any>): PublicPayInDetailModel {
     return new PublicPayInDetailModel({
+      // TODO: Fix this in the future
+      // @ts-ignore
       payIn: {
-        // TODO: Fix this in the future
-        // @ts-ignore
         type: json.pay_in.type as PayInType,
+        id: json.pay_in.id,
         bank: json.pay_in.bank && {
           name: json.pay_in.bank.name,
           logoUrl: json.pay_in.bank.logo_url,

@@ -9,12 +9,12 @@ import { DataFailed } from "@/core/resources/data-state";
 import useSWR from "swr";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 
-interface GetIncomingInvoiceFetcherParams {
+interface GetInvoiceFetcherParams {
   id: string;
   includes?: string;
 }
 
-async function GetIncomingInvoiceFetcher([_, params]: [string, GetIncomingInvoiceFetcherParams]) {
+async function GetInvoiceFetcher([_, params]: [string, GetInvoiceFetcherParams]) {
   const http = new HttpRequest();
   const sessionService = new LocalStorageSessionService();
   const invoiceService = new InvoiceServiceImpl(http);
@@ -34,8 +34,8 @@ async function GetIncomingInvoiceFetcher([_, params]: [string, GetIncomingInvoic
   return result.data;
 }
 
-export function useGetIncomingInvoice(params: GetIncomingInvoiceFetcherParams) {
-  const { data, isLoading, error } = useSWR(["get-incoming-invoice", params], GetIncomingInvoiceFetcher);
+export function useGetInvoice(params: GetInvoiceFetcherParams) {
+  const { data, isLoading, error } = useSWR(["get-invoice", params], GetInvoiceFetcher);
 
   return {
     invoice: data,
