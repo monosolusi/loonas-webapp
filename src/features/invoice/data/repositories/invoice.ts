@@ -16,9 +16,29 @@ import { CombinedInvoiceSummaryEntity } from "../../domain/entities/combined-inv
 import { PublicOutgoingInvoiceEntity } from "../../domain/entities/public-outgoing-invoice";
 import { PayInEntity } from "../../domain/entities/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
+import { PaymentMethodPayInDetailEntity } from "@/features/payment/domain/entities/payment-method-pay-in-detail-entity";
+import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 
 export class InvoiceRepositoryImpl implements InvoiceRepository {
-  constructor(private readonly invoiceService: InvoiceService) {}
+  constructor(
+    private readonly invoiceService: InvoiceService,
+    private readonly payInDetailFactory: PayInDetailFactory,
+  ) {}
+
+  public async getPayInDetail(
+    params: { invoice: { id: string } },
+    session: SessionEntity,
+  ): Promise<DataState<PaymentMethodPayInDetailEntity>> {
+    try {
+      const invoice = await this.invoiceService.get({ id: params.invoice.id }, {}, session);
+      const service = this.payInDetailFactory.getService({ type: invoice.type });
+      const payInDetail = await service.get({ invoice: { id: invoice.id } }, session);
+      return new DataSuccess(payInDetail.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
 
   public async send(
     params: {
