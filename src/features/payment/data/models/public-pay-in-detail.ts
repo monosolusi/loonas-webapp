@@ -63,6 +63,7 @@ export class PublicPayInDetailModel implements AbstractModel {
         accountNumber: json.pay_in.account_number,
         expirationTime: json.pay_in.expiration_time && DateTime.fromISO(json.pay_in.expiration_time),
         paymentUrl: json.pay_in.payment_url,
+        qrString: json.pay_in.qr_string,
       },
       summary: {
         invoiceValue: json.summary.invoice_value,
