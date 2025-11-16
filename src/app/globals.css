@@ -1,69 +1,72 @@
 @import "tailwindcss";
 
-/*@custom-variant dark (&:where(.dark, .dark *));*/
-
 @theme {
-    --font-sans: var(--font-geist-sans);
-    --font-mono: var(--font-geist-mono);
+    /* FONT */
+    --font-sans: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 
-    /* color-primary */
-    --color-primary-50: #bcd9ff;
-    --color-primary-100: #a7ceff;
-    --color-primary-200: #93c2ff;
-    --color-primary-300: #7fb6ff;
-    --color-primary-400: #6aa9ff;
-    --color-primary-500: #549dff;
-    --color-primary-600: #3c90ff;
-    --color-primary-700: #1e82ff;
-    --color-primary-800: #006ce2;
-    --color-primary-900: #0050ac;
-    --color-primary-950: #003678;
-    --color-primary-default: #007bff;
+    /* BASE / BACKGROUND */
+    --color-base: #FAFAFA;
 
-    /* color-white */
-    --color-white-50: #fcfcfc;
-    --color-white-100: #fbfbfb;
-    --color-white-200: #fafafa;
-    --color-white-300: #f9f9f9;
-    --color-white-400: #f8f8f8;
-    --color-white-500: #f7f7f7;
-    --color-white-600: #f6f6f6;
-    --color-white-700: #f5f5f5;
-    --color-white-800: #dadada;
-    --color-white-900: #a5a5a5;
-    --color-white-950: #737373;
-    --color-white-default: #f5f5f5;
+    /* NEUTRAL */
+    --color-neutral-50: #FFFFFF;
+    --color-neutral-100: #D9DADA;
+    --color-neutral-200: #BDBDBD;
+    --color-neutral-300: #323636;
+    --color-neutral-400: #1B1B1B;
+    --color-neutral-500: #0D0E0E;
 
-    --color-white-pure: #ffffff;
+    /* PRIMARY */
+    --color-primary-50: #F0F7FF;
+    --color-primary-100: #99CAFF;
+    --color-primary-200: #4CA2FF;
+    --color-primary-300: #007BFF;
+    --color-primary-400: #005ABB;
+    --color-primary-500: #001933;
+
+    /* WARNING */
+    --color-warning-50: #FFFCF5;
+    --color-warning-100: #FFFAEB;
+    --color-warning-200: #FDB022;
+    --color-warning-300: #F79009;
+    --color-warning-400: #DC6803;
+    --color-warning-500: #B54708;
+
+    /* ERROR */
+    --color-error-50: #FFFBFA;
+    --color-error-100: #FEE4E2;
+    --color-error-200: #F97066;
+    --color-error-300: #F04438;
+    --color-error-400: #D92D20;
+    --color-error-500: #B42318;
+
+    /* SUCCESS */
+    --color-success-50: #F6FEF9;
+    --color-success-100: #DCFAE6;
+    --color-success-200: #47CD89;
+    --color-success-300: #17B26A;
+    --color-success-400: #079455;
+    --color-success-500: #067647;
 }
 
 @utility scrollbar-hide {
-    /* Hide scrollbar for Chrome, Safari, and Edge */
     &::-webkit-scrollbar {
         display: none;
     }
 
-    /* For Firefox */
     scrollbar-width: none;
-
-    /* For IE and Edge (older versions) - consider if you still need this */
     -ms-overflow-style: none;
 }
 
 :root {
-    --background: var(--color-white-50);
-    --foreground: #171717;
+    --background: var(--color-base);
+    --foreground: var(--color-neutral-500);
 }
-
-/*@media (prefers-color-scheme: dark) {*/
-/*    :root {*/
-/*        --background: #0a0a0a;*/
-/*        --foreground: #ededed;*/
-/*    }*/
-/*}*/
 
 body {
     color: var(--foreground);
     background: var(--background);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans);
 }
