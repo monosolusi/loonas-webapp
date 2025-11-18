@@ -1,36 +1,32 @@
 "use client";
 
-import React from "react";
+import { TextInput, TextInputProps } from "@/core/presentations/components/text-input";
+import Image from "next/image";
+import { useMemo, useState } from "react";
 
-interface PasswordInputProps {
-  value?: string;
-  onChange?: (value: string) => void;
+type PasswordInputProps = {
   label?: string;
-  id?: string;
-}
+} & Omit<TextInputProps, "type" | "leftIcon" | "rightIcon" | "label">;
 
-export function PasswordInput({ id, value, onChange, label }: PasswordInputProps) {
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (onChange) onChange(e.target.value);
-  }
+export function PasswordInput(props: PasswordInputProps) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  const onVisibilityToggle = () => {
+    setIsVisible((prev) => !prev);
+  };
+
+  const iconPath = useMemo(() => {
+    return isVisible ? "/assets/images/eye-icon-w20-h20.svg" : "/assets/images/eye-closed-icon-w20-h20.svg";
+  }, [isVisible]);
 
   return (
-    <div>
-      <label htmlFor={id || "password"} className="block text-sm/6 font-medium text-gray-900">
-        {label || "Kata Sandi"}
-      </label>
-      <div className="mt-2">
-        <input
-          id={id || "password"}
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          value={value}
-          onChange={handleChange}
-          className="focus:outline-primary-600 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6"
-          required
-        />
-      </div>
-    </div>
+    <TextInput
+      {...props}
+      label={props.label ?? "Kata Sandi"}
+      type={isVisible ? "text" : "password"}
+      placeholder={props.placeholder ?? "Masukan kata sandi Anda"}
+      leftIcon={<Image src="/assets/images/lock-icon-w20-h20.svg" alt="Lock Icon" width={20} height={20} />}
+      rightIcon={<Image src={iconPath} alt="Lock Icon" width={20} height={20} onClick={onVisibilityToggle} />}
+    />
   );
 }

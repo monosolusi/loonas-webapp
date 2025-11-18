@@ -8,7 +8,7 @@
     "Liberation Mono", "Courier New", monospace;
 
     /* BASE / BACKGROUND */
-    --color-base: #FAFAFA;
+    --color-background: #FAFAFA;
 
     /* NEUTRAL */
     --color-neutral-50: #FFFFFF;
@@ -61,7 +61,7 @@
 }
 
 :root {
-    --background: var(--color-base);
+    --background: var(--color-background);
     --foreground: var(--color-neutral-500);
 }
 

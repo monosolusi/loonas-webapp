@@ -1,58 +1,42 @@
 "use client";
 
-import React from "react";
-import { Label } from "@/core/presentations/components/label";
+import React, { useMemo } from "react";
 
 export type TextInputProps = {
-  title: string;
-  description?: string;
-  htmlFor?: string;
-  value?: string;
+  label: string;
   onChange?: (value: string) => void;
-  className?: string;
-  type?: React.HTMLInputTypeAttribute;
-  boldLabel?: boolean;
-  inputTextAlign?: "text-left" | "text-right" | "text-center";
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "type">;
+  leftIcon?: React.ReactNode; // Must be width and height props of 20x20
+  rightIcon?: React.ReactNode; // Must be width and height props of 20x20
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">;
 
+/**
+ * Custom text input component with left and right icons as optional.
+ * Please note that the leftIcon and rightIcon props must be width and height props of 20x20.
+ *
+ * @param props
+ * @constructor
+ */
+export function TextInput(props: TextInputProps) {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (props.onChange) props.onChange(e.target.value);
+  };
 
-export function TextInput({
-                            type = "text",
-                            title,
-                            description,
-                            htmlFor,
-                            value,
-                            onChange,
-                            className,
-                            boldLabel = false,
-                            inputTextAlign,
-                            ...props
-                          }: TextInputProps) {
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (onChange) onChange(e.target.value);
-  }
+  const cleanedInputProps = useMemo(() => {
+    const { leftIcon, rightIcon, label, onChange, ...cleanedProps } = props;
+    return cleanedProps;
+  }, [props]);
 
   return (
-    <div className={className}>
-      <div className="flex flex-col">
-        <Label
-          htmlFor={htmlFor}
-          title={title}
-          description={description}
-          bold={boldLabel}
+    <div className="flex flex-col gap-2">
+      <span className="text-base">{props.label}</span>
+      <div className="display flex flex-row items-center gap-3 rounded-lg border border-solid border-neutral-100 p-3">
+        {props.leftIcon && <div className="shrink-0">{props.leftIcon}</div>}
+        <input
+          {...cleanedInputProps}
+          onChange={onChange}
+          className="flex-1 text-base outline-none placeholder:text-neutral-200"
         />
-        <div className="mt-2 flex-1">
-          <input
-            {...props}
-            id={htmlFor}
-            name={htmlFor}
-            type={type}
-            value={value}
-            onChange={handleChange}
-            className={`${inputTextAlign} block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-default sm:text-sm/6 disabled:bg-gray-50 disabled:text-gray-500 disabled:shadow-none disabled:border-gray-200 disabled:cursor-not-allowed disabled:text-gray-500`}
-          />
-        </div>
+        {props.rightIcon && <div className="shrink-0">{props.rightIcon}</div>}
       </div>
     </div>
   );
