@@ -16,7 +16,11 @@ export function PrimaryButton(props: PrimaryButtonProps) {
     <Button
       {...cleanedProps}
       label={props.label}
-      className={clsx(props.className, props.inverse ? "text-primary-300 bg-white" : "bg-primary-300 text-white")}
+      className={clsx(
+        props.className,
+        "cursor-not-allowed disabled:bg-neutral-200 disabled:text-white",
+        props.inverse ? "text-primary-300 bg-white" : "bg-primary-300 text-white",
+      )}
     />
   );
 }
