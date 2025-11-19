@@ -2,6 +2,7 @@ import Image from "next/image";
 import { TextInput } from "@/core/presentations/components/text-input";
 import { PasswordInput } from "@/core/presentations/components/password-input";
 import { PrimaryButton } from "@/core/presentations/components/primary-button";
+import { FeatureItem } from "@/app/(authentication)/sign-in/_components/feature-item";
 
 export default function SignInPage() {
   return (
@@ -62,28 +63,13 @@ export default function SignInPage() {
               </div>
               <div className="flex flex-col gap-3">
                 {/* Feature Item - Analytic Icon */}
-                <div className="flex flex-row items-center gap-3">
-                  <div className="flex h-8 w-8 flex-row items-center justify-center rounded-lg border-white/20 bg-white/20">
-                    <Image src="/assets/images/analytic-icon-w16-h16.svg" alt="Analytic Icon" width={16} height={16} />
-                  </div>
-                  <span className="text-base text-white/95">Pantau pertumbuhan real-time</span>
-                </div>
+                <FeatureItem iconPath="/assets/images/analytic-icon-w16-h16.svg" label="Pantau pertumbuhan real-time" />
 
                 {/*  Feature Item - Security */}
-                <div className="flex flex-row items-center gap-3">
-                  <div className="flex h-8 w-8 flex-row items-center justify-center rounded-lg border-white/20 bg-white/20">
-                    <Image src="/assets/images/shield-icon-w16-h16.svg" alt="Analytic Icon" width={16} height={16} />
-                  </div>
-                  <span className="text-base text-white/95">Keamanan data terjamin</span>
-                </div>
+                <FeatureItem iconPath="/assets/images/shield-icon-w16-h16.svg" label="Keamanan data terjamin" />
 
                 {/*  Feature Item - Optimised Performance */}
-                <div className="flex flex-row items-center gap-3">
-                  <div className="flex h-8 w-8 flex-row items-center justify-center rounded-lg border-white/20 bg-white/20">
-                    <Image src="/assets/images/thunder-icon-w16-h16.svg" alt="Analytic Icon" width={16} height={16} />
-                  </div>
-                  <span className="text-base text-white/95">Otomasi proses bisnis</span>
-                </div>
+                <FeatureItem iconPath="/assets/images/thunder-icon-w16-h16.svg" label="Otomasi proses bisnis" />
               </div>
             </div>
 
