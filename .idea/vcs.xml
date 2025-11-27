@@ -3,6 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../loonas-api" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../loonas-liferay" vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../nginx-mono" vcs="Git" />
   </component>
