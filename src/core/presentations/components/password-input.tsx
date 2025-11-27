@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 
 type PasswordInputProps = {
   label?: string;
+  description?: string;
 } & Omit<TextInputProps, "type" | "leftIcon" | "rightIcon" | "label">;
 
 export function PasswordInput(props: PasswordInputProps) {
@@ -24,6 +25,7 @@ export function PasswordInput(props: PasswordInputProps) {
       {...props}
       label={props.label ?? "Kata Sandi"}
       type={isVisible ? "text" : "password"}
+      description={props.description}
       placeholder={props.placeholder ?? "Masukan kata sandi Anda"}
       leftIcon={<Image src="/assets/images/lock-icon-w20-h20.svg" alt="Lock Icon" width={20} height={20} />}
       rightIcon={<Image src={iconPath} alt="Lock Icon" width={20} height={20} onClick={onVisibilityToggle} />}

@@ -4,6 +4,7 @@ import React, { useMemo } from "react";
 
 export type TextInputProps = {
   label: string;
+  description?: string;
   onChange?: (value: string) => void;
   leftIcon?: React.ReactNode; // Must be width and height props of 20x20
   rightIcon?: React.ReactNode; // Must be width and height props of 20x20
@@ -22,14 +23,14 @@ export function TextInput(props: TextInputProps) {
   };
 
   const cleanedInputProps = useMemo(() => {
-    const { leftIcon, rightIcon, label, onChange, ...cleanedProps } = props;
+    const { leftIcon, rightIcon, label, onChange, description, ...cleanedProps } = props;
     return cleanedProps;
   }, [props]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 transition-all">
       <span className="text-base">{props.label}</span>
-      <div className="display flex flex-row items-center gap-3 rounded-lg border border-solid border-neutral-100 p-3">
+      <div className="display focus-within:ring-primary-300/20 focus-within:border-primary-300 flex flex-row items-center gap-3 rounded-lg border border-solid border-neutral-100 p-3 transition-all focus-within:ring-2">
         {props.leftIcon && <div className="shrink-0">{props.leftIcon}</div>}
         <input
           {...cleanedInputProps}
@@ -38,6 +39,7 @@ export function TextInput(props: TextInputProps) {
         />
         {props.rightIcon && <div className="shrink-0">{props.rightIcon}</div>}
       </div>
+      {props.description && <span className="text-xs leading-4 font-normal text-neutral-200">{props.description}</span>}
     </div>
   );
 }
