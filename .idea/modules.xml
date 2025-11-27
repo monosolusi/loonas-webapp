@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../loonas-api/.idea/loonas-api.iml" filepath="$PROJECT_DIR$/../loonas-api/.idea/loonas-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/loonas-webapp.iml" filepath="$PROJECT_DIR$/.idea/loonas-webapp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../nginx-mono/.idea/nginx-mono.iml" filepath="$PROJECT_DIR$/../nginx-mono/.idea/nginx-mono.iml" />
     </modules>
   </component>
 </project>
