@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { PrimaryButton } from "@/core/presentations/components/primary-button";
 import { FeatureItem } from "@/app/(authentication)/sign-in/_components/feature-item";
 import { SignInProvider } from "@/features/authentication/presentation/providers/sign-in";
 import { CredentialForm } from "@/app/(authentication)/sign-in/_components/credential-form";
 import { InvalidCredAlert } from "@/app/(authentication)/sign-in/_components/invalid-cred-alert";
+import { RegisterButton } from "@/app/(authentication)/sign-in/_components/register-button";
 
 export default function SignInPage() {
   return (
@@ -66,19 +66,7 @@ export default function SignInPage() {
                   <span className="text-base text-white/80">Daftar dan mulai kelola bisnis Anda</span>
                 </div>
                 <div className="flex flex-1 flex-row">
-                  <PrimaryButton
-                    label="Daftar Sekarang"
-                    rightIcon={
-                      <Image
-                        src="/assets/images/arrow-right-icon-w16-h16.svg"
-                        alt="Arrow Right"
-                        width={16}
-                        height={16}
-                      />
-                    }
-                    className="w-full"
-                    inverse
-                  />
+                  <RegisterButton />
                 </div>
               </div>
             </div>
