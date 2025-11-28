@@ -1,11 +1,11 @@
-import React from "react";
-import Image from "next/image";
 import { StepIndicatorWithTime } from "@/app/(user)/onboarding-new-user/_components/step-indicator-with-time";
+import Image from "next/image";
 import { TextInput } from "@/core/presentations/components/text-input";
 import { PasswordInput } from "@/core/presentations/components/password-input";
 import { PrimaryButton } from "@/core/presentations/components/primary-button";
+import React from "react";
 
-export default function OnboardingNewUserPage() {
+export default function UserStepPage() {
   return (
     <div className="flex flex-col items-center justify-center gap-10">
       <StepIndicatorWithTime currentStep={1} totalSteps={4} expectedTime="~1 menit" />

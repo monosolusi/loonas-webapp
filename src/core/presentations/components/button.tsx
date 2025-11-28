@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { Spinner } from "@/core/presentations/components/spinner";
 
 export type ButtonProps = {
+  leftIcon?: React.ReactNode; // Must be width and height props of 16x16
   rightIcon?: React.ReactNode; // Must be width and height props of 16x16
   label: string;
   loading?: boolean;
@@ -10,7 +11,7 @@ export type ButtonProps = {
 
 export function Button(props: ButtonProps) {
   const cleanedButtonProps = useMemo(() => {
-    const { label, className, rightIcon, loading, ...rest } = props;
+    const { label, className, leftIcon, rightIcon, loading, ...rest } = props;
     return rest;
   }, [props]);
 
@@ -24,8 +25,9 @@ export function Button(props: ButtonProps) {
       disabled={props.loading || props.disabled}
     >
       <div className="flex flex-row items-center justify-center gap-2">
+        {props.leftIcon && !props.loading && <div className="shrink-0">{props.leftIcon}</div>}
         {props.loading ? <Spinner /> : <span className="text-base">{props.label}</span>}
-        {props.rightIcon && <div className="shrink-0">{props.rightIcon}</div>}
+        {props.rightIcon && !props.loading && <div className="shrink-0">{props.rightIcon}</div>}
       </div>
     </button>
   );
