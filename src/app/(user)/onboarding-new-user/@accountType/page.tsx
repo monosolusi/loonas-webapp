@@ -2,17 +2,13 @@ import { StepIndicatorWithTime } from "@/app/(user)/onboarding-new-user/_compone
 import { AccountTypeCard } from "@/app/(user)/onboarding-new-user/@accountType/_components/account-type-card";
 import { SecondaryButton } from "@/core/presentations/components/secondary-button";
 import Image from "next/image";
+import { StepHeader } from "@/app/(user)/onboarding-new-user/_components/step-header";
 
 export default function SelectAccountTypeStepPage() {
   return (
     <div className="flex flex-col items-center justify-center gap-10">
       <StepIndicatorWithTime currentStep={2} totalSteps={4} expectedTime="~30 detik" />
-      <div className="flex flex-col items-center justify-center gap-3">
-        <span className="text-3xl leading-9 font-semibold tracking-tight text-neutral-500">Pilih Jenis Akun</span>
-        <span className="text-base leading-6 font-normal text-neutral-200">
-          Pilih yang paling sesuai dengan kebutuhan Anda
-        </span>
-      </div>
+      <StepHeader title="Pilih Jenis Akun" description="Pilih yang paling sesuai dengan kebutuhan Anda" />
       <div className="flex flex-col gap-6">
         <div className="flex w-full flex-col gap-3">
           <AccountTypeCard

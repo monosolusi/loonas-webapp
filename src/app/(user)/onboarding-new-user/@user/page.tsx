@@ -4,15 +4,13 @@ import { TextInput } from "@/core/presentations/components/text-input";
 import { PasswordInput } from "@/core/presentations/components/password-input";
 import { PrimaryButton } from "@/core/presentations/components/primary-button";
 import React from "react";
+import { StepHeader } from "@/app/(user)/onboarding-new-user/_components/step-header";
 
 export default function UserStepPage() {
   return (
     <div className="flex flex-col items-center justify-center gap-10">
       <StepIndicatorWithTime currentStep={1} totalSteps={4} expectedTime="~1 menit" />
-      <div className="flex flex-col items-center gap-3">
-        <span className="text-3xl leading-10 font-semibold tracking-tight text-neutral-500">Buat akun baru</span>
-        <span className="text-base leading-6 font-normal text-neutral-200">Mari mulai dengan informasi dasar Anda</span>
-      </div>
+      <StepHeader title="Buat Akun Baru" description="Mari mulai dengan informasi dasar Anda" />
       <div className="flex flex-col gap-6">
         <div className="flex flex-row items-start gap-3 rounded-lg border border-neutral-100 bg-neutral-50 p-4">
           <Image
