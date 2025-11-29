@@ -3,6 +3,7 @@ import { AccountTypeCard } from "@/app/(user)/onboarding-new-user/@accountType/_
 import { SecondaryButton } from "@/core/presentations/components/secondary-button";
 import Image from "next/image";
 import { StepHeader } from "@/app/(user)/onboarding-new-user/_components/step-header";
+import { PreviousButton } from "@/app/(user)/onboarding-new-user/_components/previous-button";
 
 export default function SelectAccountTypeStepPage() {
   return (
@@ -22,18 +23,7 @@ export default function SelectAccountTypeStepPage() {
             description="Untuk perusahaan, UMKM, dan organisasi. Fitur lengkap untuk manajemen keuangan bisnis dan tim."
           />
         </div>
-        <SecondaryButton
-          label="Kembali"
-          leftIcon={
-            <Image
-              src="/assets/images/arrow-left-icon-neutral-500-w16-h16.svg"
-              alt="Left Icon"
-              width={16}
-              height={16}
-            />
-          }
-          outlined
-        />
+        <PreviousButton />
         <span className="text-center text-xs leading-6 font-normal text-neutral-200">
           Tidak yakin? Pilih Personal dulu, Anda bisa upgrade ke Bisnis nanti.
         </span>

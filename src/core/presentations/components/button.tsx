@@ -19,7 +19,7 @@ export function Button(props: ButtonProps) {
     <button
       {...cleanedButtonProps}
       className={clsx(
-        "flex h-11 cursor-pointer flex-row items-center justify-center rounded-lg p-3.5",
+        "flex h-11 w-full cursor-pointer flex-row items-center justify-center rounded-lg p-3.5",
         props.className,
       )}
       disabled={props.loading || props.disabled}

@@ -8,14 +8,26 @@ export type SelectOption = {
   value: string;
 };
 
-export type SelectInputProps = {
-  label: string;
+type SelectInputBaseProps = {
   description?: string;
   options: SelectOption[];
   onChange?: (value: string) => void;
   placeholder?: string;
   leftIcon?: React.ReactNode; // Must be width and height props of 20x20
-} & Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "onChange">;
+};
+
+type SelectInputWithLabel = SelectInputBaseProps & {
+  label: string;
+  noLabel?: false;
+};
+
+type SelectInputWithoutLabel = SelectInputBaseProps & {
+  label?: string;
+  noLabel: true;
+};
+
+export type SelectInputProps = (SelectInputWithLabel | SelectInputWithoutLabel) &
+  Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "onChange">;
 
 /**
  * Custom select input component with left icon as optional.
@@ -30,7 +42,7 @@ export function SelectInput(props: SelectInputProps) {
   };
 
   const cleanedInputProps = useMemo(() => {
-    const { leftIcon, label, onChange, description, options, placeholder, ...cleanedProps } = props;
+    const { leftIcon, label, onChange, description, options, placeholder, noLabel, ...cleanedProps } = props;
     return cleanedProps;
   }, [props]);
 
@@ -38,7 +50,7 @@ export function SelectInput(props: SelectInputProps) {
 
   return (
     <div className="flex flex-col gap-2 transition-all">
-      <span className="text-base">{props.label}</span>
+      {!props.noLabel && <span className="text-base">{props.label}</span>}
       <div className="display focus-within:ring-primary-300/20 focus-within:border-primary-300 relative flex flex-row items-center gap-3 rounded-lg border border-solid border-neutral-100 p-3 transition-all focus-within:ring-2">
         {props.leftIcon && <div className="shrink-0">{props.leftIcon}</div>}
         {!hasValue && props.placeholder && (
