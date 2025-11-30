@@ -13,7 +13,7 @@ export default function PersonalDetailInputPage() {
           Isi data diri sesuai kartu identitas Anda
         </span>
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="mb-8 flex flex-col gap-4">
         {/* Nationality Radio Input Group */}
         <div className="flex flex-col gap-2">
           <legend>Status Kewarganegaraan</legend>
@@ -54,7 +54,7 @@ export default function PersonalDetailInputPage() {
         <TextInput label="Tempat Lahir" type="text" placeholder="Masukan tempat lahir Anda" />
 
         {/*  Date of Birth Input */}
-        <div className="mb-8 flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <span className="text-base">Tanggal Lahir</span>
           <div className="flex flex-row gap-2">
             <div className="flex-1">
