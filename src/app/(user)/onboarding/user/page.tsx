@@ -4,6 +4,7 @@ import React from "react";
 import { StepHeader } from "@/app/(user)/onboarding/_components/step-header";
 import { CreateUserButton } from "@/app/(user)/onboarding/user/_components/create-user-button";
 import { CreateUserProvider } from "@/app/(user)/onboarding/user/_providers/create-user";
+import { CreateUserInputs } from "@/app/(user)/onboarding/user/_components/create-user-inputs";
 import { CreateUserForm } from "@/app/(user)/onboarding/user/_components/create-user-form";
 
 export default function UserStepPage() {
@@ -25,8 +26,10 @@ export default function UserStepPage() {
               Data Anda aman dan terenkripsi. Kami tidak akan membagikan informasi pribadi Anda kepada pihak ketiga.
             </span>
           </div>
-          <CreateUserForm />
-          <CreateUserButton />
+          <CreateUserForm>
+            <CreateUserInputs />
+            <CreateUserButton />
+          </CreateUserForm>
           <span className="text-center text-xs leading-5 font-normal text-neutral-200">
             Dengan melanjutkan, Anda menyetujui &nbsp;
             <a href="https://loonas.id" className="text-primary-300">

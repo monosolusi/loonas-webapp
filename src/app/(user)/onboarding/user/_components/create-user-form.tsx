@@ -1,54 +1,32 @@
 "use client";
 
-import { TextInput } from "@/core/presentations/components/text-input";
-import Image from "next/image";
-import { PasswordInput } from "@/core/presentations/components/password-input";
 import React from "react";
+import { useRouter } from "next/navigation";
 import { useCreateUser } from "@/app/(user)/onboarding/user/_providers/create-user";
 
-export function CreateUserForm() {
-  const {
-    email,
-    password,
-    repeatPassword,
-    setEmail,
-    setPassword,
-    setRepeatPassword,
-    emailError,
-    passwordError,
-    repeatPasswordError,
-  } = useCreateUser();
+type CreateUserFormProps = {
+  children: React.ReactNode;
+};
+
+export function CreateUserForm(props: CreateUserFormProps) {
+  const router = useRouter();
+  const { createUser, isClean, isCreating } = useCreateUser();
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!isClean) return;
+    if (!createUser) return;
+    if (isCreating) return;
+
+    await createUser();
+    router.push("/onboarding/account");
+  };
 
   return (
-    <div className="flex w-full flex-col gap-4">
-      {/* Email Input */}
-      <TextInput
-        label="Email"
-        type="email"
-        placeholder="Masukan email Anda"
-        description="Gunakan email aktif untuk verifikasi akun"
-        leftIcon={<Image src="/assets/images/email-icon-w20-h20.svg" alt="Email Icon" width={20} height={20} />}
-        value={email}
-        onChange={setEmail}
-        error={emailError}
-      />
-
-      {/* Password Input */}
-      <PasswordInput
-        label="Kata Sandi"
-        description="Kombinasi huruf besar, kecil, angka dan simbol"
-        value={password}
-        onChange={setPassword}
-        error={passwordError}
-      />
-
-      {/*  Re-enter Password Input */}
-      <PasswordInput
-        label="Ulangi Kata Sandi"
-        value={repeatPassword}
-        onChange={setRepeatPassword}
-        error={repeatPasswordError}
-      />
-    </div>
+    <form onSubmit={onSubmit} className="flex flex-col gap-6">
+      {props.children}
+    </form>
   );
 }

@@ -2,19 +2,22 @@
 
 import React, { useMemo } from "react";
 import { isValidEmail, isValidPassword } from "@/core/utilities/validation-patterns";
+import { useSignUpAndSignIn } from "@/features/user/presentation/hooks/use-sign-up-and-sign-in";
+import { ServerError } from "@/core/resources/server-error";
 
 type CreateUserContextProps = {
   email: string;
   password: string;
   repeatPassword: string;
   isClean: boolean;
+  isCreating: boolean;
   emailError: string | null;
   passwordError: string | null;
   repeatPasswordError: string | null;
   setEmail?: React.Dispatch<React.SetStateAction<string>>;
   setPassword?: React.Dispatch<React.SetStateAction<string>>;
   setRepeatPassword?: React.Dispatch<React.SetStateAction<string>>;
-  createUser?: () => void;
+  createUser?: () => Promise<void>;
 };
 
 type CreateUserProviderProps = {
@@ -26,6 +29,7 @@ const CreateUserContext = React.createContext<CreateUserContextProps>({
   password: "",
   repeatPassword: "",
   isClean: true,
+  isCreating: false,
   emailError: null,
   passwordError: null,
   repeatPasswordError: null,
@@ -35,11 +39,13 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [repeatPassword, setRepeatPassword] = React.useState<string>("");
+  const { trigger, isMutating, error } = useSignUpAndSignIn();
 
   const emailError = useMemo(() => {
+    if (error instanceof ServerError) return error.message;
     if (!email) return null;
     return isValidEmail(email) ? null : "Email tidak valid";
-  }, [email]);
+  }, [email, error]);
 
   const passwordError = useMemo(() => {
     if (!password) return null;
@@ -56,6 +62,11 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
     [email, password, repeatPassword],
   );
 
+  const createUser = async () => {
+    if (!isClean) return;
+    await trigger({ email, password });
+  };
+
   return (
     <CreateUserContext.Provider
       value={{
@@ -69,6 +80,8 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
         emailError,
         passwordError,
         repeatPasswordError,
+        createUser,
+        isCreating: isMutating,
       }}
     >
       {props.children}
