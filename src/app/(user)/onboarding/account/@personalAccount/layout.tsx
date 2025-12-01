@@ -1,8 +1,8 @@
-import { StepIndicatorWithTime } from "@/app/(user)/onboarding-new-user/_components/step-indicator-with-time";
-import { StepHeader } from "@/app/(user)/onboarding-new-user/_components/step-header";
-import { PreviousButton } from "@/app/(user)/onboarding-new-user/_components/previous-button";
-import { NextButton } from "@/app/(user)/onboarding-new-user/_components/next-button";
+import { StepIndicatorWithTime } from "@/app/(user)/onboarding/_components/step-indicator-with-time";
+import { StepHeader } from "@/app/(user)/onboarding/_components/step-header";
 import React from "react";
+import { PreviousButton } from "@/app/(user)/onboarding/account/_components/previous-button";
+import { NextButton } from "@/app/(user)/onboarding/account/_components/next-button";
 
 type PersonalAccountCreationLayoutProps = {
   personalDetail: React.ReactNode;

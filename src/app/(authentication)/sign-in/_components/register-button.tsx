@@ -8,7 +8,7 @@ export function RegisterButton() {
   const router = useRouter();
 
   const onClick = () => {
-    router.push("/onboarding-new-user");
+    router.push("/onboarding/user");
   };
 
   return (

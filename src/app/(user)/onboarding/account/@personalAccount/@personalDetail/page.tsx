@@ -1,8 +1,8 @@
-import {
-  NationalityRadioItem
-} from "@/app/(user)/onboarding-new-user/@personalAccount/_components/nationality-radio-item";
 import { TextInput } from "@/core/presentations/components/text-input";
 import { SelectInput } from "@/core/presentations/components/select-input";
+import {
+  NationalityRadioItem
+} from "@/app/(user)/onboarding/account/@personalAccount/_components/nationality-radio-item";
 
 export default function PersonalDetailInputPage() {
   return (

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { MarketingBullet } from "@/app/(user)/onboarding-new-user/_components/marketing-bullet";
+import { MarketingBullet } from "@/app/(user)/onboarding/_components/marketing-bullet";
 import { DateTime } from "luxon";
 
 export function MarketingPanel() {

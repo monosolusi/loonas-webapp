@@ -1,10 +1,10 @@
-import { StepIndicatorWithTime } from "@/app/(user)/onboarding-new-user/_components/step-indicator-with-time";
+import { StepIndicatorWithTime } from "@/app/(user)/onboarding/_components/step-indicator-with-time";
 import Image from "next/image";
 import { TextInput } from "@/core/presentations/components/text-input";
 import { PasswordInput } from "@/core/presentations/components/password-input";
 import React from "react";
-import { StepHeader } from "@/app/(user)/onboarding-new-user/_components/step-header";
-import { NextButton } from "@/app/(user)/onboarding-new-user/_components/next-button";
+import { StepHeader } from "@/app/(user)/onboarding/_components/step-header";
+import { CreateUserButton } from "@/app/(user)/onboarding/user/_components/create-user-button";
 
 export default function UserStepPage() {
   return (
@@ -40,7 +40,7 @@ export default function UserStepPage() {
           {/*  Re-enter Password Input */}
           <PasswordInput label="Ulangi Kata Sandi" />
         </div>
-        <NextButton />
+        <CreateUserButton />
         <span className="text-center text-xs leading-5 font-normal text-neutral-200">
           Dengan melanjutkan, Anda menyetujui &nbsp;
           <a href="https://loonas.id" className="text-primary-300">

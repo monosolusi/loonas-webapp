@@ -1,9 +1,6 @@
-import { StepIndicatorWithTime } from "@/app/(user)/onboarding-new-user/_components/step-indicator-with-time";
-import { AccountTypeCard } from "@/app/(user)/onboarding-new-user/@accountType/_components/account-type-card";
-import { SecondaryButton } from "@/core/presentations/components/secondary-button";
-import Image from "next/image";
-import { StepHeader } from "@/app/(user)/onboarding-new-user/_components/step-header";
-import { PreviousButton } from "@/app/(user)/onboarding-new-user/_components/previous-button";
+import { StepIndicatorWithTime } from "@/app/(user)/onboarding/_components/step-indicator-with-time";
+import { StepHeader } from "@/app/(user)/onboarding/_components/step-header";
+import { AccountTypeCard } from "@/app/(user)/onboarding/account/@accountType/_components/account-type-card";
 
 export default function SelectAccountTypeStepPage() {
   return (
@@ -23,7 +20,6 @@ export default function SelectAccountTypeStepPage() {
             description="Untuk perusahaan, UMKM, dan organisasi. Fitur lengkap untuk manajemen keuangan bisnis dan tim."
           />
         </div>
-        <PreviousButton />
         <span className="text-center text-xs leading-6 font-normal text-neutral-200">
           Tidak yakin? Pilih Personal dulu, Anda bisa upgrade ke Bisnis nanti.
         </span>

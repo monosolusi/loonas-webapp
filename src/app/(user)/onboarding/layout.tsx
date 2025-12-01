@@ -1,10 +1,8 @@
 import React from "react";
-import { MarketingPanel } from "@/app/(user)/onboarding-new-user/_components/marketing-panel";
+import { MarketingPanel } from "@/app/(user)/onboarding/_components/marketing-panel";
 
 type OnboardingLayoutProps = {
-  user: React.ReactNode;
-  accountType: React.ReactNode;
-  personalAccount: React.ReactNode;
+  children: React.ReactNode;
 };
 
 export default function OnboardingLayout(props: OnboardingLayoutProps) {
@@ -14,11 +12,7 @@ export default function OnboardingLayout(props: OnboardingLayoutProps) {
         <MarketingPanel />
       </div>
       <div className="h-full w-2/3 overflow-y-auto bg-neutral-50">
-        <div className="px-36 py-12">
-          {/*{props.user}*/}
-          {/*{props.accountType}*/}
-          {props.personalAccount}
-        </div>
+        <div className="px-36 py-12">{props.children}</div>
       </div>
     </section>
   );
