@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../loonas-api/.idea/loonas-api.iml" filepath="$PROJECT_DIR$/../loonas-api/.idea/loonas-api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../loonas-liferay/.idea/loonas-liferay.iml" filepath="$PROJECT_DIR$/../loonas-liferay/.idea/loonas-liferay.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/loonas-webapp.iml" filepath="$PROJECT_DIR$/.idea/loonas-webapp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../nginx-mono/.idea/nginx-mono.iml" filepath="$PROJECT_DIR$/../nginx-mono/.idea/nginx-mono.iml" />
     </modules>
   </component>
 </project>
