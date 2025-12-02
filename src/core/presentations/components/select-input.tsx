@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import Image from "next/image";
+import clsx from "clsx";
 
 export type SelectOption = {
   label: string;
@@ -49,9 +50,16 @@ export function SelectInput(props: SelectInputProps) {
   const hasValue = props.value !== undefined && props.value !== "";
 
   return (
-    <div className="flex flex-col gap-2 transition-all">
+    <div className={clsx("flex flex-col gap-2 transition-all", props.disabled && "opacity-50")}>
       {!props.noLabel && <span className="text-base">{props.label}</span>}
-      <div className="display focus-within:ring-primary-300/20 focus-within:border-primary-300 relative flex flex-row items-center gap-3 rounded-lg border border-solid border-neutral-100 p-3 transition-all focus-within:ring-2">
+      <div
+        className={clsx(
+          "relative flex flex-row items-center gap-3 rounded-lg border border-solid border-neutral-100 p-3 transition-all",
+          props.disabled
+            ? "cursor-not-allowed bg-neutral-50"
+            : "focus-within:ring-primary-300/20 focus-within:border-primary-300 focus-within:ring-2",
+        )}
+      >
         {props.leftIcon && <div className="shrink-0">{props.leftIcon}</div>}
         {!hasValue && props.placeholder && (
           <span className="pointer-events-none absolute left-3 text-base text-neutral-200">{props.placeholder}</span>
@@ -59,7 +67,11 @@ export function SelectInput(props: SelectInputProps) {
         <select
           {...cleanedInputProps}
           onChange={onChange}
-          className={`flex-1 cursor-pointer appearance-none bg-transparent text-base outline-none ${!hasValue ? "text-transparent" : ""}`}
+          className={clsx(
+            "flex-1 appearance-none bg-transparent text-base outline-none",
+            props.disabled ? "cursor-not-allowed" : "cursor-pointer",
+            !hasValue && "text-transparent",
+          )}
         >
           <option value="" disabled></option>
           {props.options.map((option) => (

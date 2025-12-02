@@ -1,6 +1,5 @@
 "use client";
 
-import { SelectInput } from "@/core/presentations/components/select-input";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import {
   NationalityRadioGroup
@@ -17,6 +16,9 @@ import {
 import {
   DateOfBirthInput
 } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/date-of-birth-input";
+import {
+  OccupationInput
+} from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/occupation-input";
 
 export default function PersonalDetailInputPage() {
   const { currentStep, type } = useCreateAccount();
@@ -41,11 +43,7 @@ export default function PersonalDetailInputPage() {
         <IdentityNumberInput />
 
         {/* Occupation Input */}
-        <SelectInput
-          label="Pekerjaan"
-          options={[{ label: "Pegawai Swasta", value: "PRIVATE_EMPLOYEE" }]}
-          placeholder="Pilih pekerjaan Anda"
-        />
+        <OccupationInput />
 
         {/*  Place of Birth Input */}
         <PlaceOfBirthInput />
