@@ -3,6 +3,8 @@
 import { SelectInput } from "@/core/presentations/components/select-input";
 import { TextAreaInput } from "@/core/presentations/components/text-area-input";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { ProvinceInput } from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/province-input";
+import { CityInput } from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/city-input";
 
 export default function AddressDetailInputPage() {
   const { type, currentStep } = useCreateAccount();
@@ -19,10 +21,10 @@ export default function AddressDetailInputPage() {
         </div>
         <div className="mb-8 flex flex-col gap-4">
           {/* Province Input */}
-          <SelectInput options={[]} label="Provinsi" placeholder="Pilih Provinsi" />
+          <ProvinceInput />
 
           {/* City Input */}
-          <SelectInput options={[]} label="Kabupaten/Kota" placeholder="Pilih Kabupaten/Kota" />
+          <CityInput />
 
           {/* District Input */}
           <SelectInput options={[]} label="Kecamatan" placeholder="Pilih Kecamatan" />
