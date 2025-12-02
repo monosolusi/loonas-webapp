@@ -2,10 +2,8 @@
 
 import { TextInput } from "@/core/presentations/components/text-input";
 import { SelectInput } from "@/core/presentations/components/select-input";
-import {
-  NationalityRadioItem
-} from "@/app/(user)/onboarding/account/@personalAccount/_components/nationality-radio-item";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { NationalityRadioGroup } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/nationality-radio-group";
 
 export default function PersonalDetailInputPage() {
   const { currentStep, type } = useCreateAccount();
@@ -21,27 +19,7 @@ export default function PersonalDetailInputPage() {
       </div>
       <div className="mb-8 flex flex-col gap-4">
         {/* Nationality Radio Input Group */}
-        <div className="flex flex-col gap-2">
-          <legend>Status Kewarganegaraan</legend>
-          <fieldset className="flex flex-row gap-3">
-            <div className="flex-1">
-              <NationalityRadioItem
-                uncheckedIconPath="/assets/images/flag-icon-neutral-200-w20-h20.svg"
-                checkedIconPath="/assets/images/flag-icon-primary-w20-h20.svg"
-                title="WNI"
-                description="Warga Negara Indonesia"
-              />
-            </div>
-            <div className="flex-1">
-              <NationalityRadioItem
-                uncheckedIconPath="/assets/images/globe-icon-neutral-200-w20-h20.svg"
-                checkedIconPath="/assets/images/globe-icon-primary-w20-h20.svg"
-                title="WNA"
-                description="Warga Negara Asing"
-              />
-            </div>
-          </fieldset>
-        </div>
+        <NationalityRadioGroup />
 
         {/*  Full Name Input */}
         <TextInput label="Nama Lengkap" type="text" placeholder="Masukan nama lengkap Anda" />
