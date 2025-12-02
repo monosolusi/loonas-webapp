@@ -1,10 +1,16 @@
+"use client";
+
 import { TextInput } from "@/core/presentations/components/text-input";
 import { SelectInput } from "@/core/presentations/components/select-input";
 import {
   NationalityRadioItem
 } from "@/app/(user)/onboarding/account/@personalAccount/_components/nationality-radio-item";
+import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 
 export default function PersonalDetailInputPage() {
+  const { currentStep, type } = useCreateAccount();
+
+  if (!(type === "personal" && currentStep === "personal.personal")) return null;
   return (
     <>
       <div className="mb-6 flex flex-col">

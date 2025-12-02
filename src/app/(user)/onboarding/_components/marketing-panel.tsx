@@ -4,8 +4,8 @@ import { DateTime } from "luxon";
 
 export function MarketingPanel() {
   return (
-    <div className="from-primary-300 to-primary-400 w-full bg-gradient-to-b p-10 text-neutral-50">
-      <div className="flex flex-col gap-12">
+    <div className="from-primary-300 to-primary-400 h-full w-full bg-gradient-to-b p-10 text-neutral-50">
+      <div className="flex h-full flex-col justify-between gap-12">
         <Image src="/assets/images/logo-white-transparent-w78-h32.png" alt="Loonas Logo" width={78} height={32} />
         <div className="flex flex-col gap-10">
           <div className="flex flex-col gap-3">

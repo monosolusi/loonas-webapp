@@ -29,8 +29,8 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
         </div>
         <div>
           {props.personalDetail}
-          {/*{props.addressDetail}*/}
-          {/*{props.documentUpload}*/}
+          {props.addressDetail}
+          {props.documentUpload}
         </div>
         <div className="flex flex-row gap-3 border-t border-neutral-100 pt-4">
           <div className="flex-1">

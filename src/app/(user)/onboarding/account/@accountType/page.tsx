@@ -6,9 +6,13 @@ import { AccountTypeCard } from "@/app/(user)/onboarding/account/@accountType/_c
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 
 export default function SelectAccountTypeStepPage() {
-  const { type, setType } = useCreateAccount();
+  const { type, setType, setCurrentStep } = useCreateAccount();
 
-  const onPersonalAccountSelected = () => setType?.("personal");
+  const onPersonalAccountSelected = () => {
+    setType?.("personal");
+    setCurrentStep?.("personal.personal");
+  };
+
   const onBusinessAccountSelected = () => setType?.("business");
 
   if (type) return null; // Do not render this page if the user has already selected an account type.
