@@ -17,7 +17,7 @@ export default function UserStepPage() {
   const { me, error, loading } = useGetMe();
 
   useEffect(() => {
-    if (me) router.push("/onboarding/account");
+    if (me) router.replace("/onboarding/account");
   }, [me]);
 
   return (

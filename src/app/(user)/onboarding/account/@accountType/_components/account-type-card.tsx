@@ -4,11 +4,15 @@ type AccountTypeCardProps = {
   iconPath: string;
   title: string;
   description: string;
+  onClick?: () => void;
 };
 
 export function AccountTypeCard(props: AccountTypeCardProps) {
   return (
-    <div className="group hover:border-primary-300 hover:ring-primary-300 flex cursor-pointer flex-col gap-4 rounded-xl border border-neutral-100 p-6 transition-all duration-200 ease-in-out select-none hover:cursor-pointer hover:ring-2">
+    <div
+      className="group hover:border-primary-300 hover:ring-primary-300 flex cursor-pointer flex-col gap-4 rounded-xl border border-neutral-100 p-6 transition-all duration-200 ease-in-out select-none hover:cursor-pointer hover:ring-2"
+      onClick={props.onClick}
+    >
       <div className="flex flex-row justify-between">
         <div className="bg-primary-300/10 flex size-14 flex-col items-center justify-center rounded-xl p-3.5">
           <Image src={props.iconPath} alt="Person Icon" width={28} height={28} />

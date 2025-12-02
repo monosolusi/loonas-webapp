@@ -1,8 +1,11 @@
+"use client";
+
 import { StepIndicatorWithTime } from "@/app/(user)/onboarding/_components/step-indicator-with-time";
 import { StepHeader } from "@/app/(user)/onboarding/_components/step-header";
 import React from "react";
 import { PreviousButton } from "@/app/(user)/onboarding/account/_components/previous-button";
 import { NextButton } from "@/app/(user)/onboarding/account/_components/next-button";
+import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 
 type PersonalAccountCreationLayoutProps = {
   personalDetail: React.ReactNode;
@@ -11,6 +14,9 @@ type PersonalAccountCreationLayoutProps = {
 };
 
 export default function PersonalAccountCreationLayout(props: PersonalAccountCreationLayoutProps) {
+  const { type } = useCreateAccount();
+
+  if (type !== "personal") return null; // Do not render this page if the user has not selected a personal account.
   return (
     <div className="flex flex-col items-center justify-center gap-10">
       <StepIndicatorWithTime currentStep={3} totalSteps={4} expectedTime="~3 menit" />
@@ -22,9 +28,9 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
           <div className="h-1 w-full flex-1 rounded-full bg-neutral-100"></div>
         </div>
         <div>
-          {/*{props.personalDetail}*/}
+          {props.personalDetail}
           {/*{props.addressDetail}*/}
-          {props.documentUpload}
+          {/*{props.documentUpload}*/}
         </div>
         <div className="flex flex-row gap-3 border-t border-neutral-100 pt-4">
           <div className="flex-1">
