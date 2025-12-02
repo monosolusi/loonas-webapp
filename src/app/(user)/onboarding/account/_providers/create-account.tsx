@@ -8,7 +8,7 @@ type PersonalStep = "personal.personal" | "personal.address" | "personal.documen
 type BusinessStep = "business.personal" | "business.address" | "business.documents";
 type Step = PersonalStep | BusinessStep;
 
-const ACCOUNT_STEPS: Record<AccountType, Step[]> = {
+export const ACCOUNT_STEPS: Record<AccountType, Step[]> = {
   personal: ["personal.personal", "personal.address", "personal.documents"],
   business: ["business.personal", "business.address", "business.documents"],
 } as const;

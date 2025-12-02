@@ -6,6 +6,7 @@ import React from "react";
 import { PreviousButton } from "@/app/(user)/onboarding/account/_components/previous-button";
 import { NextButton } from "@/app/(user)/onboarding/account/_components/next-button";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { StepIndicatorImpl } from "@/app/(user)/onboarding/account/_components/step-indicator.impl";
 
 type PersonalAccountCreationLayoutProps = {
   personalDetail: React.ReactNode;
@@ -22,11 +23,7 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
       <StepIndicatorWithTime currentStep={3} totalSteps={4} expectedTime="~3 menit" />
       <StepHeader title="Informasi Personal" description="Lengkapi data diri untuk verifikasi identitas Anda." />
       <div className="flex w-full flex-col items-stretch">
-        <div className="mb-6 flex flex-row gap-2">
-          <div className="bg-primary-300 h-1 w-full flex-1 rounded-full"></div>
-          <div className="h-1 w-full flex-1 rounded-full bg-neutral-100"></div>
-          <div className="h-1 w-full flex-1 rounded-full bg-neutral-100"></div>
-        </div>
+        <StepIndicatorImpl />
         <div>
           {props.personalDetail}
           {props.addressDetail}
