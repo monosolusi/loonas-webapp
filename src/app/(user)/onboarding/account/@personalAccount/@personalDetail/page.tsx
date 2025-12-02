@@ -4,6 +4,8 @@ import { TextInput } from "@/core/presentations/components/text-input";
 import { SelectInput } from "@/core/presentations/components/select-input";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { NationalityRadioGroup } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/nationality-radio-group";
+import { FullNameInput } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/full-name-input";
+import { IdentityNumberInput } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/identity-number-input";
 
 export default function PersonalDetailInputPage() {
   const { currentStep, type } = useCreateAccount();
@@ -22,10 +24,10 @@ export default function PersonalDetailInputPage() {
         <NationalityRadioGroup />
 
         {/*  Full Name Input */}
-        <TextInput label="Nama Lengkap" type="text" placeholder="Masukan nama lengkap Anda" />
+        <FullNameInput />
 
         {/*  Identity Number Input */}
-        <TextInput label="Nomor Identitas / Nomor KTP" type="text" placeholder="Masukan nomor identitas Anda" />
+        <IdentityNumberInput />
 
         {/* Occupation Input */}
         <SelectInput
