@@ -3,11 +3,26 @@
 import { useMemo } from "react";
 import { SelectInput } from "@/core/presentations/components/select-input";
 import { useListProvince } from "@/core/utilities/address/presentation/hooks/use-list-province";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
 
-export function ProvinceInput() {
+type ProvinceInputProps = {
+  value?: string;
+  onChange?: (province: ProvinceEntity | undefined) => void;
+  placeholder?: string;
+  disabled?: boolean;
+};
+
+/**
+ * Province select input component.
+ * Fetches provinces list internally and renders a controlled select input.
+ *
+ * @param props.value - Province ID (string)
+ * @param props.onChange - Callback returning the full ProvinceEntity (or undefined if cleared)
+ * @param props.placeholder - Placeholder text
+ * @param props.disabled - Additional disabled state (combined with loading state)
+ */
+export function ProvinceInput(props: ProvinceInputProps) {
   const { provinces, loading } = useListProvince();
-  const { data, update } = usePersonalAccountData();
 
   const options = useMemo(() => {
     if (!provinces) return [];
@@ -17,14 +32,19 @@ export function ProvinceInput() {
     }));
   }, [provinces]);
 
+  const onChange = (selectedId: string) => {
+    const selectedProvince = provinces?.find((p) => p.id === selectedId);
+    props.onChange?.(selectedProvince);
+  };
+
   return (
     <SelectInput
       label="Provinsi"
       options={options}
-      placeholder="Pilih Provinsi"
-      value={data.province ?? ""}
-      onChange={(value) => update?.({ province: value })}
-      disabled={loading}
+      placeholder={props.placeholder ?? "Pilih Provinsi"}
+      value={props.value ?? ""}
+      onChange={onChange}
+      disabled={props.disabled || loading}
     />
   );
 }
