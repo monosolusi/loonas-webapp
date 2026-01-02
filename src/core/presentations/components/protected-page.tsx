@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { SelectedAccountProvider } from "@/features/authentication/presentation/providers/selected-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { UserSignOutUseCase } from "@/features/authentication/domain/usecases/user-sign-out";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 export function ProtectedPage({ children }: { children: any }) {
   const [sessionLoading, setSessionLoading] = useState<boolean>(true);
@@ -42,7 +43,7 @@ export function ProtectedPage({ children }: { children: any }) {
 
       const sessionService = new LocalStorageSessionService();
       const sessionRepository = new SessionRepositoryImpl(sessionService);
-      const userService = new UserServiceImpl();
+      const userService = new UserServiceImpl(new HttpRequest());
       const userRepository = new UserRepositoryImpl(userService);
       const checkSession = new CheckSessionUseCase(sessionRepository, userRepository);
       const me = await checkSession.execute();
@@ -56,9 +57,5 @@ export function ProtectedPage({ children }: { children: any }) {
   }
 
   if (sessionLoading) return <></>;
-  return (
-    <SelectedAccountProvider>
-      {children}
-    </SelectedAccountProvider>
-  );
+  return <SelectedAccountProvider>{children}</SelectedAccountProvider>;
 }

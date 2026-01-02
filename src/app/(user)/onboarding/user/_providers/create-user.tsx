@@ -3,7 +3,8 @@
 import React, { useMemo } from "react";
 import { isValidEmail, isValidPassword } from "@/core/utilities/validation-patterns";
 import { useSignUpAndSignIn } from "@/features/user/presentation/hooks/use-sign-up-and-sign-in";
-import { ServerError } from "@/core/resources/server-error";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { useGetMe } from "@/features/user/presentation/hooks/use-get-me";
 
 type CreateUserContextProps = {
   email: string;
@@ -40,6 +41,7 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
   const [password, setPassword] = React.useState<string>("");
   const [repeatPassword, setRepeatPassword] = React.useState<string>("");
   const { trigger, isMutating, error } = useSignUpAndSignIn();
+  const { me, loading: isLoadingMe } = useGetMe();
 
   const emailError = useMemo(() => {
     if (error instanceof ServerError) return error.message;
@@ -63,7 +65,11 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
   );
 
   const createUser = async () => {
-    if (!isClean) return;
+    if (!isClean || isLoadingMe) throw new ServerError(ErrorCodes.VALIDATION_FAILED);
+
+    // Check if the user already logged in. If so, we will redirect to the home page directly
+    if (me) throw new ServerError(ErrorCodes.USER_SIGNED_IN);
+
     await trigger({ email, password });
   };
 

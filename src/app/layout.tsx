@@ -1,6 +1,7 @@
 import React from "react";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { SWRProvider } from "@/core/presentations/providers/swr-provider";
 
 export const metadata: Metadata = {
   title: "Loonas – Solusi Pembayaran Invoice Lunas dan Aman",
@@ -27,7 +28,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           rel="stylesheet"
         />
       </head>
-      <body className="h-full">{children}</body>
+      <body className="h-full">
+        <SWRProvider>{children}</SWRProvider>
+      </body>
     </html>
   );
 }

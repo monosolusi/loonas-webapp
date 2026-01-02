@@ -13,6 +13,7 @@ import { UserRepositoryImpl } from "@/features/user/data/repositories/user";
 import { UserServiceImpl } from "@/features/user/data/sources/user";
 import { useRouter } from "next/navigation";
 import { CheckSessionUseCase } from "@/features/authentication/domain/usecases/check-session";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 type SignInContextProps = {
   email: string;
@@ -22,13 +23,13 @@ type SignInContextProps = {
   setEmail?: React.Dispatch<React.SetStateAction<string>>;
   setPassword?: React.Dispatch<React.SetStateAction<string>>;
   login?: () => Promise<void>;
-}
+};
 
 const SignInContext = createContext<SignInContextProps>({
   email: "",
   password: "",
   loading: true,
-  showInvalidCred: false
+  showInvalidCred: false,
 });
 
 export function SignInProvider({ children }: { children: any }) {
@@ -68,7 +69,7 @@ export function SignInProvider({ children }: { children: any }) {
 
       const sessionService = new LocalStorageSessionService();
       const sessionRepository = new SessionRepositoryImpl(sessionService);
-      const userService = new UserServiceImpl();
+      const userService = new UserServiceImpl(new HttpRequest());
       const userRepository = new UserRepositoryImpl(userService);
       const checkSession = new CheckSessionUseCase(sessionRepository, userRepository);
       const me = await checkSession.execute();
@@ -113,9 +114,7 @@ export function SignInProvider({ children }: { children: any }) {
   }
 
   return (
-    <SignInContext.Provider
-      value={{ email, password, loading, setEmail, setPassword, login, showInvalidCred }}
-    >
+    <SignInContext.Provider value={{ email, password, loading, setEmail, setPassword, login, showInvalidCred }}>
       {children}
     </SignInContext.Provider>
   );

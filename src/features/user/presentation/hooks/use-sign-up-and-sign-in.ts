@@ -10,6 +10,7 @@ import { SessionRepositoryImpl } from "@/features/authentication/data/repositori
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SaveSessionUseCase, SaveSessionUseCaseParams } from "@/features/authentication/domain/usecases/save-session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 type SignUpAndSignIneFetcherParams = {
   arg: {
@@ -19,7 +20,7 @@ type SignUpAndSignIneFetcherParams = {
 };
 
 async function SignUpAndSignInFetcher(_: string, { arg }: SignUpAndSignIneFetcherParams) {
-  const userRepository = new UserRepositoryImpl(new UserServiceImpl());
+  const userRepository = new UserRepositoryImpl(new UserServiceImpl(new HttpRequest()));
   const signUp = new UserSignUpUseCase(userRepository);
   const signUpParams = new UserSignUpUseCaseParams(arg.email, arg.password);
   const signUpResult = await signUp.execute(signUpParams);

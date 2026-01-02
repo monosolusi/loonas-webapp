@@ -14,6 +14,7 @@ interface FetchConfig {
   requireAccount?: boolean;
   contentType?: string;
   inferContentType?: boolean;
+  headers?: Record<string, string>;
 }
 
 export class HttpRequest {
@@ -23,12 +24,14 @@ export class HttpRequest {
       requireAuth: true,
       requireAccount: true,
       contentType: "application/json",
+      headers: {},
     },
-  ) {
+  ): Promise<Record<string, any>> {
     const mergedConfig = {
       requireAuth: config.requireAuth ?? true,
       requireAccount: config.requireAccount ?? true,
       contentType: config.contentType,
+      headers: Object.assign({}, config.headers),
     };
 
     if (mergedConfig.requireAuth || mergedConfig.requireAccount) {
@@ -62,7 +65,7 @@ export class HttpRequest {
 
     const response = await fetch(url, {
       method: params.method,
-      headers: headers,
+      headers: Object.assign({}, headers, mergedConfig.headers ?? {}),
       body: generateBody(params.body),
     });
 
@@ -76,6 +79,8 @@ export class HttpRequest {
       throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
     }
 
-    return response.json();
+    const text = await response.text();
+    if (!text) return {};
+    else return JSON.parse(text);
   }
 }

@@ -7,10 +7,11 @@ import { DataFailed } from "@/core/resources/data-state";
 import { UserEntity } from "@/features/user/domain/entities/user";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import useSWR from "swr";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 async function GetMeFetcher(_: string): Promise<UserEntity> {
   const sessionRepository = new SessionRepositoryImpl(new LocalStorageSessionService());
-  const userRepository = new UserRepositoryImpl(new UserServiceImpl());
+  const userRepository = new UserRepositoryImpl(new UserServiceImpl(new HttpRequest()));
   const checkSession = new CheckSessionUseCase(sessionRepository, userRepository);
   const me = await checkSession.execute();
   if (me instanceof DataFailed) throw me.error;
