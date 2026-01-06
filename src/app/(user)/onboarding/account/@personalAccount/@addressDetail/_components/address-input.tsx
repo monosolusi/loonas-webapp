@@ -1,5 +1,5 @@
 import { TextAreaInput } from "@/core/presentations/components/text-area-input";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-create-personal-account-data";
 
 export function AddressInput() {
   const { data, update } = usePersonalAccountData();

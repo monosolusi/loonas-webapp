@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { DateTime } from "luxon";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
 import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
-import { isNonEmptyString } from "@/core/utilities/validation-patterns";
 
 type AccountType = "personal" | "business";
 
@@ -124,48 +123,6 @@ export function useCreateAccount() {
   const context = React.useContext(CreateAccountContext);
   if (!context) throw new ServerError(ErrorCodes.INVALID_HOOK_CALL);
   return context;
-}
-
-export function usePersonalAccountData() {
-  const { accountData, updatePersonalData } = useCreateAccount();
-  if (accountData?.type !== "personal") throw new ServerError(ErrorCodes.INVALID_PERSONAL_ACCOUNT_HOOK_CALL);
-
-  const data = accountData.data;
-  const isClean = useMemo(() => {
-    return (
-      isNonEmptyString(data.nationality) &&
-      isNonEmptyString(data.fullName) &&
-      isNonEmptyString(data.identityNumber) &&
-      isNonEmptyString(data.occupation) &&
-      isNonEmptyString(data.placeOfBirth) &&
-      !!data.dateOfBirth &&
-      data.dateOfBirth.isValid === true &&
-      !!data.province &&
-      !!data.city &&
-      !!data.district &&
-      !!data.subDistrict &&
-      isNonEmptyString(data.address) &&
-      !!data.identityFile &&
-      data.identityFile instanceof File &&
-      data.identityFile.size > 0 &&
-      data.identityFile.size <= 1024 * 1024 * 5
-    );
-  }, [
-    data.nationality,
-    data.fullName,
-    data.identityNumber,
-    data.occupation,
-    data.placeOfBirth,
-    data.dateOfBirth,
-    data.province,
-    data.city,
-    data.district,
-    data.subDistrict,
-    data.address,
-    data.identityFile,
-  ]);
-
-  return { data, update: updatePersonalData, isClean };
 }
 
 export function useBusinessAccountData() {

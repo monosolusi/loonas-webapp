@@ -1,8 +1,10 @@
 "use client";
 
-import { FileUploadInput } from "@/core/presentations/components/file-upload-input";
 import React from "react";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { FileUploadInput } from "@/core/presentations/components/file-upload-input";
+import {
+  usePersonalAccountData
+} from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-create-personal-account-data";
 
 export function KtpFileUploadInput() {
   const { update } = usePersonalAccountData();

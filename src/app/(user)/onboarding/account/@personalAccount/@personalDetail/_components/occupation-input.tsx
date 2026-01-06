@@ -3,7 +3,9 @@
 import { useMemo } from "react";
 import { SelectInput } from "@/core/presentations/components/select-input";
 import { useListOccupation } from "@/core/utilities/occupation/presentation/hooks/use-list-occupation";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/_providers/create-account";
+import {
+  usePersonalAccountData
+} from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-create-personal-account-data";
 
 export function OccupationInput() {
   const { occupations, loading } = useListOccupation();

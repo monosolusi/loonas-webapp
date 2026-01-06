@@ -1,6 +1,6 @@
 "use client";
 
-import { useCreateAccount, usePersonalAccountData } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import {
   ProvinceInput
 } from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/province-input";
@@ -14,6 +14,9 @@ import {
 import {
   AddressInput
 } from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/address-input";
+import {
+  usePersonalAccountData
+} from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-create-personal-account-data";
 
 export default function AddressDetailInputPage() {
   const { type, currentStep } = useCreateAccount();
