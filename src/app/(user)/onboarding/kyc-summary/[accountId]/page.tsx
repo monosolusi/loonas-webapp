@@ -1,6 +1,6 @@
 import { StepHeader } from "@/app/(user)/onboarding/_components/step-header";
 import Image from "next/image";
-import { StatusBox } from "@/app/(user)/onboarding/kyc-summary/[accountId]/_components/status-box";
+import { StatusBoxImpl } from "@/app/(user)/onboarding/kyc-summary/[accountId]/_components/status-box-impl";
 
 export default function KycSummaryPage() {
   return (
@@ -8,7 +8,7 @@ export default function KycSummaryPage() {
       <StepHeader title="Status Verifikasi KYC" description="Terima kasih! Kami sedang memproses verifikasi Anda" />
       <div className="flex w-full flex-col gap-8">
         {/*  Status Box */}
-        <StatusBox status="REJECTED" />
+        <StatusBoxImpl />
 
         {/*  Account Type Card */}
         <div className="flex flex-row items-center gap-x-4 rounded-xl border border-neutral-100 bg-white p-5">
