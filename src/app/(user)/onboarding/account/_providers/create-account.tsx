@@ -7,6 +7,7 @@ import { ProvinceEntity } from "@/core/utilities/address/domain/entities/provinc
 import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
+import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 
 type AccountType = "personal" | "business";
 
@@ -21,7 +22,7 @@ type PersonalAccountData = {
   identityFile?: File | null;
   identityNumber?: string;
   fullName?: string;
-  occupation?: string;
+  occupation?: OccupationEntity;
   placeOfBirth?: string;
   dateOfBirth?: DateTime;
   province?: ProvinceEntity;

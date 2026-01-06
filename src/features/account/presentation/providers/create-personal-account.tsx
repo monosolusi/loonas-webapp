@@ -156,10 +156,10 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
       const sessionRepository = new SessionRepositoryImpl(sessionService);
       const accountRepository = new AccountRepositoryImpl(accountService);
       const createAccount = new CreatePersonalAccountUseCase(accountRepository, sessionRepository);
-      const createAccountParams = new CreatePersonalAccountUseCaseParams(
+      const createAccountParams = new CreatePersonalAccountUseCaseParams({
         nationality,
         idNumber,
-        identityDocument,
+        idDocument: identityDocument,
         fullName,
         occupation,
         pob,
@@ -169,7 +169,7 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
         district,
         subdistrict,
         address,
-      );
+      });
 
       const account = await createAccount.execute(createAccountParams);
       if (account instanceof DataFailed) throw account.error;

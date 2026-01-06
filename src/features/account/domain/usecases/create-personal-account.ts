@@ -11,31 +11,59 @@ import { AccountRepository } from "../repositories/account";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
+type CreatePersonalAccountUseCaseParamsConstructor = {
+  nationality: string;
+  idNumber: string;
+  idDocument: File;
+  fullName: string;
+  occupation: OccupationEntity;
+  pob: string;
+  dob: DateTime;
+  province: ProvinceEntity;
+  city: CityEntity;
+  district: DistrictEntity;
+  subdistrict: SubdistrictEntity;
+  address: string;
+};
+
 export class CreatePersonalAccountUseCaseParams {
-  constructor(
-    public readonly nationality: string,
-    public readonly idNumber: string,
-    public readonly idDocument: File,
-    public readonly fullName: string,
-    public readonly occupation: OccupationEntity,
-    public readonly pob: string,
-    public readonly dob: DateTime,
-    public readonly province: ProvinceEntity,
-    public readonly city: CityEntity,
-    public readonly district: DistrictEntity,
-    public readonly subdistrict: SubdistrictEntity,
-    public readonly address: string
-  ) {
+  public readonly nationality: string;
+  public readonly idNumber: string;
+  public readonly idDocument: File;
+  public readonly fullName: string;
+  public readonly occupation: OccupationEntity;
+  public readonly pob: string;
+  public readonly dob: DateTime;
+  public readonly province: ProvinceEntity;
+  public readonly city: CityEntity;
+  public readonly district: DistrictEntity;
+  public readonly subdistrict: SubdistrictEntity;
+  public readonly address: string;
+
+  constructor(args: CreatePersonalAccountUseCaseParamsConstructor) {
+    this.nationality = args.nationality;
+    this.idNumber = args.idNumber;
+    this.idDocument = args.idDocument;
+    this.fullName = args.fullName;
+    this.occupation = args.occupation;
+    this.pob = args.pob;
+    this.dob = args.dob;
+    this.province = args.province;
+    this.city = args.city;
+    this.district = args.district;
+    this.subdistrict = args.subdistrict;
+    this.address = args.address;
+    Object.freeze(this);
   }
 }
 
-export class CreatePersonalAccountUseCase implements UseCase<DataState<PersonalAccountEntity>, CreatePersonalAccountUseCaseParams> {
-
+export class CreatePersonalAccountUseCase
+  implements UseCase<DataState<PersonalAccountEntity>, CreatePersonalAccountUseCaseParams>
+{
   constructor(
     private readonly accountRepository: AccountRepository,
-    private readonly sessionRepository: SessionRepository
-  ) {
-  }
+    private readonly sessionRepository: SessionRepository,
+  ) {}
 
   public async execute(params: CreatePersonalAccountUseCaseParams): Promise<DataState<PersonalAccountEntity>> {
     const session = await this.sessionRepository.retrieve();
@@ -55,8 +83,7 @@ export class CreatePersonalAccountUseCase implements UseCase<DataState<PersonalA
       params.district,
       params.subdistrict,
       params.address,
-      session.data
+      session.data,
     );
   }
-
 }
