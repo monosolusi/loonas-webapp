@@ -238,6 +238,24 @@ export class ErrorCodes {
     message: "Not Implemented",
   };
 
+  public static readonly INVALID_HOOK_CALL = {
+    code: "INVALID_HOOK_CALL",
+    httpCode: 400,
+    message: "A hook must be used in the same component as the one that calls it.",
+  };
+
+  public static readonly INVALID_BUSINESS_ACCOUNT_HOOK_CALL = {
+    code: "INVALID_BUSINESS_ACCOUNT_HOOK_CALL",
+    httpCode: 400,
+    message: "useBusinessAccountData must be used in business account flow",
+  };
+
+  public static readonly INVALID_PERSONAL_ACCOUNT_HOOK_CALL = {
+    code: "INVALID_PERSONAL_ACCOUNT_HOOK_CALL",
+    httpCode: 400,
+    message: "usePersonalAccountData must be used in personal account flow",
+  };
+
   public static readonly INVALID_TAX_TYPE = {
     code: "INVALID_TAX_TYPE",
     httpCode: 400,

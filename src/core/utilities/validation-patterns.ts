@@ -36,3 +36,5 @@ export const ValidationPatterns = {
 export const isValidPassword = (password: string): boolean => ValidationPatterns.password.test(password);
 
 export const isValidEmail = (email: string): boolean => ValidationPatterns.email.test(email);
+
+export const isNonEmptyString = (v: unknown): v is string => typeof v === "string" && v.trim().length > 0;

@@ -7,6 +7,7 @@ import { PreviousButton } from "@/app/(user)/onboarding/account/_components/prev
 import { NextButton } from "@/app/(user)/onboarding/account/_components/next-button";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { StepIndicatorImpl } from "@/app/(user)/onboarding/account/_components/step-indicator.impl";
+import { SubmitButton } from "@/app/(user)/onboarding/account/@personalAccount/_components/submit-button";
 
 type PersonalAccountCreationLayoutProps = {
   personalDetail: React.ReactNode;
@@ -35,6 +36,7 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
           </div>
           <div className="flex-1">
             <NextButton />
+            <SubmitButton />
           </div>
         </div>
       </div>

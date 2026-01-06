@@ -6,8 +6,10 @@ import React from "react";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 
 export function NextButton() {
-  const { nextStep } = useCreateAccount();
+  const { nextStep, currentStep } = useCreateAccount();
 
+  // Only when the current step is not "personal.documents" you can show the next button.
+  if (currentStep === "personal.documents") return null;
   return (
     <PrimaryButton
       type="button"
