@@ -1,13 +1,23 @@
 "use client";
 
-import { SelectInput } from "@/core/presentations/components/select-input";
-import { TextAreaInput } from "@/core/presentations/components/text-area-input";
-import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
-import { ProvinceInput } from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/province-input";
+import { useCreateAccount, usePersonalAccountData } from "@/app/(user)/onboarding/account/_providers/create-account";
+import {
+  ProvinceInput
+} from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/province-input";
 import { CityInput } from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/city-input";
+import {
+  DistrictInput
+} from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/district-input";
+import {
+  SubdistrictInput
+} from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/subdistrict-input";
+import {
+  AddressInput
+} from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/address-input";
 
 export default function AddressDetailInputPage() {
   const { type, currentStep } = useCreateAccount();
+  const { data, update } = usePersonalAccountData();
 
   if (!(type === "personal" && currentStep === "personal.address")) return null;
   else
@@ -21,19 +31,23 @@ export default function AddressDetailInputPage() {
         </div>
         <div className="mb-8 flex flex-col gap-4">
           {/* Province Input */}
-          <ProvinceInput />
+          <ProvinceInput value={data.province} onChange={(value) => update?.({ province: value })} />
 
           {/* City Input */}
-          <CityInput />
+          <CityInput value={data.city} onChange={(value) => update?.({ city: value })} province={data.province} />
 
           {/* District Input */}
-          <SelectInput options={[]} label="Kecamatan" placeholder="Pilih Kecamatan" />
+          <DistrictInput value={data.district} onChange={(value) => update?.({ district: value })} city={data.city} />
 
           {/* Subdistrict Input */}
-          <SelectInput options={[]} label="Kelurahan" placeholder="Pilih Kelurahan" />
+          <SubdistrictInput
+            value={data.subDistrict}
+            onChange={(value) => update?.({ subDistrict: value })}
+            district={data.district}
+          />
 
           {/* Address Input */}
-          <TextAreaInput label="Alamat" placeholder="Masukkan alamat lengkap" />
+          <AddressInput />
         </div>
       </>
     );

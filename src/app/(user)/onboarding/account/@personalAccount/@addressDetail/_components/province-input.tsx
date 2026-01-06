@@ -6,7 +6,7 @@ import { useListProvince } from "@/core/utilities/address/presentation/hooks/use
 import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
 
 type ProvinceInputProps = {
-  value?: string;
+  value?: ProvinceEntity;
   onChange?: (province: ProvinceEntity | undefined) => void;
   placeholder?: string;
   disabled?: boolean;
@@ -16,7 +16,7 @@ type ProvinceInputProps = {
  * Province select input component.
  * Fetches provinces list internally and renders a controlled select input.
  *
- * @param props.value - Province ID (string)
+ * @param props.value - ProvinceEntity
  * @param props.onChange - Callback returning the full ProvinceEntity (or undefined if cleared)
  * @param props.placeholder - Placeholder text
  * @param props.disabled - Additional disabled state (combined with loading state)
@@ -42,7 +42,7 @@ export function ProvinceInput(props: ProvinceInputProps) {
       label="Provinsi"
       options={options}
       placeholder={props.placeholder ?? "Pilih Provinsi"}
-      value={props.value ?? ""}
+      value={props.value?.id ?? ""}
       onChange={onChange}
       disabled={props.disabled || loading}
     />

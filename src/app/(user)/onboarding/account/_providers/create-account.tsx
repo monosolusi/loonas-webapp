@@ -3,6 +3,10 @@
 import React, { useEffect } from "react";
 import { DateTime } from "luxon";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
+import { CityEntity } from "@/core/utilities/address/domain/entities/city";
+import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
+import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
 
 type AccountType = "personal" | "business";
 
@@ -20,10 +24,10 @@ type PersonalAccountData = {
   occupation?: string;
   placeOfBirth?: string;
   dateOfBirth?: DateTime;
-  province?: string;
-  city?: string;
-  district?: string;
-  subDistrict?: string;
+  province?: ProvinceEntity;
+  city?: CityEntity;
+  district?: DistrictEntity;
+  subDistrict?: SubdistrictEntity;
   address?: string;
 };
 

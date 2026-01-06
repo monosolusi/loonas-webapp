@@ -3,11 +3,17 @@
 import { useMemo } from "react";
 import { SelectInput } from "@/core/presentations/components/select-input";
 import { useListCity } from "@/core/utilities/address/presentation/hooks/use-list-city";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { CityEntity } from "@/core/utilities/address/domain/entities/city";
+import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
 
-export function CityInput() {
-  const { data, update } = usePersonalAccountData();
-  const { cities, loading } = useListCity({ provinceId: data.province });
+type CityInputProps = {
+  value?: CityEntity;
+  onChange?: (city: CityEntity | undefined) => void;
+  province?: ProvinceEntity;
+};
+
+export function CityInput(props: CityInputProps) {
+  const { cities, loading } = useListCity({ provinceId: props.province?.id });
 
   const options = useMemo(() => {
     if (!cities) return [];
@@ -17,15 +23,19 @@ export function CityInput() {
     }));
   }, [cities]);
 
-  const isDisabled = loading || !data.province;
+  const onChange = (selectedId: string) => {
+    const selectedCity = cities?.find((p) => p.id === selectedId);
+    props.onChange?.(selectedCity);
+  };
 
+  const isDisabled = loading || !props.province;
   return (
     <SelectInput
       label="Kabupaten/Kota"
       options={options}
       placeholder="Pilih Kabupaten/Kota"
-      value={data.city ?? ""}
-      onChange={(value) => update?.({ city: value })}
+      value={props.value?.id ?? ""}
+      onChange={onChange}
       disabled={isDisabled}
     />
   );
