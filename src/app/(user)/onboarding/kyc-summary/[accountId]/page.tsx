@@ -1,5 +1,6 @@
 import { StepHeader } from "@/app/(user)/onboarding/_components/step-header";
 import Image from "next/image";
+import { StatusBox } from "@/app/(user)/onboarding/kyc-summary/[accountId]/_components/status-box";
 
 export default function KycSummaryPage() {
   return (
@@ -7,26 +8,7 @@ export default function KycSummaryPage() {
       <StepHeader title="Status Verifikasi KYC" description="Terima kasih! Kami sedang memproses verifikasi Anda" />
       <div className="flex w-full flex-col gap-8">
         {/*  Status Box */}
-        <div className="bg-primary-300/5 border-primary-300/20 flex flex-col items-center gap-y-6 rounded-lg border p-8">
-          {/*  Check Icon */}
-          <div className="bg-primary-300/5 border-primary-300/20 flex flex-col items-center justify-center rounded-lg border p-5">
-            <Image src="/assets/images/check-icon-primary-w40-h40.svg" alt="Check Icon" width={48} height={48} />
-          </div>
-
-          {/* Title and Description */}
-          <div className="flex flex-col items-center gap-1 text-center">
-            <div className="text-2xl leading-8 font-semibold">Dokumen Berhasil Dikirim</div>
-            <div className="text-base leading-6 font-normal text-neutral-200">
-              Terima kasih! Data Anda telah kami terima dan akan segera kami proses.
-            </div>
-          </div>
-
-          {/*  KYC Process Estimates */}
-          <div className="flex flex-row gap-x-2 rounded-lg border border-neutral-100 bg-white px-4 py-2">
-            <Image src="/assets/images/time-icon-neutral-200-w16-h16.svg" alt="Time Icon" width={16} height={16} />
-            <div className="text-sm font-medium">Estimasi 1-3 hari kerja</div>
-          </div>
-        </div>
+        <StatusBox status="REJECTED" />
 
         {/*  Account Type Card */}
         <div className="flex flex-row items-center gap-x-4 rounded-xl border border-neutral-100 bg-white p-5">

@@ -8,9 +8,7 @@ import { NextButton } from "@/app/(user)/onboarding/account/_components/next-but
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { StepIndicatorImpl } from "@/app/(user)/onboarding/account/_components/step-indicator.impl";
 import { SubmitButton } from "@/app/(user)/onboarding/account/@personalAccount/_components/submit-button";
-import {
-  PersonalAccountFormWrapper
-} from "@/app/(user)/onboarding/account/@personalAccount/_components/personal-account-form-wrapper";
+import { PersonalAccountFormWrapper } from "@/app/(user)/onboarding/account/@personalAccount/_components/personal-account-form-wrapper";
 
 type PersonalAccountCreationLayoutProps = {
   personalDetail: React.ReactNode;
