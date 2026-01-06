@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { FileUploadInput } from "@/core/presentations/components/file-upload-input";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { KtpFileUploadInput } from "./_components/ktp-file-upload-input";
 
 export default function DocumentUploadPage() {
   const { type, currentStep } = useCreateAccount();
@@ -26,7 +26,7 @@ export default function DocumentUploadPage() {
               <li>Format yang didukung: JPG, PNG, PDF (Max 5MB)</li>
             </ul>
           </div>
-          <FileUploadInput label="Dokumen Identitas / KTP" />
+          <KtpFileUploadInput />
         </div>
       </>
     );

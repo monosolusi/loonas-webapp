@@ -18,7 +18,7 @@ type BusinessAccountData = {};
 
 type PersonalAccountData = {
   nationality?: string;
-  identityFile?: File;
+  identityFile?: File | null;
   identityNumber?: string;
   fullName?: string;
   occupation?: string;

@@ -8,6 +8,8 @@ type FileUploadInputBaseProps = {
   onChange?: (file: File | null) => void;
   accept?: string;
   icon?: React.ReactNode;
+  maxSize?: number;
+  onError?: (error: string) => void;
 };
 
 type FileUploadInputWithLabel = FileUploadInputBaseProps & {
@@ -31,10 +33,21 @@ export type FileUploadInputProps = FileUploadInputWithLabel | FileUploadInputWit
 export function FileUploadInput(props: FileUploadInputProps) {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback(
     (selectedFile: File | null) => {
+      setError(null);
+
+      if (selectedFile && props.maxSize && selectedFile.size > props.maxSize) {
+        const maxSizeMB = (props.maxSize / (1024 * 1024)).toFixed(0);
+        const errorMessage = `File terlalu besar. Maksimal ${maxSizeMB}MB`;
+        setError(errorMessage);
+        props.onError?.(errorMessage);
+        return;
+      }
+
       setFile(selectedFile);
       props.onChange?.(selectedFile);
     },
@@ -120,6 +133,7 @@ export function FileUploadInput(props: FileUploadInputProps) {
         )}
       </div>
       {props.description && <span className="text-xs leading-4 font-normal text-neutral-200">{props.description}</span>}
+      {error && <span className="text-xs leading-4 font-normal text-red-500">{error}</span>}
     </div>
   );
 }
