@@ -361,7 +361,7 @@ export class ServerError extends Error {
     super(code.message);
     this.code = code.code;
     this.httpCode = code.httpCode;
-    this.message = code.message;
+    this.message = details?.message ?? code.message;
     this.details = Object.assign({}, { code: code.code, message: code.message }, details);
   }
 }

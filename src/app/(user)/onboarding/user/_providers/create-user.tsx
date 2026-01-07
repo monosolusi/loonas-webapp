@@ -2,9 +2,10 @@
 
 import React, { useMemo } from "react";
 import { isValidEmail, isValidPassword } from "@/core/utilities/validation-patterns";
-import { useSignUpAndSignIn } from "@/features/user/presentation/hooks/use-sign-up-and-sign-in";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useGetMe } from "@/features/user/presentation/hooks/use-get-me";
+import { useSignUp } from "@clerk/nextjs";
+import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 
 type CreateUserContextProps = {
   email: string;
@@ -40,14 +41,14 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [repeatPassword, setRepeatPassword] = React.useState<string>("");
-  const { trigger, isMutating, error } = useSignUpAndSignIn();
+  const [isCreating, setIsCreating] = React.useState<boolean>(false);
+  const { isLoaded, signUp, setActive } = useSignUp();
   const { me, loading: isLoadingMe } = useGetMe();
 
   const emailError = useMemo(() => {
-    if (error instanceof ServerError) return error.message;
-    if (!email) return null;
-    return isValidEmail(email) ? null : "Email tidak valid";
-  }, [email, error]);
+    if (email) return isValidEmail(email) ? null : "Email tidak valid";
+    return null;
+  }, [email]);
 
   const passwordError = useMemo(() => {
     if (!password) return null;
@@ -65,12 +66,24 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
   );
 
   const createUser = async () => {
-    if (!isClean || isLoadingMe) throw new ServerError(ErrorCodes.VALIDATION_FAILED);
+    try {
+      setIsCreating(true);
+      if (!isClean || isLoadingMe) throw new ServerError(ErrorCodes.VALIDATION_FAILED);
+      if (!isLoaded) return;
 
-    // Check if the user already logged in. If so, we will redirect to the home page directly
-    if (me) throw new ServerError(ErrorCodes.USER_SIGNED_IN);
+      // Check if the user already logged in. If so, we will redirect to the home page directly
+      // TODO: Change this to use clerk
+      if (me) throw new ServerError(ErrorCodes.USER_SIGNED_IN);
 
-    await trigger({ email, password });
+      const resource = await signUp.create({ emailAddress: email, password });
+      if (resource.status === "complete") await setActive({ session: resource.createdSessionId });
+      else throw new ServerError(ErrorCodes.UNKNOWN, { message: resource.status });
+    } catch (err) {
+      if (isClerkAPIResponseError(err)) throw new ServerError(ErrorCodes.UNKNOWN, { message: err.message });
+      console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -87,7 +100,7 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
         passwordError,
         repeatPasswordError,
         createUser,
-        isCreating: isMutating,
+        isCreating,
       }}
     >
       {props.children}
