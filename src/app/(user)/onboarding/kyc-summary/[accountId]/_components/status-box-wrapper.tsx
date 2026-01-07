@@ -10,8 +10,8 @@ export function StatusBoxWrapper(props: StatusBoxWrapperProps) {
   return (
     <div
       className={clsx(
+        `${props.backgroundColor} ${props.borderColor}`,
         "flex flex-col items-center gap-y-6 rounded-lg border p-8",
-        `${props.backgroundColor}/5 ${props.borderColor}/20`,
       )}
     >
       {props.children}

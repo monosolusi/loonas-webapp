@@ -12,7 +12,7 @@ export function StatusBoxIcon(props: StatusBoxIconProps) {
     <div
       className={clsx(
         "flex flex-col items-center justify-center rounded-lg border p-5",
-        `${props.backgroundColor}/5 ${props.borderColor}/20`,
+        `${props.backgroundColor} ${props.borderColor}`,
       )}
     >
       <Image src={props.icon} alt="Status Icon" width={48} height={48} />
