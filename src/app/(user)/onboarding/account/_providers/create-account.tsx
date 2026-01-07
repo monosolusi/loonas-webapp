@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { DateTime } from "luxon";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
@@ -96,10 +96,6 @@ export function CreateAccountProvider(props: CreateAccountProviderProps) {
       ? { type: "personal", data: personalData }
       : { type: "business", data: businessData }
     : undefined;
-
-  useEffect(() => {
-    console.log(accountData);
-  }, [accountData]);
 
   return (
     <CreateAccountContext.Provider

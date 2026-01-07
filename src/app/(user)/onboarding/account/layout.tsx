@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
 import { useRouter } from "next/navigation";
 import { CreateAccountProvider } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { useOrganizationList } from "@clerk/nextjs";
 
 type AccountOnboardingLayoutProps = {
   accountType: React.ReactNode;
@@ -12,19 +12,20 @@ type AccountOnboardingLayoutProps = {
 
 export default function AccountOnboardingLayout(props: AccountOnboardingLayoutProps) {
   const router = useRouter();
-  const { accounts, loading } = useListAccount();
+  const { isLoaded, userMemberships } = useOrganizationList();
 
   useEffect(() => {
-    if (loading || !accounts) return;
+    if (!isLoaded) return;
 
-    // If the user already has more than 1 account, we will redirect to somewhere
-    if (accounts.length > 1) return router.replace("/home");
-    else if (accounts.length === 1) {
-      const accountId = accounts[0].id;
-      return router.replace(`/onboarding/${accountId}/result`);
+    if (userMemberships.count > 1) router.replace("/home");
+    else if (userMemberships.count === 1) {
+      const accountId = userMemberships.data[0].id;
+      if (!accountId) return;
+      router.replace(`/onboarding/kyc-summary/${accountId}`);
     }
-  }, [accounts, loading]);
+  }, [isLoaded, userMemberships]);
 
+  if (!isLoaded) return null;
   return (
     <CreateAccountProvider>
       {props.accountType}
