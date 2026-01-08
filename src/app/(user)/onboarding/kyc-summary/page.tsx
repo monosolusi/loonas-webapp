@@ -6,6 +6,7 @@ import { EmailAddressCard } from "@/app/(user)/onboarding/kyc-summary/_component
 import { useOrganization } from "@clerk/nextjs";
 import { AccountTypeCard } from "./_components/account-type-card";
 import { VerificationTimelineCard } from "@/app/(user)/onboarding/kyc-summary/_components/verification-timeline-card";
+import { NextActionSection } from "@/app/(user)/onboarding/kyc-summary/_components/next-action-section";
 
 export default function KycSummaryPage() {
   const { isLoaded, organization } = useOrganization();
@@ -28,9 +29,7 @@ export default function KycSummaryPage() {
         <VerificationTimelineCard account={{ id: organization.id }} />
 
         {/*  Next Action Section */}
-        <div className="flex flex-row text-center">
-          <div className="w-full text-sm leading-5 font-normal text-neutral-200">Mohon tunggu verifikasi selesai.</div>
-        </div>
+        <NextActionSection account={{ id: organization.id }} />
 
         {/*  Support Card */}
         <div className="rounded-xl border border-neutral-100 bg-neutral-200/30 p-5">
