@@ -1,12 +1,17 @@
 "use client";
 
-import { StatusBox } from "@/app/(user)/onboarding/kyc-summary/[accountId]/_components/status-box";
+import { StatusBox } from "@/app/(user)/onboarding/kyc-summary/_components/status-box";
 import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
-import { useParams } from "next/navigation";
 import { useMemo } from "react";
 
+type StatusBoxImplProps = {
+  account: { id: string };
+};
+
 type PossibleStatus = "NEW.PENDING" | "PROCESSING.PENDING" | "COMPLETED.APPROVED" | "COMPLETED.REJECTED";
+
 type StatusBoxStatus = "SUBMITTED" | "REVIEWING" | "APPROVED" | "REJECTED";
+
 const STATUS_MAP: Record<PossibleStatus, StatusBoxStatus> = {
   "NEW.PENDING": "SUBMITTED",
   "PROCESSING.PENDING": "REVIEWING",
@@ -14,9 +19,8 @@ const STATUS_MAP: Record<PossibleStatus, StatusBoxStatus> = {
   "COMPLETED.REJECTED": "REJECTED",
 };
 
-export function StatusBoxImpl() {
-  const { accountId } = useParams<{ accountId: string }>();
-  const { verificationWork } = useGetAccountVerificationWork({ accountId });
+export function StatusBoxImpl(props: StatusBoxImplProps) {
+  const { verificationWork } = useGetAccountVerificationWork({ accountId: props.account.id });
 
   const status = useMemo(() => {
     if (!verificationWork) return null;

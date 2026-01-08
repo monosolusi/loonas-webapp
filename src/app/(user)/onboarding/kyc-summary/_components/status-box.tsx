@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { StatusBoxWrapper } from "@/app/(user)/onboarding/kyc-summary/[accountId]/_components/status-box-wrapper";
-import { StatusBoxIcon } from "@/app/(user)/onboarding/kyc-summary/[accountId]/_components/status-box-icon";
+import { StatusBoxWrapper } from "@/app/(user)/onboarding/kyc-summary/_components/status-box-wrapper";
+import { StatusBoxIcon } from "@/app/(user)/onboarding/kyc-summary/_components/status-box-icon";
 
 type StatusData = {
   title: string;

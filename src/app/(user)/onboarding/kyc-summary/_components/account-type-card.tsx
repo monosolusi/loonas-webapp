@@ -1,13 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useParams } from "next/navigation";
-import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
 import { useMemo } from "react";
+import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
 
 export function AccountTypeCard() {
-  const { accountId } = useParams<{ accountId: string }>();
-  const { verificationWork } = useGetAccountVerificationWork({ accountId });
+  const { verificationWork } = useGetAccountVerificationWork({ accountId: undefined });
 
   const accountType = useMemo(() => {
     if (!verificationWork) return "";

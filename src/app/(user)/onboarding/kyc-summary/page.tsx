@@ -1,19 +1,24 @@
+"use client";
+
 import { StepHeader } from "@/app/(user)/onboarding/_components/step-header";
 import Image from "next/image";
-import { StatusBoxImpl } from "@/app/(user)/onboarding/kyc-summary/[accountId]/_components/status-box-impl";
-import { AccountTypeCard } from "@/app/(user)/onboarding/kyc-summary/[accountId]/_components/account-type-card";
-import { EmailAddressCard } from "@/app/(user)/onboarding/kyc-summary/[accountId]/_components/email-address-card";
+import { StatusBoxImpl } from "@/app/(user)/onboarding/kyc-summary/_components/status-box-impl";
+import { EmailAddressCard } from "@/app/(user)/onboarding/kyc-summary/_components/email-address-card";
+import { useOrganization } from "@clerk/nextjs";
 
 export default function KycSummaryPage() {
+  const { isLoaded, organization } = useOrganization();
+
+  if (!isLoaded || !organization) return null;
   return (
     <div className="flex flex-col items-center justify-center gap-10">
       <StepHeader title="Status Verifikasi KYC" description="Terima kasih! Kami sedang memproses verifikasi Anda" />
       <div className="flex w-full flex-col gap-8">
         {/*  Status Box */}
-        <StatusBoxImpl />
+        <StatusBoxImpl account={{ id: organization.id }} />
 
         {/*  Account Type Card */}
-        <AccountTypeCard />
+        {/*<AccountTypeCard />*/}
 
         {/*  Email Address Card */}
         <EmailAddressCard />

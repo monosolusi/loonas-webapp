@@ -1,20 +1,25 @@
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { AccountServiceImpl } from "@/features/account/data/sources/account";
 import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
 import {
   RetrieveAccountVerificationWorkUseCase,
-  RetrieveAccountVerificationWorkUseCaseParams,
+  RetrieveAccountVerificationWorkUseCaseParams
 } from "@/features/account/domain/usecases/retrieve-account-verification-work";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import useSWR from "swr";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { AccountVerificationWorkEntity } from "@/features/account/domain/entities/account-verification-work";
+import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
+import { useAuth } from "@clerk/nextjs";
 
-interface GetAccountVerificationWorkFetcherParams {
+type GetAccountVerificationWorkProps = {
   accountId?: string;
-}
+};
+
+type GetAccountVerificationWorkFetcherParams = GetAccountVerificationWorkProps & {
+  getToken: () => Promise<string | null>;
+};
 
 async function GetAccountVerificationWorkFetcher([_, params]: [
   string,
@@ -22,11 +27,8 @@ async function GetAccountVerificationWorkFetcher([_, params]: [
 ]): Promise<AccountVerificationWorkEntity> {
   if (!params.accountId) throw new ServerError(ErrorCodes.NOT_FOUND);
 
-  const sessionService = new LocalStorageSessionService();
-  const sessionRepository = new SessionRepositoryImpl(sessionService);
-  const http = new HttpRequest();
-  const accountService = new AccountServiceImpl(http);
-  const accountRepository = new AccountRepositoryImpl(accountService);
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ getToken: params.getToken }));
+  const accountRepository = new AccountRepositoryImpl(new AccountServiceImpl(new HttpRequest()));
   const retrieve = new RetrieveAccountVerificationWorkUseCase(accountRepository, sessionRepository);
   const retrieveParams = new RetrieveAccountVerificationWorkUseCaseParams(params.accountId);
 
@@ -36,11 +38,16 @@ async function GetAccountVerificationWorkFetcher([_, params]: [
   return accountVerificationWork.data;
 }
 
-export function useGetAccountVerificationWork(params: GetAccountVerificationWorkFetcherParams) {
+export function useGetAccountVerificationWork(params: GetAccountVerificationWorkProps) {
+  const { isLoaded, getToken } = useAuth();
+  if (!isLoaded) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+
   const { data, isLoading, error, mutate } = useSWR(
-    ["get-account-verification-work", params],
+    ["get-account-verification-work", { ...params, getToken }],
     GetAccountVerificationWorkFetcher,
   );
+
+  console.log(error);
 
   return {
     verificationWork: data,
