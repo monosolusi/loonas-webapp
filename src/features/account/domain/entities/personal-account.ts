@@ -7,7 +7,9 @@ import { DistrictEntity } from "@/core/utilities/address/domain/entities/distric
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
 import { AccountType } from "@/features/account/domain/enums/account-type";
 
-interface PersonalAccountEntityConstructor {
+type Metadata = { clerkId: string };
+
+type PersonalAccountEntityConstructor = {
   id: string;
   type: AccountType;
   nationality: string;
@@ -21,10 +23,11 @@ interface PersonalAccountEntityConstructor {
   district: DistrictEntity;
   subdistrict: SubdistrictEntity;
   address: string;
+  metadata: Metadata;
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
-}
+};
 
 export class PersonalAccountEntity implements AbstractEntity {
   public id: string;
@@ -40,6 +43,7 @@ export class PersonalAccountEntity implements AbstractEntity {
   public district: DistrictEntity;
   public subdistrict: SubdistrictEntity;
   public address: string;
+  public metadata: Metadata;
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
@@ -58,6 +62,7 @@ export class PersonalAccountEntity implements AbstractEntity {
     this.district = args.district;
     this.subdistrict = args.subdistrict;
     this.address = args.address;
+    this.metadata = args.metadata;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
