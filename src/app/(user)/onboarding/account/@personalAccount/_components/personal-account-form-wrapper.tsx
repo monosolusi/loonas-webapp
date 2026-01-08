@@ -13,8 +13,8 @@ export function PersonalAccountFormWrapper(props: PersonalAccountFormWrapperProp
     try {
       event.preventDefault();
       event.stopPropagation();
-      const account = await createAccount();
-      router.push(`/onboarding/kyc-summary/${account.id}`);
+      await createAccount();
+      router.push(`/onboarding/kyc-summary`);
     } catch (err) {
       console.error(err);
     }
