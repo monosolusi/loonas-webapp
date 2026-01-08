@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 export function EmailAddressCard() {
-  const { accountId } = useParams<{ accountId: string }>();
+  const { isLoaded, user } = useUser();
 
+  if (!isLoaded || !user?.primaryEmailAddress?.emailAddress) return null;
   return (
     <div className="flex flex-row items-center gap-x-4 rounded-xl border border-neutral-100 bg-white p-5">
       {/*  Icon */}
@@ -16,7 +17,7 @@ export function EmailAddressCard() {
       {/*  Title and Description */}
       <div className="flex w-full flex-col gap-1">
         <div className="text-sm leading-5 font-medium">Email Terdaftar</div>
-        <div className="text-base leading-6 font-semibold">john.doe@gmail.com</div>
+        <div className="text-base leading-6 font-semibold">{user.primaryEmailAddress?.emailAddress}</div>
         <div className="text-sm leading-5 font-normal text-neutral-200">Kami akan mengirimkan update ke email ini</div>
       </div>
     </div>

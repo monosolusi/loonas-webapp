@@ -4,8 +4,12 @@ import Image from "next/image";
 import { useMemo } from "react";
 import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
 
-export function AccountTypeCard() {
-  const { verificationWork } = useGetAccountVerificationWork({ accountId: undefined });
+type AccountTypeCardProps = {
+  account: { id: string };
+};
+
+export function AccountTypeCard(props: AccountTypeCardProps) {
+  const { verificationWork } = useGetAccountVerificationWork({ accountId: props.account.id });
 
   const accountType = useMemo(() => {
     if (!verificationWork) return "";

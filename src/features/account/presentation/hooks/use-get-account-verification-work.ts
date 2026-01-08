@@ -3,7 +3,7 @@ import { AccountServiceImpl } from "@/features/account/data/sources/account";
 import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
 import {
   RetrieveAccountVerificationWorkUseCase,
-  RetrieveAccountVerificationWorkUseCaseParams
+  RetrieveAccountVerificationWorkUseCaseParams,
 } from "@/features/account/domain/usecases/retrieve-account-verification-work";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";

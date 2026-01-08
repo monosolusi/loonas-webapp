@@ -5,6 +5,7 @@ import Image from "next/image";
 import { StatusBoxImpl } from "@/app/(user)/onboarding/kyc-summary/_components/status-box-impl";
 import { EmailAddressCard } from "@/app/(user)/onboarding/kyc-summary/_components/email-address-card";
 import { useOrganization } from "@clerk/nextjs";
+import { AccountTypeCard } from "./_components/account-type-card";
 
 export default function KycSummaryPage() {
   const { isLoaded, organization } = useOrganization();
@@ -18,7 +19,7 @@ export default function KycSummaryPage() {
         <StatusBoxImpl account={{ id: organization.id }} />
 
         {/*  Account Type Card */}
-        {/*<AccountTypeCard />*/}
+        <AccountTypeCard account={{ id: organization.id }} />
 
         {/*  Email Address Card */}
         <EmailAddressCard />
