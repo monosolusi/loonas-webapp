@@ -12,38 +12,39 @@ import { AccountRepositoryImpl } from "@/features/account/data/repositories/acco
 import { AccountServiceImpl } from "@/features/account/data/sources/account";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { useAuth } from "@clerk/nextjs";
+import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 
 type CreatePersonalAccountFetcherParams = {
-  arg: {
-    personal: {
-      nationality: string;
-      fullName: string;
-      idNumber: string;
-      occupation: OccupationEntity;
-      placeOfBirth: string;
-      dateOfBirth: DateTime;
-    };
-    address: {
-      province: ProvinceEntity;
-      city: CityEntity;
-      district: DistrictEntity;
-      subdistrict: SubdistrictEntity;
-      address: string;
-    };
-    documents: {
-      idFile: File;
-    };
+  getToken: () => Promise<string | null>;
+  personal: {
+    nationality: string;
+    fullName: string;
+    idNumber: string;
+    occupation: OccupationEntity;
+    placeOfBirth: string;
+    dateOfBirth: DateTime;
+  };
+  address: {
+    province: ProvinceEntity;
+    city: CityEntity;
+    district: DistrictEntity;
+    subdistrict: SubdistrictEntity;
+    address: string;
+  };
+  documents: {
+    idFile: File;
   };
 };
 
-async function CreatePersonalAccountFetcher(_: string, params: CreatePersonalAccountFetcherParams) {
-  const { arg } = params;
+type TriggerInput = Omit<CreatePersonalAccountFetcherParams, "getToken">;
 
-  const sessionRepository = new SessionRepositoryImpl(new LocalStorageSessionService());
+async function CreatePersonalAccountFetcher(_: string, params: { arg: CreatePersonalAccountFetcherParams }) {
+  const { arg } = params;
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ getToken: arg.getToken }));
   const accountRepository = new AccountRepositoryImpl(new AccountServiceImpl(new HttpRequest()));
   const create = new CreatePersonalAccountUseCase(accountRepository, sessionRepository);
   const createParams = new CreatePersonalAccountUseCaseParams({
@@ -69,5 +70,18 @@ async function CreatePersonalAccountFetcher(_: string, params: CreatePersonalAcc
 }
 
 export function useCreatePersonalAccount() {
-  return useSWRMutation("create-personal-account", CreatePersonalAccountFetcher);
+  const { getToken, isLoaded } = useAuth();
+  const { trigger, ...rest } = useSWRMutation("create-personal-account", CreatePersonalAccountFetcher);
+
+  // Wrapper trigger yang otomatis inject getToken dari Clerk
+  const wrappedTrigger = (data: TriggerInput) => {
+    if (!isLoaded) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+    return trigger({ ...data, getToken });
+  };
+
+  return {
+    ...rest,
+    trigger: wrappedTrigger,
+    isReady: isLoaded,
+  };
 }
