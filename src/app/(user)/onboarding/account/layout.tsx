@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CreateAccountProvider } from "@/app/(user)/onboarding/account/_providers/create-account";
-import { useOrganizationList } from "@clerk/nextjs";
+import { useAuth, useOrganizationList } from "@clerk/nextjs";
 
 type AccountOnboardingLayoutProps = {
   accountType: React.ReactNode;
@@ -13,6 +13,7 @@ type AccountOnboardingLayoutProps = {
 export default function AccountOnboardingLayout(props: AccountOnboardingLayoutProps) {
   const router = useRouter();
   const { isLoaded, userMemberships } = useOrganizationList();
+  const { isLoaded: authLoaded, isSignedIn, signOut } = useAuth();
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -24,6 +25,12 @@ export default function AccountOnboardingLayout(props: AccountOnboardingLayoutPr
       router.replace(`/onboarding/kyc-summary/${accountId}`);
     }
   }, [isLoaded, userMemberships]);
+
+  useEffect(() => {
+    console.log(authLoaded, isSignedIn);
+    if (!authLoaded) return;
+    if (!isSignedIn) router.replace("/sign-in");
+  }, [authLoaded, isSignedIn]);
 
   if (!isLoaded) return null;
   return (
