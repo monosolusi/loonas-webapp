@@ -9,7 +9,9 @@ import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/cre
 import { StepIndicatorImpl } from "@/app/(user)/onboarding/account/_components/step-indicator.impl";
 import { SubmitButton } from "@/app/(user)/onboarding/account/@businessAccount/_components/submit-button";
 
-type PersonalAccountCreationLayoutProps = {};
+type PersonalAccountCreationLayoutProps = {
+  personalDetail: React.ReactNode;
+};
 
 export default function PersonalAccountCreationLayout(props: PersonalAccountCreationLayoutProps) {
   const { type } = useCreateAccount();
@@ -19,10 +21,10 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
     <form>
       <div className="flex flex-col items-center justify-center gap-10">
         <StepIndicatorWithTime currentStep={3} totalSteps={4} expectedTime="~5 menit" />
-        <StepHeader title="Informasi Personal" description="Lengkapi data diri untuk verifikasi identitas Anda." />
+        <StepHeader title="Informasi Bisnis" description="Lengkapi data perusahaan untuk verifikasi bisnis Anda." />
         <div className="flex w-full flex-col items-stretch">
           <StepIndicatorImpl />
-          <div></div>
+          <div>{props.personalDetail}</div>
           <div className="flex flex-row gap-3 border-t border-neutral-100 pt-4">
             <div className="flex-1">
               <PreviousButton />
