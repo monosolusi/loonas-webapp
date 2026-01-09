@@ -1,6 +1,7 @@
 import { TextInput } from "@/core/presentations/components/text-input";
 import Image from "next/image";
 import React from "react";
+import PhoneNumberInput from "@/core/presentations/components/phone-number-input";
 
 export default function BusinessDetailPage() {
   return (
@@ -17,7 +18,7 @@ export default function BusinessDetailPage() {
           placeholder="Masukan email perusahaan Anda."
           leftIcon={<Image src="/assets/images/email-icon-w20-h20.svg" alt="Email Icon" width={20} height={20} />}
         />
-        <TextInput label="Nomor Telpon" type="tel" placeholder="Masukan nomor telpon Anda." />
+        <PhoneNumberInput />
       </div>
     </>
   );
