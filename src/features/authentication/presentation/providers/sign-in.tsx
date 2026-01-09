@@ -2,18 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { DataFailed } from "@/core/resources/data-state";
-import { UserSignInUseCase, UserSignInUseCaseParams } from "@/features/authentication/domain/usecases/user-sign-in";
-import { AuthRepositoryImpl } from "@/features/authentication/data/repositories/auth";
-import { AuthServiceImpl } from "@/features/authentication/data/sources/auth";
-import { SaveSessionUseCase, SaveSessionUseCaseParams } from "@/features/authentication/domain/usecases/save-session";
-import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
-import { UserRepositoryImpl } from "@/features/user/data/repositories/user";
-import { UserServiceImpl } from "@/features/user/data/sources/user";
 import { useRouter } from "next/navigation";
-import { CheckSessionUseCase } from "@/features/authentication/domain/usecases/check-session";
-import { HttpRequest } from "@/core/helpers/http-request";
+import { useAuth, useSignIn } from "@clerk/nextjs";
 
 type SignInContextProps = {
   email: string;
@@ -38,6 +28,8 @@ export function SignInProvider({ children }: { children: any }) {
   const [loading, setLoading] = useState<boolean>(true);
   const [showInvalidCred, setShowInvalidCred] = useState<boolean>(false);
   const [error, setError] = useState<Error>();
+  const { isLoaded, isSignedIn } = useAuth();
+  const { signIn, setActive } = useSignIn();
   const router = useRouter();
 
   useEffect(() => {
@@ -50,8 +42,8 @@ export function SignInProvider({ children }: { children: any }) {
   }, [error]);
 
   useEffect(() => {
-    checkSession();
-  }, []);
+    if (isLoaded) checkSession();
+  }, [isLoaded]);
 
   function checkCleanInput() {
     if (email === "") return false;
@@ -66,17 +58,7 @@ export function SignInProvider({ children }: { children: any }) {
   async function checkSession(): Promise<void> {
     try {
       setLoading(true);
-
-      const sessionService = new LocalStorageSessionService();
-      const sessionRepository = new SessionRepositoryImpl(sessionService);
-      const userService = new UserServiceImpl(new HttpRequest());
-      const userRepository = new UserRepositoryImpl(userService);
-      const checkSession = new CheckSessionUseCase(sessionRepository, userRepository);
-      const me = await checkSession.execute();
-      if (me instanceof DataFailed) throw me.error;
-
-      // We have a valid access token and session, we can redirect to protected page
-      router.replace("/home");
+      if (isSignedIn) router.replace("/home");
     } catch (err: any) {
       setError(err);
     } finally {
@@ -89,24 +71,16 @@ export function SignInProvider({ children }: { children: any }) {
       setLoading(true);
       const isClean = checkCleanInput();
       if (!isClean) throw new ServerError(ErrorCodes.VALIDATION_FAILED);
+      if (!isLoaded || !signIn || !setActive) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
 
-      const authService = new AuthServiceImpl();
-      const authRepository = new AuthRepositoryImpl(authService);
-      const useCase = new UserSignInUseCase(authRepository);
-      const params = new UserSignInUseCaseParams(email, password);
-      const result = await useCase.execute(params);
-      if (result instanceof DataFailed) throw result.error;
-      if (result.data === undefined) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      const { createdSessionId } = await signIn.create({
+        strategy: "password",
+        identifier: email,
+        password: password,
+      });
 
-      // This time, the login success, and we will save the session to the local storage for easy access
-      const sessionService = new LocalStorageSessionService();
-      const sessionRepository = new SessionRepositoryImpl(sessionService);
-      const saveSession = new SaveSessionUseCase(sessionRepository);
-      const saveSessionParams = new SaveSessionUseCaseParams(result.data.accessToken);
-      const savedSession = await saveSession.execute(saveSessionParams);
-      if (savedSession instanceof DataFailed) throw savedSession.error;
-
-      router.replace("/home");
+      if (!createdSessionId) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+      await setActive({ session: createdSessionId, redirectUrl: "/home" });
     } catch (err: any) {
       setError(err);
       setLoading(false);
