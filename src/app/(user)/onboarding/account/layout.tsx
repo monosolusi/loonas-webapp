@@ -8,6 +8,7 @@ import { useAuth, useOrganizationList } from "@clerk/nextjs";
 type AccountOnboardingLayoutProps = {
   accountType: React.ReactNode;
   personalAccount: React.ReactNode;
+  businessAccount: React.ReactNode;
 };
 
 export default function AccountOnboardingLayout(props: AccountOnboardingLayoutProps) {
@@ -27,7 +28,6 @@ export default function AccountOnboardingLayout(props: AccountOnboardingLayoutPr
   }, [isLoaded, userMemberships]);
 
   useEffect(() => {
-    console.log(authLoaded, isSignedIn);
     if (!authLoaded) return;
     if (!isSignedIn) router.replace("/sign-in");
   }, [authLoaded, isSignedIn]);
@@ -37,6 +37,7 @@ export default function AccountOnboardingLayout(props: AccountOnboardingLayoutPr
     <CreateAccountProvider>
       {props.accountType}
       {props.personalAccount}
+      {props.businessAccount}
     </CreateAccountProvider>
   );
 }

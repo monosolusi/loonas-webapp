@@ -9,7 +9,7 @@ export function NextButton() {
   const { nextStep, currentStep } = useCreateAccount();
 
   // Only when the current step is not "personal.documents" you can show the next button.
-  if (currentStep === "personal.documents") return null;
+  if (currentStep === "personal.documents" || currentStep === "business.documents") return null;
   return (
     <PrimaryButton
       type="button"

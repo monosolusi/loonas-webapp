@@ -13,7 +13,10 @@ export default function SelectAccountTypeStepPage() {
     setCurrentStep?.("personal.personal");
   };
 
-  const onBusinessAccountSelected = () => setType?.("business");
+  const onBusinessAccountSelected = () => {
+    setType?.("business");
+    setCurrentStep?.("business.personal");
+  };
 
   if (type) return null; // Do not render this page if the user has already selected an account type.
   return (
