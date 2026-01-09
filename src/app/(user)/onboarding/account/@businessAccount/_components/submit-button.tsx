@@ -4,6 +4,6 @@ import { PrimaryButton } from "@/core/presentations/components/primary-button";
 export function SubmitButton() {
   const { currentStep } = useCreateAccount();
 
-  if (currentStep !== "personal.documents") return null;
-  return <PrimaryButton label="Buat Akun" type="submit" />;
+  if (currentStep !== "business.documents") return null;
+  return <PrimaryButton label="Buat Akun Bisnis" type="submit" />;
 }
