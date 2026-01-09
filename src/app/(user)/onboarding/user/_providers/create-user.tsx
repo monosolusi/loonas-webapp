@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import { isValidEmail, isValidPassword } from "@/core/utilities/validation-patterns";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useGetMe } from "@/features/user/presentation/hooks/use-get-me";
-import { useSignUp } from "@clerk/nextjs";
+import { useAuth, useSignUp } from "@clerk/nextjs";
 import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 
 type CreateUserContextProps = {
@@ -43,6 +43,7 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
   const [repeatPassword, setRepeatPassword] = React.useState<string>("");
   const [isCreating, setIsCreating] = React.useState<boolean>(false);
   const { isLoaded, signUp, setActive } = useSignUp();
+  const { isSignedIn } = useAuth();
   const { me, loading: isLoadingMe } = useGetMe();
 
   const emailError = useMemo(() => {
@@ -70,6 +71,7 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
       setIsCreating(true);
       if (!isClean || isLoadingMe) throw new ServerError(ErrorCodes.VALIDATION_FAILED);
       if (!isLoaded) return;
+      if (isSignedIn) throw new ServerError(ErrorCodes.USER_SIGNED_IN);
 
       // Check if the user already logged in. If so, we will redirect to the home page directly
       // TODO: Change this to use clerk
