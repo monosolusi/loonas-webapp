@@ -1,9 +1,15 @@
+"use client";
+
 import { TextInput } from "@/core/presentations/components/text-input";
 import Image from "next/image";
 import React from "react";
 import PhoneNumberInput from "@/core/presentations/components/phone-number-input";
+import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 
 export default function BusinessDetailPage() {
+  const { type, currentStep } = useCreateAccount();
+
+  if (!(type === "business" && currentStep === "business.personal")) return null;
   return (
     <>
       <div className="mb-6 flex flex-col">

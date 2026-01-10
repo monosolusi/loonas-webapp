@@ -11,6 +11,7 @@ import { SubmitButton } from "@/app/(user)/onboarding/account/@businessAccount/_
 
 type PersonalAccountCreationLayoutProps = {
   personalDetail: React.ReactNode;
+  addressDetail: React.ReactNode;
 };
 
 export default function PersonalAccountCreationLayout(props: PersonalAccountCreationLayoutProps) {
@@ -24,7 +25,10 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
         <StepHeader title="Informasi Bisnis" description="Lengkapi data perusahaan untuk verifikasi bisnis Anda." />
         <div className="flex w-full flex-col items-stretch">
           <StepIndicatorImpl />
-          <div>{props.personalDetail}</div>
+          <div>
+            {props.personalDetail}
+            {props.addressDetail}
+          </div>
           <div className="flex flex-row gap-3 border-t border-neutral-100 pt-4">
             <div className="flex-1">
               <PreviousButton />

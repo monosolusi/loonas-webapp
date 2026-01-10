@@ -1,22 +1,12 @@
 "use client";
 
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
-import {
-  ProvinceInput
-} from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/province-input";
-import { CityInput } from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/city-input";
-import {
-  DistrictInput
-} from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/district-input";
-import {
-  SubdistrictInput
-} from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/subdistrict-input";
-import {
-  AddressInput
-} from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/address-input";
-import {
-  usePersonalAccountData
-} from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-create-personal-account-data";
+import { ProvinceInput } from "@/app/(user)/onboarding/_components/province-input";
+import { CityInput } from "@/app/(user)/onboarding/_components/city-input";
+import { DistrictInput } from "@/app/(user)/onboarding/_components/district-input";
+import { SubdistrictInput } from "@/app/(user)/onboarding/_components/subdistrict-input";
+import { AddressInput } from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/address-input";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-create-personal-account-data";
 
 export default function AddressDetailInputPage() {
   const { type, currentStep } = useCreateAccount();
