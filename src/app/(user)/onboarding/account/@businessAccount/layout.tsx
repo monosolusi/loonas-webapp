@@ -12,6 +12,7 @@ import { SubmitButton } from "@/app/(user)/onboarding/account/@businessAccount/_
 type PersonalAccountCreationLayoutProps = {
   personalDetail: React.ReactNode;
   addressDetail: React.ReactNode;
+  documentUpload: React.ReactNode;
 };
 
 export default function PersonalAccountCreationLayout(props: PersonalAccountCreationLayoutProps) {
@@ -28,6 +29,7 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
           <div>
             {props.personalDetail}
             {props.addressDetail}
+            {props.documentUpload}
           </div>
           <div className="flex flex-row gap-3 border-t border-neutral-100 pt-4">
             <div className="flex-1">

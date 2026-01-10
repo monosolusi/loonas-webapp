@@ -1,11 +1,11 @@
 "use client";
 
-import {useCreateAccount} from "@/app/(user)/onboarding/account/_providers/create-account";
-import {ProvinceInput} from "@/app/(user)/onboarding/_components/province-input";
-import {CityInput} from "@/app/(user)/onboarding/_components/city-input";
-import {DistrictInput} from "@/app/(user)/onboarding/_components/district-input";
-import {SubdistrictInput} from "@/app/(user)/onboarding/_components/subdistrict-input";
-import {TextAreaInput} from "@/core/presentations/components/text-area-input";
+import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { ProvinceInput } from "@/app/(user)/onboarding/_components/province-input";
+import { CityInput } from "@/app/(user)/onboarding/_components/city-input";
+import { DistrictInput } from "@/app/(user)/onboarding/_components/district-input";
+import { SubdistrictInput } from "@/app/(user)/onboarding/_components/subdistrict-input";
+import { TextAreaInput } from "@/core/presentations/components/text-area-input";
 
 export default function AddressDetailPage() {
   const { type, currentStep } = useCreateAccount();
