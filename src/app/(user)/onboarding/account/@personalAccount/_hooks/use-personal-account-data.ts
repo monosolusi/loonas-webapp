@@ -1,3 +1,5 @@
+"use client";
+
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useMemo } from "react";
 import { isNonEmptyString } from "@/core/utilities/validation-patterns";
