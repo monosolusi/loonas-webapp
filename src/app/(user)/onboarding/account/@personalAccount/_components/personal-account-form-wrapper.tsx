@@ -1,4 +1,4 @@
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-create-personal-account-data";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-personal-account-data";
 import { useRouter } from "next/navigation";
 
 type PersonalAccountFormWrapperProps = {
