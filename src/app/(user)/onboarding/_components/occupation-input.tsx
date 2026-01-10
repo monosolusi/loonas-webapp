@@ -1,13 +1,17 @@
 "use client";
 
+import { useListOccupation } from "@/core/utilities/occupation/presentation/hooks/use-list-occupation";
 import { useMemo } from "react";
 import { SelectInput } from "@/core/presentations/components/select-input";
-import { useListOccupation } from "@/core/utilities/occupation/presentation/hooks/use-list-occupation";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-personal-account-data";
+import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 
-export function OccupationInput() {
+type OccupationInputProps = {
+  value?: OccupationEntity;
+  onChange?: (occupation: OccupationEntity | undefined) => void;
+};
+
+export function OccupationInput(props: OccupationInputProps) {
   const { occupations, loading } = useListOccupation();
-  const { data, update } = usePersonalAccountData();
 
   const options = useMemo(() => {
     if (!occupations) return [];
@@ -19,7 +23,7 @@ export function OccupationInput() {
 
   const onChange = (selectedId: string) => {
     const selectedOccupation = occupations?.find((occupation) => occupation.id === selectedId);
-    update?.({ occupation: selectedOccupation });
+    props.onChange?.(selectedOccupation);
   };
 
   return (
@@ -27,7 +31,7 @@ export function OccupationInput() {
       label="Pekerjaan"
       options={options}
       placeholder="Pilih pekerjaan Anda"
-      value={data.occupation?.id ?? ""}
+      value={props.value?.id ?? ""}
       onChange={(value) => onChange(value)}
       disabled={loading}
     />

@@ -6,10 +6,12 @@ import { FullNameInput } from "@/app/(user)/onboarding/account/@personalAccount/
 import { IdentityNumberInput } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/identity-number-input";
 import { PlaceOfBirthInput } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/place-of-birth-input";
 import { DateOfBirthInput } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/date-of-birth-input";
-import { OccupationInput } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/occupation-input";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-personal-account-data";
+import { OccupationInput } from "@/app/(user)/onboarding/_components/occupation-input";
 
 export default function PersonalDetailInputPage() {
   const { currentStep, type } = useCreateAccount();
+  const { data, update } = usePersonalAccountData();
 
   if (!(type === "personal" && currentStep === "personal.personal")) return null;
   return (
@@ -31,7 +33,7 @@ export default function PersonalDetailInputPage() {
         <IdentityNumberInput />
 
         {/* Occupation Input */}
-        <OccupationInput />
+        <OccupationInput value={data.occupation} onChange={(value) => update?.({ occupation: value })} />
 
         {/*  Place of Birth Input */}
         <PlaceOfBirthInput />
