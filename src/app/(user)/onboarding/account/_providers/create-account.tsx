@@ -15,7 +15,21 @@ type PersonalStep = "personal.personal" | "personal.address" | "personal.documen
 type BusinessStep = "business.personal" | "business.address" | "business.documents";
 type Step = PersonalStep | BusinessStep;
 
-type BusinessAccountData = {};
+type BusinessAccountData = {
+  companyName?: string;
+  companyEmail?: string;
+  companyPhone?: string;
+  companyProvince?: ProvinceEntity;
+  companyCity?: CityEntity;
+  companyDistrict?: DistrictEntity;
+  companySubdistrict?: SubdistrictEntity;
+  companyAddress?: string;
+  deedOfEstablishment?: File | null;
+  mostRecentDeededOfEstablishment?: File | null;
+  businessRegistrationNumber?: File | null;
+  directorNationalIdentityCard?: File | null;
+  financialStatement?: File | null;
+};
 
 type PersonalAccountData = {
   nationality?: string;
@@ -120,10 +134,4 @@ export function useCreateAccount() {
   const context = React.useContext(CreateAccountContext);
   if (!context) throw new ServerError(ErrorCodes.INVALID_HOOK_CALL);
   return context;
-}
-
-export function useBusinessAccountData() {
-  const { accountData, updateBusinessData } = useCreateAccount();
-  if (accountData?.type !== "business") throw new ServerError(ErrorCodes.INVALID_BUSINESS_ACCOUNT_HOOK_CALL);
-  return { data: accountData.data, update: updateBusinessData };
 }

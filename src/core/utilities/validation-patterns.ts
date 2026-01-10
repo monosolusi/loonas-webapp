@@ -38,3 +38,12 @@ export const isValidPassword = (password: string): boolean => ValidationPatterns
 export const isValidEmail = (email: string): boolean => ValidationPatterns.email.test(email);
 
 export const isNonEmptyString = (v: unknown): v is string => typeof v === "string" && v.trim().length > 0;
+
+/**
+ * Validates if a value is a valid File with size constraints
+ * @param value - The value to check
+ * @param maxSizeInBytes - Maximum file size in bytes (default: 5MB)
+ */
+export const isValidFile = (value: unknown, maxSizeInBytes: number = 1024 * 1024 * 5): value is File => {
+  return !!value && value instanceof File && value.size > 0 && value.size <= maxSizeInBytes;
+};

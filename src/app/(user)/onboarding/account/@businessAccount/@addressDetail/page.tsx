@@ -6,9 +6,13 @@ import { CityInput } from "@/app/(user)/onboarding/_components/city-input";
 import { DistrictInput } from "@/app/(user)/onboarding/_components/district-input";
 import { SubdistrictInput } from "@/app/(user)/onboarding/_components/subdistrict-input";
 import { TextAreaInput } from "@/core/presentations/components/text-area-input";
+import {
+  useBusinessAccountData
+} from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
 
 export default function AddressDetailPage() {
   const { type, currentStep } = useCreateAccount();
+  const { data, update } = useBusinessAccountData();
 
   if (!(type === "business" && currentStep === "business.address")) return null;
   return (
@@ -18,11 +22,32 @@ export default function AddressDetailPage() {
         <span className="text-sm leading-5 font-medium text-neutral-200">Lengkapi detail alamat kantor perusahaan</span>
       </div>
       <div className="mb-8 flex flex-col gap-4">
-        <ProvinceInput />
-        <CityInput />
-        <DistrictInput />
-        <SubdistrictInput />
-        <TextAreaInput label="Alamat" placeholder="Masukkan alamat lengkap" />
+        <ProvinceInput value={data?.companyProvince} onChange={(value) => update?.({ companyProvince: value })} />
+
+        <CityInput
+          value={data?.companyCity}
+          onChange={(value) => update?.({ companyCity: value })}
+          province={data?.companyProvince}
+        />
+
+        <DistrictInput
+          value={data?.companyDistrict}
+          onChange={(value) => update?.({ companyDistrict: value })}
+          city={data?.companyCity}
+        />
+
+        <SubdistrictInput
+          value={data?.companySubdistrict}
+          onChange={(value) => update?.({ companySubdistrict: value })}
+          district={data?.companyDistrict}
+        />
+
+        <TextAreaInput
+          label="Alamat"
+          placeholder="Masukkan alamat lengkap"
+          value={data?.companyAddress ?? ""}
+          onChange={(value) => update?.({ companyAddress: value })}
+        />
       </div>
     </>
   );

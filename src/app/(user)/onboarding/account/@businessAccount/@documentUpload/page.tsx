@@ -3,9 +3,11 @@
 import React from "react";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { FileUploadInput } from "@/core/presentations/components/file-upload-input";
+import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
 
 export default function DocumentUploadPage() {
   const { type, currentStep } = useCreateAccount();
+  const { data, update } = useBusinessAccountData();
 
   if (!(type === "business" && currentStep === "business.documents")) return null;
   return (
@@ -22,11 +24,40 @@ export default function DocumentUploadPage() {
             <li>Format yang didukung: JPG, PNG, PDF (Max 5MB)</li>
           </ul>
         </div>
-        <FileUploadInput label="Akta Pendirian" accept=".jpg,.jpeg,.png,.pdf" maxSize={5 * 1024 * 1024} />
-        <FileUploadInput label="Perubahan Terbaru" accept=".jpg,.jpeg,.png,.pdf" maxSize={5 * 1024 * 1024} />
-        <FileUploadInput label="NIB (Nomor Induk Berusaha)" accept=".jpg,.jpeg,.png,.pdf" maxSize={5 * 1024 * 1024} />
-        <FileUploadInput label="KTP Direksi" accept=".jpg,.jpeg,.png,.pdf" maxSize={5 * 1024 * 1024} />
-        <FileUploadInput label="Laporan Keuangan" accept=".jpg,.jpeg,.png,.pdf" maxSize={5 * 1024 * 1024} />
+        <FileUploadInput
+          label="Akta Pendirian"
+          accept=".jpg,.jpeg,.png,.pdf"
+          maxSize={5 * 1024 * 1024}
+          onChange={(value) => update?.({ deedOfEstablishment: value })}
+        />
+
+        <FileUploadInput
+          label="Perubahan Terbaru"
+          accept=".jpg,.jpeg,.png,.pdf"
+          maxSize={5 * 1024 * 1024}
+          onChange={(value) => update?.({ mostRecentDeededOfEstablishment: value })}
+        />
+
+        <FileUploadInput
+          label="NIB (Nomor Induk Berusaha)"
+          accept=".jpg,.jpeg,.png,.pdf"
+          maxSize={5 * 1024 * 1024}
+          onChange={(value) => update?.({ businessRegistrationNumber: value })}
+        />
+
+        <FileUploadInput
+          label="KTP Direksi"
+          accept=".jpg,.jpeg,.png,.pdf"
+          maxSize={5 * 1024 * 1024}
+          onChange={(value) => update?.({ directorNationalIdentityCard: value })}
+        />
+
+        <FileUploadInput
+          label="Laporan Keuangan"
+          accept=".jpg,.jpeg,.png,.pdf"
+          maxSize={5 * 1024 * 1024}
+          onChange={(value) => update?.({ financialStatement: value })}
+        />
       </div>
     </>
   );
