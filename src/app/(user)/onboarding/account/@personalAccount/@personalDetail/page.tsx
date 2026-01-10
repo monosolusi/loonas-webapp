@@ -6,7 +6,7 @@ import { FullNameInput } from "@/app/(user)/onboarding/account/@personalAccount/
 import { IdentityNumberInput } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/identity-number-input";
 import { PlaceOfBirthInput } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/place-of-birth-input";
 import { DateOfBirthInput } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/date-of-birth-input";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-personal-account-data";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
 import { OccupationInput } from "@/app/(user)/onboarding/_components/occupation-input";
 
 export default function PersonalDetailInputPage() {

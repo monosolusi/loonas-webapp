@@ -1,7 +1,7 @@
 "use client";
 
 import { TextInput } from "@/core/presentations/components/text-input";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-personal-account-data";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
 
 export function PlaceOfBirthInput() {
   const { data, update } = usePersonalAccountData();

@@ -1,6 +1,6 @@
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { PrimaryButton } from "@/core/presentations/components/primary-button";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-personal-account-data";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
 
 export function SubmitButton() {
   const { currentStep } = useCreateAccount();

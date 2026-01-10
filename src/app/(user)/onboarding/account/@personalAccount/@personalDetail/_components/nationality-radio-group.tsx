@@ -1,7 +1,7 @@
 "use client";
 
 import { NationalityRadioItem } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/nationality-radio-item";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-personal-account-data";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
 
 type Nationality = "WNI" | "WNA";
 

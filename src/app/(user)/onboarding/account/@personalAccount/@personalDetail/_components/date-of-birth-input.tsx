@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { DateTime } from "luxon";
 import { SelectInput } from "@/core/presentations/components/select-input";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/use-personal-account-data";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
 
 const MONTHS = [
   { value: "1", label: "Januari" },
