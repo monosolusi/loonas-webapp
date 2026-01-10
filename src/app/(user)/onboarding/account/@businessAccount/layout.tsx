@@ -10,7 +10,7 @@ import { StepIndicatorImpl } from "@/app/(user)/onboarding/account/_components/s
 import { SubmitButton } from "@/app/(user)/onboarding/account/@businessAccount/_components/submit-button";
 
 type PersonalAccountCreationLayoutProps = {
-  personalDetail: React.ReactNode;
+  businessDetail: React.ReactNode;
   addressDetail: React.ReactNode;
   documentUpload: React.ReactNode;
 };
@@ -27,7 +27,7 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
         <div className="flex w-full flex-col items-stretch">
           <StepIndicatorImpl />
           <div>
-            {props.personalDetail}
+            {props.businessDetail}
             {props.addressDetail}
             {props.documentUpload}
           </div>
