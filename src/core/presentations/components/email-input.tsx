@@ -21,11 +21,9 @@ export function EmailInput({
   const [error, setError] = useState<string | null>(null);
 
   const onChange = (newValue: string) => {
-    if (newValue && !isValidEmail(newValue)) {
-      setError("Format email tidak valid");
-    } else {
-      setError(null);
-    }
+    if (newValue && !isValidEmail(newValue)) setError("Format email tidak valid");
+    else setError(null);
+
     onChangeProp?.(newValue);
   };
 
