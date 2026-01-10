@@ -10,6 +10,7 @@ export function PreviousButton() {
   return (
     <SecondaryButton
       label="Kembali"
+      type="button"
       leftIcon={
         <Image src="/assets/images/arrow-left-icon-neutral-500-w16-h16.svg" alt="Left Icon" width={16} height={16} />
       }
