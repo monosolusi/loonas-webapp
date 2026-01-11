@@ -1,16 +1,16 @@
 "use client";
 
 import { useMemo } from "react";
-import { SelectInput } from "@/core/presentations/components/select-input";
+import { SelectInput, SelectInputProps } from "@/core/presentations/components/select-input";
 import { useListProvince } from "@/core/utilities/address/presentation/hooks/use-list-province";
 import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
 
 type ProvinceInputProps = {
   value?: ProvinceEntity;
   onChange?: (province: ProvinceEntity | undefined) => void;
+  label?: string;
   placeholder?: string;
-  disabled?: boolean;
-};
+} & Omit<SelectInputProps, "value" | "onChange" | "options" | "label">;
 
 /**
  * Province select input component.
@@ -18,10 +18,17 @@ type ProvinceInputProps = {
  *
  * @param props.value - ProvinceEntity
  * @param props.onChange - Callback returning the full ProvinceEntity (or undefined if cleared)
- * @param props.placeholder - Placeholder text
- * @param props.disabled - Additional disabled state (combined with loading state)
+ * @param props.label - Label text (default: "Provinsi")
+ * @param props.placeholder - Placeholder text (default: "Pilih Provinsi")
  */
-export function ProvinceInput(props: ProvinceInputProps) {
+export function ProvinceInput({
+  value,
+  onChange: onChangeProp,
+  label = "Provinsi",
+  placeholder = "Pilih Provinsi",
+  disabled,
+  ...restProps
+}: ProvinceInputProps) {
   const { provinces, loading } = useListProvince();
 
   const options = useMemo(() => {
@@ -34,17 +41,18 @@ export function ProvinceInput(props: ProvinceInputProps) {
 
   const onChange = (selectedId: string) => {
     const selectedProvince = provinces?.find((p) => p.id === selectedId);
-    props.onChange?.(selectedProvince);
+    onChangeProp?.(selectedProvince);
   };
 
   return (
     <SelectInput
-      label="Provinsi"
+      {...restProps}
+      label={label}
       options={options}
-      placeholder={props.placeholder ?? "Pilih Provinsi"}
-      value={props.value?.id ?? ""}
+      placeholder={placeholder}
+      value={value?.id ?? ""}
       onChange={onChange}
-      disabled={props.disabled || loading}
+      disabled={disabled || loading}
     />
   );
 }

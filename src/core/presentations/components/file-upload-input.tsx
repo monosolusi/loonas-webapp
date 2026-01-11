@@ -5,12 +5,12 @@ import Image from "next/image";
 
 type FileUploadInputBaseProps = {
   description?: string;
+  value?: File | null;
   onChange?: (file: File | null) => void;
-  accept?: string;
   icon?: React.ReactNode;
   maxSize?: number;
   onError?: (error: string) => void;
-};
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value" | "type">;
 
 type FileUploadInputWithLabel = FileUploadInputBaseProps & {
   label: string;
@@ -31,10 +31,13 @@ export type FileUploadInputProps = FileUploadInputWithLabel | FileUploadInputWit
  * @constructor
  */
 export function FileUploadInput(props: FileUploadInputProps) {
-  const [file, setFile] = useState<File | null>(null);
+  const [internalFile, setInternalFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Use controlled value if provided, otherwise use internal state
+  const file = props.value !== undefined ? props.value : internalFile;
 
   const handleFile = useCallback(
     (selectedFile: File | null) => {
@@ -48,7 +51,8 @@ export function FileUploadInput(props: FileUploadInputProps) {
         return;
       }
 
-      setFile(selectedFile);
+      // Update internal state only if not controlled
+      if (props.value === undefined) setInternalFile(selectedFile);
       props.onChange?.(selectedFile);
     },
     [props],
@@ -94,7 +98,12 @@ export function FileUploadInput(props: FileUploadInputProps) {
 
   return (
     <div className="flex flex-col gap-2 transition-all">
-      {!props.noLabel && <span className="text-base">{props.label}</span>}
+      {!props.noLabel && (
+        <span className="text-base">
+          {props.label}
+          {props.required && <span className="text-red-500"> *</span>}
+        </span>
+      )}
       <div
         onClick={handleClick}
         onDragOver={handleDragOver}
@@ -104,7 +113,14 @@ export function FileUploadInput(props: FileUploadInputProps) {
           isDragging ? "border-primary-300 bg-primary-50" : "border-neutral-100"
         }`}
       >
-        <input ref={inputRef} type="file" accept={props.accept} onChange={handleInputChange} className="hidden" />
+        <input
+          ref={inputRef}
+          type="file"
+          accept={props.accept}
+          onChange={handleInputChange}
+          className="hidden"
+          required={props.required}
+        />
 
         {!file ? (
           // Empty State

@@ -33,7 +33,10 @@ export function TextInput(props: TextInputProps) {
 
   return (
     <div className="flex flex-col gap-2 transition-all">
-      <span className="text-base">{props.label}</span>
+      <span className="text-base">
+        {props.label}
+        {props.required && <span className="text-red-500"> *</span>}
+      </span>
       <div
         className={clsx(
           "display flex flex-row items-center gap-3 rounded-lg border border-solid p-3 transition-all focus-within:ring-2",

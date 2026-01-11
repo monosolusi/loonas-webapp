@@ -25,11 +25,16 @@ export default function BusinessDetailPage() {
           placeholder="Masukan nama perusahaan Anda."
           value={data.companyName ?? ""}
           onChange={(value) => update?.({ companyName: value })}
+          required
         />
 
-        <EmailInput value={data.companyEmail ?? ""} onChange={(value) => update?.({ companyEmail: value })} />
+        <EmailInput value={data.companyEmail ?? ""} onChange={(value) => update?.({ companyEmail: value })} required />
 
-        <PhoneNumberInput value={data.companyPhone ?? ""} onChange={(value) => update?.({ companyPhone: value })} />
+        <PhoneNumberInput
+          value={data.companyPhone ?? ""}
+          onChange={(value) => update?.({ companyPhone: value })}
+          required
+        />
       </div>
     </>
   );

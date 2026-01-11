@@ -37,7 +37,12 @@ export function TextAreaInput(props: TextAreaInputProps) {
 
   return (
     <div className="flex flex-col gap-2 transition-all">
-      {!props.noLabel && <span className="text-base">{props.label}</span>}
+      {!props.noLabel && (
+        <span className="text-base">
+          {props.label}
+          {props.required && <span className="text-red-500"> *</span>}
+        </span>
+      )}
       <div className="display focus-within:ring-primary-300/20 focus-within:border-primary-300 flex flex-row items-start gap-3 rounded-lg border border-solid border-neutral-100 p-3 transition-all focus-within:ring-2">
         <textarea
           {...cleanedInputProps}

@@ -51,7 +51,12 @@ export function SelectInput(props: SelectInputProps) {
 
   return (
     <div className={clsx("flex flex-col gap-2 transition-all", props.disabled && "opacity-50")}>
-      {!props.noLabel && <span className="text-base">{props.label}</span>}
+      {!props.noLabel && (
+        <span className="text-base">
+          {props.label}
+          {props.required && <span className="text-red-500"> *</span>}
+        </span>
+      )}
       <div
         className={clsx(
           "relative flex flex-row items-center gap-3 rounded-lg border border-solid border-neutral-100 p-3 transition-all",

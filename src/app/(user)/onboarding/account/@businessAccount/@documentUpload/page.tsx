@@ -3,7 +3,9 @@
 import React from "react";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { FileUploadInput } from "@/core/presentations/components/file-upload-input";
-import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
+import {
+  useBusinessAccountData
+} from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
 
 export default function DocumentUploadPage() {
   const { type, currentStep } = useCreateAccount();
@@ -28,13 +30,16 @@ export default function DocumentUploadPage() {
           label="Akta Pendirian"
           accept=".jpg,.jpeg,.png,.pdf"
           maxSize={5 * 1024 * 1024}
+          value={data.deedOfEstablishment}
           onChange={(value) => update?.({ deedOfEstablishment: value })}
+          required
         />
 
         <FileUploadInput
           label="Perubahan Terbaru"
           accept=".jpg,.jpeg,.png,.pdf"
           maxSize={5 * 1024 * 1024}
+          value={data.mostRecentDeededOfEstablishment}
           onChange={(value) => update?.({ mostRecentDeededOfEstablishment: value })}
         />
 
@@ -42,20 +47,25 @@ export default function DocumentUploadPage() {
           label="NIB (Nomor Induk Berusaha)"
           accept=".jpg,.jpeg,.png,.pdf"
           maxSize={5 * 1024 * 1024}
+          value={data.businessRegistrationNumber}
           onChange={(value) => update?.({ businessRegistrationNumber: value })}
+          required
         />
 
         <FileUploadInput
           label="KTP Direksi"
           accept=".jpg,.jpeg,.png,.pdf"
           maxSize={5 * 1024 * 1024}
+          value={data.directorNationalIdentityCard}
           onChange={(value) => update?.({ directorNationalIdentityCard: value })}
+          required
         />
 
         <FileUploadInput
           label="Laporan Keuangan"
           accept=".jpg,.jpeg,.png,.pdf"
           maxSize={5 * 1024 * 1024}
+          value={data.financialStatement}
           onChange={(value) => update?.({ financialStatement: value })}
         />
       </div>

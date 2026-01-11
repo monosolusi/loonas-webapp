@@ -1,17 +1,29 @@
-import { SelectInput } from "@/core/presentations/components/select-input";
+"use client";
+
+import { useMemo } from "react";
+import { SelectInput, SelectInputProps } from "@/core/presentations/components/select-input";
 import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
 import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { useListDistrict } from "@/core/utilities/address/presentation/hooks/use-list-district";
-import { useMemo } from "react";
 
 type DistrictInputProps = {
   value?: DistrictEntity;
   onChange?: (district: DistrictEntity | undefined) => void;
   city?: CityEntity;
-};
+  label?: string;
+  placeholder?: string;
+} & Omit<SelectInputProps, "value" | "onChange" | "options" | "label">;
 
-export function DistrictInput(props: DistrictInputProps) {
-  const { districts, loading } = useListDistrict({ cityId: props.city?.id });
+export function DistrictInput({
+  value,
+  onChange: onChangeProp,
+  city,
+  label = "Kecamatan",
+  placeholder = "Pilih Kecamatan",
+  disabled,
+  ...restProps
+}: DistrictInputProps) {
+  const { districts, loading } = useListDistrict({ cityId: city?.id });
 
   const options = useMemo(() => {
     if (!districts) return [];
@@ -23,19 +35,20 @@ export function DistrictInput(props: DistrictInputProps) {
 
   const onChange = (selectedId: string) => {
     const selectedDistrict = districts?.find((district) => district.id === selectedId);
-    props.onChange?.(selectedDistrict);
+    onChangeProp?.(selectedDistrict);
   };
 
-  const isDisabled = useMemo(() => loading || !props.city, [loading, props.city]);
+  const isDisabled = disabled || loading || !city;
 
   return (
     <SelectInput
+      {...restProps}
+      label={label}
       options={options}
-      label="Kecamatan"
-      placeholder="Pilih Kecamatan"
-      disabled={isDisabled}
-      value={props.value?.id}
+      placeholder={placeholder}
+      value={value?.id ?? ""}
       onChange={onChange}
+      disabled={isDisabled}
     />
   );
 }

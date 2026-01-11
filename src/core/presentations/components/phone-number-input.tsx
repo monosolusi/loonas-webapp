@@ -1,20 +1,18 @@
 "use client";
 
-import { TextInput } from "@/core/presentations/components/text-input";
+import { TextInput, TextInputProps } from "@/core/presentations/components/text-input";
 import React from "react";
 
 type PhoneNumberInputProps = {
-  value?: string;
-  onChange?: (value: string) => void;
   label?: string;
   placeholder?: string;
-};
+} & Omit<TextInputProps, "label" | "type" | "inputMode" | "pattern">;
 
 export default function PhoneNumberInput({
-  value,
-  onChange: onChangeProp,
   label = "Nomor Telpon",
   placeholder = "Masukan nomor telpon Anda (cth: 081234567890)",
+  onChange: onChangeProp,
+  ...restProps
 }: PhoneNumberInputProps) {
   const onChange = (value: string) => {
     // Only allow numeric characters
@@ -24,10 +22,10 @@ export default function PhoneNumberInput({
 
   return (
     <TextInput
+      {...restProps}
       label={label}
       type="tel"
       placeholder={placeholder}
-      value={value}
       onChange={onChange}
       inputMode="numeric"
       pattern="[0-9]*"
