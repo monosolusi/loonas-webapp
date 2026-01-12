@@ -8,6 +8,9 @@ import { NextButton } from "@/app/(user)/onboarding/account/_components/next-but
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { StepIndicatorImpl } from "@/app/(user)/onboarding/account/_components/step-indicator.impl";
 import { SubmitButton } from "@/app/(user)/onboarding/account/@businessAccount/_components/submit-button";
+import {
+  BusinessAccountFormWrapper
+} from "@/app/(user)/onboarding/account/@businessAccount/_components/business-account-form";
 
 type PersonalAccountCreationLayoutProps = {
   businessDetail: React.ReactNode;
@@ -20,7 +23,7 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
 
   if (type !== "business") return null; // Do not render this page if the user has not selected a personal account.
   return (
-    <form>
+    <BusinessAccountFormWrapper>
       <div className="flex flex-col items-center justify-center gap-10">
         <StepIndicatorWithTime currentStep={3} totalSteps={4} expectedTime="~5 menit" />
         <StepHeader title="Informasi Bisnis" description="Lengkapi data perusahaan untuk verifikasi bisnis Anda." />
@@ -42,6 +45,6 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
           </div>
         </div>
       </div>
-    </form>
+    </BusinessAccountFormWrapper>
   );
 }

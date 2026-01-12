@@ -3,41 +3,38 @@ import { AbstractModel } from "@/core/resources/model";
 import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
 import { AccountType } from "@/features/account/domain/enums/account-type";
 
-interface BusinessAccountModelConstructor {
+type Metadata = { clerkId: string };
+
+type AddressInformation = {
+  province: { id: string; label: string };
+  city: { id: string; label: string };
+  district: { id: string; label: string };
+  subdistrict: { id: string; label: string };
+  address: string;
+};
+
+type CompanyInformation = {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  address: AddressInformation;
+};
+
+type BusinessAccountModelConstructor = {
   id: string;
   type: AccountType;
-  company: {
-    name: string;
-    email: string;
-    phoneNumber: string;
-    address: {
-      province: { id: string; label: string };
-      city: { id: string; label: string };
-      district: { id: string; label: string };
-      subdistrict: { id: string; label: string };
-      address: string;
-    };
-  };
+  company: CompanyInformation;
+  metadata: Metadata;
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
-}
+};
 
 export class BusinessAccountModel implements AbstractModel {
   public id: string;
   public type: AccountType;
-  public company: {
-    name: string;
-    email: string;
-    phoneNumber: string;
-    address: {
-      province: { id: string; label: string };
-      city: { id: string; label: string };
-      district: { id: string; label: string };
-      subdistrict: { id: string; label: string };
-      address: string;
-    };
-  };
+  public company: CompanyInformation;
+  public metadata: Metadata;
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
@@ -46,6 +43,7 @@ export class BusinessAccountModel implements AbstractModel {
     this.id = args.id;
     this.type = args.type;
     this.company = args.company;
+    this.metadata = args.metadata;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
@@ -79,6 +77,7 @@ export class BusinessAccountModel implements AbstractModel {
           address: doc["company"]["address"]["address"],
         },
       },
+      metadata: { clerkId: doc["metadata"]["clerk_id"] },
       createdAt: DateTime.fromISO(doc["created_at"]),
       updatedAt: DateTime.fromISO(doc["updated_at"]),
       deletedAt: doc["deleted_at"] ? DateTime.fromISO(doc["deleted_at"]) : undefined,
@@ -93,6 +92,7 @@ export class BusinessAccountModel implements AbstractModel {
       id: data.id,
       type: data.type,
       company: data.company,
+      metadata: data.metadata,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
       deletedAt: data.deletedAt,
@@ -104,6 +104,7 @@ export class BusinessAccountModel implements AbstractModel {
       id: entity.id,
       type: entity.type,
       company: entity.company,
+      metadata: entity.metadata,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
       deletedAt: entity.deletedAt,
@@ -114,18 +115,8 @@ export class BusinessAccountModel implements AbstractModel {
     return new BusinessAccountEntity({
       id: this.id,
       type: this.type,
-      company: {
-        name: this.company.name,
-        email: this.company.email,
-        phoneNumber: this.company.phoneNumber,
-        address: {
-          province: this.company.address.province,
-          city: this.company.address.city,
-          district: this.company.address.district,
-          subdistrict: this.company.address.subdistrict,
-          address: this.company.address.address,
-        },
-      },
+      company: this.company,
+      metadata: this.metadata,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,

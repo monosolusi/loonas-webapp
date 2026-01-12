@@ -54,7 +54,7 @@ export class AccountServiceImpl implements AccountService {
           body: formData,
           session,
         },
-        { contentType: undefined },
+        { contentType: undefined, requireAccount: false },
       );
 
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);

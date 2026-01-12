@@ -113,14 +113,7 @@ export function FileUploadInput(props: FileUploadInputProps) {
           isDragging ? "border-primary-300 bg-primary-50" : "border-neutral-100"
         }`}
       >
-        <input
-          ref={inputRef}
-          type="file"
-          accept={props.accept}
-          onChange={handleInputChange}
-          className="hidden"
-          required={props.required}
-        />
+        <input ref={inputRef} type="file" accept={props.accept} onChange={handleInputChange} className="hidden" />
 
         {!file ? (
           // Empty State

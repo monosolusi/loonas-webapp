@@ -4,8 +4,10 @@ import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@busines
 
 export function SubmitButton() {
   const { currentStep } = useCreateAccount();
-  const { isClean } = useBusinessAccountData();
+  const { isClean, isCreating } = useBusinessAccountData();
 
   if (currentStep !== "business.documents") return null;
-  return <PrimaryButton label="Buat Akun Bisnis" type="submit" disabled={!isClean} />;
+  return (
+    <PrimaryButton label="Buat Akun Bisnis" type="submit" disabled={!isClean || isCreating} loading={isCreating} />
+  );
 }

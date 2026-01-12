@@ -62,11 +62,13 @@ export default function DocumentUploadPage() {
         />
 
         <FileUploadInput
-          label="Laporan Keuangan"
+          label="Rekening Koran Bank"
+          description="Rekening koran bank selama 3 bulan terakhir dalam 1 PDF"
           accept=".jpg,.jpeg,.png,.pdf"
           maxSize={5 * 1024 * 1024}
-          value={data.financialStatement}
-          onChange={(value) => update?.({ financialStatement: value })}
+          value={data.bankStatement}
+          onChange={(value) => update?.({ bankStatement: value })}
+          required
         />
       </div>
     </>

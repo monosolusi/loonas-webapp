@@ -28,7 +28,7 @@ type BusinessAccountData = {
   mostRecentDeededOfEstablishment?: File | null;
   businessRegistrationNumber?: File | null;
   directorNationalIdentityCard?: File | null;
-  financialStatement?: File | null;
+  bankStatement?: File | null;
 };
 
 type PersonalAccountData = {
