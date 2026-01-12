@@ -47,8 +47,6 @@ export function useGetAccountVerificationWork(params: GetAccountVerificationWork
     GetAccountVerificationWorkFetcher,
   );
 
-  console.log(error);
-
   return {
     verificationWork: data,
     loading: isLoading,
