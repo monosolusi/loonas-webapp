@@ -33,7 +33,7 @@ export default function KycSummaryPage() {
 
         {/*  Support Card */}
         <div className="rounded-xl border border-neutral-100 bg-neutral-200/30 p-5">
-          <div className="text-sm leading-5 font-normal text-neutral-200">
+          <div className="text-center text-sm leading-5 font-normal text-neutral-200">
             Ada pertanyaan? Hubungi kami di&nbsp;
             <span className="text-primary-300">
               <a href="mailto:support@loonas.com">support@loonas.com</a>

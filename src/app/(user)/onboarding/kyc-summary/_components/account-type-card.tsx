@@ -17,7 +17,7 @@ export function AccountTypeCard(props: AccountTypeCardProps) {
       case "PERSONAL":
         return "Personal";
       case "BUSINESS":
-        return "Business";
+        return "Bisnis";
       default:
         return "Tidak Diketahui";
     }
