@@ -1,5 +1,5 @@
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
-import { PrimaryButton } from "@/core/presentations/components/primary-button";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
 
 export function SubmitButton() {

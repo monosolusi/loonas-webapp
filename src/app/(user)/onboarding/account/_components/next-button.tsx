@@ -1,6 +1,6 @@
 "use client";
 
-import { PrimaryButton } from "@/core/presentations/components/primary-button";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import Image from "next/image";
 import React from "react";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";

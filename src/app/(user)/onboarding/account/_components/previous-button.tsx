@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { SecondaryButton } from "@/core/presentations/components/secondary-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 
 export function PreviousButton() {

@@ -6,7 +6,7 @@ import {
   SelectedAccountProviderProps,
 } from "@/features/authentication/presentation/providers/selected-account.types";
 import { useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const SelectedAccountContext = createContext<SelectedAccountContextProps>({
   states: [true],
@@ -102,11 +102,12 @@ export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
   const [loading, setLoading] = useState<boolean>(true);
   const { isLoaded: isAuthLoaded, orgId } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!isAuthLoaded) return;
-    if (!orgId) router.push("/account/select");
-  }, [isAuthLoaded, orgId]);
+    if (!orgId) router.push("/accounts");
+  }, [isAuthLoaded, orgId, pathname]);
 
   return <SelectedAccountContext value={{ states: [loading] }}>{props.children}</SelectedAccountContext>;
 }

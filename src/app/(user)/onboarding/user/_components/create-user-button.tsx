@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { PrimaryButton } from "@/core/presentations/components/primary-button";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useCreateUser } from "@/app/(user)/onboarding/user/_providers/create-user";
 import { useAuth } from "@clerk/nextjs";
 

@@ -1,7 +1,7 @@
 "use client";
 import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
-import { PrimaryButton } from "@/core/presentations/components/primary-button";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
