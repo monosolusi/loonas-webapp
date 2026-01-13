@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { HeaderUserEmail } from "@/app/(authenticated)/_components/header-user-email";
+import { HeaderSignOutMenu } from "@/app/(authenticated)/_components/header-sign-out-menu";
 
 export function HeaderAccountMenu() {
   return (
@@ -82,18 +83,7 @@ export function HeaderAccountMenu() {
           </div>
 
           <div className="flex flex-col gap-y-1 p-2">
-            <MenuItem
-              as="div"
-              className="hover:bg-error-300/5 text-error-300 flex cursor-pointer flex-row items-center gap-x-2 p-3 hover:rounded-lg"
-            >
-              <Image
-                src="/assets/images/sign-out-icon-neutral-300-w16-h16.svg"
-                alt="Sign Out Icon"
-                width={16}
-                height={16}
-              />
-              <div className="text-sm leading-4 font-semibold">Keluar</div>
-            </MenuItem>
+            <HeaderSignOutMenu />
           </div>
         </div>
       </MenuItems>

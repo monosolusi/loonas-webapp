@@ -23,15 +23,20 @@ const INITIAL_STATE: UseListAccountReturnType = {
 };
 
 async function ListAccountFetcher([_, params]: [string, ListAccountFetcherParams]) {
-  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ getToken: params.getToken }));
-  const accountRepository = new AccountRepositoryImpl(new AccountServiceImpl(new HttpRequest()));
-  const listAccount = new ListAccountUseCase(accountRepository, sessionRepository);
-  const accounts = await listAccount.execute();
-  if (accounts instanceof DataFailed) throw accounts.error;
-  if (accounts.data === undefined) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-  if (accounts.data.length === 0) throw new ServerError(ErrorCodes.NOT_FOUND);
-
-  return accounts.data;
+  try {
+    const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ getToken: params.getToken }));
+    const accountRepository = new AccountRepositoryImpl(new AccountServiceImpl(new HttpRequest()));
+    const listAccount = new ListAccountUseCase(accountRepository, sessionRepository);
+    const accounts = await listAccount.execute();
+    if (accounts instanceof DataFailed) throw accounts.error;
+    if (accounts.data === undefined) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    return accounts.data;
+  } catch (err) {
+    if (err instanceof ServerError) {
+      if (err.code === ErrorCodes.NOT_FOUND.code) return [];
+      else throw err;
+    } else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+  }
 }
 
 export function useListAccount(): UseListAccountReturnType {
