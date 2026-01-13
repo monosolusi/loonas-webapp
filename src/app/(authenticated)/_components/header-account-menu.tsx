@@ -3,6 +3,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { HeaderUserEmail } from "@/app/(authenticated)/_components/header-user-email";
 import { HeaderSignOutMenu } from "@/app/(authenticated)/_components/header-sign-out-menu";
 import { HeaderAccountName } from "@/app/(authenticated)/_components/header-account-name";
+import { HeaderAccountList } from "@/app/(authenticated)/_components/header-account-list";
 
 export function HeaderAccountMenu() {
   return (
@@ -29,38 +30,7 @@ export function HeaderAccountMenu() {
       >
         <div className="flex w-[320px] flex-col gap-y-2">
           {/* Account List - Switch Account Section */}
-          <div className="flex flex-col gap-y-1 p-2">
-            <div className="p-2 text-xs leading-4 font-semibold tracking-tight text-neutral-300 uppercase">
-              Switch Account
-            </div>
-
-            <MenuItem as="div" className="flex cursor-pointer flex-row items-center gap-x-3 p-3">
-              <div className="bg-primary-300/10 border-primary-300/20 text-primary-300 flex size-8 flex-col items-center justify-center rounded-full border text-xs leading-4 font-bold"></div>
-              <div className="flex flex-col">
-                <div className="text-sm leading-4 font-semibold">Budi Santoso</div>
-                <div className="text-xs leading-4 font-normal text-neutral-300 capitalize">Akun Personal</div>
-              </div>
-            </MenuItem>
-
-            <MenuItem as="div" className="flex cursor-pointer flex-row items-center gap-x-3 p-3">
-              <div className="bg-success-300/10 border-success-300/20 text-success-300 flex size-8 flex-col items-center justify-center rounded-full border text-xs leading-4 font-bold"></div>
-              <div className="flex flex-col">
-                <div className="text-sm leading-4 font-semibold">PT Maju Jaya</div>
-                <div className="text-xs leading-4 font-normal text-neutral-300 capitalize">Akun Bisnis</div>
-              </div>
-            </MenuItem>
-            <MenuItem
-              as="div"
-              className="hover hover:bg-primary-300/5 flex cursor-pointer flex-row items-center gap-x-3 rounded-lg p-3"
-            >
-              <div className="bg-primary-300/10 border-primary-300/20 text-primary-300 flex size-8 flex-col items-center justify-center rounded-full border">
-                <Image src="/assets/images/plus-icon-neutral-300-w16-h16.svg" alt="Plus Icon" width={16} height={16} />
-              </div>
-              <div className="flex flex-col">
-                <div className="text-primary-300 text-sm leading-4 font-medium">Tambah Akun Baru</div>
-              </div>
-            </MenuItem>
-          </div>
+          <HeaderAccountList />
 
           {/*  Divider */}
           <div className="px-1">
