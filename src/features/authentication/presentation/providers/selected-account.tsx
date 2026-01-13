@@ -3,9 +3,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   SelectedAccountContextProps,
-  SelectedAccountProviderProps,
+  SelectedAccountProviderProps
 } from "@/features/authentication/presentation/providers/selected-account.types";
-import { useAuth } from "@clerk/nextjs";
+import { useOrganizationList } from "@clerk/nextjs";
 import { usePathname, useRouter } from "next/navigation";
 
 const SelectedAccountContext = createContext<SelectedAccountContextProps>({
@@ -100,14 +100,24 @@ const SelectedAccountContext = createContext<SelectedAccountContextProps>({
 
 export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
   const [loading, setLoading] = useState<boolean>(true);
-  const { isLoaded: isAuthLoaded, orgId } = useAuth();
+  const { isLoaded: isOrganizationListLoaded, userMemberships } = useOrganizationList();
   const router = useRouter();
   const pathname = usePathname();
 
+  /**
+   * Redirects users without any organization memberships to the onboarding flow.
+   *
+   * This effect runs on every route change (pathname dependency) to ensure users
+   * who haven't joined or created an account are always redirected to complete
+   * the onboarding process.
+   *
+   * - Waits for organization list to be loaded before checking
+   * - If user has no memberships (count === 0), redirects to account creation
+   */
   useEffect(() => {
-    if (!isAuthLoaded) return;
-    if (!orgId) router.push("/accounts");
-  }, [isAuthLoaded, orgId, pathname]);
+    if (!isOrganizationListLoaded) return;
+    if (userMemberships.count === 0) router.push("/onboarding/account");
+  }, [isOrganizationListLoaded, userMemberships, pathname]);
 
   return <SelectedAccountContext value={{ states: [loading] }}>{props.children}</SelectedAccountContext>;
 }
