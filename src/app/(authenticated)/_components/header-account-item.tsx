@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { HeaderUserEmail } from "@/app/(authenticated)/_components/header-user-email";
 
 export function HeaderAccountItem() {
   return (
@@ -7,7 +8,7 @@ export function HeaderAccountItem() {
       <MenuButton className="flex flex-row items-center gap-x-3 px-3 py-2 focus:not-data-focus:outline-none">
         <div className="flex flex-col">
           <div className="text-right leading-5 font-bold">Frans Siswanto</div>
-          <div className="text-right text-xs leading-4 font-medium text-neutral-300">franssiswanto@gmail.com</div>
+          <HeaderUserEmail />
         </div>
         <div className="border-primary-300/20 bg-primary-300/10 size-10 rounded-full"></div>
         <div className="size-4">
