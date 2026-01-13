@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   SelectedAccountContextProps,
-  SelectedAccountProviderProps
+  SelectedAccountProviderProps,
 } from "@/features/authentication/presentation/providers/selected-account.types";
 import { useOrganizationList } from "@clerk/nextjs";
 import { usePathname, useRouter } from "next/navigation";

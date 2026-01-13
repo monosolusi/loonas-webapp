@@ -83,7 +83,7 @@
 
 import Image from "next/image";
 import { HeaderTitle } from "@/app/(authenticated)/_components/header-title";
-import { HeaderAccountItem } from "@/app/(authenticated)/_components/header-account-item";
+import { HeaderAccountMenu } from "@/app/(authenticated)/_components/header-account-menu";
 
 export function Header() {
   return (
@@ -101,7 +101,7 @@ export function Header() {
         {/* Vertical Divider */}
         <div className="h-6 w-[2px] bg-neutral-200"></div>
 
-        <HeaderAccountItem />
+        <HeaderAccountMenu />
       </div>
     </div>
   );

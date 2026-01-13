@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { HeaderUserEmail } from "@/app/(authenticated)/_components/header-user-email";
 
-export function HeaderAccountItem() {
+export function HeaderAccountMenu() {
   return (
     <Menu>
       <MenuButton className="flex flex-row items-center gap-x-3 px-3 py-2 focus:not-data-focus:outline-none">
