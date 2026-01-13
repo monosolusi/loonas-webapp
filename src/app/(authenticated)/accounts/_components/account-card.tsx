@@ -1,6 +1,11 @@
 import Image from "next/image";
+import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
-export function AccountCard() {
+type AccountCardProps = {
+  account: AccountTypeEntity;
+};
+
+export function AccountCard(props: AccountCardProps) {
   return (
     <div className="flex w-[256px] flex-col gap-y-6 rounded-lg border border-neutral-200 bg-white p-6">
       {/* Icons */}

@@ -1,7 +1,12 @@
+"use client";
+
 import { AccountCard } from "@/app/(authenticated)/accounts/_components/account-card";
 import Image from "next/image";
+import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
 
 export default function AccountManagementPage() {
+  const { accounts } = useListAccount();
+
   return (
     <div className="flex flex-col gap-y-8">
       {/*  Header Title & Description */}
@@ -26,12 +31,9 @@ export default function AccountManagementPage() {
             </div>
           </div>
         </div>
-        <AccountCard />
-        <AccountCard />
-        <AccountCard />
-        <AccountCard />
-        <AccountCard />
-        <AccountCard />
+        {accounts?.map((account) => (
+          <AccountCard key={account.id} account={account} />
+        ))}
       </div>
     </div>
   );
