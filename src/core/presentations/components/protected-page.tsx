@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { SelectedAccountProvider } from "@/features/authentication/presentation/providers/selected-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useAuth } from "@clerk/nextjs";
@@ -10,7 +9,6 @@ export function ProtectedPage({ children }: { children: any }) {
   const [sessionLoading, setSessionLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error>();
   const { isLoaded, isSignedIn, signOut } = useAuth();
-  const router = useRouter();
 
   useEffect(() => {
     if (error) {
@@ -22,7 +20,7 @@ export function ProtectedPage({ children }: { children: any }) {
 
   useEffect(() => {
     if (isLoaded) checkSession();
-  }, [isLoaded]);
+  }, [isLoaded, isSignedIn]);
 
   async function checkSession() {
     try {
