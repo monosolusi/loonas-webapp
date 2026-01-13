@@ -4,6 +4,7 @@ import { HeaderUserEmail } from "@/app/(authenticated)/_components/header-user-e
 import { HeaderSignOutMenu } from "@/app/(authenticated)/_components/header-sign-out-menu";
 import { HeaderAccountName } from "@/app/(authenticated)/_components/header-account-name";
 import { HeaderAccountList } from "@/app/(authenticated)/_components/header-account-list";
+import { HeaderAvatar } from "@/app/(authenticated)/_components/header-avatar";
 
 export function HeaderAccountMenu() {
   return (
@@ -13,7 +14,7 @@ export function HeaderAccountMenu() {
           <HeaderAccountName />
           <HeaderUserEmail />
         </div>
-        <div className="border-primary-300/20 bg-primary-300/10 size-10 rounded-full"></div>
+        <HeaderAvatar />
         <div className="size-4">
           <Image
             src="/assets/images/arrow-down-icon-neutral-300-w16-h16.svg"
