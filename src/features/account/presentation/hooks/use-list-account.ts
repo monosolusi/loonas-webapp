@@ -9,8 +9,18 @@ import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import useSWR from "swr";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
-import { ListAccountFetcherParams } from "@/features/account/presentation/hooks/use-list-account.types";
+import {
+  ListAccountFetcherParams,
+  UseListAccountReturnType
+} from "@/features/account/presentation/hooks/use-list-account.types";
 import { useAuth } from "@clerk/nextjs";
+
+const INITIAL_STATE: UseListAccountReturnType = {
+  accounts: null,
+  loading: true,
+  error: null,
+  refresh: null,
+};
 
 async function ListAccountFetcher([_, params]: [string, ListAccountFetcherParams]) {
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ getToken: params.getToken }));
@@ -24,14 +34,27 @@ async function ListAccountFetcher([_, params]: [string, ListAccountFetcherParams
   return accounts.data;
 }
 
-export function useListAccount() {
+export function useListAccount(): UseListAccountReturnType {
   const { isLoaded, getToken } = useAuth();
-  if (!isLoaded) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+  const { data, isLoading, error, mutate } = useSWR(
+    isLoaded ? ["list-account", { getToken }] : null,
+    ListAccountFetcher,
+  );
 
-  const { data, isLoading, error, mutate } = useSWR(["list-account", { getToken }], ListAccountFetcher);
+  const isInitializing = !isLoaded || isLoading;
+  if (isInitializing) return INITIAL_STATE;
+
+  if (error) {
+    return {
+      accounts: null,
+      loading: false,
+      error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
+      refresh: null,
+    };
+  }
 
   return {
-    accounts: data,
+    accounts: data ?? [],
     loading: isLoading,
     error: error,
     refresh: mutate,

@@ -1,16 +1,16 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect } from "react";
 import {
   SelectedAccountContextProps,
   SelectedAccountProviderProps,
 } from "@/features/authentication/presentation/providers/selected-account.types";
-import { useOrganizationList } from "@clerk/nextjs";
 import { usePathname, useRouter } from "next/navigation";
+import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
 
-const SelectedAccountContext = createContext<SelectedAccountContextProps>({
-  states: [true],
-});
+// const SelectedAccountContext = createContext<SelectedAccountContextProps>({
+//   states: [true],
+// });
 
 // export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
 //   const [rejectedDialog, setRejectedDialog] = useState<boolean>(false);
@@ -98,9 +98,10 @@ const SelectedAccountContext = createContext<SelectedAccountContextProps>({
 //   );
 // }
 
+const SelectedAccountContext = createContext<SelectedAccountContextProps>({});
+
 export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
-  const [loading, setLoading] = useState<boolean>(true);
-  const { isLoaded: isOrganizationListLoaded, userMemberships } = useOrganizationList({ userMemberships: true });
+  const { accounts, error, loading } = useListAccount();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -115,11 +116,11 @@ export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
    * - If a user has no memberships (count === 0), redirects to account creation
    */
   useEffect(() => {
-    if (!isOrganizationListLoaded) return;
-    if (userMemberships.count === 0) router.push("/onboarding/account");
-  }, [isOrganizationListLoaded, userMemberships, pathname]);
+    if (loading || error) return;
+    if (accounts.length === 0) router.push("/onboarding/account");
+  }, [accounts, pathname, loading, error]);
 
-  return <SelectedAccountContext value={{ states: [loading] }}>{props.children}</SelectedAccountContext>;
+  return <SelectedAccountContext value={{}}>{props.children}</SelectedAccountContext>;
 }
 
 export function useSelectedAccountProvider() {
