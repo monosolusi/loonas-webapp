@@ -1,5 +1,5 @@
-import clsx from "clsx";
 import React from "react";
+import Image from "next/image";
 
 interface LogoImageProps {
   className?: string;
@@ -7,10 +7,6 @@ interface LogoImageProps {
 
 export function LogoImage(props: LogoImageProps) {
   return (
-    <img
-      src="https://res.cloudinary.com/monosolusi/image/upload/v1740993366/loonas/web-assets/loonas-logo_rspb5c.svg"
-      alt="Logo"
-      className={clsx("h-10 w-auto", props.className)}
-    />
+    <Image src="/assets/images/logo-w165-h48.png" alt="Logo" className={props.className} width={165} height={48} />
   );
 }
