@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { PrimaryButton } from "@/core/presentations/components/primary-button";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useRouter } from "next/navigation";
 
 export function RegisterButton() {

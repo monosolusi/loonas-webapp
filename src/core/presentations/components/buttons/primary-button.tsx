@@ -1,27 +1,27 @@
 "use client";
 
 import clsx from "clsx";
-import { Button, ButtonProps } from "@/core/presentations/components/button";
+import { Button, ButtonProps } from "@/core/presentations/components/buttons/button";
 import { useMemo } from "react";
 
-type SecondaryButtonProps = {
+type PrimaryButtonProps = {
   inverse?: boolean;
   outlined?: boolean;
 } & ButtonProps;
 
-export function SecondaryButton(props: SecondaryButtonProps) {
+export function PrimaryButton(props: PrimaryButtonProps) {
   const { inverse = false, outlined = false, className, ...buttonProps } = props;
 
   const variantClasses = useMemo(() => {
     if (outlined) {
       return inverse
         ? "border-2 border-white text-white bg-transparent hover:bg-white/10"
-        : "border-2 border-neutral-100 text-neutral-500 bg-transparent hover:bg-neutral-100/10";
+        : "border-2 border-primary-300 text-primary-300 bg-transparent hover:bg-primary-300/10";
     }
 
     return inverse
-      ? "bg-white text-neutral-500 hover:bg-white/90"
-      : "bg-neutral-300 text-white hover:bg-neutral-300/90";
+      ? "bg-white text-primary-300 hover:bg-white/90"
+      : "bg-primary-300 text-white hover:bg-primary-300/90";
   }, [outlined, inverse]);
 
   return (
