@@ -11,26 +11,19 @@ export function ProtectedPage({ children }: { children: any }) {
   const { isLoaded, isSignedIn, signOut } = useAuth();
 
   useEffect(() => {
-    if (error) {
+    if (error && isLoaded) {
+      setError(undefined);
+
       // Force sign out
-      if (error instanceof ServerError) signOut();
+      if (error instanceof ServerError) signOut({ redirectUrl: "/sign-in" });
       else throw error;
     }
   }, [error, isLoaded]);
 
   useEffect(() => {
-    if (isLoaded) checkSession();
+    if (!isLoaded) return;
+    if (!isSignedIn) setError(new ServerError(ErrorCodes.NO_VALID_SESSION));
   }, [isLoaded, isSignedIn]);
-
-  async function checkSession() {
-    try {
-      setSessionLoading(true);
-      if (!isSignedIn) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
-      setSessionLoading(false);
-    } catch (err: any) {
-      setError(err);
-    }
-  }
 
   if (sessionLoading) return <></>;
   return <SelectedAccountProvider>{children}</SelectedAccountProvider>;

@@ -1,48 +1,40 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
-import { RejectedDialog } from "@/features/authentication/presentation/components/reject-account-dialog";
-import { useOrganizationList } from "@clerk/nextjs";
-import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
-
-interface SelectedAccountContextProps {
-  states: [boolean]; // loading
-  selectedAccount?: AccountTypeEntity;
-  changeAccount?: (account: AccountTypeEntity, reload?: boolean) => void | Promise<void>;
-}
+import { createContext, useContext } from "react";
+import {
+  SelectedAccountContextProps,
+  SelectedAccountProviderProps,
+} from "@/features/authentication/presentation/providers/selected-account.types";
 
 const SelectedAccountContext = createContext<SelectedAccountContextProps>({
   states: [true],
 });
 
-export function SelectedAccountProvider({ children }: { children: any }) {
-  const [rejectedDialog, setRejectedDialog] = useState<boolean>(false);
-  const [selectedAccount, setSelectedAccount] = useState<AccountTypeEntity>();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error>();
-  const { isLoaded: isOrganizationListLoaded, setActive } = useOrganizationList();
-  const { loading: isGetAccountLoading, account } = useGetCurrentAccount();
-
-  useEffect(() => {
-    if (error) {
-      if (error instanceof ServerError && error.code === ErrorCodes.ACCOUNT_VERIFICATION_REJECTED.code) {
-        setRejectedDialog(true);
-      } else throw error;
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (isGetAccountLoading) return;
-    setSelectedAccount(account);
-  }, [isGetAccountLoading, account]);
-
-  async function changeAccount(newAccount: AccountTypeEntity) {
-    if (!isOrganizationListLoaded) return;
-    await setActive({ organization: newAccount.metadata.clerkId });
-  }
-
+export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
+  // const [rejectedDialog, setRejectedDialog] = useState<boolean>(false);
+  // const [selectedAccount, setSelectedAccount] = useState<AccountTypeEntity>();
+  // const [loading, setLoading] = useState<boolean>(true);
+  // const [error, setError] = useState<Error>();
+  // const { isLoaded: isOrganizationListLoaded, setActive } = useOrganizationList();
+  // const { loading: isGetAccountLoading, account } = useGetCurrentAccount();
+  //
+  // useEffect(() => {
+  //   if (error) {
+  //     if (error instanceof ServerError && error.code === ErrorCodes.ACCOUNT_VERIFICATION_REJECTED.code) {
+  //       setRejectedDialog(true);
+  //     } else throw error;
+  //   }
+  // }, [error]);
+  //
+  // useEffect(() => {
+  //   if (isGetAccountLoading) return;
+  //   setSelectedAccount(account);
+  // }, [isGetAccountLoading, account]);
+  //
+  // async function changeAccount(newAccount: AccountTypeEntity) {
+  //   if (!isOrganizationListLoaded) return;
+  //   await setActive({ organization: newAccount.metadata.clerkId });
+  // }
   // /**
   //  * This function will do dumb select only and will not check the account ownership.
   //  * However, the backend will be able to check the account ownership.
@@ -93,12 +85,14 @@ export function SelectedAccountProvider({ children }: { children: any }) {
   //     setError(err);
   //   }
   // }
-
+  // return (
+  //   <SelectedAccountContext.Provider value={{ selectedAccount, changeAccount, states: [loading] }}>
+  //     <RejectedDialog open={rejectedDialog} setOpen={setRejectedDialog} />
+  //     {children}
+  //   </SelectedAccountContext.Provider>
+  // );
   return (
-    <SelectedAccountContext.Provider value={{ selectedAccount, changeAccount, states: [loading] }}>
-      <RejectedDialog open={rejectedDialog} setOpen={setRejectedDialog} />
-      {children}
-    </SelectedAccountContext.Provider>
+    <SelectedAccountContext.Provider value={{ states: [false] }}>{props.children}</SelectedAccountContext.Provider>
   );
 }
 
