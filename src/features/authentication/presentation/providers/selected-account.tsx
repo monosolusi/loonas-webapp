@@ -120,6 +120,11 @@ export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
     if (accounts.length === 0) router.push("/onboarding/account");
   }, [accounts, pathname, loading, error]);
 
+  // useEffect(() => {
+  //   if (!isLoaded) return;
+  //
+  // }, [orgId, isLoaded]);
+
   return <SelectedAccountContext value={{}}>{props.children}</SelectedAccountContext>;
 }
 

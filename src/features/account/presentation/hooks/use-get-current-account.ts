@@ -1,6 +1,9 @@
 import { useAuth } from "@clerk/nextjs";
 import useSWR from "swr";
-import { GetAccountFetcherParams } from "@/features/account/presentation/hooks/use-get-current-account.types";
+import {
+  GetAccountFetcherParams,
+  UseGetCurrentAccountReturnValue,
+} from "@/features/account/presentation/hooks/use-get-current-account.types";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
@@ -9,6 +12,13 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { GetCurrentAccountUseCase } from "@/features/account/domain/usecases/get-current-account.usecase";
+
+const INITIAL_STATE: UseGetCurrentAccountReturnValue = {
+  account: null,
+  loading: true,
+  error: null,
+  refresh: null,
+};
 
 async function GetCurrentAccount([_, params]: [string, GetAccountFetcherParams]) {
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ getToken: params.getToken }));
@@ -20,12 +30,24 @@ async function GetCurrentAccount([_, params]: [string, GetAccountFetcherParams])
   return account.data;
 }
 
-export function useGetCurrentAccount() {
-  const { getToken } = useAuth();
+export function useGetCurrentAccount(): UseGetCurrentAccountReturnValue {
+  const { isLoaded, getToken } = useAuth();
   const { data, isLoading, error, mutate } = useSWR(["get-account", { getToken }], GetCurrentAccount);
 
+  const isInitializing = !isLoaded || isLoading;
+
+  if (isInitializing) return INITIAL_STATE;
+  if (error) {
+    return {
+      account: null,
+      loading: false,
+      error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
+      refresh: null,
+    };
+  }
+
   return {
-    account: data,
+    account: data!,
     loading: isLoading,
     error: error,
     refresh: mutate,
