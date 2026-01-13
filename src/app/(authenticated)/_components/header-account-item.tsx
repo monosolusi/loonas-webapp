@@ -1,7 +1,10 @@
+"use client";
+
 import { MenuItem } from "@headlessui/react";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 import { AccountType } from "@/features/account/domain/enums/account-type";
 import { AccountAvatar } from "@/app/(authenticated)/_components/account-avatar";
+import { useOrganizationList } from "@clerk/nextjs";
 
 type HeaderAccountItemProps = {
   account: AccountTypeEntity;
@@ -13,8 +16,15 @@ const ACCOUNT_TYPE_MAP = {
 };
 
 export function HeaderAccountItem(props: HeaderAccountItemProps) {
+  const { setActive, isLoaded } = useOrganizationList();
+
+  const onClick = async () => {
+    if (!isLoaded) return;
+    await setActive({ organization: props.account.metadata.clerkId, redirectUrl: "/home" });
+  };
+
   return (
-    <MenuItem as="div" className="flex cursor-pointer flex-row items-center gap-x-3 p-3">
+    <MenuItem as="div" className="flex cursor-pointer flex-row items-center gap-x-3 p-3" onClick={onClick}>
       <AccountAvatar type={props.account.type} />
 
       <div className="flex flex-col">
