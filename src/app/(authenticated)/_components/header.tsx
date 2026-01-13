@@ -83,6 +83,7 @@
 
 import Image from "next/image";
 import { HeaderTitle } from "@/app/(authenticated)/_components/header-title";
+import { HeaderAccountItem } from "@/app/(authenticated)/_components/header-account-item";
 
 export function Header() {
   return (
@@ -100,21 +101,7 @@ export function Header() {
         {/* Vertical Divider */}
         <div className="h-6 w-[2px] bg-neutral-200"></div>
 
-        <div className="flex flex-row items-center gap-x-3 px-3 py-2">
-          <div className="flex flex-col">
-            <div className="text-right leading-5 font-bold">Frans Siswanto</div>
-            <div className="text-right text-xs leading-4 font-medium text-neutral-300">franssiswanto@gmail.com</div>
-          </div>
-          <div className="border-primary-300/20 bg-primary-300/10 size-10 rounded-full"></div>
-          <div className="size-4">
-            <Image
-              src="/assets/images/arrow-down-icon-neutral-300-w16-h16.svg"
-              alt="arrow down icon"
-              width={16}
-              height={16}
-            />
-          </div>
-        </div>
+        <HeaderAccountItem />
       </div>
     </div>
   );
