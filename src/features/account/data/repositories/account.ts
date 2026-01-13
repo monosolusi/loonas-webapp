@@ -18,6 +18,16 @@ import { AccountTypeEntity } from "@/features/account/domain/types/account-type"
 export class AccountRepositoryImpl implements AccountRepository {
   constructor(private readonly accountService: AccountService) {}
 
+  public async getCurrent(session: SessionEntity): Promise<DataState<AccountTypeEntity>> {
+    try {
+      const account = await this.accountService.getCurrent(session);
+      return new DataSuccess(account.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
   public async createBusiness(
     params: CreateBusinessParams,
     session: SessionEntity,

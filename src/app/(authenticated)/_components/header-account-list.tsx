@@ -5,25 +5,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ArrowLeftStartOnRectangleIcon, ChevronDownIcon, PlusIcon } from "@heroicons/react/20/solid";
-import { AccountListProvider, useAccountListProvider } from "@/features/account/presentation/providers/account-list";
 import { useSelectedAccountProvider } from "@/features/authentication/presentation/providers/selected-account";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { UserSignOutUseCase } from "@/features/authentication/domain/usecases/user-sign-out";
 import { DataFailed } from "@/core/resources/data-state";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
+import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
 
 export function HeaderAccountList() {
-  return (
-    <AccountListProvider>
-      <HeaderAccountListComponent />
-    </AccountListProvider>
-  );
-}
-
-function HeaderAccountListComponent() {
   const router = useRouter();
-  const [accounts] = useAccountListProvider();
+  const { accounts, loading } = useListAccount();
   const [error, setError] = useState<Error>();
   const {
     selectedAccount,

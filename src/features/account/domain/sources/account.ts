@@ -65,4 +65,6 @@ export interface AccountService {
     },
     session: SessionEntity,
   ): Promise<AccountBankAccountModel[]>;
+
+  getCurrent(session: SessionEntity): Promise<AccountTypeModel>;
 }

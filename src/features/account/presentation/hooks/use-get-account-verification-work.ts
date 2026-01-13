@@ -14,7 +14,7 @@ import { ClerkSessionService } from "@/features/authentication/data/sources/cler
 import { useAuth } from "@clerk/nextjs";
 
 type GetAccountVerificationWorkProps = {
-  accountId?: string;
+  accountId?: string | null;
 };
 
 type GetAccountVerificationWorkFetcherParams = GetAccountVerificationWorkProps & {

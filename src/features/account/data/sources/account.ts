@@ -18,6 +18,20 @@ import { AccountType } from "@/features/account/domain/enums/account-type";
 export class AccountServiceImpl implements AccountService {
   constructor(private readonly http: HttpRequest) {}
 
+  public async getCurrent(session: SessionEntity): Promise<AccountTypeModel> {
+    try {
+      const path = "/accounts/me";
+      const method = "GET";
+      const result = await this.http.request({ path, method, session });
+      if (result.type === AccountType.PERSONAL) return PersonalAccountModel.fromJson(result);
+      else if (result.type === AccountType.BUSINESS) return BusinessAccountModel.fromJson(result);
+      else throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
   public async createBusiness(params: CreateBusinessParams, session: SessionEntity): Promise<BusinessAccountModel> {
     try {
       const path = "/accounts/business";
