@@ -3,7 +3,8 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CreateAccountProvider } from "@/app/(user)/onboarding/account/_providers/create-account";
-import { useAuth, useOrganizationList } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
+import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
 
 type AccountOnboardingLayoutProps = {
   accountType: React.ReactNode;
@@ -13,21 +14,21 @@ type AccountOnboardingLayoutProps = {
 
 export default function AccountOnboardingLayout(props: AccountOnboardingLayoutProps) {
   const router = useRouter();
-  const { isLoaded, userMemberships } = useOrganizationList();
+  const { accounts, loading, error } = useListAccount();
   const { isLoaded: authLoaded, isSignedIn, signOut } = useAuth();
 
   useEffect(() => {
-    if (!isLoaded) return;
-    if (userMemberships.count > 1) router.replace("/home");
-    else if (userMemberships.count === 1) router.replace(`/onboarding/kyc-summary`);
-  }, [isLoaded, userMemberships]);
+    if (loading || error) return;
+    if (accounts.length > 1) router.replace("/home");
+    else if (accounts.length === 1) router.replace(`/onboarding/kyc-summary`);
+  }, [error, loading, accounts]);
 
   useEffect(() => {
     if (!authLoaded) return;
     if (!isSignedIn) router.replace("/sign-in");
   }, [authLoaded, isSignedIn]);
 
-  if (!isLoaded) return null;
+  if (loading) return null;
   return (
     <CreateAccountProvider>
       {props.accountType}

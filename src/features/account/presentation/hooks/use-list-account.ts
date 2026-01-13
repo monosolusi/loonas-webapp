@@ -11,7 +11,7 @@ import useSWR from "swr";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import {
   ListAccountFetcherParams,
-  UseListAccountReturnType
+  UseListAccountReturnType,
 } from "@/features/account/presentation/hooks/use-list-account.types";
 import { useAuth } from "@clerk/nextjs";
 
