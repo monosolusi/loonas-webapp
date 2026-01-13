@@ -82,11 +82,12 @@
 // }
 
 import Image from "next/image";
+import { HeaderTitle } from "@/app/(authenticated)/_components/header-title";
 
 export function Header() {
   return (
     <div className="flex flex-row items-center justify-between border-b border-b-neutral-200 px-6 py-2">
-      <div className="text-xl leading-5 font-bold tracking-tight">Manajemen Akun</div>
+      <HeaderTitle />
       <div className="flex flex-row items-center gap-x-6">
         {/* Notification Icon */}
         <div className="flex size-10 flex-col items-center justify-center">
