@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useRouter } from "next/navigation";
 import { useAuth, useSignIn } from "@clerk/nextjs";
@@ -25,7 +25,7 @@ const SignInContext = createContext<SignInContextProps>({
 export function SignInProvider({ children }: { children: any }) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isLogginIn, setIsLoggingIn] = useState<boolean>(false);
   const [showInvalidCred, setShowInvalidCred] = useState<boolean>(false);
   const [error, setError] = useState<Error>();
   const { isLoaded, isSignedIn } = useAuth();
@@ -42,8 +42,9 @@ export function SignInProvider({ children }: { children: any }) {
   }, [error]);
 
   useEffect(() => {
-    if (isLoaded) checkSession();
-  }, [isLoaded]);
+    if (!isLoaded) return;
+    if (isSignedIn) router.replace("/home");
+  }, [isLoaded, isSignedIn]);
 
   function checkCleanInput() {
     if (email === "") return false;
@@ -55,20 +56,9 @@ export function SignInProvider({ children }: { children: any }) {
     return emailRegex.test(email);
   }
 
-  async function checkSession(): Promise<void> {
-    try {
-      setLoading(true);
-      if (isSignedIn) router.replace("/home");
-    } catch (err: any) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function login() {
     try {
-      setLoading(true);
+      setIsLoggingIn(true);
       const isClean = checkCleanInput();
       if (!isClean) throw new ServerError(ErrorCodes.VALIDATION_FAILED);
       if (!isLoaded || !signIn || !setActive) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
@@ -83,12 +73,18 @@ export function SignInProvider({ children }: { children: any }) {
       await setActive({ session: createdSessionId, redirectUrl: "/home" });
     } catch (err: any) {
       setError(err);
-      setLoading(false);
+      setIsLoggingIn(false);
     }
   }
 
+  const isLoading = useMemo(() => {
+    return isLogginIn || !isLoaded;
+  }, [isLoaded, isLogginIn]);
+
   return (
-    <SignInContext.Provider value={{ email, password, loading, setEmail, setPassword, login, showInvalidCred }}>
+    <SignInContext.Provider
+      value={{ email, password, loading: isLoading, setEmail, setPassword, login, showInvalidCred }}
+    >
       {children}
     </SignInContext.Provider>
   );

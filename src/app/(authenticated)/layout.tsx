@@ -1,4 +1,4 @@
-import { ProtectedPage } from "@/core/presentations/components/protected-page";
+import { ProtectedPage } from "@/app/(authenticated)/_components/protected-page";
 
 export default function AuthenticatedLayout({ children }: { children: any }) {
   return (
