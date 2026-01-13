@@ -4,6 +4,7 @@ import { StepIndicatorWithTime } from "@/app/(user)/onboarding/_components/step-
 import { StepHeader } from "@/app/(user)/onboarding/_components/step-header";
 import { AccountTypeCard } from "@/app/(user)/onboarding/account/@accountType/_components/account-type-card";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { GoToSignIn } from "@/app/(user)/onboarding/account/@accountType/_components/go-to-sign-in";
 
 export default function SelectAccountTypeStepPage() {
   const { type, setType, setCurrentStep } = useCreateAccount();
@@ -41,6 +42,7 @@ export default function SelectAccountTypeStepPage() {
         <span className="text-center text-xs leading-6 font-normal text-neutral-200">
           Tidak yakin? Pilih Personal dulu, Anda bisa upgrade ke Bisnis nanti.
         </span>
+        <GoToSignIn />
       </div>
     </div>
   );
