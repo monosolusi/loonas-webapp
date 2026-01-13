@@ -14,17 +14,12 @@ type AccountOnboardingLayoutProps = {
 export default function AccountOnboardingLayout(props: AccountOnboardingLayoutProps) {
   const router = useRouter();
   const { isLoaded, userMemberships } = useOrganizationList();
-  const { isLoaded: authLoaded, isSignedIn, signOut } = useAuth();
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
 
   useEffect(() => {
     if (!isLoaded) return;
-
     if (userMemberships.count > 1) router.replace("/home");
-    else if (userMemberships.count === 1) {
-      const accountId = userMemberships.data[0].id;
-      if (!accountId) return;
-      router.replace(`/onboarding/kyc-summary/${accountId}`);
-    }
+    else if (userMemberships.count === 1) router.replace(`/onboarding/kyc-summary`);
   }, [isLoaded, userMemberships]);
 
   useEffect(() => {
