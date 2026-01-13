@@ -14,7 +14,7 @@ type AccountOnboardingLayoutProps = {
 export default function AccountOnboardingLayout(props: AccountOnboardingLayoutProps) {
   const router = useRouter();
   const { isLoaded, userMemberships } = useOrganizationList();
-  const { isLoaded: authLoaded, isSignedIn } = useAuth();
+  const { isLoaded: authLoaded, isSignedIn, signOut } = useAuth();
 
   useEffect(() => {
     if (!isLoaded) return;

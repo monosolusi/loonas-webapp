@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   SelectedAccountContextProps,
-  SelectedAccountProviderProps,
+  SelectedAccountProviderProps
 } from "@/features/authentication/presentation/providers/selected-account.types";
 import { useOrganizationList } from "@clerk/nextjs";
 import { usePathname, useRouter } from "next/navigation";
@@ -100,7 +100,7 @@ const SelectedAccountContext = createContext<SelectedAccountContextProps>({
 
 export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
   const [loading, setLoading] = useState<boolean>(true);
-  const { isLoaded: isOrganizationListLoaded, userMemberships } = useOrganizationList();
+  const { isLoaded: isOrganizationListLoaded, userMemberships } = useOrganizationList({ userMemberships: true });
   const router = useRouter();
   const pathname = usePathname();
 
@@ -111,8 +111,8 @@ export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
    * who haven't joined or created an account are always redirected to complete
    * the onboarding process.
    *
-   * - Waits for organization list to be loaded before checking
-   * - If user has no memberships (count === 0), redirects to account creation
+   * - Waits for an organization list to be loaded before checking
+   * - If a user has no memberships (count === 0), redirects to account creation
    */
   useEffect(() => {
     if (!isOrganizationListLoaded) return;
