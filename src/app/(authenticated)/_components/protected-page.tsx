@@ -2,12 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { SelectedAccountProvider } from "@/features/authentication/presentation/providers/selected-account";
-import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { ServerError } from "@/core/resources/server-error";
 import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export function ProtectedPage({ children }: { children: any }) {
   const [error, setError] = useState<Error>();
   const { isLoaded, isSignedIn, signOut } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (error && isLoaded) {
@@ -20,8 +22,7 @@ export function ProtectedPage({ children }: { children: any }) {
   }, [error, isLoaded]);
 
   useEffect(() => {
-    if (!isLoaded) return;
-    if (!isSignedIn) setError(new ServerError(ErrorCodes.NO_VALID_SESSION));
+    if (isLoaded && !isSignedIn) router.replace("/sign-in");
   }, [isLoaded, isSignedIn]);
 
   const sessionLoading = useMemo(() => {
