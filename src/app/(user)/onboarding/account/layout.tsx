@@ -15,13 +15,7 @@ type AccountOnboardingLayoutProps = {
 export default function AccountOnboardingLayout(props: AccountOnboardingLayoutProps) {
   const router = useRouter();
   const { accounts, loading, error } = useListAccount();
-  const { isLoaded: authLoaded, isSignedIn, signOut } = useAuth();
-
-  useEffect(() => {
-    if (loading || error) return;
-    if (accounts.length > 1) router.replace("/home");
-    else if (accounts.length === 1) router.replace(`/onboarding/kyc-summary`);
-  }, [error, loading, accounts]);
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
 
   useEffect(() => {
     if (!authLoaded) return;

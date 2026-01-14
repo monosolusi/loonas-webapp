@@ -1,8 +1,8 @@
 "use client";
 
 import { AccountCard } from "@/app/(authenticated)/accounts/_components/account-card";
-import Image from "next/image";
 import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
+import { AddAccountCard } from "@/app/(authenticated)/accounts/_components/add-account-card";
 
 export default function AccountManagementPage() {
   const { accounts } = useListAccount();
@@ -19,18 +19,8 @@ export default function AccountManagementPage() {
 
       {/*  List of Account */}
       <div className="flex w-full flex-row flex-wrap gap-6">
-        {/* Add Account Button */}
-        <div className="group hover:bg-primary-300/10 hover:border-primary-300/20 flex w-[256px] cursor-pointer flex-col items-center justify-center gap-y-4 rounded-lg border border-neutral-200 bg-white p-6 transition-all ease-out">
-          <div className="group-hover:border-primary-300/20 flex size-14 flex-col items-center justify-center rounded-full border border-neutral-200 bg-white shadow-md transition-all ease-out group-hover:size-15">
-            <Image src="/assets/images/plus-icon-neutral-400-w24-h24.svg" alt="Tambah Akun" width={24} height={24} />
-          </div>
-          <div className="flex flex-col items-center gap-y-1">
-            <div className="leading-6 font-semibold">Buat Akun Baru</div>
-            <div className="text-center text-sm leading-5 text-neutral-300">
-              Tambahkan entitas bisnis atau personal lain
-            </div>
-          </div>
-        </div>
+        <AddAccountCard />
+
         {accounts?.map((account) => (
           <AccountCard key={account.id} account={account} />
         ))}
