@@ -42,8 +42,9 @@ export function useGetAccountVerificationWork(params: GetAccountVerificationWork
   const { isLoaded, getToken } = useAuth();
   if (!isLoaded) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
 
+  const shouldFetch = !!params.accountId;
   const { data, isLoading, error, mutate } = useSWR(
-    ["get-account-verification-work", { ...params, getToken }],
+    shouldFetch ? ["get-account-verification-work", { ...params, getToken }] : null,
     GetAccountVerificationWorkFetcher,
   );
 

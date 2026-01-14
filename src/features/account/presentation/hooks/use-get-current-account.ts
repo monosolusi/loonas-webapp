@@ -39,16 +39,11 @@ export function useGetCurrentAccount(): UseGetCurrentAccountReturnValue {
     GetCurrentAccount,
   );
 
-  const isInitializing = !isLoaded || (!orgId && !error) || isLoading;
+  const isInitializing = !isLoaded || isLoading;
   if (isInitializing) return INITIAL_STATE;
-
-  if (error) {
-    return {
-      account: null,
-      loading: false,
-      error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
-      refresh: null,
-    };
+  if (error) return Object.assign({}, INITIAL_STATE, { error, loading: false });
+  if (!shouldFetch) {
+    return Object.assign({}, INITIAL_STATE, { loading: false, error: new ServerError(ErrorCodes.NOT_FOUND) });
   }
 
   return {

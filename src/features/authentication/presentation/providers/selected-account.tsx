@@ -11,6 +11,7 @@ import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-
 import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 // const SelectedAccountContext = createContext<SelectedAccountContextProps>({
 //   states: [true],
@@ -106,7 +107,7 @@ const SelectedAccountContext = createContext<SelectedAccountContextProps>({});
 
 export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
   const { accounts, error, loading } = useListAccount();
-  const { account } = useGetCurrentAccount();
+  const { account, error: currentAccountError, loading: currentAccountLoading } = useGetCurrentAccount();
   const { verificationWork } = useGetAccountVerificationWork({ accountId: account?.id ?? null });
   const router = useRouter();
   const pathname = usePathname();
@@ -126,6 +127,22 @@ export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
     if (accounts.length === 0) router.push("/onboarding/account");
   }, [accounts, pathname, loading, error]);
 
+  /**
+   * Redirects users to the accounts page if they try to access a non-existent account.
+   */
+  useEffect(() => {
+    if (currentAccountLoading) return;
+    if (!currentAccountError) return;
+
+    const isAccountNotFound =
+      currentAccountError instanceof ServerError && currentAccountError.code === ErrorCodes.NOT_FOUND.code;
+
+    if (isAccountNotFound) router.push("/accounts");
+  }, [account, currentAccountLoading, currentAccountError, pathname]);
+
+  /**
+   * Redirects users to the KYC summary page if their account verification status is not pending.
+   */
   useEffect(() => {
     if (!verificationWork) return;
     const routeMap: Record<string, string> = {
