@@ -1,10 +1,11 @@
 import Image from "next/image";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
 import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
+import { useOrganizationList } from "@clerk/nextjs";
 
 type AccountCardActionProps = {
   account: AccountTypeEntity;
@@ -49,6 +50,7 @@ const ACTION_CONFIG: Record<
 export function AccountCardAction(props: AccountCardActionProps) {
   const { verificationWork } = useGetAccountVerificationWork({ accountId: props.account.id });
   const { account: currentAccount } = useGetCurrentAccount();
+  const { isLoaded, setActive } = useOrganizationList();
 
   const actionState = useMemo((): ActionState => {
     if (!verificationWork) return "loading";
@@ -63,8 +65,13 @@ export function AccountCardAction(props: AccountCardActionProps) {
 
   const config = ACTION_CONFIG[actionState];
 
+  const onClick = useCallback(() => {
+    if (!isLoaded) return;
+    setActive({ organization: props.account.metadata.clerkId, redirectUrl: "/home" });
+  }, [isLoaded, setActive, props.account.metadata.clerkId]);
+
   return (
-    <button type="button" disabled={config.disabled}>
+    <button type="button" disabled={config.disabled} onClick={actionState === "approved" ? onClick : undefined}>
       <div
         className={`flex flex-row items-center justify-between rounded-lg border px-3 py-2 text-sm leading-5 font-medium transition-all duration-100 ease-out ${config.className}`}
       >

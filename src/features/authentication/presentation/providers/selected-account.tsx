@@ -3,10 +3,14 @@
 import { createContext, useContext, useEffect } from "react";
 import {
   SelectedAccountContextProps,
-  SelectedAccountProviderProps,
+  SelectedAccountProviderProps
 } from "@/features/authentication/presentation/providers/selected-account.types";
 import { usePathname, useRouter } from "next/navigation";
 import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
+import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
+import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
+import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
+import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 
 // const SelectedAccountContext = createContext<SelectedAccountContextProps>({
 //   states: [true],
@@ -102,6 +106,8 @@ const SelectedAccountContext = createContext<SelectedAccountContextProps>({});
 
 export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
   const { accounts, error, loading } = useListAccount();
+  const { account } = useGetCurrentAccount();
+  const { verificationWork } = useGetAccountVerificationWork({ accountId: account?.id ?? null });
   const router = useRouter();
   const pathname = usePathname();
 
@@ -120,10 +126,17 @@ export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
     if (accounts.length === 0) router.push("/onboarding/account");
   }, [accounts, pathname, loading, error]);
 
-  // useEffect(() => {
-  //   if (!isLoaded) return;
-  //
-  // }, [orgId, isLoaded]);
+  useEffect(() => {
+    if (!verificationWork) return;
+    const routeMap: Record<string, string> = {
+      [`${VerificationStatus.NEW}.${VerificationOutcome.PENDING}`]: "/onboarding/kyc-summary",
+      [`${VerificationStatus.PROCESSING}.${VerificationOutcome.PENDING}`]: "/onboarding/kyc-summary",
+      [`${VerificationStatus.COMPLETED}.${VerificationOutcome.REJECTED}`]: "/onboarding/kyc-summary",
+    };
+
+    const redirectRoute = routeMap[`${verificationWork.latestStatus}.${verificationWork.verificationOutcome}`];
+    if (redirectRoute) router.push(redirectRoute);
+  }, [verificationWork]);
 
   return <SelectedAccountContext value={{}}>{props.children}</SelectedAccountContext>;
 }

@@ -31,12 +31,17 @@ async function GetCurrentAccount([_, params]: [string, GetAccountFetcherParams])
 }
 
 export function useGetCurrentAccount(): UseGetCurrentAccountReturnValue {
-  const { isLoaded, getToken } = useAuth();
-  const { data, isLoading, error, mutate } = useSWR(["get-account", { getToken }], GetCurrentAccount);
+  const { isLoaded, getToken, orgId } = useAuth();
 
-  const isInitializing = !isLoaded || isLoading;
+  const shouldFetch = isLoaded && !!orgId;
+  const { data, isLoading, error, mutate } = useSWR(
+    shouldFetch ? ["get-current-account", { getToken }] : null,
+    GetCurrentAccount,
+  );
 
+  const isInitializing = !isLoaded || (!orgId && !error) || isLoading;
   if (isInitializing) return INITIAL_STATE;
+
   if (error) {
     return {
       account: null,
