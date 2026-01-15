@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect } from "react";
 import {
   SelectedAccountContextProps,
-  SelectedAccountProviderProps
+  SelectedAccountProviderProps,
 } from "@/features/authentication/presentation/providers/selected-account.types";
 import { usePathname, useRouter } from "next/navigation";
 import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
