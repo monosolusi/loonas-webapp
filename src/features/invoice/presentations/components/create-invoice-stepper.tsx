@@ -13,6 +13,11 @@ const STATE: Record<State, StateValue> = {
     description: "Sedang aktif",
     descriptionForeground: "text-primary-300",
   },
+  completed: {
+    backgroundColor: "bg-primary-300",
+    borderColor: "border-primary-300",
+    descriptionForeground: "text-neutral-400",
+  },
   default: {
     backgroundColor: "bg-white",
     borderColor: "border-neutral-200",
@@ -22,9 +27,14 @@ const STATE: Record<State, StateValue> = {
 
 export function CreateInvoiceStepper(props: CreateInvoiceStepperProps) {
   const { backgroundColor, borderColor, description, descriptionForeground, iconPath } = useMemo(() => {
-    const iconPath = props.state == "active" ? props.iconPath.active : props.iconPath.default;
+    const iconPath =
+      props.state === "completed"
+        ? "/assets/images/check-icon-white-w18-h18.svg"
+        : props.state === "active"
+          ? props.iconPath.active
+          : props.iconPath.default;
     return Object.assign({}, { description: props.description, iconPath }, STATE[props.state ?? "default"]);
-  }, [props.state]);
+  }, [props.state, props.iconPath, props.description]);
 
   return (
     <div className="flex flex-row items-center gap-x-4 p-2">

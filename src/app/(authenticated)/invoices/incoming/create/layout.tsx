@@ -40,17 +40,15 @@
 //   );
 // }
 
-import { CreateInvoiceStepper } from "@/features/invoice/presentations/components/create-invoice-stepper";
 import { CreateIncomingInvoiceLayoutProps } from "@/app/(authenticated)/invoices/incoming/create/layout.types";
-import {
-  CreateIncomingInvoiceStepsProvider
-} from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
+import { CreateIncomingInvoiceStepsProvider } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 import { CreateClientButton } from "@/features/invoice/presentations/components/create-client-button";
 import { CreateIncomingNextButton } from "@/features/invoice/presentations/components/create-incoming-next-button";
 import { CreateNewPartnerProvider } from "@/features/partner/presentation/providers/create-new-partner";
 import { CreateClientCancelButton } from "@/features/invoice/presentations/components/create-client-cancel-button";
 import { CreateIncomingCancelButton } from "@/features/invoice/presentations/components/create-incoming-cancel-button";
 import { CreateIncomingInvoiceProvider } from "@/features/invoice/presentations/providers/create-incoming-invoice";
+import { CreateIncomingSteppers } from "@/features/invoice/presentations/components/create-incoming-steppers";
 
 export default function CreateIncomingInvoiceLayout(props: CreateIncomingInvoiceLayoutProps) {
   return (
@@ -71,64 +69,7 @@ export default function CreateIncomingInvoiceLayout(props: CreateIncomingInvoice
             <div className="rounded-lg border border-neutral-200">
               <div className="flex flex-row">
                 {/*  Left - Progress */}
-                <div className="w-[320px] border-r border-neutral-200 px-6 py-8">
-                  <div className="flex flex-col gap-y-1">
-                    <CreateInvoiceStepper
-                      title="Client"
-                      description="Pilih Client"
-                      iconPath={{
-                        default: "/assets/images/person-icon-neutral-400-w28-h28.svg",
-                        active: "/assets/images/person-icon-primary-w28-h28.svg",
-                      }}
-                      state="active"
-                    />
-
-                    <CreateInvoiceStepper
-                      title="Detail"
-                      description="Isi faktur"
-                      iconPath={{
-                        default: "/assets/images/document-icon-neutral-400-w16-h16.svg",
-                        active: "/assets/images/document-icon-primary-300-w16-h16.svg",
-                      }}
-                    />
-
-                    <CreateInvoiceStepper
-                      title="Rekening"
-                      description="Tujuan transfer"
-                      iconPath={{
-                        default: "/assets/images/building-icon-neutral-400-w16-h16.svg",
-                        active: "/assets/images/building-icon-primary-w28-h28.svg",
-                      }}
-                    />
-
-                    <CreateInvoiceStepper
-                      title="Metode Pembayaran"
-                      description="Cara bayar"
-                      iconPath={{
-                        default: "/assets/images/credit-card-icon-neutral-400-w16-h16.svg",
-                        active: "/assets/images/credit-card-icon-primary-300-w16-h16.svg",
-                      }}
-                    />
-
-                    <CreateInvoiceStepper
-                      title="Bayar"
-                      description="Lakukan pembayaran"
-                      iconPath={{
-                        default: "/assets/images/dollar-icon-neutral-400-w16-h16.svg",
-                        active: "/assets/images/dollar-icon-primary-300-w16-h16.svg",
-                      }}
-                    />
-
-                    <CreateInvoiceStepper
-                      title="Selesai"
-                      description="Faktur telah dibuat"
-                      iconPath={{
-                        default: "/assets/images/check-circle-icon-neutral-400-w16-h16.svg",
-                        active: "/assets/images/check-circle-icon-primary-300-w16-h16.svg",
-                      }}
-                    />
-                  </div>
-                </div>
+                <CreateIncomingSteppers />
 
                 {/*  Right - Content */}
                 <div className="flex flex-1 flex-col">

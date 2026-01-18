@@ -1,4 +1,4 @@
-export type State = "active" | "default";
+export type State = "active" | "completed" | "default";
 
 export type CreateInvoiceStepperProps = {
   title: string;
