@@ -35,7 +35,10 @@ export function SelectorItem(props: SelectorItemProps) {
   }, [props.title]);
 
   return (
-    <div className={`flex flex-row items-center gap-x-4 ${bottomBorder} px-4 py-5 ${backgroundColor} cursor-pointer`}>
+    <div
+      className={`flex flex-row items-center gap-x-4 ${bottomBorder} px-4 py-5 ${backgroundColor} cursor-pointer`}
+      onClick={props.onClick}
+    >
       <div className={`size-10 rounded-full ${avatarBackground} flex flex-col items-center justify-center`}>
         <div className={`${avatarForeground} text-center text-sm leading-5 font-bold`}>{avatarContent}</div>
       </div>

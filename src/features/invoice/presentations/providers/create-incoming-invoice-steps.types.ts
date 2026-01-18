@@ -1,4 +1,4 @@
-export type Step = "select-client" | "select-client.create-new";
+export type Step = "select-client" | "select-client.create-new" | "invoices";
 
 export type CreateIncomingInvoiceStepsProviderProps = {
   children: React.ReactNode;

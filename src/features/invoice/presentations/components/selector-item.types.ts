@@ -6,9 +6,10 @@ export type StateValue = {
   avatarForeground: string;
 };
 
-export type SelectorItemProps = {
+export type SelectorItemProps<T = unknown> = {
   showBorder?: boolean;
   title: string;
   description?: string;
   state?: State;
+  onClick?: (item: T) => void;
 };
