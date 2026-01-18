@@ -13,7 +13,7 @@ export function ListClientSearchBar() {
           className="w-full placeholder-neutral-300 focus:outline-none"
           placeholder="Cari nama klien..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => setSearchQuery?.(e.target.value)}
         />
       </div>
     </div>

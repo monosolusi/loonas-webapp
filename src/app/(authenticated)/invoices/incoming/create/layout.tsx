@@ -42,9 +42,7 @@
 
 import { CreateInvoiceStepper } from "@/features/invoice/presentations/components/create-invoice-stepper";
 import { CreateIncomingInvoiceLayoutProps } from "@/app/(authenticated)/invoices/incoming/create/layout.types";
-import {
-  CreateIncomingInvoiceStepsProvider
-} from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
+import { CreateIncomingInvoiceStepsProvider } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 import { CreateClientButton } from "@/features/invoice/presentations/components/create-client-button";
 import { CreateIncomingNextButton } from "@/features/invoice/presentations/components/create-incoming-next-button";
 import { CreateNewPartnerProvider } from "@/features/partner/presentation/providers/create-new-partner";
