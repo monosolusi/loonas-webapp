@@ -36,6 +36,7 @@ export function CreateNewPartnerProvider(props: CreateNewPartnerProviderProps) {
     if (!isClean) throw new ServerError(ErrorCodes.INCOMPLETE_FORM);
 
     await trigger({ name, email, phoneNumber: phone });
+    clearInput();
   }
 
   return (
@@ -49,7 +50,6 @@ export function CreateNewPartnerProvider(props: CreateNewPartnerProviderProps) {
         setEmail,
         setPhone,
         create: createPartner,
-        clearInput,
       }}
     >
       {props.children}

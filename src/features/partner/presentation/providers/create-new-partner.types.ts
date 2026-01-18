@@ -9,7 +9,6 @@ export type CreateNewPartnerContextProps = {
   setEmail?: React.Dispatch<React.SetStateAction<string>>;
   setPhone?: React.Dispatch<React.SetStateAction<string>>;
   create?: () => Promise<void>;
-  clearInput?: () => void;
 };
 
 export type CreateNewPartnerProviderProps = {
