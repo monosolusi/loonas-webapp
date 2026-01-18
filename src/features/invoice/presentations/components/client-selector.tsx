@@ -1,11 +1,11 @@
 "use client";
 
 import { Selector } from "@/features/invoice/presentations/components/selector";
-import { useListPartner } from "@/features/partner/presentation/hooks/use-list-partner";
 import { SelectorItem } from "@/features/invoice/presentations/components/selector-item";
+import { useListPartnerProvider } from "@/features/invoice/presentations/providers/list-partner";
 
 export function ClientSelector() {
-  const { partners } = useListPartner();
+  const { partners } = useListPartnerProvider();
 
   return (
     <Selector>

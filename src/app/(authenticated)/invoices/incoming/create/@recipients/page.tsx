@@ -79,6 +79,8 @@ import Image from "next/image";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { ClientSelector } from "@/features/invoice/presentations/components/client-selector";
 import { useCreateIncomingInvoiceSteps } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
+import { ListPartnerProvider } from "@/features/invoice/presentations/providers/list-partner";
+import { ListClientSearchBar } from "@/features/invoice/presentations/components/list-client-search-bar";
 
 export default function SelectClientSection() {
   const { setCurrentStep, currentStep } = useCreateIncomingInvoiceSteps();
@@ -89,36 +91,29 @@ export default function SelectClientSection() {
 
   if (currentStep !== "select-client") return null;
   return (
-    <div className="flex flex-col gap-y-6">
-      {/* Title & Description */}
-      <div className="flex flex-col">
-        <div className="text-2xl leading-8 font-bold text-neutral-400">Pilih Klien</div>
-        <div className="text-base leading-6 font-normal">Siapa yang mengirim faktur ini?</div>
-      </div>
-
-      {/*  Search Bar */}
-      <div className="w-full rounded-md border border-neutral-200 px-3 py-3.5">
-        <div className="flex flex-row gap-x-2">
-          <Image src="/assets/images/search-icon-neutral-400-w20-h20.svg" alt="search icon" width={20} height={20} />
-          <input
-            type="text"
-            className="w-full placeholder-neutral-300 focus:outline-none"
-            placeholder="Cari nama klien..."
-          />
+    <ListPartnerProvider>
+      <div className="flex flex-col gap-y-6">
+        {/* Title & Description */}
+        <div className="flex flex-col">
+          <div className="text-2xl leading-8 font-bold text-neutral-400">Pilih Klien</div>
+          <div className="text-base leading-6 font-normal">Siapa yang mengirim faktur ini?</div>
         </div>
+
+        {/*  Search Bar */}
+        <ListClientSearchBar />
+
+        {/*  List of Client */}
+        <ClientSelector />
+
+        <SecondaryButton
+          label="Tambah Klien Baru"
+          leftIcon={
+            <Image src="/assets/images/plus-icon-neutral-400-w24-h24.svg" alt="Plus Icon" width={16} height={16} />
+          }
+          onClick={onAddClientClick}
+          outlined
+        />
       </div>
-
-      {/*  List of Client */}
-      <ClientSelector />
-
-      <SecondaryButton
-        label="Tambah Klien Baru"
-        leftIcon={
-          <Image src="/assets/images/plus-icon-neutral-400-w24-h24.svg" alt="Plus Icon" width={16} height={16} />
-        }
-        onClick={onAddClientClick}
-        outlined
-      />
-    </div>
+    </ListPartnerProvider>
   );
 }
