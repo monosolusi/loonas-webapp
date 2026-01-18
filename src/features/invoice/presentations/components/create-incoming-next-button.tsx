@@ -6,7 +6,7 @@ import { Step } from "@/features/invoice/presentations/providers/create-incoming
 
 const VISIBLE_STATE: Step[] = ["select-client"];
 
-export function NextButton() {
+export function CreateIncomingNextButton() {
   const { currentStep } = useCreateIncomingInvoiceSteps();
 
   if (!VISIBLE_STATE.includes(currentStep)) return null;

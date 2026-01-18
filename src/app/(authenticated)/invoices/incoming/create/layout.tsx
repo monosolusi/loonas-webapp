@@ -41,12 +41,15 @@
 // }
 
 import { CreateInvoiceStepper } from "@/features/invoice/presentations/components/create-invoice-stepper";
-import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { CreateIncomingInvoiceLayoutProps } from "@/app/(authenticated)/invoices/incoming/create/layout.types";
-import { CreateIncomingInvoiceStepsProvider } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
+import {
+  CreateIncomingInvoiceStepsProvider
+} from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 import { CreateClientButton } from "@/features/invoice/presentations/components/create-client-button";
-import { NextButton } from "@/features/invoice/presentations/components/next-button";
+import { CreateIncomingNextButton } from "@/features/invoice/presentations/components/create-incoming-next-button";
 import { CreateNewPartnerProvider } from "@/features/partner/presentation/providers/create-new-partner";
+import { CreateClientCancelButton } from "@/features/invoice/presentations/components/create-client-cancel-button";
+import { CreateIncomingCancelButton } from "@/features/invoice/presentations/components/create-incoming-cancel-button";
 
 export default function CreateIncomingInvoiceLayout(props: CreateIncomingInvoiceLayoutProps) {
   return (
@@ -134,10 +137,11 @@ export default function CreateIncomingInvoiceLayout(props: CreateIncomingInvoice
                 {/*  Action Buttons */}
                 <div className="flex flex-row items-center justify-between border-t border-t-neutral-200 p-6">
                   <div className="flex">
-                    <SecondaryButton label="Batalkan" outlined />
+                    <CreateIncomingCancelButton />
+                    <CreateClientCancelButton />
                   </div>
                   <div className="flex">
-                    <NextButton />
+                    <CreateIncomingNextButton />
                     <CreateClientButton />
                   </div>
                 </div>
