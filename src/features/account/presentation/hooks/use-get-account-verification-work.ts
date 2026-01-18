@@ -11,14 +11,14 @@ import useSWR from "swr";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { AccountVerificationWorkEntity } from "@/features/account/domain/entities/account-verification-work";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
-import { useAuth } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
 
 type GetAccountVerificationWorkProps = {
   accountId?: string | null;
 };
 
 type GetAccountVerificationWorkFetcherParams = GetAccountVerificationWorkProps & {
-  getToken: () => Promise<string | null>;
+  clerk: ReturnType<typeof useClerk>;
 };
 
 async function GetAccountVerificationWorkFetcher([_, params]: [
@@ -27,7 +27,7 @@ async function GetAccountVerificationWorkFetcher([_, params]: [
 ]): Promise<AccountVerificationWorkEntity> {
   if (!params.accountId) throw new ServerError(ErrorCodes.NOT_FOUND);
 
-  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ getToken: params.getToken }));
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const accountRepository = new AccountRepositoryImpl(new AccountServiceImpl(new HttpRequest()));
   const retrieve = new RetrieveAccountVerificationWorkUseCase(accountRepository, sessionRepository);
   const retrieveParams = new RetrieveAccountVerificationWorkUseCaseParams(params.accountId);
@@ -39,12 +39,11 @@ async function GetAccountVerificationWorkFetcher([_, params]: [
 }
 
 export function useGetAccountVerificationWork(params: GetAccountVerificationWorkProps) {
-  const { isLoaded, getToken } = useAuth();
-  if (!isLoaded) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+  const clerk = useClerk();
 
   const shouldFetch = !!params.accountId;
   const { data, isLoading, error, mutate } = useSWR(
-    shouldFetch ? ["get-account-verification-work", { ...params, getToken }] : null,
+    shouldFetch ? ["get-account-verification-work", { ...params, clerk }] : null,
     GetAccountVerificationWorkFetcher,
   );
 

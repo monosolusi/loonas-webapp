@@ -73,12 +73,21 @@
 //   if (currentStep !== 1) return null;
 //   return <SelectRecipientContent />;
 // }
+"use client";
 
 import Image from "next/image";
-import { SelectorItem } from "@/features/invoice/presentations/components/selector-item";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
+import { ClientSelector } from "@/features/invoice/presentations/components/client-selector";
+import { useCreateIncomingInvoiceSteps } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 
 export default function SelectClientSection() {
+  const { setCurrentStep, currentStep } = useCreateIncomingInvoiceSteps();
+
+  const onAddClientClick = () => {
+    setCurrentStep?.("select-client.create-new");
+  };
+
+  if (currentStep !== "select-client") return null;
   return (
     <div className="flex flex-col gap-y-6">
       {/* Title & Description */}
@@ -100,17 +109,14 @@ export default function SelectClientSection() {
       </div>
 
       {/*  List of Client */}
-      <div className="flex max-h-[350px] flex-col overflow-y-auto rounded-lg border border-neutral-200">
-        <SelectorItem title="PT Sumber Makmur" description="finance@sumbermakmur.co.id" />
-        <SelectorItem title="CV Teknologi Abadi" description="admin@teknologiabadi.com" state="active" />
-        <SelectorItem title="Office Supplies Co." description="order@officesupplies.id" showBorder={false} />
-      </div>
+      <ClientSelector />
 
       <SecondaryButton
         label="Tambah Klien Baru"
         leftIcon={
           <Image src="/assets/images/plus-icon-neutral-400-w24-h24.svg" alt="Plus Icon" width={16} height={16} />
         }
+        onClick={onAddClientClick}
         outlined
       />
     </div>

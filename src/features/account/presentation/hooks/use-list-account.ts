@@ -13,7 +13,7 @@ import {
   ListAccountFetcherParams,
   UseListAccountReturnType,
 } from "@/features/account/presentation/hooks/use-list-account.types";
-import { useAuth } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
 
 const INITIAL_STATE: UseListAccountReturnType = {
   accounts: null,
@@ -24,7 +24,7 @@ const INITIAL_STATE: UseListAccountReturnType = {
 
 async function ListAccountFetcher([_, params]: [string, ListAccountFetcherParams]) {
   try {
-    const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ getToken: params.getToken }));
+    const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
     const accountRepository = new AccountRepositoryImpl(new AccountServiceImpl(new HttpRequest()));
     const listAccount = new ListAccountUseCase(accountRepository, sessionRepository);
     const accounts = await listAccount.execute();
@@ -40,15 +40,10 @@ async function ListAccountFetcher([_, params]: [string, ListAccountFetcherParams
 }
 
 export function useListAccount(): UseListAccountReturnType {
-  const { isLoaded, getToken } = useAuth();
-  const { data, isLoading, error, mutate } = useSWR(
-    isLoaded ? ["list-account", { getToken }] : null,
-    ListAccountFetcher,
-  );
+  const clerk = useClerk();
+  const { data, isLoading, error, mutate } = useSWR(["list-account", { clerk }], ListAccountFetcher);
 
-  const isInitializing = !isLoaded || isLoading;
-  if (isInitializing) return INITIAL_STATE;
-
+  if (isLoading) return INITIAL_STATE;
   if (error) {
     return {
       accounts: null,

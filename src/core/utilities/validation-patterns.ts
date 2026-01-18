@@ -28,6 +28,7 @@ export const emailSchema = Joi.string().email();
 export const ValidationPatterns = {
   password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  phoneNumber: /^(\+?[1-9]\d{0,2})?\d{8,12}$/,
 } as const;
 
 /**
@@ -36,6 +37,8 @@ export const ValidationPatterns = {
 export const isValidPassword = (password: string): boolean => ValidationPatterns.password.test(password);
 
 export const isValidEmail = (email: string): boolean => ValidationPatterns.email.test(email);
+
+export const isValidPhoneNumber = (phoneNumber: string): boolean => ValidationPatterns.phoneNumber.test(phoneNumber);
 
 export const isNonEmptyString = (v: unknown): v is string => typeof v === "string" && v.trim().length > 0;
 

@@ -1,4 +1,4 @@
-import { useAuth } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
 import useSWR from "swr";
 import {
   GetAccountFetcherParams,
@@ -21,7 +21,7 @@ const INITIAL_STATE: UseGetCurrentAccountReturnValue = {
 };
 
 async function GetCurrentAccount([_, params]: [string, GetAccountFetcherParams]) {
-  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ getToken: params.getToken }));
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const accountRepository = new AccountRepositoryImpl(new AccountServiceImpl(new HttpRequest()));
   const get = new GetCurrentAccountUseCase(accountRepository, sessionRepository);
   const account = await get.execute();
@@ -31,21 +31,11 @@ async function GetCurrentAccount([_, params]: [string, GetAccountFetcherParams])
 }
 
 export function useGetCurrentAccount(): UseGetCurrentAccountReturnValue {
-  const { isLoaded, getToken, orgId } = useAuth();
+  const clerk = useClerk();
+  const { data, isLoading, error, mutate } = useSWR(["get-current-account", { clerk }], GetCurrentAccount);
 
-  const shouldFetch = isLoaded && !!orgId;
-  const { data, isLoading, error, mutate } = useSWR(
-    shouldFetch ? ["get-current-account", { getToken }] : null,
-    GetCurrentAccount,
-  );
-
-  const isInitializing = !isLoaded || isLoading;
-  if (isInitializing) return INITIAL_STATE;
+  if (isLoading) return INITIAL_STATE;
   if (error) return Object.assign({}, INITIAL_STATE, { error, loading: false });
-  if (!shouldFetch) {
-    return Object.assign({}, INITIAL_STATE, { loading: false, error: new ServerError(ErrorCodes.NOT_FOUND) });
-  }
-
   return {
     account: data!,
     loading: isLoading,

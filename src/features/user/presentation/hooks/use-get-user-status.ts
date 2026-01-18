@@ -5,14 +5,14 @@ import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
-import { useAuth } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
 import useSWR from "swr";
 import { GetUserStatusFetcherParams } from "@/features/user/presentation/hooks/use-get-user-status.types";
 import { UserStatusEntity } from "@/features/user/domain/entities/user-status.entity";
 import { GetUserStatusUseCase } from "@/features/user/domain/usecases/get-user-status.usecase";
 
 async function GetUserStatusFetcher([_, params]: [string, GetUserStatusFetcherParams]): Promise<UserStatusEntity> {
-  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ getToken: params.getToken }));
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const userRepository = new UserRepositoryImpl(new UserServiceImpl(new HttpRequest()));
   const get = new GetUserStatusUseCase(userRepository, sessionRepository);
   const status = await get.execute();
@@ -23,8 +23,8 @@ async function GetUserStatusFetcher([_, params]: [string, GetUserStatusFetcherPa
 }
 
 export function useGetUserStatus() {
-  const { isLoaded, getToken } = useAuth();
-  const { data, isLoading, error } = useSWR(isLoaded ? ["get-user-status", { getToken }] : null, GetUserStatusFetcher);
+  const clerk = useClerk();
+  const { data, isLoading, error } = useSWR(["get-user-status", { clerk }], GetUserStatusFetcher);
 
   return {
     status: data,

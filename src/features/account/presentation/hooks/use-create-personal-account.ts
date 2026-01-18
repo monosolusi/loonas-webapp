@@ -15,11 +15,11 @@ import { SessionRepositoryImpl } from "@/features/authentication/data/repositori
 import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { useAuth } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 
 type CreatePersonalAccountFetcherParams = {
-  getToken: () => Promise<string | null>;
+  clerk: ReturnType<typeof useClerk>;
   personal: {
     nationality: string;
     fullName: string;
@@ -40,11 +40,11 @@ type CreatePersonalAccountFetcherParams = {
   };
 };
 
-type TriggerInput = Omit<CreatePersonalAccountFetcherParams, "getToken">;
+type TriggerInput = Omit<CreatePersonalAccountFetcherParams, "clerk">;
 
 async function CreatePersonalAccountFetcher(_: string, params: { arg: CreatePersonalAccountFetcherParams }) {
   const { arg } = params;
-  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ getToken: arg.getToken }));
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: arg.clerk }));
   const accountRepository = new AccountRepositoryImpl(new AccountServiceImpl(new HttpRequest()));
   const create = new CreatePersonalAccountUseCase(accountRepository, sessionRepository);
   const createParams = new CreatePersonalAccountUseCaseParams({
@@ -70,18 +70,14 @@ async function CreatePersonalAccountFetcher(_: string, params: { arg: CreatePers
 }
 
 export function useCreatePersonalAccount() {
-  const { getToken, isLoaded } = useAuth();
+  const clerk = useClerk();
   const { trigger, ...rest } = useSWRMutation("create-personal-account", CreatePersonalAccountFetcher);
 
   // Wrapper trigger yang otomatis inject getToken dari Clerk
-  const wrappedTrigger = (data: TriggerInput) => {
-    if (!isLoaded) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
-    return trigger({ ...data, getToken });
-  };
+  const wrappedTrigger = (data: TriggerInput) => trigger({ ...data, clerk });
 
   return {
     ...rest,
     trigger: wrappedTrigger,
-    isReady: isLoaded,
   };
 }

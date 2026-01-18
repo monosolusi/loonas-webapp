@@ -24,7 +24,7 @@ export class AccountServiceImpl implements AccountService {
       const method = "GET";
 
       // It doesn't require an account because we use the token directly from clerk token.
-      const result = await this.http.request({ path, method, session }, { requireAccount: false });
+      const result = await this.http.request({ path, method, session });
       if (result.type === AccountType.PERSONAL) return PersonalAccountModel.fromJson(result);
       else if (result.type === AccountType.BUSINESS) return BusinessAccountModel.fromJson(result);
       else throw new ServerError(ErrorCodes.INVALID_INSTANCE);

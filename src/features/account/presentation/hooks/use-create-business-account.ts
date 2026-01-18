@@ -9,7 +9,7 @@ import {
   CreateBusinessAccountUseCaseParams,
 } from "@/features/account/domain/usecases/create-business-account";
 import { DataFailed } from "@/core/resources/data-state";
-import { useAuth } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
 import { HttpRequest } from "@/core/helpers/http-request";
@@ -42,12 +42,12 @@ type CreateBusinessAccountProps = {
 };
 
 type CreateBusinessAccountFetcherParams = CreateBusinessAccountProps & {
-  getToken: () => Promise<string | null>;
+  clerk: ReturnType<typeof useClerk>;
 };
 
 async function CreateBusinessAccountFetcher(_: string, { arg }: { arg: CreateBusinessAccountFetcherParams }) {
   // Input will be validated inside the Use Case. This is to split between domain and presentation.
-  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ getToken: arg.getToken }));
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: arg.clerk }));
   const accountRepository = new AccountRepositoryImpl(new AccountServiceImpl(new HttpRequest()));
   const create = new CreateBusinessAccountUseCase(accountRepository, sessionRepository);
   const createParams = new CreateBusinessAccountUseCaseParams({ company: arg.company, director: arg.director });
@@ -60,18 +60,14 @@ async function CreateBusinessAccountFetcher(_: string, { arg }: { arg: CreateBus
 }
 
 export function useCreateBusinessAccount() {
-  const { getToken, isLoaded } = useAuth();
+  const clerk = useClerk();
   const { trigger, ...rest } = useSWRMutation("create-business-account", CreateBusinessAccountFetcher);
 
   // Wrapper trigger yang otomatis inject getToken dari Clerk
-  const wrappedTrigger = (data: CreateBusinessAccountProps) => {
-    if (!isLoaded) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
-    return trigger({ ...data, getToken });
-  };
+  const wrappedTrigger = (data: CreateBusinessAccountProps) => trigger({ ...data, clerk });
 
   return {
     ...rest,
     trigger: wrappedTrigger,
-    isReady: isLoaded,
   };
 }

@@ -2,22 +2,32 @@ import { AccountTypeEntity, AccountTypeModel } from "@/features/account/domain/t
 import { SessionService } from "@/features/authentication/domain/sources/session";
 import { SessionModel } from "../models/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { useClerk } from "@clerk/nextjs";
+import { ClerkAccountModel } from "@/features/account/data/models/clerk-account.model";
 
 type ClerkSessionServiceConstructorParams = {
-  getToken: () => Promise<string | null>;
+  clerk: ReturnType<typeof useClerk>;
 };
 
 export class ClerkSessionService implements SessionService {
-  private readonly getToken: () => Promise<string | null>;
+  private readonly clerk: ReturnType<typeof useClerk>;
 
   constructor(args: ClerkSessionServiceConstructorParams) {
-    this.getToken = args.getToken;
+    this.clerk = args.clerk;
     Object.freeze(this);
   }
 
-  async retrieve(): Promise<SessionModel> {
-    const token = await this.getToken();
+  public async retrieve(): Promise<SessionModel> {
+    if (!this.clerk.session) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+
+    const token = await this.clerk.session.getToken();
     if (!token) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+
+    if (this.clerk.organization) {
+      const selectedAccount = new ClerkAccountModel({ id: this.clerk.organization.id });
+      return new SessionModel({ accessToken: token, selectedAccount });
+    }
+
     return new SessionModel({ accessToken: token });
   }
 

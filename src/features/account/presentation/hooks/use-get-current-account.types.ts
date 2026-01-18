@@ -1,9 +1,10 @@
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 import { KeyedMutator } from "swr";
 import { ServerError } from "@/core/resources/server-error";
+import { useClerk } from "@clerk/nextjs";
 
 export type GetAccountFetcherParams = {
-  getToken: () => Promise<string | null>;
+  clerk: ReturnType<typeof useClerk>;
 };
 
 type InitalState = {

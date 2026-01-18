@@ -1,5 +1,5 @@
 import { useClerk } from "@clerk/nextjs";
 
-export type GetUserStatusFetcherParams = {
+export type ListPartnerFetcherParams = {
   clerk: ReturnType<typeof useClerk>;
 };
