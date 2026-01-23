@@ -7,14 +7,14 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { EmailInput } from "@/core/presentations/components/email-input";
+import { EmailInput } from "@/core/presentations/components/text-inputs/email-input";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { DataFailed } from "@/core/resources/data-state";
 import { useRouter } from "next/navigation";
 import {
   SendPasswordResetEmailUseCase,
-  SendPasswordResetEmailUseCaseParams
+  SendPasswordResetEmailUseCaseParams,
 } from "../../../features/authentication/domain/usecases/send-password-reset-email";
 import { AuthServiceImpl } from "@/features/authentication/data/sources/auth";
 import { AuthRepositoryImpl } from "@/features/authentication/data/repositories/auth";
@@ -56,9 +56,7 @@ export default function ResetPasswordPage() {
           src="https://res.cloudinary.com/monosolusi/image/upload/v1740993366/loonas/web-assets/loonas-logo_rspb5c.svg"
           className="mx-auto h-12 w-auto"
         />
-        <h2 className="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-          Bikin Password Baru!
-        </h2>
+        <h2 className="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Bikin Password Baru!</h2>
       </div>
 
       <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-[480px]">
@@ -71,7 +69,7 @@ export default function ResetPasswordPage() {
 
         <p className="mt-10 text-center text-sm/6 text-gray-500">
           Berubah Pikiran?{" "}
-          <Link href="/sign-in" className="font-semibold text-primary-600 hover:text-primary-500">
+          <Link href="/sign-in" className="text-primary-600 hover:text-primary-500 font-semibold">
             Coba Masuk Lagi
           </Link>
         </p>

@@ -1,4 +1,10 @@
-export type Step = "select-client" | "select-client.create-new" | "invoices";
+export type Step =
+  | "select-client"
+  | "select-client.create-new"
+  | "invoices"
+  | "client-bank-account"
+  | "client-bank-account.create-new"
+  | "select-payment-method";
 
 export type CreateIncomingInvoiceStepsProviderProps = {
   children: React.ReactNode;

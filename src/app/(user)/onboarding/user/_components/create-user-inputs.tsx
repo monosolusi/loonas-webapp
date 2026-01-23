@@ -1,8 +1,8 @@
 "use client";
 
-import { TextInput } from "@/core/presentations/components/text-input";
+import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import Image from "next/image";
-import { PasswordInput } from "@/core/presentations/components/password-input";
+import { PasswordInput } from "@/core/presentations/components/text-inputs/password-input";
 import React from "react";
 import { useCreateUser } from "@/app/(user)/onboarding/user/_providers/create-user";
 

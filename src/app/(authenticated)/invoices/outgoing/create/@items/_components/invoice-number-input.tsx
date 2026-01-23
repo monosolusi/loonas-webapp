@@ -1,7 +1,5 @@
-import { TextInput } from "@/core/presentations/components/text-input";
-import {
-  useCreateOutgoingInvoice
-} from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
+import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 
 export function InvoiceNumberInput() {
   const { invoiceNumber, setInvoiceNumber } = useCreateOutgoingInvoice();

@@ -57,7 +57,7 @@ export function CreateNewPartnerProvider(props: CreateNewPartnerProviderProps) {
   );
 }
 
-export function useCreateNewPartner() {
+export function useCreateNewPartnerProvider() {
   const context = useContext(CreateNewPartnerContext);
   if (!context) throw new ServerError(ErrorCodes.INVALID_HOOK_CALL);
   return context;

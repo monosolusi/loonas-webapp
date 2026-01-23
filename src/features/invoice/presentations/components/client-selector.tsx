@@ -2,7 +2,7 @@
 
 import { Selector } from "@/features/invoice/presentations/components/selector";
 import { SelectorItem } from "@/features/invoice/presentations/components/selector-item";
-import { useListPartnerProvider } from "@/features/invoice/presentations/providers/list-partner";
+import { useListPartnerProvider } from "@/features/partner/presentation/providers/list-partner";
 import { useCreateIncomingInvoiceProvider } from "@/features/invoice/presentations/providers/create-incoming-invoice";
 
 export function ClientSelector() {

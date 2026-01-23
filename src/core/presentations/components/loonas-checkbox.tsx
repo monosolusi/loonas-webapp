@@ -1,15 +1,9 @@
 import { Checkbox, Field } from "@headlessui/react";
 import React from "react";
-
-interface LoonasCheckboxProps {
-  checked: boolean;
-  onChange?: (checked: boolean) => void | Promise<void>;
-  children?: React.ReactNode;
-  disabled?: boolean;
-}
+import { LoonasCheckboxProps } from "@/core/presentations/components/loonas-checkbox.types";
 
 export function LoonasCheckbox(props: LoonasCheckboxProps) {
-  const handleLabelClick = () => {
+  const onLabelClick = () => {
     if (!props.onChange) return;
     props.onChange(!props.checked);
   };
@@ -20,7 +14,7 @@ export function LoonasCheckbox(props: LoonasCheckboxProps) {
         checked={props.checked}
         onChange={props.onChange}
         disabled={props.disabled}
-        className="group data-[checked]:bg-primary-default data-[checked]:border-primary-default mt-1 flex size-5 flex-row items-center justify-center rounded-sm border-1 border-gray-500 bg-white disabled:border-gray-200 data-[disabled]:border-gray-200 data-[disabled]:bg-gray-50"
+        className="group data-[checked]:bg-primary-300 data-[checked]:border-primary-300 mt-1 flex size-5 flex-row items-center justify-center rounded-sm border-1 border-gray-500 bg-white disabled:border-gray-200 data-[disabled]:border-gray-200 data-[disabled]:bg-gray-50"
       >
         <svg
           fill="none"
@@ -36,7 +30,7 @@ export function LoonasCheckbox(props: LoonasCheckboxProps) {
           />
         </svg>
       </Checkbox>
-      <div className="flex-1 select-none" onClick={handleLabelClick}>
+      <div className="flex-1 select-none" onClick={onLabelClick}>
         {props.children}
       </div>
     </Field>

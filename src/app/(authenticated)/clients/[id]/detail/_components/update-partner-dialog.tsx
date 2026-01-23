@@ -1,7 +1,7 @@
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ErrorCard } from "@/core/presentations/components/error-card";
-import { TextInput } from "@/core/presentations/components/text-input";
-import { EmailInput } from "@/core/presentations/components/email-input";
+import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
+import { EmailInput } from "@/core/presentations/components/text-inputs/email-input";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import React from "react";
 import { ServerError } from "@/core/resources/server-error";
@@ -67,7 +67,7 @@ export function UpdatePartnerDialog(props: UpdatePartnerDialogProps) {
         id: props.existingData.id,
         name: name,
         email: email,
-        phone: formattedPhone
+        phone: formattedPhone,
       });
 
       setLoading(false);
@@ -87,10 +87,10 @@ export function UpdatePartnerDialog(props: UpdatePartnerDialogProps) {
         <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
           <DialogPanel
             transition
-            className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 w-full sm:max-w-sm sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
+            className="relative w-full transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:max-w-sm sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
           >
             <div className="sm:flex sm:items-start">
-              <div className="flex-1 mt-3 sm:mt-0 sm:ml-4 sm:text-left">
+              <div className="mt-3 flex-1 sm:mt-0 sm:ml-4 sm:text-left">
                 <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
                   Perbarui Klien
                 </DialogTitle>
@@ -129,9 +129,7 @@ export function UpdatePartnerDialog(props: UpdatePartnerDialogProps) {
             </div>
             <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
               <div className="ml-3">
-                <FilledButton loading={loading}>
-                  Perbarui Klien
-                </FilledButton>
+                <FilledButton loading={loading}>Perbarui Klien</FilledButton>
               </div>
               <button
                 type="button"

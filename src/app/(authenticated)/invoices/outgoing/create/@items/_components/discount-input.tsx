@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { TextInput } from "@/core/presentations/components/text-input";
+import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { TextInputWithRightAddOn } from "@/core/presentations/components/text-input-with-right-add-on";
 import { TextInputWithLeftAddOn } from "@/core/presentations/components/text-input-with-left-add-on";
 import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";

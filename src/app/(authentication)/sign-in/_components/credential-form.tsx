@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import React from "react";
-import { TextInput } from "@/core/presentations/components/text-input";
-import { PasswordInput } from "@/core/presentations/components/password-input";
+import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
+import { PasswordInput } from "@/core/presentations/components/text-inputs/password-input";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useSignInProvider } from "@/features/authentication/presentation/providers/sign-in";
 

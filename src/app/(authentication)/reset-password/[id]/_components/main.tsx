@@ -5,10 +5,10 @@ import { AuthServiceImpl } from "@/features/authentication/data/sources/auth";
 import { AuthRepositoryImpl } from "@/features/authentication/data/repositories/auth";
 import {
   SubmitNewPasswordUseCase,
-  SubmitNewPasswordUseCaseParams
+  SubmitNewPasswordUseCaseParams,
 } from "@/features/authentication/domain/usecases/submit-new-password";
 import { DataFailed } from "@/core/resources/data-state";
-import { PasswordInput } from "@/core/presentations/components/password-input";
+import { PasswordInput } from "@/core/presentations/components/text-inputs/password-input";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";

@@ -1,14 +1,14 @@
 "use client";
 
 import { useCreateIncomingInvoiceSteps } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
-import { TextInput } from "@/core/presentations/components/text-input";
-import { EmailInput } from "@/core/presentations/components/email-input";
-import PhoneNumberInput from "@/core/presentations/components/phone-number-input";
-import { useCreateNewPartner } from "@/features/partner/presentation/providers/create-new-partner";
+import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
+import { EmailInput } from "@/core/presentations/components/text-inputs/email-input";
+import PhoneNumberInput from "@/core/presentations/components/text-inputs/phone-number-input";
+import { useCreateNewPartnerProvider } from "@/features/partner/presentation/providers/create-new-partner";
 
 export default function AddClientPage() {
   const { currentStep } = useCreateIncomingInvoiceSteps();
-  const { name, email, phone, setName, setEmail, setPhone } = useCreateNewPartner();
+  const { name, email, phone, setName, setEmail, setPhone } = useCreateNewPartnerProvider();
 
   if (currentStep !== "select-client.create-new") return null;
   return (

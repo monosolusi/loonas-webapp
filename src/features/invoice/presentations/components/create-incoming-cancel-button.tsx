@@ -3,8 +3,9 @@
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { useCreateIncomingInvoiceSteps } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 import { useRouter } from "next/navigation";
+import { Step } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps.types";
 
-const VISIBLE_STATE: string[] = ["select-client"];
+const VISIBLE_STATE: Step[] = ["select-client"];
 
 export function CreateIncomingCancelButton() {
   const { currentStep } = useCreateIncomingInvoiceSteps();

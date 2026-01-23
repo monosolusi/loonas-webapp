@@ -1,6 +1,5 @@
 "use client";
 
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { BankServiceImpl } from "@/features/bank/data/sources/bank";
 import { BankRepositoryImpl } from "@/features/bank/data/repositories/bank";
@@ -9,12 +8,13 @@ import { BankEntity } from "@/features/bank/domain/entities/bank";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import useSWR from "swr";
+import { ListBankFetcherParams } from "@/features/bank/presentation/hooks/use-list-bank.types";
+import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
+import { useClerk } from "@clerk/nextjs";
 
-async function listBank(): Promise<BankEntity[]> {
-  const sessionService = new LocalStorageSessionService();
-  const sessionRepository = new SessionRepositoryImpl(sessionService);
-  const bankService = new BankServiceImpl();
-  const bankRepository = new BankRepositoryImpl(bankService);
+async function ListBankFetcher([, params]: [string, ListBankFetcherParams]): Promise<BankEntity[]> {
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
+  const bankRepository = new BankRepositoryImpl(new BankServiceImpl());
   const listBanks = new ListBanksUseCase(bankRepository, sessionRepository);
 
   const result = await listBanks.execute();
@@ -24,11 +24,12 @@ async function listBank(): Promise<BankEntity[]> {
 }
 
 export function useListBank() {
-  const { data, error, isLoading } = useSWR("list-bank", listBank);
+  const clerk = useClerk();
+  const { data, error, isLoading } = useSWR(["list-bank", { clerk }], ListBankFetcher);
 
   return {
     banks: data ?? [],
     loading: isLoading,
-    error: error
+    error: error,
   };
 }

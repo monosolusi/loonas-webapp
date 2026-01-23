@@ -64,6 +64,15 @@ import {
   Step,
 } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps.types";
 
+export const STEP_MAP: Record<Step, { next: Step | null; prev: Step | null }> = {
+  ["select-client"]: { next: "invoices", prev: null },
+  ["select-client.create-new"]: { next: null, prev: null },
+  ["invoices"]: { next: "client-bank-account", prev: "select-client" },
+  ["client-bank-account"]: { next: "select-payment-method", prev: "invoices" },
+  ["client-bank-account.create-new"]: { next: null, prev: null },
+  ["select-payment-method"]: { next: null, prev: "client-bank-account" },
+};
+
 const CreateIncomingInvoiceStepsContext = React.createContext<CreateIncomingInvoiceStepsContextProps>({
   currentStep: "select-client",
 });

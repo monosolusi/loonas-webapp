@@ -1,24 +1,16 @@
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import React from "react";
+import { LoonasDialogProps } from "@/core/presentations/components/loonas-dialog.types";
 
-interface LoonasdialogProps {
-  children?: React.ReactNode;
-  title?: string;
-  width?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl" | "full";
-  open: boolean;
-  onClose?: (() => void) | (() => Promise<void>);
-  allowDismiss?: boolean;
-}
-
-export function LoonasDialog(props: LoonasdialogProps) {
-  const handleClose = (_: boolean) => {
-    const allowDismis = (props.allowDismiss === undefined? true : props.allowDismiss);
-    if (!allowDismis) return;
+export function LoonasDialog(props: LoonasDialogProps) {
+  const onClose = (_: boolean) => {
+    const allowDismiss = props.allowDismiss === undefined ? true : props.allowDismiss;
+    if (!allowDismiss) return;
     if (props.onClose) props.onClose();
   };
 
   return (
-    <Dialog open={props.open} onClose={handleClose} className="relative z-10">
+    <Dialog open={props.open} onClose={onClose} className="relative z-10">
       <DialogBackdrop
         className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
         transition

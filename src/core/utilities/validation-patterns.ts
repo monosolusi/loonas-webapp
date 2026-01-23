@@ -1,6 +1,7 @@
 // src/core/utils/validation-patterns.ts
 
 import Joi from "joi";
+import { DateTime } from "luxon";
 
 /**
  * Password must contain:
@@ -49,4 +50,8 @@ export const isNonEmptyString = (v: unknown): v is string => typeof v === "strin
  */
 export const isValidFile = (value: unknown, maxSizeInBytes: number = 1024 * 1024 * 5): value is File => {
   return !!value && value instanceof File && value.size > 0 && value.size <= maxSizeInBytes;
+};
+
+export const isValidDateTime = (value: DateTime) => {
+  return value.isValid;
 };

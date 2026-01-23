@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { TextInputWithLeftAddOn } from "@/core/presentations/components/text-input-with-left-add-on";
-import { TextInput } from "@/core/presentations/components/text-input";
+import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 
