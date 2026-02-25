@@ -1,24 +1,10 @@
-// import React from "react";
-// import { PaymentRequestProvider } from "@/features/payment/presentations/providers/payment-request";
-// import {
-//   DisbursementStatusPageImpl
-// } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/page-impl";
-//
-//
-// export default async function DisbursementStatusPage({ params }: { params: Promise<{ id: string }> }) {
-//   const { id } = await params;
-//
-//   return (
-//     <PaymentRequestProvider requestId={id}>
-//       <DisbursementStatusPageImpl />
-//     </PaymentRequestProvider>
-//   );
-// }
-
 import {PrimaryButton} from "@/core/presentations/components/buttons/primary-button";
 import {CreateIncomingSteppers} from "@/features/invoice/presentations/components/create-incoming-steppers";
+import {SectionCard} from "@/core/presentations/components/section-card";
 import Image from "next/image";
 import {IDRFormatter} from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import {InvoiceRowItem} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/invoice-row-item";
+import {StatusBanner} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/status-banner";
 import {TimelineItem} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/timeline-item";
 
 export default function DisbursementStatusPage() {
@@ -53,37 +39,17 @@ export default function DisbursementStatusPage() {
                 </div>
 
                 {/*  Status With Total Amount */}
-                <div className="flex flex-row items-center justify-between rounded-lg border border-neutral-200 bg-white p-6">
-                  {/*  Status & Icon */}
-                  <div className="flex flex-row gap-x-4">
-                    <div className="flex size-12 flex-row items-center justify-center rounded-full border border-black/5 bg-white/60 shadow">
-                      <Image src="/assets/images/clock-icon-neutral-300-w20-h20.svg" alt="" width={20} height={20} />
-                    </div>
-                    <div className="flex flex-col gap-y-1">
-                      <div className="leading-5 font-bold">Menunggu Pembayaran</div>
-                      <div className="text-sm leading-5 font-semibold">Silahkan selesaikan pembayaran</div>
-                    </div>
-                  </div>
-
-                  {/*  Total Amount */}
-                  <div className="flex flex-col gap-y-1 text-right">
-                    <div className="text-xs leading-4 font-semibold tracking-tight uppercase">Total Nominal</div>
-                    <div className="text-xl leading-5 font-bold tracking-tight">
-                      {IDRFormatter.toCurrency(10000000)}
-                    </div>
-                  </div>
-                </div>
+                <StatusBanner
+                  variant="pending"
+                  iconSrc="/assets/images/clock-icon-neutral-300-w20-h20.svg"
+                  title="Menunggu Pembayaran"
+                  description="Silahkan selesaikan pembayaran"
+                  totalAmount={IDRFormatter.toCurrency(10000000)}
+                />
 
                 {/*  Status Timeline */}
-                <div className="flex flex-col rounded-lg border border-neutral-200 bg-white">
-                  {/*  Card Title */}
-                  <div className="flex flex-row items-center gap-x-2 border-b border-b-neutral-100 px-6 py-4">
-                    <Image src="/assets/images/shield-icon-primary-w16-h16.svg" alt="" width={16} height={16} />
-                    <div className="leading-6 font-semibold">Status Transaksi</div>
-                  </div>
-
-                  {/*  Timeline Items */}
-                  <div className="flex flex-col gap-y-8 p-6">
+                <SectionCard iconSrc="/assets/images/shield-icon-primary-w16-h16.svg" title="Status Transaksi">
+                  <div className="flex flex-col gap-y-8">
                     <TimelineItem
                       state="past"
                       title="Menunggu Pembayaran"
@@ -112,7 +78,71 @@ export default function DisbursementStatusPage() {
                       iconSrc="/assets/images/money-icon-neutral-300-w18-h18.svg"
                     />
                   </div>
-                </div>
+                </SectionCard>
+
+                {/*  Payment Information */}
+                <SectionCard
+                  iconSrc="/assets/images/wallet-icon-primary-300-w16-h16.svg"
+                  title="Informasi Pembayaran"
+                  bodyClassName="p-0"
+                >
+                  <div className="flex flex-row">
+                    <div className="flex flex-1 flex-col gap-y-4 border-r border-r-neutral-100 p-6">
+                      <div className="flex flex-col gap-y-1">
+                        <div className="text-xs leading-4 text-neutral-300">Metode Bayar</div>
+                        <div className="leading-5 font-medium">QRIS</div>
+                      </div>
+
+                      <div className="flex flex-col gap-y-1">
+                        <div className="text-xs leading-4 text-neutral-300">Waktu Transaksi</div>
+                        <div className="leading-5 font-medium">25 Februari 2026, 19:48 WIB</div>
+                      </div>
+
+                      <div className="flex flex-col gap-y-1">
+                        <div className="text-xs leading-4 text-neutral-300">Client</div>
+                        <div className="leading-5 font-medium">PT Sumber Makmur</div>
+                      </div>
+                    </div>
+                    <div className="flex flex-1 flex-col gap-y-4 p-6">
+                      <div className="flex flex-col gap-y-1">
+                        <div className="text-xs leading-4 text-neutral-300">Bank Penerima</div>
+                        <div className="leading-5 font-medium">Bank Central Asia</div>
+                      </div>
+
+                      <div className="flex flex-col gap-y-1">
+                        <div className="text-xs leading-4 text-neutral-300">Nomor Rekening</div>
+                        <div className="leading-5 font-medium">00000000000000000000</div>
+                      </div>
+
+                      <div className="flex flex-col gap-y-1">
+                        <div className="text-xs leading-4 text-neutral-300">Atas Nama</div>
+                        <div className="leading-5 font-medium">Finance Sumber Makmur Sejati</div>
+                      </div>
+                    </div>
+                  </div>
+                </SectionCard>
+
+                {/*  Invoice Information */}
+                <SectionCard
+                  title="Rincian Faktur"
+                  iconSrc="/assets/images/document-icon-primary-300-w16-h16.svg"
+                  bodyClassName="p-0"
+                >
+                  <div className="flex flex-col">
+                    <InvoiceRowItem
+                      number={1}
+                      invoiceNumber="INV/2023/10/001"
+                      amount="Rp 5.000.000"
+                      date="01 Oktober 2023"
+                    />
+                    <InvoiceRowItem
+                      number={2}
+                      invoiceNumber="INV/2023/10/002"
+                      amount="Rp 5.000.000"
+                      date="01 Oktober 2023"
+                    />
+                  </div>
+                </SectionCard>
               </div>
             </div>
 
