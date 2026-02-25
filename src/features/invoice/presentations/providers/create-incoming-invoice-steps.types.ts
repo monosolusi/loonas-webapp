@@ -4,7 +4,9 @@ export type Step =
   | "invoices"
   | "client-bank-account"
   | "client-bank-account.create-new"
-  | "select-payment-method";
+  | "select-payment-method"
+  | "payment"
+  | "invoice-created";
 
 export type CreateIncomingInvoiceStepsProviderProps = {
   children: React.ReactNode;

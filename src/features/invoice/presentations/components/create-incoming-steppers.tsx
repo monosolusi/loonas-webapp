@@ -1,12 +1,18 @@
 "use client";
 
 import { CreateInvoiceStepper } from "@/features/invoice/presentations/components/create-invoice-stepper";
-import { useCreateIncomingInvoiceSteps } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 import { Step } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps.types";
 import { useMemo } from "react";
 import { State } from "@/features/invoice/presentations/components/create-invoice-stepper.types";
+import { CreateIncomingSteppersProps } from "@/features/invoice/presentations/components/create-incoming-steppers.types";
 
-type Stepper = "select-client" | "invoices" | "client-bank-account" | "select-payment-method";
+type Stepper =
+  | "select-client"
+  | "invoices"
+  | "client-bank-account"
+  | "select-payment-method"
+  | "payment"
+  | "invoice-created";
 
 type StepperValue = {
   active: Step[];
@@ -17,32 +23,51 @@ type StepperValue = {
 const STEPPER_STATE: Record<Stepper, StepperValue> = {
   "select-client": {
     active: ["select-client", "select-client.create-new"],
-    completed: ["invoices", "client-bank-account", "client-bank-account.create-new", "select-payment-method"],
+    completed: [
+      "invoices",
+      "client-bank-account",
+      "client-bank-account.create-new",
+      "select-payment-method",
+      "payment",
+      "invoice-created",
+    ],
   },
   invoices: {
     active: ["invoices"],
-    completed: ["client-bank-account", "client-bank-account.create-new", "select-payment-method"],
+    completed: [
+      "client-bank-account",
+      "client-bank-account.create-new",
+      "select-payment-method",
+      "payment",
+      "invoice-created",
+    ],
   },
   "client-bank-account": {
     active: ["client-bank-account", "client-bank-account.create-new"],
-    completed: ["select-payment-method"],
+    completed: ["select-payment-method", "payment", "invoice-created"],
   },
   "select-payment-method": {
     active: ["select-payment-method"],
+    completed: ["payment", "invoice-created"],
+  },
+  payment: {
+    active: ["payment"],
+    completed: ["invoice-created"],
+  },
+  "invoice-created": {
+    active: ["invoice-created"],
     completed: [],
   },
 };
 
-export function CreateIncomingSteppers() {
-  const { currentStep } = useCreateIncomingInvoiceSteps();
-
+export function CreateIncomingSteppers(props: CreateIncomingSteppersProps) {
   const stepperState = useMemo(() => {
     return (stepper: Stepper): State => {
-      if (STEPPER_STATE[stepper].completed.includes(currentStep)) return "completed";
-      if (STEPPER_STATE[stepper].active.includes(currentStep)) return "active";
+      if (STEPPER_STATE[stepper].completed.includes(props.currentStep)) return "completed";
+      if (STEPPER_STATE[stepper].active.includes(props.currentStep)) return "active";
       return "default";
     };
-  }, [currentStep]);
+  }, [props.currentStep]);
 
   return (
     <div className="w-[280px] border-r border-neutral-200 px-6 py-8">
@@ -94,6 +119,7 @@ export function CreateIncomingSteppers() {
             default: "/assets/images/dollar-icon-neutral-400-w16-h16.svg",
             active: "/assets/images/dollar-icon-primary-300-w16-h16.svg",
           }}
+          state={stepperState("payment")}
         />
 
         <CreateInvoiceStepper
@@ -103,6 +129,7 @@ export function CreateIncomingSteppers() {
             default: "/assets/images/check-circle-icon-neutral-400-w16-h16.svg",
             active: "/assets/images/check-circle-icon-primary-300-w16-h16.svg",
           }}
+          state={stepperState("invoice-created")}
         />
       </div>
     </div>

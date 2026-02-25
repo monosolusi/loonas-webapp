@@ -6,13 +6,13 @@ import { CreateNewPartnerProvider } from "@/features/partner/presentation/provid
 import { CreateClientCancelButton } from "@/features/invoice/presentations/components/create-client-cancel-button";
 import { CreateIncomingCancelButton } from "@/features/invoice/presentations/components/create-incoming-cancel-button";
 import { CreateIncomingInvoiceProvider } from "@/features/invoice/presentations/providers/create-incoming-invoice";
-import { CreateIncomingSteppers } from "@/features/invoice/presentations/components/create-incoming-steppers";
 import { CreateIncomingBackButton } from "@/features/invoice/presentations/components/create-incoming-back-button";
 import { CreatePartnerBankAccountCancelButton } from "@/features/invoice/presentations/components/create-partner-bank-account-cancel-button";
 import { VerifyBankAccountButton } from "@/features/invoice/presentations/components/verify-bank-account-button";
 import { CreatePartnerBankAccountWrapperForIncomingInvoice } from "@/features/invoice/presentations/providers/create-partner-bank-account-wrapper-for-incoming-invoice";
 import { CreateBankAccountButton } from "@/features/invoice/presentations/components/create-bank-account-button";
 import { CreateIncomingSaveButton } from "@/features/invoice/presentations/components/create-incoming-save-button";
+import { CreateIncomingSteppersWrapperForCreateIncomingPage } from "@/features/invoice/presentations/components/create-incoming-steppers-wrapper-for-create-incoming-page";
 
 export default function CreateIncomingInvoiceLayout(props: CreateIncomingInvoiceLayoutProps) {
   return (
@@ -34,7 +34,7 @@ export default function CreateIncomingInvoiceLayout(props: CreateIncomingInvoice
               <div className="rounded-lg border border-neutral-200">
                 <div className="flex flex-row">
                   {/*  Left - Progress */}
-                  <CreateIncomingSteppers />
+                  <CreateIncomingSteppersWrapperForCreateIncomingPage />
 
                   {/*  Right - Content */}
                   <div className="flex flex-1 flex-col">
