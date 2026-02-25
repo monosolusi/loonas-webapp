@@ -1,5 +1,8 @@
 import clsx from "clsx";
 
+/**
+ * @deprecated Use `SectionCard` from `@/core/presentations/components/section-card` instead.
+ */
 interface CardProps {
   children?: React.ReactNode;
   className?: string;
@@ -7,6 +10,9 @@ interface CardProps {
   effect?: { hover?: boolean; selectable?: boolean };
 }
 
+/**
+ * @deprecated Use `SectionCard` from `@/core/presentations/components/section-card` instead.
+ */
 export function Card(props: CardProps) {
   return (
     <div
