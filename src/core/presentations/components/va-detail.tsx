@@ -1,9 +1,10 @@
 "use client";
 
 import { ClipboardDocumentIcon } from "@heroicons/react/24/outline";
-import React, { useState } from "react";
+import React from "react";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { CurrencyDisplay } from "./currency-display";
+import { useCopyToClipboard } from "@/core/presentations/hooks/use-copy-to-clipboard";
 
 interface VirtualAccountDetailBoxProps {
   logoUrl: string;
@@ -13,13 +14,7 @@ interface VirtualAccountDetailBoxProps {
 }
 
 export function VirtualAccountDetailBox(props: VirtualAccountDetailBoxProps) {
-  const [copied, setCopied] = useState(false);
-
-  const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(props.accountNumber);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const { copied, copy } = useCopyToClipboard();
 
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-6">
@@ -39,7 +34,7 @@ export function VirtualAccountDetailBox(props: VirtualAccountDetailBoxProps) {
         <div className="flex flex-1 items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4">
           <span className="font-mono text-lg font-bold">{props.accountNumber}</span>
           <button
-            onClick={copyToClipboard}
+            onClick={() => copy(props.accountNumber)}
             className="text-primary-default hover:text-primary-800 flex cursor-pointer items-center"
           >
             <ClipboardDocumentIcon className="mr-1 h-5 w-5" />

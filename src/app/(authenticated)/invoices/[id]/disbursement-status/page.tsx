@@ -8,9 +8,11 @@ import {InvoiceRowItem} from "@/app/(authenticated)/invoices/[id]/disbursement-s
 import {StatusBannerImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/status-banner-impl";
 import {TimelineItem} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/timeline-item";
 import {useParams} from "next/navigation";
+import {useCopyToClipboard} from "@/core/presentations/hooks/use-copy-to-clipboard";
 
 export default function DisbursementStatusPage() {
   const { id } = useParams<{ id: string }>();
+  const { copy } = useCopyToClipboard();
   return (
     <div className="flex flex-col gap-y-8">
       {/* Title & Description */}
@@ -35,7 +37,7 @@ export default function DisbursementStatusPage() {
                   <div className="text-2xl leading-8 font-bold tracking-tighter">Detail Transaksi</div>
                   <div className="flex flex-row items-center gap-x-2 rounded-lg border border-neutral-200 bg-neutral-100 px-3 py-2">
                     <div className="text-xs leading-4">ID: {id}</div>
-                    <div className="cursor-pointer">
+                    <div className="cursor-pointer" onClick={() => copy(id)}>
                       <Image src="/assets/images/copy-icon-neutral-500-w12-h12.svg" alt="" width={12} height={12} />
                     </div>
                   </div>
