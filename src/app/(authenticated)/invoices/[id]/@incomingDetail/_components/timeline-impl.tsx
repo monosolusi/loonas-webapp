@@ -2,7 +2,7 @@
 
 import { BanknotesIcon, ClockIcon, CreditCardIcon } from "@heroicons/react/20/solid";
 import { useParams } from "next/navigation";
-import { Timeline } from "../../disbursement-status/_components/timeline";
+import { Timeline } from "@/app/(authenticated)/invoices/[id]/@incomingDetail/_components/timeline";
 import { useGetIncomingInvoice } from "@/features/invoice/presentations/hooks/use-get-incoming-invoice";
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 
