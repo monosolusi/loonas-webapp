@@ -13,6 +13,7 @@ import { PublicOutgoingInvoiceEntity } from "../entities/public-outgoing-invoice
 import { PayInEntity } from "../entities/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import { PaymentMethodPayInDetailEntity } from "@/features/payment/domain/entities/payment-method-pay-in-detail-entity";
+import { InvoiceTimelineEntity } from "@/features/invoice/domain/entities/invoice-timeline";
 
 export interface InvoiceItem {
   name: string;
@@ -101,4 +102,6 @@ export interface InvoiceRepository {
     params: { invoice: { id: string } },
     session: SessionEntity,
   ): Promise<DataState<PaymentMethodPayInDetailEntity>>;
+
+  getTimeline(filter: { id: string }, session: SessionEntity): Promise<DataState<InvoiceTimelineEntity>>;
 }
