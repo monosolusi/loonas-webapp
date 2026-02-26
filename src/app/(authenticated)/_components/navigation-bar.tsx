@@ -3,7 +3,7 @@ import { NavigationItem } from "@/app/(authenticated)/_components/navigation-ite
 
 export function NavigationBar() {
   return (
-    <nav className="bg-background flex h-full w-[256px] flex-col gap-y-8 p-6">
+    <nav className="bg-background flex h-full w-[256px] flex-col gap-y-8 border-r border-r-neutral-200 p-6">
       <LogoImage className="h-auto w-24" />
       <div className="flex flex-1 flex-col gap-y-1">
         <NavigationItem
