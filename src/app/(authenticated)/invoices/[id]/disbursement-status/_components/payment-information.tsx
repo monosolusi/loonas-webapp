@@ -9,6 +9,15 @@ interface PaymentInformationProps {
   accountHolder: string;
 }
 
+function InfoField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-y-1">
+      <div className="text-xs leading-4 text-neutral-300">{label}</div>
+      <div className="leading-5 font-medium">{value}</div>
+    </div>
+  );
+}
+
 export function PaymentInformation(props: PaymentInformationProps) {
   return (
     <SectionCard
@@ -18,36 +27,14 @@ export function PaymentInformation(props: PaymentInformationProps) {
     >
       <div className="flex flex-row">
         <div className="flex flex-1 flex-col gap-y-4 border-r border-r-neutral-100 p-6">
-          <div className="flex flex-col gap-y-1">
-            <div className="text-xs leading-4 text-neutral-300">Metode Bayar</div>
-            <div className="leading-5 font-medium">{props.paymentMethod}</div>
-          </div>
-
-          <div className="flex flex-col gap-y-1">
-            <div className="text-xs leading-4 text-neutral-300">Waktu Transaksi</div>
-            <div className="leading-5 font-medium">{props.transactionDate}</div>
-          </div>
-
-          <div className="flex flex-col gap-y-1">
-            <div className="text-xs leading-4 text-neutral-300">Client</div>
-            <div className="leading-5 font-medium">{props.client}</div>
-          </div>
+          <InfoField label="Metode Bayar" value={props.paymentMethod} />
+          <InfoField label="Waktu Transaksi" value={props.transactionDate} />
+          <InfoField label="Client" value={props.client} />
         </div>
         <div className="flex flex-1 flex-col gap-y-4 p-6">
-          <div className="flex flex-col gap-y-1">
-            <div className="text-xs leading-4 text-neutral-300">Bank Penerima</div>
-            <div className="leading-5 font-medium">{props.bankName}</div>
-          </div>
-
-          <div className="flex flex-col gap-y-1">
-            <div className="text-xs leading-4 text-neutral-300">Nomor Rekening</div>
-            <div className="leading-5 font-medium">{props.accountNumber}</div>
-          </div>
-
-          <div className="flex flex-col gap-y-1">
-            <div className="text-xs leading-4 text-neutral-300">Atas Nama</div>
-            <div className="leading-5 font-medium">{props.accountHolder}</div>
-          </div>
+          <InfoField label="Bank Penerima" value={props.bankName} />
+          <InfoField label="Nomor Rekening" value={props.accountNumber} />
+          <InfoField label="Atas Nama" value={props.accountHolder} />
         </div>
       </div>
     </SectionCard>

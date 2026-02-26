@@ -58,8 +58,7 @@ export default function DisbursementStatusPage() {
             </div>
 
             {/*  Action Buttons */}
-            <div className="flex flex-row items-center justify-between border-t border-t-neutral-200 p-6">
-              <div className="flex"></div>
+            <div className="flex flex-row items-center justify-end border-t border-t-neutral-200 p-6">
               <div className="flex">
                 <PrimaryButton label="Lihat Faktur" />
               </div>
