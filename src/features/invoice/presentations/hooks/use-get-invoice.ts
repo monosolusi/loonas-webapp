@@ -1,25 +1,34 @@
+"use client";
+
 import { HttpRequest } from "@/core/helpers/http-request";
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { InvoiceRepositoryImpl } from "../../data/repositories/invoice";
 import { InvoiceServiceImpl } from "../../data/sources/invoice";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { GetInvoiceUseCase, GetInvoiceUseCaseParams } from "../../domain/usecases/get-invoice";
+import { GetInvoiceUseCase, GetInvoiceUseCaseParams } from "../../domain/usecases/get-invoice.usecases";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { DataFailed } from "@/core/resources/data-state";
 import useSWR from "swr";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
+import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
+import { useClerk } from "@clerk/nextjs";
+import {
+  GetInvoiceFetcherParams,
+  UseGetInvoiceParams,
+  UseGetInvoiceReturnType,
+} from "@/features/invoice/presentations/hooks/use-get-invoice.types";
 
-interface GetInvoiceFetcherParams {
-  id: string;
-  includes?: string;
-}
+const INITIAL_STATE: UseGetInvoiceReturnType = {
+  invoice: null,
+  loading: true,
+  error: null,
+};
 
 async function GetInvoiceFetcher([_, params]: [string, GetInvoiceFetcherParams]) {
-  const http = new HttpRequest();
-  const sessionService = new LocalStorageSessionService();
-  const invoiceService = new InvoiceServiceImpl(http);
-  const invoiceRepository = new InvoiceRepositoryImpl(invoiceService, new PayInDetailFactory());
-  const sessionRepository = new SessionRepositoryImpl(sessionService);
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
+  const invoiceRepository = new InvoiceRepositoryImpl(
+    new InvoiceServiceImpl(new HttpRequest()),
+    new PayInDetailFactory(),
+  );
 
   const get = new GetInvoiceUseCase(invoiceRepository, sessionRepository);
   const getParams = new GetInvoiceUseCaseParams({
@@ -34,12 +43,24 @@ async function GetInvoiceFetcher([_, params]: [string, GetInvoiceFetcherParams])
   return result.data;
 }
 
-export function useGetInvoice(params: GetInvoiceFetcherParams) {
-  const { data, isLoading, error } = useSWR(["get-invoice", params], GetInvoiceFetcher);
+export function useGetInvoice(params: UseGetInvoiceParams): UseGetInvoiceReturnType {
+  const clerk = useClerk();
+  const { data, isLoading, error } = useSWR(["get-invoice", { ...params, clerk }], GetInvoiceFetcher);
+
+  if (isLoading) return INITIAL_STATE;
+  if (error) {
+    return {
+      invoice: null,
+      loading: false,
+      error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
+    };
+  }
+
+  if (!data) return INITIAL_STATE;
 
   return {
     invoice: data,
-    loading: isLoading,
-    error: error,
+    loading: false,
+    error: null,
   };
 }

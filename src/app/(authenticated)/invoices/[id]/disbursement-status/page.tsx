@@ -1,13 +1,16 @@
+"use client";
+
 import {PrimaryButton} from "@/core/presentations/components/buttons/primary-button";
 import {CreateIncomingSteppers} from "@/features/invoice/presentations/components/create-incoming-steppers";
 import {SectionCard} from "@/core/presentations/components/section-card";
 import Image from "next/image";
-import {IDRFormatter} from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import {InvoiceRowItem} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/invoice-row-item";
-import {StatusBanner} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/status-banner";
+import {StatusBannerImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/status-banner-impl";
 import {TimelineItem} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/timeline-item";
+import {useParams} from "next/navigation";
 
 export default function DisbursementStatusPage() {
+  const { id } = useParams<{ id: string }>();
   return (
     <div className="flex flex-col gap-y-8">
       {/* Title & Description */}
@@ -31,7 +34,7 @@ export default function DisbursementStatusPage() {
                 <div className="flex flex-1 flex-col items-center gap-y-3">
                   <div className="text-2xl leading-8 font-bold tracking-tighter">Detail Transaksi</div>
                   <div className="flex flex-row items-center gap-x-2 rounded-lg border border-neutral-200 bg-neutral-100 px-3 py-2">
-                    <div className="text-xs leading-4">ID: 8f1a2b3c-4d5e-6f78-9012-34567890abcd</div>
+                    <div className="text-xs leading-4">ID: {id}</div>
                     <div className="cursor-pointer">
                       <Image src="/assets/images/copy-icon-neutral-500-w12-h12.svg" alt="" width={12} height={12} />
                     </div>
@@ -39,13 +42,7 @@ export default function DisbursementStatusPage() {
                 </div>
 
                 {/*  Status With Total Amount */}
-                <StatusBanner
-                  variant="pending"
-                  iconSrc="/assets/images/clock-icon-neutral-300-w20-h20.svg"
-                  title="Menunggu Pembayaran"
-                  description="Silahkan selesaikan pembayaran"
-                  totalAmount={IDRFormatter.toCurrency(10000000)}
-                />
+                <StatusBannerImpl id={id} />
 
                 {/*  Status Timeline */}
                 <SectionCard iconSrc="/assets/images/shield-icon-primary-w16-h16.svg" title="Status Transaksi">

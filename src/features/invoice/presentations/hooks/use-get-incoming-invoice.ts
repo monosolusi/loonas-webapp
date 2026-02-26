@@ -3,7 +3,7 @@ import { LocalStorageSessionService } from "@/features/authentication/data/sourc
 import { InvoiceRepositoryImpl } from "../../data/repositories/invoice";
 import { InvoiceServiceImpl } from "../../data/sources/invoice";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { GetInvoiceUseCase, GetInvoiceUseCaseParams } from "../../domain/usecases/get-invoice";
+import { GetInvoiceUseCase, GetInvoiceUseCaseParams } from "../../domain/usecases/get-invoice.usecases";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { DataFailed } from "@/core/resources/data-state";
 import useSWR from "swr";
@@ -34,6 +34,9 @@ async function GetIncomingInvoiceFetcher([_, params]: [string, GetIncomingInvoic
   return result.data;
 }
 
+/**
+ * @deprecated Use `useGetInvoice` from `@/features/invoice/presentations/hooks/use-get-invoice` instead.
+ */
 export function useGetIncomingInvoice(params: GetIncomingInvoiceFetcherParams) {
   const { data, isLoading, error } = useSWR(["get-incoming-invoice", params], GetIncomingInvoiceFetcher);
 
