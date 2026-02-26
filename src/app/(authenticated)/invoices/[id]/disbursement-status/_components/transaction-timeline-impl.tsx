@@ -5,18 +5,11 @@ import { SectionCard } from "@/core/presentations/components/section-card";
 import { TimelineItem } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/timeline-item";
 import { InvoiceTimelineStepEntity } from "@/features/invoice/domain/entities/invoice-timeline";
 
-const STEP_DESCRIPTIONS: Record<number, string> = {
-  1: "Silakan selesaikan pembayaran agar pesanan dapat diproses.",
-  2: "Terima kasih, dana Anda sudah masuk ke sistem kami.",
-  3: "Mohon tunggu, kami sedang memverifikasi dan mencairkan dana.",
-  4: "Selesai! Dana sudah berhasil dikirim ke rekening tujuan.",
-};
-
-const STEP_ICONS: Record<number, string> = {
-  1: "/assets/images/wallet-icon-neutral-500-w18-h18.svg",
-  2: "/assets/images/clock-icon-neutral-300-w20-h20.svg",
-  3: "/assets/images/progress-circle-icon-neutral-500-w28-h28.svg",
-  4: "/assets/images/money-icon-neutral-300-w18-h18.svg",
+const STEP_ICONS: Record<string, string> = {
+  INVOICE_CREATED: "/assets/images/wallet-icon-neutral-500-w18-h18.svg",
+  PAYMENT_RECEIVED: "/assets/images/clock-icon-neutral-300-w20-h20.svg",
+  DISBURSEMENT_PROCESSING: "/assets/images/progress-circle-icon-neutral-500-w28-h28.svg",
+  DISBURSEMENT_COMPLETED: "/assets/images/money-icon-neutral-300-w18-h18.svg",
 };
 
 function deriveState(step: InvoiceTimelineStepEntity, firstIncompleteStep: number | null): "past" | "current" | "future" {
@@ -62,8 +55,8 @@ export function TransactionTimelineImpl({ id }: TransactionTimelineImplProps) {
               key={step.step}
               state={state}
               title={step.name}
-              description={STEP_DESCRIPTIONS[step.step] ?? ""}
-              iconSrc={STEP_ICONS[step.step]}
+              description={step.description}
+              iconSrc={STEP_ICONS[step.status]}
               timestamp={step.completedAt ? step.completedAt.toFormat("dd LLL, HH:mm") : undefined}
             />
           );

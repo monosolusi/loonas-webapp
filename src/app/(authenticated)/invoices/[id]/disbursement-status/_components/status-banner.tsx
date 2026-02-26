@@ -1,10 +1,7 @@
-import Image from "next/image";
-
 type StatusBannerVariant = "pending" | "received" | "processing" | "completed";
 
 interface StatusBannerProps {
   variant: StatusBannerVariant;
-  iconSrc: string;
   title: string;
   description: string;
   totalAmount: string;
@@ -27,15 +24,10 @@ export function StatusBanner(props: StatusBannerProps) {
       {/* Decorative blur */}
       <div className="absolute right-0 top-[-16px] size-32 rounded-full bg-white/10 blur-[24px]" />
 
-      {/* Left: Icon + Text */}
-      <div className="flex flex-row items-center gap-x-4">
-        <div className="flex size-12 items-center justify-center rounded-full border border-black/5 bg-white/60">
-          <Image src={props.iconSrc} alt="" width={20} height={20} />
-        </div>
-        <div className="flex flex-col gap-y-1">
-          <div className="leading-5 font-bold">{props.title}</div>
-          <div className="text-sm leading-5 font-medium opacity-90">{props.description}</div>
-        </div>
+      {/* Left: Text */}
+      <div className="flex flex-col gap-y-1">
+        <div className="leading-5 font-bold">{props.title}</div>
+        <div className="text-sm leading-5 font-medium opacity-90">{props.description}</div>
       </div>
 
       {/* Right: Total Amount */}
