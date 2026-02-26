@@ -6,7 +6,7 @@ import {SectionCard} from "@/core/presentations/components/section-card";
 import Image from "next/image";
 import {InvoiceRowItem} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/invoice-row-item";
 import {StatusBannerImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/status-banner-impl";
-import {TimelineItem} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/timeline-item";
+import {TransactionTimelineImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/transaction-timeline-impl";
 import {useParams} from "next/navigation";
 
 export default function DisbursementStatusPage() {
@@ -45,37 +45,7 @@ export default function DisbursementStatusPage() {
                 <StatusBannerImpl id={id} />
 
                 {/*  Status Timeline */}
-                <SectionCard iconSrc="/assets/images/shield-icon-primary-w16-h16.svg" title="Status Transaksi">
-                  <div className="flex flex-col gap-y-8">
-                    <TimelineItem
-                      state="past"
-                      title="Menunggu Pembayaran"
-                      description="Silakan selesaikan pembayaran agar pesanan dapat diproses."
-                      timestamp="23 Jan, 12:02"
-                    />
-
-                    <TimelineItem
-                      state="current"
-                      title="Pembayaran Diterima"
-                      iconSrc="/assets/images/clock-icon-neutral-300-w20-h20.svg"
-                      description="Terima kasih, dana Anda sudah masuk ke sistem kami."
-                    />
-
-                    <TimelineItem
-                      state="future"
-                      title="Selesai Di Proses"
-                      description="Mohon tunggu, kami sedang memverifikasi dan mencairkan dana."
-                      iconSrc="/assets/images/clock-icon-neutral-300-w20-h20.svg"
-                    />
-
-                    <TimelineItem
-                      state="future"
-                      title="Dana Berhasil Dicairkan"
-                      description="Selesai! Dana sudah berhasil dikirim ke rekening tujuan."
-                      iconSrc="/assets/images/money-icon-neutral-300-w18-h18.svg"
-                    />
-                  </div>
-                </SectionCard>
+                <TransactionTimelineImpl id={id} />
 
                 {/*  Payment Information */}
                 <SectionCard
