@@ -1,5 +1,6 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { InvoiceModel } from "@/features/invoice/data/models/invoice";
+import { InvoiceTimelineModel } from "@/features/invoice/data/models/invoice-timeline";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { DateTime } from "luxon";
@@ -94,4 +95,6 @@ export interface InvoiceService {
   }): Promise<PayInModel>;
 
   send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void>;
+
+  getTimeline(filter: { id: string }, session: SessionEntity): Promise<InvoiceTimelineModel>;
 }

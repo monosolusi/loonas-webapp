@@ -18,6 +18,7 @@ import { PayInEntity } from "../../domain/entities/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import { PaymentMethodPayInDetailEntity } from "@/features/payment/domain/entities/payment-method-pay-in-detail-entity";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
+import { InvoiceTimelineEntity } from "../../domain/entities/invoice-timeline";
 
 export class InvoiceRepositoryImpl implements InvoiceRepository {
   constructor(
@@ -157,6 +158,16 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
         session,
       );
       return new DataSuccess(invoice.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async getTimeline(filter: { id: string }, session: SessionEntity): Promise<DataState<InvoiceTimelineEntity>> {
+    try {
+      const timeline = await this.invoiceService.getTimeline(filter, session);
+      return new DataSuccess(timeline.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

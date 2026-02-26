@@ -19,6 +19,7 @@ import { InvoiceSenderModel } from "@/features/invoice/data/models/invoice-sende
 import { InvoiceRecipientModel } from "@/features/invoice/data/models/invoice-recipient";
 import { PublicOutgoingInvoiceModel } from "../models/public-outgoing-invoice";
 import { PayInModel } from "../models/pay-in";
+import { InvoiceTimelineModel } from "../models/invoice-timeline";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 
 export class InvoiceServiceImpl implements InvoiceService {
@@ -182,6 +183,19 @@ export class InvoiceServiceImpl implements InvoiceService {
       if (finaliseResult.pdf) pdf = FileModel.fromJson(finaliseResult.pdf);
 
       return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature, summary, sender, pdf });
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async getTimeline(filter: { id: string }, session: SessionEntity): Promise<InvoiceTimelineModel> {
+    try {
+      const path = `/invoices/${filter.id}/timeline`;
+      const method = "GET";
+      const result = await this.http.request({ path, method, session });
+      if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      return InvoiceTimelineModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
