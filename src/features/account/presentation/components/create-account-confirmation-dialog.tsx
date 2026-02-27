@@ -4,7 +4,7 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/re
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import React from "react";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 
 interface CreateAccountConfirmationDialogProps {
   open: boolean;
@@ -59,9 +59,7 @@ export function CreateAccountConfirmationDialog(props: CreateAccountConfirmation
                   Setuju & Lanjutkan
                 </FilledButton>
               </div>
-              <OutlinedButton type="button" onClick={props.onCloseClick} disabled={props.loading}>
-                Cek Lagi
-              </OutlinedButton>
+              <SecondaryButton outlined type="button" label="Cek Lagi" onClick={props.onCloseClick} disabled={props.loading} />
             </div>
           </DialogPanel>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { useParams } from "next/navigation";
 import { useGetOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-outgoing-invoice";
 
@@ -36,5 +36,5 @@ export function DownloadPdfButton() {
     }
   };
 
-  return <OutlinedButton onClick={onDownload}>Download PDF</OutlinedButton>;
+  return <SecondaryButton outlined label="Download PDF" onClick={onDownload} />;
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { QtyInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/qty-input";
 import { PriceInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/price-input";
 import { TotalField } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/total-field";
@@ -96,9 +96,7 @@ export function AddItemDialog(props: AddItemDialogProps) {
             </div>
           </div>
           <div className="-mx-4 flex flex-row justify-end space-x-4 border-t border-gray-200 px-4 pt-4 sm:-mx-6 sm:px-6">
-            <OutlinedButton type="button" onClick={handleClose}>
-              Batal
-            </OutlinedButton>
+            <SecondaryButton outlined type="button" label="Batal" onClick={handleClose} />
             <SaveItemButton />
           </div>
         </AddItemForm>

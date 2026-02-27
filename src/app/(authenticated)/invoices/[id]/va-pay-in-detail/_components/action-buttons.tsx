@@ -1,5 +1,5 @@
 import { FilledButton } from "@/core/presentations/components/filled-button";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import React from "react";
 import { useRouter } from "next/navigation";
 
@@ -23,9 +23,7 @@ export function ActionButtons(props: ActionButtonsProps) {
       <FilledButton onClick={handlePaymentDone}>
         Sudah Bayar
       </FilledButton>
-      <OutlinedButton onClick={handlePayLater}>
-        Bayar Nanti
-      </OutlinedButton>
+      <SecondaryButton outlined label="Bayar Nanti" onClick={handlePayLater} />
     </div>
   );
 }

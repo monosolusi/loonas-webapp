@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 
 interface InvoiceDocumentListItem {
   number: number;
@@ -55,7 +55,7 @@ export function InvoiceDocumentList({ documents, totalAmount }: InvoiceDocumentL
                 <div className="flex flex-1 flex-col">
                   <span className="text-sm leading-5 font-medium">{doc.file.name}</span>
                 </div>
-                <OutlinedButton onClick={() => window.open(doc.file!.url, "_blank")}>Lihat</OutlinedButton>
+                <SecondaryButton outlined label="Lihat" onClick={() => window.open(doc.file!.url, "_blank")} />
               </div>
             </div>
           )}

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { PaymentConfigurationTableImpl } from "@/app/(authenticated)/invoices/outgoing/create/@payment/_components/payment-configuration-table-impl";
 import { NextButton } from "@/app/(authenticated)/invoices/outgoing/create/@payment/_components/next-button";
 
@@ -29,7 +29,7 @@ export default function PaymentSettingSection() {
           <PaymentConfigurationTableImpl />
         </div>
         <div className="mt-4 flex flex-1 flex-row justify-end gap-x-4">
-          <OutlinedButton>Simpan Draft</OutlinedButton>
+          <SecondaryButton outlined label="Simpan Draft" />
           <NextButton />
         </div>
       </div>

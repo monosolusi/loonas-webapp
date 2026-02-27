@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import React from "react";
 
 export function CancelButton() {
@@ -12,10 +12,6 @@ export function CancelButton() {
   };
 
   return (
-    <OutlinedButton
-      onClick={handleCancelClick}
-    >
-      Tidak Jadi
-    </OutlinedButton>
+    <SecondaryButton outlined label="Tidak Jadi" onClick={handleCancelClick} />
   );
 }

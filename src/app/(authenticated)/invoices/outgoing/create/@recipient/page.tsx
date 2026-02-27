@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { ClientTableImpl } from "@/app/(authenticated)/invoices/outgoing/create/@recipient/_components/client-table-impl";
 import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { NewClientButton } from "@/features/partner/presentation/components/new-client-button";
@@ -28,7 +28,7 @@ export default function RecipientSection() {
           <ClientTableImpl />
         </div>
         <div className="mt-4 flex flex-1 flex-row justify-end gap-x-4">
-          <OutlinedButton>Simpan Draft</OutlinedButton>
+          <SecondaryButton outlined label="Simpan Draft" />
         </div>
       </div>
     </>

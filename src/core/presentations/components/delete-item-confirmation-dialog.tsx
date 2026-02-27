@@ -1,5 +1,5 @@
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 
 type DeleteItemConfirmationDialogProps = {
@@ -22,9 +22,7 @@ export function DeleteItemConfirmationDialog(props: DeleteItemConfirmationDialog
         <p className="text-sm text-gray-500">Nama Item: {props.data.name}</p>
       </div>
       <div className="-mx-4 flex flex-row justify-end space-x-4 border-t border-gray-200 px-4 pt-4 sm:-mx-6 sm:px-6">
-        <OutlinedButton type="button" onClick={props.onClose}>
-          Batal
-        </OutlinedButton>
+        <SecondaryButton outlined type="button" label="Batal" onClick={props.onClose} />
         <FilledButton type="button" onClick={onSubmit} color="danger">
           Hapus
         </FilledButton>

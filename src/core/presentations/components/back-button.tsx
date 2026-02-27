@@ -1,8 +1,8 @@
 "use client";
 
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import React, { useMemo } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 
 interface BackButtonProps {
@@ -18,15 +18,12 @@ export function BackButton(props: BackButtonProps) {
     else router.back();
   };
 
-  const renderedLabel = useMemo(() => {
-    if (props.label) return props.label;
-    return "Kembali";
-  }, [props.label]);
-
   return (
-    <OutlinedButton onClick={handleClick}>
-      <ArrowLeftIcon className="mt-0.5 mr-1 size-4" />
-      {renderedLabel}
-    </OutlinedButton>
+    <SecondaryButton
+      outlined
+      label={props.label ?? "Kembali"}
+      leftIcon={<ArrowLeftIcon className="size-4" />}
+      onClick={handleClick}
+    />
   );
 }

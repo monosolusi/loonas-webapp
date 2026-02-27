@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { Card } from "@/core/presentations/components/card";
 import { InvoiceNumberInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/invoice-number-input";
 import { InvoiceDateInput } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/invoice-date-input";
@@ -80,7 +80,7 @@ export default function ItemsSection() {
           </Card>
         </div>
         <div className="mt-4 flex flex-1 flex-row justify-end gap-x-4">
-          <OutlinedButton>Simpan Draft</OutlinedButton>
+          <SecondaryButton outlined label="Simpan Draft" />
           <NextStepButton />
         </div>
       </div>

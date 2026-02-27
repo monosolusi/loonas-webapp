@@ -1,6 +1,6 @@
 "use client";
 
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import {
@@ -18,9 +18,11 @@ export function BackButton() {
   };
 
   return (
-    <OutlinedButton onClick={handleBackClick}>
-      <ArrowLeftIcon className="size-4 mt-0.5 mr-1" />
-      {currentStep === 0 ? "Kembali" : "Langkah Sebelumnya"}
-    </OutlinedButton>
+    <SecondaryButton
+      outlined
+      label={currentStep === 0 ? "Kembali" : "Langkah Sebelumnya"}
+      leftIcon={<ArrowLeftIcon className="size-4" />}
+      onClick={handleBackClick}
+    />
   );
 }

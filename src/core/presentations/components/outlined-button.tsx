@@ -6,6 +6,9 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
+/**
+ * @deprecated Use `SecondaryButton` from `@/core/presentations/components/buttons/secondary-button` with `outlined` prop instead.
+ */
 export function OutlinedButton({
   children,
   loading,

@@ -1,7 +1,7 @@
 "use client";
 
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 
 type PaymentSummaryStatus = "pending" | "processing" | "completed";
 
@@ -61,8 +61,8 @@ export function PaymentSummary({ total, subtotal, adminFee, paymentMethod, statu
 
       {/* Status-based CTA */}
       {status === "pending" && <PrimaryButton label="Lanjutkan Pembayaran" />}
-      {status === "processing" && <OutlinedButton disabled>Menunggu Proses</OutlinedButton>}
-      {status === "completed" && <OutlinedButton>Unduh Bukti</OutlinedButton>}
+      {status === "processing" && <SecondaryButton outlined disabled label="Menunggu Proses" />}
+      {status === "completed" && <SecondaryButton outlined label="Unduh Bukti" />}
     </div>
   );
 }

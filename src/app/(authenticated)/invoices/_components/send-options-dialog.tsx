@@ -1,7 +1,7 @@
 "use client";
 
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
-import { OutlinedButton } from "@/core/presentations/components/outlined-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { FilledButton } from "@/core/presentations/components/filled-button";
 import React, { useMemo, useState } from "react";
 import { SendViaEmailCheckbox } from "@/app/(authenticated)/invoices/_components/send-via-email-checkbox";
@@ -72,9 +72,7 @@ export function SendOptionsDialog(props: SendOptionsDialogProps) {
           />
         </div>
         <div className="flex flex-row justify-end space-x-2">
-          <OutlinedButton onClick={onCancelClick} disabled={isLoading}>
-            Batal
-          </OutlinedButton>
+          <SecondaryButton outlined label="Batal" onClick={onCancelClick} disabled={isLoading} />
           <FilledButton onClick={onSendClick} disabled={isSendDisabled} loading={isLoading}>
             Kirim Faktur
           </FilledButton>
