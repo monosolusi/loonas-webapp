@@ -1,19 +1,3 @@
-// import { ProtectedPage } from "@/app/(authenticated)/_components/protected-page";
-//
-// export default function AuthenticatedLayout({ children }: { children: any }) {
-//   return (
-//     <ProtectedPage>
-//       {children}
-//       {/*<div className="min-h-full">*/}
-//       {/*  <Header />*/}
-//       {/*  <PageMain>*/}
-//       {/*    {children}*/}
-//       {/*  </PageMain>*/}
-//       {/*</div>*/}
-//     </ProtectedPage>
-//   );
-// }
-
 import { ProtectedPage } from "@/app/(authenticated)/_components/protected-page";
 import { NavigationBar } from "@/app/(authenticated)/_components/navigation-bar";
 import { Header } from "@/app/(authenticated)/_components/header";

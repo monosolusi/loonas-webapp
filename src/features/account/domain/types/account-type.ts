@@ -5,6 +5,6 @@ import { BusinessAccountModel } from "@/features/account/data/models/business-ac
 import { ClerkAccountEntity } from "@/features/account/domain/entities/clerk-account.entity";
 import { ClerkAccountModel } from "@/features/account/data/models/clerk-account.model";
 
-export type AccountTypeEntity = PersonalAccountEntity | BusinessAccountEntity | ClerkAccountEntity;
+export type AccountTypeEntity = PersonalAccountEntity | BusinessAccountEntity;
 
-export type AccountTypeModel = PersonalAccountModel | BusinessAccountModel | ClerkAccountModel;
+export type AccountTypeModel = PersonalAccountModel | BusinessAccountModel;

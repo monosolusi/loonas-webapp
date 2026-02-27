@@ -7,5 +7,5 @@ import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-
 export function HeaderAvatar() {
   const { account } = useGetCurrentAccount();
 
-  return <AccountAvatar type={account?.type ?? AccountType.PERSONAL} size={10} />;
+  return <AccountAvatar type={account?.type ?? AccountType.PERSONAL} size={10} name={account?.fullName} />;
 }
