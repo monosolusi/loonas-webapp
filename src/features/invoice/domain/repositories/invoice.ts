@@ -16,6 +16,7 @@ import { PaymentMethodPayInDetailEntity } from "@/features/payment/domain/entiti
 import { InvoiceTimelineEntity } from "@/features/invoice/domain/entities/invoice-timeline";
 import { PaginatedData } from "@/core/resources/paginated";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
+import { InvoiceSummaryEntity } from "@/features/invoice/domain/entities/invoice-summary";
 
 export interface InvoiceItem {
   name: string;
@@ -66,6 +67,10 @@ export interface OutgoingInvoiceFilter {
   id?: string;
 }
 
+export interface InvoiceSummaryRepoFilter {
+  type: InvoiceType;
+}
+
 export interface ListInvoicesFilter {
   type?: InvoiceType;
   page?: number;
@@ -109,4 +114,6 @@ export interface InvoiceRepository {
   ): Promise<DataState<PaymentMethodPayInDetailEntity>>;
 
   getTimeline(filter: { id: string }, session: SessionEntity): Promise<DataState<InvoiceTimelineEntity>>;
+
+  getSummary(filter: InvoiceSummaryRepoFilter, session: SessionEntity): Promise<DataState<InvoiceSummaryEntity>>;
 }

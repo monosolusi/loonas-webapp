@@ -7,9 +7,11 @@ import {
   InvoiceService,
   InvoiceServiceFilter,
   InvoiceServiceFilterParams,
+  InvoiceSummaryFilter,
   ListInvoicesServiceFilter,
   OutgoingInvoiceFilter,
 } from "@/features/invoice/domain/sources/invoice";
+import { InvoiceSummaryModel } from "@/features/invoice/data/models/invoice-summary";
 import { PaginationMetaModel } from "@/core/resources/pagination-meta-model";
 import { OutgoingInvoiceModel } from "../models/outgoing-invoice";
 import { HttpRequest } from "@/core/helpers/http-request";
@@ -224,6 +226,21 @@ export class InvoiceServiceImpl implements InvoiceService {
       const result = await this.http.request({ path, method, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
       return InvoiceTimelineModel.fromJson(result);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async getSummary(filter: InvoiceSummaryFilter, session: SessionEntity): Promise<InvoiceSummaryModel> {
+    try {
+      const path = "/invoices/summary";
+      const method = "GET";
+      const searchParams: Record<string, string> = { type: filter.type };
+
+      const result = await this.http.request({ path, method, searchParams, session });
+      if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      return InvoiceSummaryModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

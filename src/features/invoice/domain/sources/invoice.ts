@@ -14,6 +14,7 @@ import { PayInModel } from "../../data/models/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import { PaginationMetaModel } from "@/core/resources/pagination-meta-model";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
+import { InvoiceSummaryModel } from "@/features/invoice/data/models/invoice-summary";
 
 export interface InvoiceServiceFilter {
   id?: string;
@@ -64,6 +65,10 @@ export interface OutgoingInvoiceFilter {
   id?: string;
 }
 
+export interface InvoiceSummaryFilter {
+  type: InvoiceType;
+}
+
 export interface ListInvoicesServiceFilter {
   type?: InvoiceType;
   page?: number;
@@ -105,4 +110,6 @@ export interface InvoiceService {
   send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void>;
 
   getTimeline(filter: { id: string }, session: SessionEntity): Promise<InvoiceTimelineModel>;
+
+  getSummary(filter: InvoiceSummaryFilter, session: SessionEntity): Promise<InvoiceSummaryModel>;
 }

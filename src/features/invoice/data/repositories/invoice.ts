@@ -6,6 +6,7 @@ import {
   InvoiceRepository,
   InvoiceRepositoryFilter,
   InvoiceRepositoryFilterParams,
+  InvoiceSummaryRepoFilter,
   ListInvoicesFilter,
   OutgoingInvoiceFilter,
 } from "@/features/invoice/domain/repositories/invoice";
@@ -21,6 +22,7 @@ import { NotificationChannel } from "@/features/notification/domain/enums/notifi
 import { PaymentMethodPayInDetailEntity } from "@/features/payment/domain/entities/payment-method-pay-in-detail-entity";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 import { InvoiceTimelineEntity } from "../../domain/entities/invoice-timeline";
+import { InvoiceSummaryEntity } from "../../domain/entities/invoice-summary";
 
 export class InvoiceRepositoryImpl implements InvoiceRepository {
   constructor(
@@ -184,6 +186,19 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
         session,
       );
       return new DataSuccess(invoice.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async getSummary(
+    filter: InvoiceSummaryRepoFilter,
+    session: SessionEntity,
+  ): Promise<DataState<InvoiceSummaryEntity>> {
+    try {
+      const summary = await this.invoiceService.getSummary({ type: filter.type }, session);
+      return new DataSuccess(summary.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
