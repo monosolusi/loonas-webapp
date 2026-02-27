@@ -28,13 +28,13 @@ export function StatusBannerImpl({ id }: StatusBannerImplProps) {
     );
   }
 
-  const { currentActiveStatus } = timeline;
-  const variant = STATUS_VARIANT_MAP[currentActiveStatus.status] ?? "pending";
+  const { lastCompletedStatus } = timeline;
+  const variant = STATUS_VARIANT_MAP[lastCompletedStatus.status] ?? "pending";
   return (
     <StatusBanner
       variant={variant}
-      title={currentActiveStatus.name}
-      description={currentActiveStatus.description}
+      title={lastCompletedStatus.name}
+      description={lastCompletedStatus.description}
       totalAmount={IDRFormatter.toCurrency(invoice.total)}
     />
   );

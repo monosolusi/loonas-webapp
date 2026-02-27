@@ -4,7 +4,7 @@ import {PrimaryButton} from "@/core/presentations/components/buttons/primary-but
 import {CreateIncomingSteppers} from "@/features/invoice/presentations/components/create-incoming-steppers";
 import Image from "next/image";
 import {StatusBannerImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/status-banner-impl";
-import {TransactionTimelineImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/transaction-timeline-impl";
+import {TransactionTimelineImpl} from "@/features/invoice/presentations/components/transaction-timeline-impl";
 import {PaymentInformationImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/payment-information-impl";
 import {InvoiceDetailImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/invoice-detail-impl";
 import {useParams, useRouter} from "next/navigation";

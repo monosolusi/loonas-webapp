@@ -29,20 +29,20 @@ export class InvoiceTimelineStepEntity implements AbstractEntity {
   }
 }
 
-interface InvoiceTimelineActiveStatusEntityConstructor {
+interface InvoiceTimelineLastCompletedStatusEntityConstructor {
   step: number;
   status: string;
   name: string;
   description: string;
 }
 
-export class InvoiceTimelineActiveStatusEntity implements AbstractEntity {
+export class InvoiceTimelineLastCompletedStatusEntity implements AbstractEntity {
   public step: number;
   public status: string;
   public name: string;
   public description: string;
 
-  constructor(args: InvoiceTimelineActiveStatusEntityConstructor) {
+  constructor(args: InvoiceTimelineLastCompletedStatusEntityConstructor) {
     this.step = args.step;
     this.status = args.status;
     this.name = args.name;
@@ -53,20 +53,20 @@ export class InvoiceTimelineActiveStatusEntity implements AbstractEntity {
 interface InvoiceTimelineEntityConstructor {
   invoiceId: string;
   invoiceType: InvoiceType;
-  currentActiveStatus: InvoiceTimelineActiveStatusEntity;
+  lastCompletedStatus: InvoiceTimelineLastCompletedStatusEntity;
   steps: InvoiceTimelineStepEntity[];
 }
 
 export class InvoiceTimelineEntity implements AbstractEntity {
   public invoiceId: string;
   public invoiceType: InvoiceType;
-  public currentActiveStatus: InvoiceTimelineActiveStatusEntity;
+  public lastCompletedStatus: InvoiceTimelineLastCompletedStatusEntity;
   public steps: InvoiceTimelineStepEntity[];
 
   constructor(args: InvoiceTimelineEntityConstructor) {
     this.invoiceId = args.invoiceId;
     this.invoiceType = args.invoiceType;
-    this.currentActiveStatus = args.currentActiveStatus;
+    this.lastCompletedStatus = args.lastCompletedStatus;
     this.steps = args.steps;
   }
 }

@@ -1,7 +1,7 @@
 import { AbstractModel } from "@/core/resources/model";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import {
-  InvoiceTimelineActiveStatusEntity,
+  InvoiceTimelineLastCompletedStatusEntity,
   InvoiceTimelineEntity,
   InvoiceTimelineStepEntity,
 } from "@/features/invoice/domain/entities/invoice-timeline";
@@ -56,28 +56,28 @@ export class InvoiceTimelineStepModel implements AbstractModel {
   }
 }
 
-interface InvoiceTimelineActiveStatusModelConstructor {
+interface InvoiceTimelineLastCompletedStatusModelConstructor {
   step: number;
   status: string;
   name: string;
   description: string;
 }
 
-export class InvoiceTimelineActiveStatusModel implements AbstractModel {
+export class InvoiceTimelineLastCompletedStatusModel implements AbstractModel {
   public step: number;
   public status: string;
   public name: string;
   public description: string;
 
-  constructor(args: InvoiceTimelineActiveStatusModelConstructor) {
+  constructor(args: InvoiceTimelineLastCompletedStatusModelConstructor) {
     this.step = args.step;
     this.status = args.status;
     this.name = args.name;
     this.description = args.description;
   }
 
-  public static fromJson(doc: Record<string, any>): InvoiceTimelineActiveStatusModel {
-    return new InvoiceTimelineActiveStatusModel({
+  public static fromJson(doc: Record<string, any>): InvoiceTimelineLastCompletedStatusModel {
+    return new InvoiceTimelineLastCompletedStatusModel({
       step: doc["step"],
       status: doc["status"],
       name: doc["name"],
@@ -85,8 +85,8 @@ export class InvoiceTimelineActiveStatusModel implements AbstractModel {
     });
   }
 
-  public toEntity(): InvoiceTimelineActiveStatusEntity {
-    return new InvoiceTimelineActiveStatusEntity({
+  public toEntity(): InvoiceTimelineLastCompletedStatusEntity {
+    return new InvoiceTimelineLastCompletedStatusEntity({
       step: this.step,
       status: this.status,
       name: this.name,
@@ -98,20 +98,20 @@ export class InvoiceTimelineActiveStatusModel implements AbstractModel {
 interface InvoiceTimelineModelConstructor {
   invoiceId: string;
   invoiceType: InvoiceType;
-  currentActiveStatus: InvoiceTimelineActiveStatusModel;
+  lastCompletedStatus: InvoiceTimelineLastCompletedStatusModel;
   steps: InvoiceTimelineStepModel[];
 }
 
 export class InvoiceTimelineModel implements AbstractModel {
   public invoiceId: string;
   public invoiceType: InvoiceType;
-  public currentActiveStatus: InvoiceTimelineActiveStatusModel;
+  public lastCompletedStatus: InvoiceTimelineLastCompletedStatusModel;
   public steps: InvoiceTimelineStepModel[];
 
   constructor(args: InvoiceTimelineModelConstructor) {
     this.invoiceId = args.invoiceId;
     this.invoiceType = args.invoiceType;
-    this.currentActiveStatus = args.currentActiveStatus;
+    this.lastCompletedStatus = args.lastCompletedStatus;
     this.steps = args.steps;
   }
 
@@ -119,7 +119,7 @@ export class InvoiceTimelineModel implements AbstractModel {
     return new InvoiceTimelineModel({
       invoiceId: doc["invoice_id"],
       invoiceType: doc["invoice_type"],
-      currentActiveStatus: InvoiceTimelineActiveStatusModel.fromJson(doc["current_active_status"]),
+      lastCompletedStatus: InvoiceTimelineLastCompletedStatusModel.fromJson(doc["last_completed_status"]),
       steps: (doc["steps"] as Record<string, any>[]).map(InvoiceTimelineStepModel.fromJson),
     });
   }
@@ -128,7 +128,7 @@ export class InvoiceTimelineModel implements AbstractModel {
     return new InvoiceTimelineEntity({
       invoiceId: this.invoiceId,
       invoiceType: this.invoiceType,
-      currentActiveStatus: this.currentActiveStatus.toEntity(),
+      lastCompletedStatus: this.lastCompletedStatus.toEntity(),
       steps: this.steps.map((step) => step.toEntity()),
     });
   }

@@ -2,7 +2,7 @@
 
 import { useGetInvoiceTimeline } from "@/features/invoice/presentations/hooks/use-get-invoice-timeline";
 import { SectionCard } from "@/core/presentations/components/section-card";
-import { TimelineItem } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/timeline-item";
+import { TimelineItem } from "@/features/invoice/presentations/components/timeline-item";
 import { InvoiceTimelineStepEntity } from "@/features/invoice/domain/entities/invoice-timeline";
 
 const STEP_ICONS: Record<string, string> = {
