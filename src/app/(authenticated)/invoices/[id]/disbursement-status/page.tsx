@@ -7,11 +7,12 @@ import {StatusBannerImpl} from "@/app/(authenticated)/invoices/[id]/disbursement
 import {TransactionTimelineImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/transaction-timeline-impl";
 import {PaymentInformationImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/payment-information-impl";
 import {InvoiceDetailImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/invoice-detail-impl";
-import {useParams} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import {useCopyToClipboard} from "@/core/presentations/hooks/use-copy-to-clipboard";
 
 export default function DisbursementStatusPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const { copy } = useCopyToClipboard();
   return (
     <div className="flex flex-col gap-y-8">
@@ -60,7 +61,7 @@ export default function DisbursementStatusPage() {
             {/*  Action Buttons */}
             <div className="flex flex-row items-center justify-end border-t border-t-neutral-200 p-6">
               <div className="flex">
-                <PrimaryButton label="Lihat Faktur" />
+                <PrimaryButton label="Lihat Faktur" onClick={() => router.push(`/invoices/${id}`)} />
               </div>
             </div>
           </div>
