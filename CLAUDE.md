@@ -88,3 +88,8 @@ Directories use kebab-case. Components use kebab-case filenames.
 - Prettier: 2-space indent, 120 char width
 - `@typescript-eslint/no-explicit-any` is disabled
 - Domain layer must not import from data or presentation layers
+
+### Git
+
+- Branch naming: `features/{description}` for new features
+- Always create branches from `dev`
