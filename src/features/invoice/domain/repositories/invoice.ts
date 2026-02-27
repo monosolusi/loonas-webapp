@@ -65,12 +65,6 @@ export interface OutgoingInvoiceFilter {
 }
 
 export interface InvoiceRepository {
-  list(
-    filter: InvoiceRepositoryFilter,
-    params: InvoiceRepositoryFilterParams,
-    session: SessionEntity,
-  ): Promise<DataState<InvoiceEntity[]>>;
-
   get(
     filter: InvoiceRepositoryFilter,
     params: Pick<InvoiceRepositoryFilterParams, "includes">,

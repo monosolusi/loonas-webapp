@@ -188,17 +188,4 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
     }
   }
 
-  public async list(
-    filter: InvoiceRepositoryFilter,
-    params: InvoiceRepositoryFilterParams,
-    session: SessionEntity,
-  ): Promise<DataState<InvoiceEntity[]>> {
-    try {
-      const invoices = await this.invoiceService.list(filter, params, session);
-      return new DataSuccess(invoices.map((invoice) => invoice.toEntity()));
-    } catch (err) {
-      if (err instanceof ServerError) return new DataFailed(err);
-      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
-    }
-  }
 }

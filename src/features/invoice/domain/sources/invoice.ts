@@ -63,12 +63,6 @@ export interface OutgoingInvoiceFilter {
 }
 
 export interface InvoiceService {
-  list(
-    filter: InvoiceServiceFilter,
-    params: InvoiceServiceFilterParams,
-    session: SessionEntity,
-  ): Promise<InvoiceModel[]>;
-
   get(
     filter: InvoiceServiceFilter,
     params: Pick<InvoiceServiceFilterParams, "includes">,
