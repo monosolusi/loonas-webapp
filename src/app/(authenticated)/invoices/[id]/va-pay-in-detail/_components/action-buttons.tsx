@@ -15,7 +15,7 @@ export function ActionButtons(props: ActionButtonsProps) {
   };
 
   const handlePaymentDone = () => {
-    router.push(`/invoices/${props.invoiceId}/disbursement-status`);
+    router.replace(`/invoices/${props.invoiceId}/disbursement-status`);
   };
 
   return (

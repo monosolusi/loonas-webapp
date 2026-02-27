@@ -61,7 +61,7 @@ export default function DisbursementStatusPage() {
             {/*  Action Buttons */}
             <div className="flex flex-row items-center justify-end border-t border-t-neutral-200 p-6">
               <div className="flex">
-                <PrimaryButton label="Lihat Faktur" onClick={() => router.push(`/invoices/${id}`)} />
+                <PrimaryButton label="Lihat Faktur" onClick={() => router.replace(`/invoices/${id}`)} />
               </div>
             </div>
           </div>
