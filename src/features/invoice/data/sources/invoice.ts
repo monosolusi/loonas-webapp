@@ -7,8 +7,10 @@ import {
   InvoiceService,
   InvoiceServiceFilter,
   InvoiceServiceFilterParams,
-  OutgoingInvoiceFilter
+  ListInvoicesServiceFilter,
+  OutgoingInvoiceFilter,
 } from "@/features/invoice/domain/sources/invoice";
+import { PaginationMetaModel } from "@/core/resources/pagination-meta-model";
 import { OutgoingInvoiceModel } from "../models/outgoing-invoice";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { InvoiceItemModel } from "@/features/invoice/data/models/invoice-item";
@@ -24,6 +26,32 @@ import { NotificationChannel } from "@/features/notification/domain/enums/notifi
 
 export class InvoiceServiceImpl implements InvoiceService {
   constructor(private readonly http: HttpRequest) {}
+
+  public async list(
+    filter: ListInvoicesServiceFilter,
+    session: SessionEntity,
+  ): Promise<{ data: InvoiceModel[]; meta: PaginationMetaModel }> {
+    try {
+      const path = "/invoices";
+      const method = "GET";
+      const searchParams: Record<string, string> = {};
+      if (filter.type) searchParams.type = filter.type;
+      if (filter.page) searchParams.page = String(filter.page);
+      if (filter.limit) searchParams.limit = String(filter.limit);
+      if (filter.includes) searchParams.include = filter.includes;
+
+      const result = await this.http.request({ path, method, searchParams, session });
+      if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const data = (result.data as Record<string, any>[]).map(InvoiceModel.fromJson);
+      const meta = PaginationMetaModel.fromJson(result.meta);
+
+      return { data, meta };
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
 
   public async send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void> {
     const path = `/invoices/outgoing/${params.id}/send`;

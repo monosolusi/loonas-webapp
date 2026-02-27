@@ -14,6 +14,8 @@ import { PayInEntity } from "../entities/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import { PaymentMethodPayInDetailEntity } from "@/features/payment/domain/entities/payment-method-pay-in-detail-entity";
 import { InvoiceTimelineEntity } from "@/features/invoice/domain/entities/invoice-timeline";
+import { PaginatedData } from "@/core/resources/paginated";
+import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 
 export interface InvoiceItem {
   name: string;
@@ -64,7 +66,16 @@ export interface OutgoingInvoiceFilter {
   id?: string;
 }
 
+export interface ListInvoicesFilter {
+  type?: InvoiceType;
+  page?: number;
+  limit?: number;
+  includes?: string;
+}
+
 export interface InvoiceRepository {
+  list(filter: ListInvoicesFilter, session: SessionEntity): Promise<DataState<PaginatedData<InvoiceEntity>>>;
+
   get(
     filter: InvoiceRepositoryFilter,
     params: Pick<InvoiceRepositoryFilterParams, "includes">,

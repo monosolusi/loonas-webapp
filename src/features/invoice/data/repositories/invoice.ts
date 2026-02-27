@@ -6,8 +6,10 @@ import {
   InvoiceRepository,
   InvoiceRepositoryFilter,
   InvoiceRepositoryFilterParams,
+  ListInvoicesFilter,
   OutgoingInvoiceFilter,
 } from "@/features/invoice/domain/repositories/invoice";
+import { PaginatedData } from "@/core/resources/paginated";
 import { InvoiceEntity } from "../../domain/entities/invoice";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { InvoiceService } from "@/features/invoice/domain/sources/invoice";
@@ -25,6 +27,30 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
     private readonly invoiceService: InvoiceService,
     private readonly payInDetailFactory: PayInDetailFactory,
   ) {}
+
+  public async list(
+    filter: ListInvoicesFilter,
+    session: SessionEntity,
+  ): Promise<DataState<PaginatedData<InvoiceEntity>>> {
+    try {
+      const result = await this.invoiceService.list(
+        {
+          type: filter.type,
+          page: filter.page,
+          limit: filter.limit,
+          includes: filter.includes,
+        },
+        session,
+      );
+      return new DataSuccess({
+        data: result.data.map((invoice) => invoice.toEntity()),
+        meta: result.meta.toMeta(),
+      });
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
 
   public async getPayInDetail(
     params: { invoice: { id: string } },

@@ -3,8 +3,8 @@
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { Menu, MenuButton, MenuItem, MenuItems, Tab, TabGroup, TabList } from "@headlessui/react";
-import clsx from "clsx";
 import Image from "next/image";
+import { IncomingInvoiceTableImpl } from "./_components/incoming-invoice-table-impl";
 
 const monthFilterOptions = [
   { label: "Bulan Ini", value: "this_month" },
@@ -13,81 +13,6 @@ const monthFilterOptions = [
   { label: "6 Bulan Terakhir", value: "last_6_months" },
   { label: "Tahun Ini", value: "this_year" },
   { label: "Semua", value: "all" },
-];
-
-const invoiceData = [
-  {
-    client: "PT Sumber Makmur",
-    invoiceNumber: "INV-IN-001",
-    extraInvoices: 2,
-    date: "23 Okt 2023",
-    status: "pending" as const,
-    amount: "Rp 5.000.000",
-  },
-  {
-    client: "CV Teknologi Abadi",
-    invoiceNumber: "INV-IN-002",
-    extraInvoices: 0,
-    date: "21 Okt 2023",
-    status: "paid" as const,
-    amount: "Rp 1.250.000",
-  },
-  {
-    client: "PT Sumber Berkah Cahaya Aba...",
-    invoiceNumber: "INV-IN-2024-OCT-PURCH...",
-    extraInvoices: 0,
-    date: "18 Okt 2023",
-    status: "pending" as const,
-    amount: "Rp 12.500.000",
-  },
-  {
-    client: "CV Mitra Jaya",
-    invoiceNumber: "INV-IN-005",
-    extraInvoices: 2,
-    date: "16 Okt 2023",
-    status: "paid" as const,
-    amount: "Rp 3.200.000",
-  },
-  {
-    client: "PT Global Sentosa",
-    invoiceNumber: "INV-IN-006",
-    extraInvoices: 0,
-    date: "14 Okt 2023",
-    status: "pending" as const,
-    amount: "Rp 8.900.000",
-  },
-  {
-    client: "UD Sejahtera Mandiri",
-    invoiceNumber: "INV-IN-008",
-    extraInvoices: 0,
-    date: "10 Okt 2023",
-    status: "paid" as const,
-    amount: "Rp 4.500.000",
-  },
-  {
-    client: "PT Indah Karya Logistik",
-    invoiceNumber: "INV-IN-009",
-    extraInvoices: 2,
-    date: "08 Okt 2023",
-    status: "pending" as const,
-    amount: "Rp 7.800.000",
-  },
-  {
-    client: "CV Bintang Timur",
-    invoiceNumber: "INV-IN-010",
-    extraInvoices: 0,
-    date: "06 Okt 2023",
-    status: "paid" as const,
-    amount: "Rp 2.900.000",
-  },
-  {
-    client: "PT Anugrah Sejahtera",
-    invoiceNumber: "INV-IN-012",
-    extraInvoices: 0,
-    date: "03 Okt 2023",
-    status: "pending" as const,
-    amount: "Rp 6.400.000",
-  },
 ];
 
 export default function IncomingInvoicePage() {
@@ -240,53 +165,8 @@ export default function IncomingInvoicePage() {
             </span>
           </div>
 
-          {/* Table Rows */}
-          {invoiceData.map((invoice, index) => (
-            <div
-              key={index}
-              className="group hover:border-l-primary-300 hover:bg-primary-50 grid cursor-pointer grid-cols-[2fr_1.5fr_1fr_1.5fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0"
-            >
-              <span className="truncate text-sm leading-5 font-semibold text-neutral-500">{invoice.client}</span>
-              <div className="flex flex-row items-center gap-x-2">
-                <span className="truncate text-sm leading-5 text-neutral-400">{invoice.invoiceNumber}</span>
-                {invoice.extraInvoices > 0 && (
-                  <span className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-xs leading-4 font-medium text-neutral-300">
-                    +{invoice.extraInvoices}
-                  </span>
-                )}
-              </div>
-              <span className="text-sm leading-5 text-neutral-400">{invoice.date}</span>
-              <div className="flex flex-row items-center gap-x-1.5">
-                <span
-                  className={clsx(
-                    "rounded-sm px-2 py-0.5 text-xs leading-4 font-medium",
-                    invoice.status === "paid" ? "bg-success-50 text-success-500" : "bg-warning-50 text-warning-500",
-                  )}
-                >
-                  {invoice.status === "paid" ? "Lunas" : "Menunggu Pembayaran"}
-                </span>
-              </div>
-              <span className="text-right text-sm leading-5 font-semibold text-neutral-500">{invoice.amount}</span>
-            </div>
-          ))}
-
-          {/* Table Footer */}
-          <div className="flex flex-row items-center justify-between border-t border-neutral-100 px-6 py-3">
-            <span className="text-sm leading-5 text-neutral-300">
-              Menampilkan {invoiceData.length} dari {invoiceData.length} data
-            </span>
-            <div className="flex flex-row items-center gap-x-2">
-              <button className="flex size-8 items-center justify-center rounded-lg text-neutral-200 hover:bg-neutral-100">
-                ‹
-              </button>
-              <button className="flex size-8 items-center justify-center rounded-full bg-neutral-500 text-sm font-medium text-neutral-50">
-                1
-              </button>
-              <button className="flex size-8 items-center justify-center rounded-lg text-neutral-200 hover:bg-neutral-100">
-                ›
-              </button>
-            </div>
-          </div>
+          {/* Table Rows + Footer */}
+          <IncomingInvoiceTableImpl />
         </div>
       </div>
     </div>

@@ -50,7 +50,7 @@ export function InvoiceDocumentListImpl({ id }: InvoiceDocumentListImplProps) {
       bodyClassName="p-0"
       iconSrc="/assets/images/document-icon-primary-300-w24-h24.svg"
     >
-      <InvoiceDocumentList documents={documents} totalAmount={IDRFormatter.toCurrency(invoice.total)} />
+      <InvoiceDocumentList documents={documents} totalAmount={IDRFormatter.toCurrency(invoice.amount)} />
     </SectionCard>
   );
 }

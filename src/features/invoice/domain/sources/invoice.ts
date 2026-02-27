@@ -12,6 +12,8 @@ import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { PublicOutgoingInvoiceModel } from "../../data/models/public-outgoing-invoice";
 import { PayInModel } from "../../data/models/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
+import { PaginationMetaModel } from "@/core/resources/pagination-meta-model";
+import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 
 export interface InvoiceServiceFilter {
   id?: string;
@@ -62,7 +64,19 @@ export interface OutgoingInvoiceFilter {
   id?: string;
 }
 
+export interface ListInvoicesServiceFilter {
+  type?: InvoiceType;
+  page?: number;
+  limit?: number;
+  includes?: string;
+}
+
 export interface InvoiceService {
+  list(
+    filter: ListInvoicesServiceFilter,
+    session: SessionEntity,
+  ): Promise<{ data: InvoiceModel[]; meta: PaginationMetaModel }>;
+
   get(
     filter: InvoiceServiceFilter,
     params: Pick<InvoiceServiceFilterParams, "includes">,

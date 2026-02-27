@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { TransactionTimelineImpl } from "@/features/invoice/presentations/components/transaction-timeline-impl";
 import { InvoiceDocumentListImpl } from "@/app/(authenticated)/invoices/[id]/_components/invoice-document-list-impl";
 import { RecipientInfoImpl } from "@/app/(authenticated)/invoices/[id]/_components/recipient-info-impl";
@@ -9,19 +9,23 @@ import { PaymentSummaryImpl } from "@/app/(authenticated)/invoices/[id]/_compone
 
 export default function InvoiceDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
 
   return (
     <div className="flex flex-col gap-y-6">
       {/*  Header */}
       <div className="flex flex-row items-center gap-x-4">
-        <div className="flex size-9 cursor-pointer flex-col items-center justify-center rounded-lg border border-neutral-100">
+        <button
+          onClick={() => router.back()}
+          className="flex size-9 cursor-pointer flex-col items-center justify-center rounded-lg border border-neutral-100"
+        >
           <Image
             src="/assets/images/arrow-left-icon-neutral-500-w16-h16.svg"
             alt="arrow-left-icon"
             width={16}
             height={16}
           />
-        </div>
+        </button>
 
         <div className="flex flex-col gap-y-1">
           <div className="text-xl leading-5 font-bold tracking-tight">INV/2023/10/001</div>
