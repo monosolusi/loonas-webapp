@@ -55,7 +55,9 @@ export function InvoiceDocumentList({ documents, totalAmount }: InvoiceDocumentL
                 <div className="flex flex-1 flex-col">
                   <span className="text-sm leading-5 font-medium">{doc.file.name}</span>
                 </div>
-                <SecondaryButton outlined label="Lihat" onClick={() => window.open(doc.file!.url, "_blank")} />
+                <a href={doc.file.url} download={doc.file.name} target="_blank" rel="noopener noreferrer">
+                  <SecondaryButton outlined label="Unduh" />
+                </a>
               </div>
             </div>
           )}

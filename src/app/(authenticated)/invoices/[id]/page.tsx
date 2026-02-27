@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
+import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
+import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { TransactionTimelineImpl } from "@/features/invoice/presentations/components/transaction-timeline-impl";
 import { InvoiceDocumentListImpl } from "@/app/(authenticated)/invoices/[id]/_components/invoice-document-list-impl";
 import { RecipientInfoImpl } from "@/app/(authenticated)/invoices/[id]/_components/recipient-info-impl";
@@ -10,6 +12,11 @@ import { PaymentSummaryImpl } from "@/app/(authenticated)/invoices/[id]/_compone
 export default function InvoiceDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { invoice } = useGetInvoice({ id });
+
+  const title = invoice?.type === InvoiceType.OUTGOING ? "Faktur Keluaran" : "Faktur Masukan";
+  const shortId = id.slice(0, 8);
+  const createdDate = invoice?.createdAt.setLocale("id").toFormat("dd LLL yyyy");
 
   return (
     <div className="flex flex-col gap-y-6">
@@ -28,8 +35,10 @@ export default function InvoiceDetailPage() {
         </button>
 
         <div className="flex flex-col gap-y-1">
-          <div className="text-xl leading-5 font-bold tracking-tight">INV/2023/10/001</div>
-          <div className="text-sm leading-5 text-neutral-200">Faktur Masukan</div>
+          <div className="text-xl leading-5 font-bold tracking-tight">{title}</div>
+          <div className="text-sm leading-5 text-neutral-200">
+            ID: {shortId}{createdDate ? ` · ${createdDate}` : ""}
+          </div>
         </div>
       </div>
 
