@@ -2,73 +2,19 @@
 
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { useState } from "react";
+import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
+import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
+import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
+import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
+import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
+import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 
-type InvoiceType = "Masukan" | "Keluaran";
-type FilterType = "Semua" | InvoiceType;
 type InvoiceStatusType = "paid" | "unpaid" | "sent" | "draft" | "cancelled" | "expired" | "failed";
 
-interface InvoiceRow {
-  id: string;
-  client: string;
-  type: InvoiceType;
-  extraInvoices: number;
-  amount: string;
-  status: InvoiceStatusType;
-  relativeTime: string;
-}
-
-const invoices: InvoiceRow[] = [
-  {
-    id: "1",
-    client: "PT Maju Bersama",
-    type: "Keluaran",
-    extraInvoices: 0,
-    amount: "Rp4.500.000",
-    status: "unpaid",
-    relativeTime: "Hari ini",
-  },
-  {
-    id: "2",
-    client: "CV Sentosa Abadi",
-    type: "Masukan",
-    extraInvoices: 2,
-    amount: "Rp8.250.000",
-    status: "unpaid",
-    relativeTime: "2 hari lalu",
-  },
-  {
-    id: "3",
-    client: "PT Cahaya Digital",
-    type: "Keluaran",
-    extraInvoices: 0,
-    amount: "Rp3.200.000",
-    status: "sent",
-    relativeTime: "3 hari lalu",
-  },
-  {
-    id: "4",
-    client: "UD Karya Mandiri",
-    type: "Masukan",
-    extraInvoices: 1,
-    amount: "Rp5.750.000",
-    status: "paid",
-    relativeTime: "1 minggu lalu",
-  },
-  {
-    id: "5",
-    client: "PT Sinar Abadi",
-    type: "Keluaran",
-    extraInvoices: 0,
-    amount: "Rp2.100.000",
-    status: "draft",
-    relativeTime: "1 minggu lalu",
-  },
-];
-
-const filters: { label: string; value: FilterType; icon?: "in" | "out" }[] = [
-  { label: "Semua", value: "Semua" },
-  { label: "Masukan", value: "Masukan", icon: "in" },
-  { label: "Keluaran", value: "Keluaran", icon: "out" },
+const filters: { label: string; value: InvoiceType | undefined; icon?: "in" | "out" }[] = [
+  { label: "Semua", value: undefined },
+  { label: "Masukan", value: InvoiceType.INCOMING, icon: "in" },
+  { label: "Keluaran", value: InvoiceType.OUTGOING, icon: "out" },
 ];
 
 const statusConfig: Record<InvoiceStatusType, { label: string; className: string }> = {
@@ -80,6 +26,33 @@ const statusConfig: Record<InvoiceStatusType, { label: string; className: string
   expired: { label: "Kedaluwarsa", className: "text-danger-500" },
   failed: { label: "Gagal", className: "text-danger-500" },
 };
+
+function mapStatus(status: InvoiceStatus): InvoiceStatusType {
+  switch (status) {
+    case OutgoingInvoiceStatus.PAID:
+    case PaymentRequestStatus.COMPLETED:
+      return "paid";
+    case PaymentRequestStatus.PENDING_PAYMENT:
+    case PaymentRequestStatus.PENDING_INVOICE:
+    case OutgoingInvoiceStatus.PENDING_BANK_TRANSFER:
+      return "unpaid";
+    case OutgoingInvoiceStatus.SENT:
+    case PaymentRequestStatus.PAYMENT_RECEIVED_PENDING_DELIVERY:
+      return "sent";
+    case OutgoingInvoiceStatus.DRAFT:
+    case OutgoingInvoiceStatus.READY_TO_SEND:
+      return "draft";
+    case OutgoingInvoiceStatus.CANCELLED:
+    case PaymentRequestStatus.CANCELLED:
+      return "cancelled";
+    case PaymentRequestStatus.EXPIRED:
+      return "expired";
+    case PaymentRequestStatus.FAILED:
+      return "failed";
+    default:
+      return "draft";
+  }
+}
 
 function ArrowIcon({ direction, className }: { direction: "in" | "out"; className?: string }) {
   return (
@@ -110,10 +83,25 @@ function StatusText({ status }: { status: InvoiceStatusType }) {
   return <span className={`text-sm leading-5 font-medium ${config.className}`}>{config.label}</span>;
 }
 
-export function DashboardRecentInvoices() {
-  const [activeFilter, setActiveFilter] = useState<FilterType>("Semua");
+function SkeletonRow() {
+  return (
+    <div className="grid grid-cols-[2fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0">
+      <div className="flex items-center gap-2">
+        <div className="size-7 shrink-0 animate-pulse rounded-lg bg-neutral-100" />
+        <div className="flex flex-col gap-1">
+          <div className="h-5 w-32 animate-pulse rounded bg-neutral-100" />
+          <div className="h-4 w-20 animate-pulse rounded bg-neutral-100" />
+        </div>
+      </div>
+      <div className="h-5 w-24 animate-pulse rounded bg-neutral-100" />
+      <div className="h-5 w-28 animate-pulse rounded bg-neutral-100" />
+    </div>
+  );
+}
 
-  const filtered = activeFilter === "Semua" ? invoices : invoices.filter((inv) => inv.type === activeFilter);
+export function DashboardRecentInvoices() {
+  const [activeFilter, setActiveFilter] = useState<InvoiceType | undefined>(undefined);
+  const { invoices, loading } = useListInvoices({ type: activeFilter, limit: 5, includes: "documents" });
 
   return (
     <SectionCard
@@ -123,7 +111,7 @@ export function DashboardRecentInvoices() {
         <div className="flex items-center gap-1">
           {filters.map((f) => (
             <button
-              key={f.value}
+              key={f.label}
               onClick={() => setActiveFilter(f.value)}
               className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                 activeFilter === f.value
@@ -145,42 +133,70 @@ export function DashboardRecentInvoices() {
         <span className="font-medium">STATUS</span>
       </div>
 
+      {/* Loading skeleton */}
+      {loading && (
+        <>
+          <SkeletonRow />
+          <SkeletonRow />
+          <SkeletonRow />
+          <SkeletonRow />
+          <SkeletonRow />
+        </>
+      )}
+
+      {/* Empty state */}
+      {!loading && invoices?.length === 0 && (
+        <div className="px-6 py-10 text-center text-sm text-neutral-300">Belum ada faktur</div>
+      )}
+
       {/* Rows */}
-      {filtered.map((inv) => (
-        <div
-          key={inv.id}
-          className="hover:border-l-primary-300 hover:bg-primary-50 grid cursor-pointer grid-cols-[2fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0"
-        >
-          {/* Pihak — icon + client name + relative time */}
-          <div className="flex items-center gap-2">
+      {!loading &&
+        invoices?.map((inv) => {
+          const direction = inv.type === InvoiceType.INCOMING ? "in" : "out";
+          const extraInvoices = (inv.documents?.length ?? 1) - 1;
+
+          return (
             <div
-              className={`flex size-7 shrink-0 items-center justify-center rounded-lg ${inv.type === "Masukan" ? "bg-emerald-50" : "bg-orange-50"}`}
+              key={inv.id}
+              className="hover:border-l-primary-300 hover:bg-primary-50 grid cursor-pointer grid-cols-[2fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0"
             >
-              <ArrowIcon
-                direction={inv.type === "Masukan" ? "in" : "out"}
-                className={inv.type === "Masukan" ? "text-emerald-500" : "text-orange-500"}
-              />
-            </div>
-            <div className="flex min-w-0 flex-col gap-1">
+              {/* Pihak — icon + client name + relative time */}
               <div className="flex items-center gap-2">
-                <span className="truncate text-sm leading-5 font-semibold text-neutral-500">{inv.client}</span>
-                {inv.extraInvoices > 0 && (
-                  <span className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-xs leading-4 font-medium text-neutral-300">
-                    +{inv.extraInvoices}
+                <div
+                  className={`flex size-7 shrink-0 items-center justify-center rounded-lg ${direction === "in" ? "bg-emerald-50" : "bg-orange-50"}`}
+                >
+                  <ArrowIcon
+                    direction={direction}
+                    className={direction === "in" ? "text-emerald-500" : "text-orange-500"}
+                  />
+                </div>
+                <div className="flex min-w-0 flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="truncate text-sm leading-5 font-semibold text-neutral-500">
+                      {inv.receiver.name}
+                    </span>
+                    {extraInvoices > 0 && (
+                      <span className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-xs leading-4 font-medium text-neutral-300">
+                        +{extraInvoices}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs leading-4 text-neutral-300">
+                    {inv.createdAt.setLocale("id").toRelative()}
                   </span>
-                )}
+                </div>
               </div>
-              <span className="text-xs leading-4 text-neutral-300">{inv.relativeTime}</span>
+
+              {/* Nominal — left-aligned amount */}
+              <span className="text-sm leading-5 font-semibold text-neutral-500">
+                {IDRFormatter.toCurrency(inv.total)}
+              </span>
+
+              {/* Status — colored text */}
+              <StatusText status={mapStatus(inv.status)} />
             </div>
-          </div>
-
-          {/* Nominal — left-aligned amount */}
-          <span className="text-sm leading-5 font-semibold text-neutral-500">{inv.amount}</span>
-
-          {/* Status — colored text */}
-          <StatusText status={inv.status} />
-        </div>
-      ))}
+          );
+        })}
     </SectionCard>
   );
 }
