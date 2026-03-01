@@ -158,6 +158,9 @@ export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
   return <SelectedAccountContext value={{}}>{props.children}</SelectedAccountContext>;
 }
 
+/**
+ * @deprecated Use `useGetCurrentAccount()` from `@/features/account/presentation/hooks/use-get-current-account` instead.
+ */
 export function useSelectedAccountProvider() {
   return useContext(SelectedAccountContext);
 }
