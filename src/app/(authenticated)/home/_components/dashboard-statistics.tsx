@@ -1,4 +1,7 @@
+"use client";
+
 import clsx from "clsx";
+import { useGetDashboardStatistics } from "@/features/dashboard/presentations/hooks/use-get-dashboard-statistics";
 
 function toCompactIDR(value: number): string {
   const abs = Math.abs(value);
@@ -44,28 +47,61 @@ interface StatCard {
   theme: keyof typeof themeClasses;
 }
 
-const stats: StatCard[] = [
-  {
-    label: "Piutang",
-    value: toCompactIDR(28750000),
-    subtitle: "dari 6 faktur",
-    theme: "primary",
-  },
-  {
-    label: "Hutang",
-    value: toCompactIDR(12500000),
-    subtitle: "dari 4 faktur",
-    theme: "warning",
-  },
-  {
-    label: "Menunggu Pembayaran",
-    value: "10 faktur",
-    subtitle: "5 masukan, 5 keluaran",
-    theme: "error",
-  },
-];
+function StatCardSkeleton() {
+  return (
+    <div className="flex animate-pulse flex-col gap-y-3 rounded-xl border border-t border-r border-b-4 border-l border-neutral-100 bg-neutral-50 p-5">
+      <div className="h-5 w-20 rounded bg-neutral-100" />
+      <div className="flex flex-col gap-y-1.5">
+        <div className="h-8 w-32 rounded bg-neutral-100" />
+        <div className="h-4 w-24 rounded bg-neutral-100" />
+      </div>
+    </div>
+  );
+}
 
 export function DashboardStatistics() {
+  const { statistics, loading } = useGetDashboardStatistics();
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatCardSkeleton />
+        <StatCardSkeleton />
+        <StatCardSkeleton />
+      </div>
+    );
+  }
+
+  const revenueSubtitle = (() => {
+    if (!statistics) return "-";
+    if (statistics.revenue.changes !== null) {
+      const sign = statistics.revenue.changes >= 0 ? "+" : "";
+      return `${sign}${statistics.revenue.changes}% dari bulan lalu`;
+    }
+    return `Bulan lalu: ${toCompactIDR(statistics.revenue.lastMonthAmount)}`;
+  })();
+
+  const stats: StatCard[] = [
+    {
+      label: "Piutang",
+      value: toCompactIDR(statistics?.piutang.amount ?? 0),
+      subtitle: `dari ${statistics?.piutang.count ?? 0} faktur`,
+      theme: "primary",
+    },
+    {
+      label: "Hutang",
+      value: toCompactIDR(statistics?.hutang.amount ?? 0),
+      subtitle: `dari ${statistics?.hutang.count ?? 0} faktur`,
+      theme: "warning",
+    },
+    {
+      label: "Revenue",
+      value: toCompactIDR(statistics?.revenue.amount ?? 0),
+      subtitle: revenueSubtitle,
+      theme: "error",
+    },
+  ];
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       {stats.map((stat) => {

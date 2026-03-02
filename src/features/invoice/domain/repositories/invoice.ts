@@ -17,6 +17,7 @@ import { InvoiceTimelineEntity } from "@/features/invoice/domain/entities/invoic
 import { PaginatedData } from "@/core/resources/paginated";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { InvoiceSummaryEntity } from "@/features/invoice/domain/entities/invoice-summary";
+import { CashFlowEntity } from "@/features/invoice/domain/entities/cash-flow";
 
 export interface InvoiceItem {
   name: string;
@@ -71,6 +72,11 @@ export interface InvoiceSummaryRepoFilter {
   type: InvoiceType;
 }
 
+export interface CashFlowRepoFilter {
+  month?: number;
+  year?: number;
+}
+
 export interface ListInvoicesFilter {
   type?: InvoiceType;
   page?: number;
@@ -116,4 +122,6 @@ export interface InvoiceRepository {
   getTimeline(filter: { id: string }, session: SessionEntity): Promise<DataState<InvoiceTimelineEntity>>;
 
   getSummary(filter: InvoiceSummaryRepoFilter, session: SessionEntity): Promise<DataState<InvoiceSummaryEntity>>;
+
+  getCashFlow(filter: CashFlowRepoFilter, session: SessionEntity): Promise<DataState<CashFlowEntity>>;
 }

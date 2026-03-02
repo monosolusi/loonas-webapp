@@ -2,6 +2,7 @@
 
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
@@ -100,6 +101,7 @@ function SkeletonRow() {
 }
 
 export function DashboardRecentInvoices() {
+  const router = useRouter();
   const [activeFilter, setActiveFilter] = useState<InvoiceType | undefined>(undefined);
   const { invoices, loading } = useListInvoices({ type: activeFilter, limit: 5, includes: "documents" });
 
@@ -158,6 +160,7 @@ export function DashboardRecentInvoices() {
           return (
             <div
               key={inv.id}
+              onClick={() => router.push(`/invoices/${inv.id}`)}
               className="hover:border-l-primary-300 hover:bg-primary-50 grid cursor-pointer grid-cols-[2fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0"
             >
               {/* Pihak — icon + client name + relative time */}

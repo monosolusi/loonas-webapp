@@ -1,6 +1,7 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import {
+  CashFlowRepoFilter,
   CombinedInvoiceSummaryFilter,
   CreateOutgoingParams,
   InvoiceRepository,
@@ -23,6 +24,7 @@ import { PaymentMethodPayInDetailEntity } from "@/features/payment/domain/entiti
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 import { InvoiceTimelineEntity } from "../../domain/entities/invoice-timeline";
 import { InvoiceSummaryEntity } from "../../domain/entities/invoice-summary";
+import { CashFlowEntity } from "../../domain/entities/cash-flow";
 
 export class InvoiceRepositoryImpl implements InvoiceRepository {
   constructor(
@@ -199,6 +201,19 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
     try {
       const summary = await this.invoiceService.getSummary({ type: filter.type }, session);
       return new DataSuccess(summary.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async getCashFlow(
+    filter: CashFlowRepoFilter,
+    session: SessionEntity,
+  ): Promise<DataState<CashFlowEntity>> {
+    try {
+      const cashFlow = await this.invoiceService.getCashFlow({ month: filter.month, year: filter.year }, session);
+      return new DataSuccess(cashFlow.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
