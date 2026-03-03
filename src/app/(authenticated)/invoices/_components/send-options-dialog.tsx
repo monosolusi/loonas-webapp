@@ -2,7 +2,7 @@
 
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
-import { FilledButton } from "@/core/presentations/components/filled-button";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import React, { useMemo, useState } from "react";
 import { SendViaEmailCheckbox } from "@/app/(authenticated)/invoices/_components/send-via-email-checkbox";
 import { SendViaWhatsappCheckbox } from "@/app/(authenticated)/invoices/_components/send-via-whatsapp-checkbox";
@@ -71,11 +71,15 @@ export function SendOptionsDialog(props: SendOptionsDialogProps) {
             isAvailable={props.availableChannels.includes(NotificationChannel.WHATSAPP)}
           />
         </div>
-        <div className="flex flex-row justify-end space-x-2">
-          <SecondaryButton outlined label="Batal" onClick={onCancelClick} disabled={isLoading} />
-          <FilledButton onClick={onSendClick} disabled={isSendDisabled} loading={isLoading}>
-            Kirim Faktur
-          </FilledButton>
+        <div className="flex flex-row justify-end gap-2">
+          <SecondaryButton outlined label="Batal" onClick={onCancelClick} disabled={isLoading} className="w-auto" />
+          <PrimaryButton
+            label="Kirim Faktur"
+            onClick={onSendClick}
+            disabled={isSendDisabled}
+            loading={isLoading}
+            className="w-auto"
+          />
         </div>
       </div>
     </LoonasDialog>

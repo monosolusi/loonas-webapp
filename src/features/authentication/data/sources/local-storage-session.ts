@@ -9,6 +9,10 @@ import { SessionService } from "@/features/authentication/domain/sources/session
 import { AccountType } from "@/features/account/domain/enums/account-type";
 import { PersonalAccountModel } from "@/features/account/data/models/personal-account";
 
+/**
+ * @deprecated Use `ClerkSessionService` from `@/features/authentication/data/sources/clerk-session.service` instead.
+ * LocalStorage-based session no longer has a valid `selectedAccount` since the SelectedAccountProvider was deprecated.
+ */
 export class LocalStorageSessionService implements SessionService {
   public async retrieveSelectedAccount(): Promise<AccountTypeModel> {
     const encodedAccount = localStorage.getItem("selectedAccount");

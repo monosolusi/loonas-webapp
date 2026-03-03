@@ -105,6 +105,11 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 const SelectedAccountContext = createContext<SelectedAccountContextProps>({});
 
+/**
+ * @deprecated This provider no longer manages account selection. The redirect logic it contains
+ * should be migrated elsewhere. Use `useGetCurrentAccount()` from
+ * `@/features/account/presentation/hooks/use-get-current-account` for account data instead.
+ */
 export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
   const { accounts, error, loading } = useListAccount();
   const { account, error: currentAccountError, loading: currentAccountLoading } = useGetCurrentAccount();

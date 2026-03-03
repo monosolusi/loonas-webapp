@@ -1,7 +1,7 @@
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import { DialogTitle } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { FilledButton } from "@/core/presentations/components/filled-button";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useRouter } from "next/navigation";
 
 export function HasNoAccountErrorDialog() {
@@ -15,8 +15,7 @@ export function HasNoAccountErrorDialog() {
     <LoonasDialog
       width="md"
       open={true}
-      onClose={() => {
-      }}
+      onClose={() => {}}
     >
       <div>
         <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-red-100">
@@ -32,9 +31,7 @@ export function HasNoAccountErrorDialog() {
             </p>
           </div>
           <div className="mt-5 sm:mt-6">
-            <FilledButton type="button" onClick={handleCreateBankAccountClick}>
-              Daftarkan Rekening Kamu
-            </FilledButton>
+            <PrimaryButton label="Daftarkan Rekening Kamu" onClick={handleCreateBankAccountClick} />
           </div>
         </div>
       </div>

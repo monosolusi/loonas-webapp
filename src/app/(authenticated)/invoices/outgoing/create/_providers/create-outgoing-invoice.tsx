@@ -7,6 +7,9 @@ import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
+import { useListAccountBankAccout } from "@/features/bank/presentation/hooks/use-list-account-bank-account";
+import { HasNoAccountErrorDialog } from "@/app/(authenticated)/invoices/outgoing/create/_components/has-no-account-error-dialog";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 export type OutgoingStep =
   | "select-recipient"
@@ -84,6 +87,11 @@ const CreateOutgoingInvoiceContext = React.createContext<CreateOutgoingInvoiceCo
 });
 
 export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProviderProps) {
+  const { error: bankAccountError, loading: bankAccountLoading } = useListAccountBankAccout();
+  const hasBankAccount =
+    !bankAccountLoading &&
+    !(bankAccountError instanceof ServerError && bankAccountError.code === ErrorCodes.ACCOUNT_HAS_NO_BANK_ACCOUNT.code);
+
   const [currentStep, setCurrentStep] = useState<OutgoingStep>("select-recipient");
   const [recipient, setRecipient] = useState<PartnerEntity>();
   const [invoiceNumber, setInvoiceNumber] = useState<string>("");
@@ -181,6 +189,7 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
         deleteInvoiceItem,
       }}
     >
+      {!bankAccountLoading && !hasBankAccount && <HasNoAccountErrorDialog />}
       {props.children}
     </CreateOutgoingInvoiceContext.Provider>
   );
