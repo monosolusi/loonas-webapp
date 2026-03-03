@@ -1,23 +1,28 @@
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
+import { useClerk } from "@clerk/nextjs";
+import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import useSWRMutation from "swr/mutation";
+import { useSWRMutationClerk } from "@/core/helpers/use-swr-mutation-clerk";
 import { CalculateTaxUseCase, CalculateTaxUseCaseParams } from "@/features/tax/domain/usecases/calculate-tax";
 import { TaxRepositoryImpl } from "@/features/tax/data/repositories/tax";
 import { TaxServiceImpl } from "@/features/tax/data/sources/tax";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 
-interface FetcherParams {
+type FetcherProps = {
   amountBeforeTax: number;
   taxType: TaxType;
   tax?: number;
   taxBase?: number;
-}
+};
+
+type FetcherParams = FetcherProps & {
+  clerk: ReturnType<typeof useClerk>;
+};
 
 async function calculateTaxFetcher(_: string, { arg }: { arg: FetcherParams }) {
-  const sessionService = new LocalStorageSessionService();
+  const sessionService = new ClerkSessionService({ clerk: arg.clerk });
   const sessionRepository = new SessionRepositoryImpl(sessionService);
 
   const httpRequest = new HttpRequest();
@@ -39,5 +44,5 @@ async function calculateTaxFetcher(_: string, { arg }: { arg: FetcherParams }) {
 }
 
 export function useCalculateTax() {
-  return useSWRMutation("calculate-tax", calculateTaxFetcher);
+  return useSWRMutationClerk("calculate-tax", calculateTaxFetcher);
 }

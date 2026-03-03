@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { TextInputWithLeftAddOn } from "@/core/presentations/components/text-input-with-left-add-on";
-import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
+import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 
 export function TaxBaseField() {
@@ -19,19 +18,18 @@ export function TaxBaseField() {
     if (!setTaxBase) return;
 
     const numberValue = Number(value.replace(/\./g, ""));
-    if (taxBase === numberValue) return; // No Changes
+    if (taxBase === numberValue) return;
 
     setTaxBase(numberValue);
   };
 
-  if (isDisabled) return <TextInput title="DPP" disabled />;
   return (
-    <TextInputWithLeftAddOn
-      value={taxBase.toLocaleString("id-ID")}
-      onChange={handleChange}
-      title="DPP"
+    <TextInput
+      label="DPP"
       leftAddOn="Rp"
-      textDirection="text-right"
+      inputTextAlign="text-right"
+      value={isDisabled ? "" : taxBase.toLocaleString("id-ID")}
+      onChange={handleChange}
       disabled={isDisabled}
     />
   );

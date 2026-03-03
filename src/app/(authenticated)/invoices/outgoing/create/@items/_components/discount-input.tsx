@@ -2,8 +2,6 @@
 
 import React from "react";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
-import { TextInputWithRightAddOn } from "@/core/presentations/components/text-input-with-right-add-on";
-import { TextInputWithLeftAddOn } from "@/core/presentations/components/text-input-with-left-add-on";
 import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 
@@ -14,32 +12,34 @@ export function DiscountInput() {
     if (!setDiscount) return;
 
     const numberValue = Number(value.replace(/\./g, ""));
-    if (discount === numberValue) return; // No changes
+    if (discount === numberValue) return;
 
     setDiscount(numberValue);
   };
 
   if (discountType === DiscountType.NO_DISCOUNT) {
-    return <TextInput title="Diskon" disabled />;
+    return <TextInput label="Diskon" disabled />;
   } else if (discountType === DiscountType.PERCENTAGE) {
     return (
-      <TextInputWithRightAddOn
-        title="Diskon"
+      <TextInput
+        label="Diskon"
         rightAddOn="%"
+        inputTextAlign="text-right"
         value={discount.toLocaleString("id-ID")}
         onChange={handleChange}
-        textDirection="text-right"
       />
     );
   } else if (discountType === DiscountType.FIXED) {
     return (
-      <TextInputWithLeftAddOn
-        title="Diskon"
+      <TextInput
+        label="Diskon"
         leftAddOn="Rp"
-        textDirection="text-right"
+        inputTextAlign="text-right"
         value={discount.toLocaleString("id-ID")}
         onChange={handleChange}
       />
     );
-  } else return <TextInput title="Diskon" disabled />;
+  } else {
+    return <TextInput label="Diskon" disabled />;
+  }
 }

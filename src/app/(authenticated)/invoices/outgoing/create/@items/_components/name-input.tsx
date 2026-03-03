@@ -6,5 +6,5 @@ import { TextInput } from "@/core/presentations/components/text-inputs/text-inpu
 export function NameInput() {
   const { name, setName } = useAddItem();
 
-  return <TextInput title="Nama" value={name} onChange={setName} required />;
+  return <TextInput label="Nama Item" placeholder="Masukkan nama item" value={name} onChange={setName} required />;
 }

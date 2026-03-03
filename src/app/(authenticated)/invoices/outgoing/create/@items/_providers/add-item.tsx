@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { TaxCalculator } from "@/core/utilities/tax/domain/calculator";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
@@ -36,6 +36,7 @@ interface AddItemContextProps {
   total: number;
   mustRecalculateTax: boolean;
   recalculated?: () => void;
+  setCalculatedTax?: (result: { tax: number; taxBase: number; total: number }) => void;
   clearInput?: () => void;
   setInput?: (data: InitialItem) => void;
   setName?: React.Dispatch<React.SetStateAction<string>>;
@@ -80,9 +81,18 @@ export function AddItemProvider(props: AddItemProviderProps) {
 
   // Utility States
   const [mustRecalculateTax, setMustRecalculateTax] = useState<boolean>(true);
+  const isCalculatingRef = useRef(false);
 
   // Functions
   const recalculated = () => setMustRecalculateTax(false);
+
+  const setCalculatedTax = (result: { tax: number; taxBase: number; total: number }) => {
+    isCalculatingRef.current = true;
+    setTax(result.tax);
+    setTaxBase(result.taxBase);
+    setTotal(result.total);
+    setMustRecalculateTax(false);
+  };
 
   const clearInput = () => {
     setName("");
@@ -112,9 +122,15 @@ export function AddItemProvider(props: AddItemProviderProps) {
   };
 
   useEffect(() => {
+    if (isCalculatingRef.current) return;
     if (taxType === TaxType.NON_TAXABLE) setMustRecalculateTax(false);
     else setMustRecalculateTax(true);
   }, [qty, price, taxType, discount, discountType, tax, taxBase]);
+
+  // Always reset the calculating flag after each render so it never stays stale
+  useEffect(() => {
+    isCalculatingRef.current = false;
+  });
 
   useEffect(() => {
     if (taxType === TaxType.NON_TAXABLE) {
@@ -144,6 +160,7 @@ export function AddItemProvider(props: AddItemProviderProps) {
         total,
         mustRecalculateTax,
         recalculated,
+        setCalculatedTax,
         clearInput,
         setInput,
         setName,

@@ -1,14 +1,15 @@
-import { DateInput } from "@/core/presentations/components/date-input";
-import {
-  useCreateOutgoingInvoice
-} from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+"use client";
+
+import { DatePickerInput } from "@/core/presentations/components/text-inputs/date-picker-input";
+import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { DateTime } from "luxon";
 
 export function InvoiceDateInput() {
   const { dueDate, invoiceDate, setInvoiceDate } = useCreateOutgoingInvoice();
 
-  const handleDateChange = (date: DateTime) => {
+  const handleDateChange = (date?: DateTime) => {
     if (!setInvoiceDate) return;
+    if (!date) return;
     if (!dueDate) {
       setInvoiceDate(date.startOf("day"));
       return;
@@ -21,8 +22,8 @@ export function InvoiceDateInput() {
   };
 
   return (
-    <DateInput
-      title="Tanggal Faktur"
+    <DatePickerInput
+      label="Tanggal Faktur"
       value={invoiceDate}
       onChange={handleDateChange}
       required

@@ -47,6 +47,10 @@ export function DemoButton() {
     );
   };
 
-  if (process.env.NODE_ENV === "production") return;
-  return <SecondaryButton outlined label="Auto Populate Data" onClick={autoPopulateData} />;
+  if (process.env.NODE_ENV === "production") return null;
+  return (
+    <div className="flex justify-end">
+      <SecondaryButton outlined label="Auto Populate" onClick={autoPopulateData} className="w-auto" />
+    </div>
+  );
 }

@@ -1,56 +1,44 @@
-"use client";
-
-import React from "react";
-import { useListAccountBankAccout } from "@/features/bank/presentation/hooks/use-list-account-bank-account";
-import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { HasNoAccountErrorDialog } from "@/app/(authenticated)/invoices/outgoing/create/_components/has-no-account-error-dialog";
-import { PageContent } from "@/core/presentations/components/page-content";
-import { CreateOutgoingInvoiceProgressStepper } from "@/app/(authenticated)/invoices/outgoing/create/_components/create-outgoing-invoice-progress-stepper";
 import { CreateOutgoingInvoiceProvider } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
-import { BackButton } from "@/app/(authenticated)/invoices/outgoing/create/_components/back-button";
-import { PageHeading } from "@/core/presentations/components/page-heading";
-
-interface CreateOutgoingInvoiceLayoutProps {
-  children: React.ReactNode;
-  recipient: React.ReactNode;
-  items: React.ReactNode;
-  payment: React.ReactNode;
-  review: React.ReactNode;
-}
+import { CreateNewPartnerProvider } from "@/features/partner/presentation/providers/create-new-partner";
+import { AddItemProvider } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
+import { CreateOutgoingSteppers } from "@/app/(authenticated)/invoices/outgoing/create/_components/create-outgoing-steppers";
+import { CreateOutgoingActionBar } from "@/app/(authenticated)/invoices/outgoing/create/_components/create-outgoing-action-bar";
+import { CreateOutgoingInvoiceLayoutProps } from "@/app/(authenticated)/invoices/outgoing/create/layout.types";
 
 export default function CreateOutgoingInvoiceLayout(props: CreateOutgoingInvoiceLayoutProps) {
-  const { loading, error } = useListAccountBankAccout();
-
-  if (error) {
-    if (error instanceof ServerError) {
-      if (error.code === ErrorCodes.ACCOUNT_HAS_NO_BANK_ACCOUNT.code) {
-        return <HasNoAccountErrorDialog />;
-      } else return null;
-    } else return null;
-  }
-
-  // If nothing happens, return the children
-  if (!loading && !error) {
-    return (
-      <CreateOutgoingInvoiceProvider maxStep={4}>
-        <PageHeading>Faktur Keluaran</PageHeading>
-        <PageContent>
-          <div className="flex flex-col space-y-12">
-            <div className="flex flex-col space-y-2">
-              <div className="flex flex-row items-start">
-                <BackButton />
+  return (
+    <CreateOutgoingInvoiceProvider>
+      <CreateNewPartnerProvider>
+        <AddItemProvider>
+          <div className="flex flex-col gap-y-8">
+            <div className="flex flex-col">
+              <div className="text-2xl leading-8 font-bold tracking-tighter">Buat Faktur Keluaran</div>
+              <div className="text-base leading-6 font-normal text-neutral-300">
+                Kirim faktur ke Client kamu disini. Ikuti langkah-langkah dibawah ini untuk membuat faktur keluaran baru
               </div>
-              <CreateOutgoingInvoiceProgressStepper />
             </div>
-            <div>
-              {props.recipient}
-              {props.items}
-              {props.payment}
-              {props.review}
+
+            <div className="rounded-lg border border-neutral-200">
+              <div className="flex flex-row">
+                <CreateOutgoingSteppers />
+
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <div className="flex-1 px-12 py-8">
+                    {props.recipient}
+                    {props.addClient}
+                    {props.items}
+                    {props.addItem}
+                    {props.payment}
+                    {props.review}
+                  </div>
+
+                  <CreateOutgoingActionBar />
+                </div>
+              </div>
             </div>
           </div>
-        </PageContent>
-      </CreateOutgoingInvoiceProvider>
-    );
-  }
+        </AddItemProvider>
+      </CreateNewPartnerProvider>
+    </CreateOutgoingInvoiceProvider>
+  );
 }

@@ -1,38 +1,14 @@
 "use client";
 
-import { FilledButton } from "@/core/presentations/components/filled-button";
-import {
-  AddItemDialog,
-  ItemDetail
-} from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/add-item-dialog";
-import { useState } from "react";
-import {
-  useCreateOutgoingInvoice
-} from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
+import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 
 export function HeaderAddItemButton() {
-  const { addInvoiceItem } = useCreateOutgoingInvoice();
-  const [open, setOpen] = useState(false);
+  const { setCurrentStep } = useCreateOutgoingInvoice();
 
   const handleClick = () => {
-    setOpen(true);
+    setCurrentStep?.("invoice-details.add-item");
   };
 
-  const handleSubmit = (item: ItemDetail) => {
-    addInvoiceItem?.(item);
-    setOpen(false);
-  };
-
-  return (
-    <>
-      <FilledButton onClick={handleClick}>
-        Tambah Item
-      </FilledButton>
-      <AddItemDialog
-        open={open}
-        onSubmit={handleSubmit}
-        onClose={() => setOpen(false)}
-      />
-    </>
-  );
+  return <PrimaryButton type="button" label="Tambah Item" onClick={handleClick} />;
 }

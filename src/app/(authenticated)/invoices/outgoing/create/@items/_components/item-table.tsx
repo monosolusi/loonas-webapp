@@ -1,7 +1,3 @@
-import { Table } from "@/core/presentations/components/table";
-import { TableHeader } from "@/core/presentations/components/table-header";
-import { TableBody } from "@/core/presentations/components/table-body";
-import { TableContainer } from "@/core/presentations/components/table-container";
 import React, { useMemo } from "react";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { AddItemTableButton } from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/add-item-table-button";
@@ -44,124 +40,85 @@ export function ItemTable(props: ItemTableProps) {
     return props.data.filter((row) => row.taxType === TaxType.NON_TAXABLE).reduce((sum, row) => sum + row.total, 0);
   }, [props.data]);
 
-  const generateDiscountString = (discountType?: DiscountType, discount?: number) => {
-    if (!discountType || !discount) return "-";
-    if (discountType === DiscountType.PERCENTAGE) return `${discount}%`;
-    if (discountType === DiscountType.FIXED) return IDRFormatter.toCurrency(discount);
-    return "-";
+  const formatDiscount = (row: ItemRow): string | null => {
+    if (!row.discountType || !row.discount) return null;
+    if (row.discountType === DiscountType.PERCENTAGE) return `${row.discount}%`;
+    if (row.discountType === DiscountType.FIXED) return IDRFormatter.toCurrency(row.discount);
+    return null;
   };
 
-  const formattedData = useMemo(() => {
-    return props.data.map((row, index) => {
-      return {
-        className: "group hover:bg-gray-50 cursor-pointer",
-        row: [
-          {
-            node: (
-              <div className="flex flex-col space-y-1">
-                <div className="font-bold text-gray-900 group-hover:underline">{row.name}</div>
-                {row.description && <span className="text-xs text-gray-500">{row.description}</span>}
-              </div>
-            ),
-            hideOnMobile: false,
-          },
-          { node: `${row.qty} / ${IDRFormatter.toCurrency(row.price)}`, hideOnMobile: false, className: "text-right" },
-          {
-            node: generateDiscountString(row.discountType, row.discount),
-            hideOnMobile: false,
-            className: "text-right",
-          },
-          {
-            node: row.taxBase === 0 ? "-" : IDRFormatter.toCurrency(row.taxBase),
-            hideOnMobile: false,
-            className: "text-right",
-          },
-          {
-            node: row.tax === 0 ? "-" : IDRFormatter.toCurrency(row.tax),
-            hideOnMobile: false,
-            className: "text-right",
-          },
-          { node: IDRFormatter.toCurrency(row.total), hideOnMobile: false, className: "text-right" },
-          {
-            node: (
-              <div className="flex justify-center gap-x-2">
-                <EditRowButton data={row} dataIndex={index} />
-                <DeleteRowButton data={{ name: row.name }} dataIndex={index} />
-              </div>
-            ),
-            hideOnMobile: false,
-          },
-        ],
-      };
-    });
-  }, [props.data]);
-
   return (
-    <TableContainer>
-      <Table>
-        <TableHeader
-          items={[
-            { node: "Nama Produk", hideOnMobile: false },
-            { node: "Qty / Harga", hideOnMobile: false, className: "text-right" },
-            { node: "Diskon", hideOnMobile: false, className: "text-right" },
-            { node: "DPP", hideOnMobile: false, className: "text-right" },
-            { node: "Pajak", hideOnMobile: false, className: "text-right" },
-            { node: "Jumlah", hideOnMobile: false, className: "text-right" },
-            { node: "", hideOnMobile: false },
-          ]}
-        />
-        <TableBody
-          items={[
-            ...formattedData,
-            {
-              className: "cursor-pointer",
-              row: [
-                {
-                  node: <AddItemTableButton />,
-                  hideOnMobile: false,
-                  colSpan: 7,
-                },
-              ],
-            },
-          ]}
-        />
-        <tfoot className="divide-y divide-gray-200 bg-gray-50">
-          <tr>
-            <td colSpan={5} className="px-3 pt-4 pb-2 text-right text-sm">
-              Dasar Pengenaan Pajak (DPP)
-            </td>
-            <td className="px-3 pt-4 pb-2 text-right text-sm">
-              {totalTaxBase === 0 ? "-" : IDRFormatter.toCurrency(totalTaxBase)}
-            </td>
-            <td></td>
-          </tr>
-          <tr>
-            <td colSpan={5} className="px-3 py-2 text-right text-sm">
-              Total Pajak
-            </td>
-            <td className="px-3 py-2 text-right text-sm">{totalTax === 0 ? "-" : IDRFormatter.toCurrency(totalTax)}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td colSpan={5} className="px-3 py-2 text-right text-sm">
-              Total Non-Pajak
-            </td>
-            <td className="px-3 py-2 text-right text-sm">
-              {nonTaxableAmount === 0 ? "-" : IDRFormatter.toCurrency(nonTaxableAmount)}
-            </td>
-            <td></td>
-          </tr>
-          <tr>
-            <td colSpan={5} className="px-3 pt-2 pb-4 text-right text-sm">
-              Grand Total Faktur
-            </td>
-            <td className="px-3 pt-2 pb-4 text-right text-sm font-bold underline">
-              {totalAmount === 0 ? "-" : IDRFormatter.toCurrency(totalAmount)}
-            </td>
-            <td></td>
-          </tr>
-        </tfoot>
-      </Table>
-    </TableContainer>
+    <div className="overflow-hidden rounded-sm shadow-sm ring-1 ring-black/5">
+      {/* Item rows */}
+      <div className="divide-y divide-gray-200 bg-white">
+        {props.data.map((row, index) => (
+          <div key={index} className="group cursor-pointer px-4 py-3 hover:bg-gray-50">
+            <div className="flex items-start justify-between gap-x-4">
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-bold text-gray-900 group-hover:underline">{row.name}</div>
+                {row.description && <div className="text-xs text-gray-500">{row.description}</div>}
+              </div>
+              <div className="flex shrink-0 items-center gap-x-3">
+                <span className="text-sm font-semibold text-gray-900">{IDRFormatter.toCurrency(row.total)}</span>
+                <div className="flex items-center gap-x-2">
+                  <EditRowButton dataIndex={index} />
+                  <DeleteRowButton data={{ name: row.name }} dataIndex={index} />
+                </div>
+              </div>
+            </div>
+            <div className="mt-1 flex flex-wrap items-center gap-x-1 text-xs text-gray-400">
+              <span>{row.qty} × {IDRFormatter.toCurrency(row.price)}</span>
+              {formatDiscount(row) && (
+                <>
+                  <span>·</span>
+                  <span>Diskon: {formatDiscount(row)}</span>
+                </>
+              )}
+              {row.taxBase > 0 && (
+                <>
+                  <span>·</span>
+                  <span>DPP: {IDRFormatter.toCurrency(row.taxBase)}</span>
+                </>
+              )}
+              {row.tax > 0 && (
+                <>
+                  <span>·</span>
+                  <span>Pajak: {IDRFormatter.toCurrency(row.tax)}</span>
+                </>
+              )}
+            </div>
+          </div>
+        ))}
+
+        {/* Add item row */}
+        <div className="cursor-pointer py-1">
+          <AddItemTableButton />
+        </div>
+      </div>
+
+      {/* Summary footer */}
+      <div className="divide-y divide-gray-200 bg-gray-50 text-sm">
+        <div className="flex items-baseline justify-end gap-x-4 px-4 pt-4 pb-2">
+          <span>Dasar Pengenaan Pajak (DPP)</span>
+          <span className="w-36 text-right">{totalTaxBase === 0 ? "-" : IDRFormatter.toCurrency(totalTaxBase)}</span>
+        </div>
+        <div className="flex items-baseline justify-end gap-x-4 px-4 py-2">
+          <span>Total Pajak</span>
+          <span className="w-36 text-right">{totalTax === 0 ? "-" : IDRFormatter.toCurrency(totalTax)}</span>
+        </div>
+        <div className="flex items-baseline justify-end gap-x-4 px-4 py-2">
+          <span>Total Non-Pajak</span>
+          <span className="w-36 text-right">
+            {nonTaxableAmount === 0 ? "-" : IDRFormatter.toCurrency(nonTaxableAmount)}
+          </span>
+        </div>
+        <div className="flex items-baseline justify-end gap-x-4 px-4 pt-2 pb-4">
+          <span>Grand Total Faktur</span>
+          <span className="w-36 text-right font-bold underline">
+            {totalAmount === 0 ? "-" : IDRFormatter.toCurrency(totalAmount)}
+          </span>
+        </div>
+      </div>
+    </div>
   );
 }

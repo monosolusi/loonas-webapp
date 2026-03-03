@@ -8,18 +8,18 @@ import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@item
 export function TaxTypeSelect() {
   const { taxType, setTaxType } = useAddItem();
 
-  const handleChange = (data: { value: string; label: string }) => {
+  const handleChange = (value: string) => {
     if (!setTaxType) return;
-    if (taxType === data.value) return;
-    setTaxType(data.value as TaxType);
+    if (taxType === value) return;
+    setTaxType(value as TaxType);
   };
 
   return (
     <SelectInput
-      title="Jenis Pajak"
+      label="Jenis Pajak"
       value={taxType}
       onChange={handleChange}
-      data={[
+      options={[
         { value: TaxType.MANUAL_INCLUSIVE, label: "Manual Inklusif" },
         { value: TaxType.MANUAL_EXCLUSIVE, label: "Manual Eksklusif" },
         { value: TaxType.NON_TAXABLE, label: "Tidak Kena Pajak" },

@@ -17,7 +17,7 @@ export function QtyInput() {
 
   return (
     <TextInput
-      title="Qty"
+      label="Qty"
       type="text"
       inputTextAlign="text-right"
       value={qty.toLocaleString("id-ID")}

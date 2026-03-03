@@ -1,13 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { DateTime } from "luxon";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
-import { useListPaymentMethod } from "@/features/payment/presentations/hooks/use-list-payment-method";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
+
+export type OutgoingStep =
+  | "select-recipient"
+  | "select-recipient.create-new"
+  | "invoice-details"
+  | "invoice-details.add-item"
+  | "invoice-details.edit-item"
+  | "payment-configuration"
+  | "review-and-send";
 
 export interface InvoiceItem {
   name: string;
@@ -29,9 +37,8 @@ interface PaymentConfiguration {
 }
 
 interface CreateOutgoingInvoiceContextProps {
-  currentStep: number;
-  nextStep?: () => void;
-  previousStep?: () => void;
+  currentStep: OutgoingStep;
+  setCurrentStep?: React.Dispatch<React.SetStateAction<OutgoingStep>>;
   recipient?: PartnerEntity;
   invoiceNumber?: string;
   invoiceDate: DateTime;
@@ -41,6 +48,11 @@ interface CreateOutgoingInvoiceContextProps {
   tnc?: string;
   signature?: File | null;
   paymentConfiguration: PaymentConfiguration[];
+  isRecipientStepClean: boolean;
+  isInvoiceDetailsStepClean: boolean;
+  isPaymentConfigStepClean: boolean;
+  editingItemIndex: number | null;
+  setEditingItemIndex?: React.Dispatch<React.SetStateAction<number | null>>;
   setPaymentConfiguration?: React.Dispatch<React.SetStateAction<PaymentConfiguration[]>>;
   setSignature?: React.Dispatch<React.SetStateAction<File | null>>;
   setTnc?: React.Dispatch<React.SetStateAction<string>>;
@@ -57,21 +69,22 @@ interface CreateOutgoingInvoiceContextProps {
 
 interface CreateOutgoingInvoiceProviderProps {
   children: React.ReactNode;
-  maxStep: number;
 }
 
 const CreateOutgoingInvoiceContext = React.createContext<CreateOutgoingInvoiceContextProps>({
-  currentStep: 0,
+  currentStep: "select-recipient",
   invoiceDate: DateTime.now().setZone("Asia/Jakarta"),
   dueDate: DateTime.now().setZone("Asia/Jakarta").plus({ days: 7 }),
   items: [],
   paymentConfiguration: [],
+  isRecipientStepClean: false,
+  isInvoiceDetailsStepClean: false,
+  isPaymentConfigStepClean: false,
+  editingItemIndex: null,
 });
 
 export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProviderProps) {
-  const { paymentMethods } = useListPaymentMethod();
-
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState<OutgoingStep>("select-recipient");
   const [recipient, setRecipient] = useState<PartnerEntity>();
   const [invoiceNumber, setInvoiceNumber] = useState<string>("");
   const [invoiceDate, setInvoiceDate] = useState<DateTime>(DateTime.now().setZone("Asia/Jakarta"));
@@ -81,31 +94,22 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
   const [tnc, setTnc] = useState<string>("");
   const [signature, setSignature] = useState<File | null>(null);
   const [paymentConfiguration, setPaymentConfiguration] = useState<PaymentConfiguration[]>([]);
+  const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (!paymentMethods) return;
-    const paymentConfiguration = paymentMethods.map((paymentMethod) => ({
-      paymentMethod: paymentMethod,
-      isEnabled: true,
-      chargeFeeOn: ChargeFeeOn.INVOICE_RECEIVER,
-    }));
+  const isRecipientStepClean = useMemo(() => {
+    return !!recipient;
+  }, [recipient]);
 
-    setPaymentConfiguration(paymentConfiguration);
-  }, [paymentMethods]);
+  const isInvoiceDetailsStepClean = useMemo(() => {
+    if (!invoiceNumber) return false;
+    if (invoiceDate.startOf("day") > dueDate.startOf("day")) return false;
+    if (items.length === 0) return false;
+    return true;
+  }, [invoiceNumber, invoiceDate, dueDate, items]);
 
-  const nextStep = () => {
-    setCurrentStep((prev) => {
-      if (prev < props.maxStep - 1) return prev + 1;
-      return prev;
-    });
-  };
-
-  const previousStep = () => {
-    setCurrentStep((prev) => {
-      if (prev > 0) return prev - 1;
-      return prev;
-    });
-  };
+  const isPaymentConfigStepClean = useMemo(() => {
+    return paymentConfiguration.length > 0;
+  }, [paymentConfiguration]);
 
   const addInvoiceItem = (item: InvoiceItem) => {
     if (!setItems) return;
@@ -148,8 +152,7 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
     <CreateOutgoingInvoiceContext.Provider
       value={{
         currentStep,
-        nextStep,
-        previousStep,
+        setCurrentStep,
         recipient,
         invoiceNumber,
         invoiceDate,
@@ -158,6 +161,11 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
         note,
         tnc,
         paymentConfiguration,
+        isRecipientStepClean,
+        isInvoiceDetailsStepClean,
+        isPaymentConfigStepClean,
+        editingItemIndex,
+        setEditingItemIndex,
         setPaymentConfiguration,
         signature,
         setSignature,
