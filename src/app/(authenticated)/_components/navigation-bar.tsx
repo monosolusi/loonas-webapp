@@ -3,7 +3,7 @@ import { NavigationItem } from "@/app/(authenticated)/_components/navigation-ite
 
 export function NavigationBar() {
   return (
-    <nav className="bg-background flex h-full w-[256px] flex-col gap-y-8 border-r border-r-neutral-200 p-6">
+    <nav className="bg-background flex h-full w-[256px] shrink-0 flex-col gap-y-8 border-r border-r-neutral-200 p-6">
       <LogoImage className="h-auto w-24" />
       <div className="flex flex-1 flex-col gap-y-1">
         <NavigationItem
@@ -17,6 +17,12 @@ export function NavigationBar() {
           label="Faktur Masukan"
           iconPath="/assets/images/invoice-in-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/invoice-in-icon-primary-300-w16-h16.svg"
+        />
+        <NavigationItem
+          href="/invoices/outgoing/create"
+          label="Faktur Keluaran"
+          iconPath="/assets/images/invoice-out-icon-neutral-300-w16-h16.svg"
+          selectedIconPath="/assets/images/invoice-out-icon-primary-300-w16-h16.svg"
         />
         <NavigationItem
           href="/accounts"

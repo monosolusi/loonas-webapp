@@ -15,6 +15,7 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/invoices/incoming": { title: "Faktur Masukan" },
   "/invoices/incoming/create": { title: "Faktur Masukan" },
   "/invoices/outgoing": { title: "Faktur Keluaran" },
+  "/invoices/outgoing/create": { title: "Faktur Keluaran" },
   "/clients": { title: "Klien" },
   "/inventories": { title: "Inventaris" },
   "/settings": { title: "Pengaturan" },
