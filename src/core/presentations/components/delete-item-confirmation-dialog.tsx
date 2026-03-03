@@ -1,6 +1,6 @@
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
-import { FilledButton } from "@/core/presentations/components/filled-button";
+import { DangerButton } from "@/core/presentations/components/buttons/danger-button";
 
 type DeleteItemConfirmationDialogProps = {
   open: boolean;
@@ -23,9 +23,7 @@ export function DeleteItemConfirmationDialog(props: DeleteItemConfirmationDialog
       </div>
       <div className="-mx-4 flex flex-row justify-end space-x-4 border-t border-gray-200 px-4 pt-4 sm:-mx-6 sm:px-6">
         <SecondaryButton outlined type="button" label="Batal" onClick={props.onClose} />
-        <FilledButton type="button" onClick={onSubmit} color="danger">
-          Hapus
-        </FilledButton>
+        <DangerButton type="button" label="Hapus" onClick={onSubmit} />
       </div>
     </LoonasDialog>
   );

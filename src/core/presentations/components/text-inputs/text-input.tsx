@@ -10,6 +10,9 @@ export type TextInputProps = {
   onChange?: (value: string) => void;
   leftIcon?: React.ReactNode; // Must be width and height props of 20x20
   rightIcon?: React.ReactNode; // Must be width and height props of 20x20
+  leftAddOn?: string; // Text prefix inside the input container (e.g. "Rp")
+  rightAddOn?: string; // Text suffix inside the input container (e.g. "%")
+  inputTextAlign?: string;
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">;
 
 /**
@@ -26,7 +29,7 @@ export function TextInput(props: TextInputProps) {
 
   const cleanedInputProps = useMemo(() => {
     // Remove props that doesn't belong to the input element.
-    const { leftIcon, rightIcon, label, onChange, description, error, ...cleanedProps } = props;
+    const { leftIcon, rightIcon, leftAddOn, rightAddOn, label, onChange, description, error, inputTextAlign, ...cleanedProps } = props;
     return Object.assign({}, cleanedProps, {
       value: cleanedProps.value ?? "",
     }) as React.InputHTMLAttributes<HTMLInputElement>;
@@ -36,14 +39,14 @@ export function TextInput(props: TextInputProps) {
   const isDisabled = useMemo(() => !!props.disabled, [props.disabled]);
 
   return (
-    <div className="flex flex-col gap-2 transition-all">
+    <div className="flex min-w-0 flex-col gap-2 transition-all">
       <span className={clsx("text-base", isDisabled && "text-neutral-200")}>
         {props.label}
         {props.required && <span className="text-red-500"> *</span>}
       </span>
       <div
         className={clsx(
-          "display flex flex-row items-center gap-3 rounded-lg border border-solid p-3 transition-all focus-within:ring-2",
+          "display flex h-11 min-w-0 flex-row items-center gap-3 rounded-lg border border-solid p-3 transition-all focus-within:ring-2",
           isDisabled
             ? "cursor-not-allowed border-neutral-100 bg-neutral-100 focus-within:ring-0"
             : hasError
@@ -51,16 +54,27 @@ export function TextInput(props: TextInputProps) {
               : "focus-within:border-primary-300 focus-within:ring-primary-300/20 border-neutral-100",
         )}
       >
+        {props.leftAddOn && (
+          <span className={clsx("shrink-0 text-base", isDisabled ? "text-neutral-200" : "text-neutral-300")}>
+            {props.leftAddOn}
+          </span>
+        )}
         {props.leftIcon && <div className={clsx("shrink-0", isDisabled && "opacity-50")}>{props.leftIcon}</div>}
         <input
           {...cleanedInputProps}
           onChange={onChange}
           className={clsx(
-            "flex-1 text-base outline-none placeholder:text-neutral-200",
+            "min-w-0 flex-1 text-base outline-none placeholder:text-neutral-200",
             isDisabled && "cursor-not-allowed bg-neutral-100 text-neutral-300",
+            props.inputTextAlign,
           )}
         />
         {props.rightIcon && <div className={clsx("shrink-0", isDisabled && "opacity-50")}>{props.rightIcon}</div>}
+        {props.rightAddOn && (
+          <span className={clsx("shrink-0 text-base", isDisabled ? "text-neutral-200" : "text-neutral-300")}>
+            {props.rightAddOn}
+          </span>
+        )}
       </div>
       {hasError && <span className="text-xs leading-4 font-normal text-red-500">{props.error}</span>}
       {!hasError && props.description && (
