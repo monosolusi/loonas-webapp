@@ -1,15 +1,27 @@
-import {
-  PaymentConfigurationTable
-} from "@/app/(authenticated)/invoices/outgoing/create/@payment/_components/payment-configuration-table";
-import { useMemo } from "react";
+import { PaymentConfigurationTable } from "@/app/(authenticated)/invoices/outgoing/create/@payment/_components/payment-configuration-table";
+import { useEffect, useMemo, useRef } from "react";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import {
-  useCreateOutgoingInvoice
-} from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
+import { useListPaymentMethod } from "@/features/payment/presentations/hooks/use-list-payment-method";
 
 export function PaymentConfigurationTableImpl() {
   const { paymentConfiguration, setPaymentConfiguration } = useCreateOutgoingInvoice();
+  const { paymentMethods, loading, error } = useListPaymentMethod();
+  const hasInitialized = useRef(false);
+
+  useEffect(() => {
+    if (!paymentMethods || !setPaymentConfiguration || hasInitialized.current) return;
+    hasInitialized.current = true;
+
+    setPaymentConfiguration(
+      paymentMethods.map((gateway) => ({
+        paymentMethod: gateway,
+        isEnabled: gateway.isActive,
+        chargeFeeOn: ChargeFeeOn.INVOICE_RECEIVER,
+      })),
+    );
+  }, [paymentMethods, setPaymentConfiguration]);
 
   const formattedData = useMemo(() => {
     const generateFeeInText = (variableFee: number, fixedFee: number) => {
@@ -52,8 +64,30 @@ export function PaymentConfigurationTableImpl() {
       if (index === -1) return prev;
       prev[index].chargeFeeOn = params.chargeFeeOn;
       return [...prev];
-    })
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-sm text-gray-500">Memuat metode pembayaran...</div>
+      </div>
+    );
   }
 
-  return <PaymentConfigurationTable data={formattedData} onEnableChange={handleEnableChange} onChargeFeeOnChange={handleChargeFeeOnChange} />;
+  if (error) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-sm text-red-500">Gagal memuat metode pembayaran. Silakan coba lagi.</div>
+      </div>
+    );
+  }
+
+  return (
+    <PaymentConfigurationTable
+      data={formattedData}
+      onEnableChange={handleEnableChange}
+      onChargeFeeOnChange={handleChargeFeeOnChange}
+    />
+  );
 }
