@@ -8,7 +8,7 @@ export function HasNoAccountErrorDialog() {
   const router = useRouter();
 
   const handleCreateBankAccountClick = () => {
-    router.push("/settings/bank-accounts/create");
+    router.push("/settings/bank-accounts");
   };
 
   return (

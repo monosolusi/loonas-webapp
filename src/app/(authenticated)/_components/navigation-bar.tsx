@@ -30,6 +30,12 @@ export function NavigationBar() {
           iconPath="/assets/images/people-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/people-icon-primary-300-w16-h16.svg"
         />
+        <NavigationItem
+          href="/settings"
+          label="Pengaturan"
+          iconPath="/assets/images/gear-icon-neutral-300-w16-h16.svg"
+          selectedIconPath="/assets/images/gear-icon-primary-300-w16-h16.svg"
+        />
       </div>
       <div className="flex text-xs leading-4 text-neutral-300">Loonas</div>
     </nav>

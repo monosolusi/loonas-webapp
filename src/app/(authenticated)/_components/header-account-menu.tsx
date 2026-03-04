@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { HeaderUserEmail } from "@/app/(authenticated)/_components/header-user-email";
 import { HeaderSignOutMenu } from "@/app/(authenticated)/_components/header-sign-out-menu";
@@ -40,13 +41,34 @@ export function HeaderAccountMenu() {
 
           {/*  Settings Section */}
           <div className="flex flex-col gap-y-1 p-2">
-            <MenuItem
-              as="div"
-              className="flex cursor-pointer flex-row items-center gap-x-2 p-3 text-neutral-300 hover:rounded-lg hover:text-neutral-500"
-            >
-              <Image src="/assets/images/people-icon-neutral-300-w16-h16.svg" alt="Gear Icon" width={16} height={16} />
-              <div className="text-sm leading-4 font-semibold">Manajemen Akun</div>
-            </MenuItem>
+            <Link href="/settings">
+              <MenuItem
+                as="div"
+                className="flex cursor-pointer flex-row items-center gap-x-2 p-3 text-neutral-300 hover:rounded-lg hover:text-neutral-500"
+              >
+                <Image
+                  src="/assets/images/gear-icon-neutral-300-w16-h16.svg"
+                  alt="Settings Icon"
+                  width={16}
+                  height={16}
+                />
+                <div className="text-sm leading-4 font-semibold">Pengaturan</div>
+              </MenuItem>
+            </Link>
+            <Link href="/accounts">
+              <MenuItem
+                as="div"
+                className="flex cursor-pointer flex-row items-center gap-x-2 p-3 text-neutral-300 hover:rounded-lg hover:text-neutral-500"
+              >
+                <Image
+                  src="/assets/images/people-icon-neutral-300-w16-h16.svg"
+                  alt="Account Icon"
+                  width={16}
+                  height={16}
+                />
+                <div className="text-sm leading-4 font-semibold">Manajemen Akun</div>
+              </MenuItem>
+            </Link>
           </div>
 
           {/*  Divider */}

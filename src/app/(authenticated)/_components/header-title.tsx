@@ -19,6 +19,7 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/clients": { title: "Klien" },
   "/inventories": { title: "Inventaris" },
   "/settings": { title: "Pengaturan" },
+  "/settings/bank-accounts": { title: "Pengaturan" },
 };
 
 export function HeaderTitle() {
