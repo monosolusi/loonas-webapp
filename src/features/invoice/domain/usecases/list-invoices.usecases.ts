@@ -1,11 +1,11 @@
 import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
-import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { InvoiceRepository } from "@/features/invoice/domain/repositories/invoice";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { PaginatedData } from "@/core/resources/paginated";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
+import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-list-item";
 
 export class ListInvoicesUseCaseParams {
   public type?: InvoiceType;
@@ -22,14 +22,14 @@ export class ListInvoicesUseCaseParams {
 }
 
 export class ListInvoicesUseCase
-  implements UseCase<DataState<PaginatedData<InvoiceEntity>>, ListInvoicesUseCaseParams>
+  implements UseCase<DataState<PaginatedData<InvoiceListItemEntity>>, ListInvoicesUseCaseParams>
 {
   constructor(
     private readonly invoiceRepository: InvoiceRepository,
     private readonly sessionRepository: SessionRepository,
   ) {}
 
-  public async execute(params: ListInvoicesUseCaseParams): Promise<DataState<PaginatedData<InvoiceEntity>>> {
+  public async execute(params: ListInvoicesUseCaseParams): Promise<DataState<PaginatedData<InvoiceListItemEntity>>> {
     try {
       const session = await this.retrieveSession();
       return this.invoiceRepository.list(

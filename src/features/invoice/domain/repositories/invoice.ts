@@ -16,6 +16,7 @@ import { PaymentMethodPayInDetailEntity } from "@/features/payment/domain/entiti
 import { InvoiceTimelineEntity } from "@/features/invoice/domain/entities/invoice-timeline";
 import { PaginatedData } from "@/core/resources/paginated";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
+import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-list-item";
 import { InvoiceSummaryEntity } from "@/features/invoice/domain/entities/invoice-summary";
 import { CashFlowEntity } from "@/features/invoice/domain/entities/cash-flow";
 
@@ -85,7 +86,7 @@ export interface ListInvoicesFilter {
 }
 
 export interface InvoiceRepository {
-  list(filter: ListInvoicesFilter, session: SessionEntity): Promise<DataState<PaginatedData<InvoiceEntity>>>;
+  list(filter: ListInvoicesFilter, session: SessionEntity): Promise<DataState<PaginatedData<InvoiceListItemEntity>>>;
 
   get(
     filter: InvoiceRepositoryFilter,

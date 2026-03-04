@@ -27,6 +27,8 @@ import { PublicOutgoingInvoiceModel } from "../models/public-outgoing-invoice";
 import { PayInModel } from "../models/pay-in";
 import { InvoiceTimelineModel } from "../models/invoice-timeline";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
+import { InvoiceListItemModel } from "@/features/invoice/data/types/invoice-list-item-model";
+import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 
 export class InvoiceServiceImpl implements InvoiceService {
   constructor(private readonly http: HttpRequest) {}
@@ -34,7 +36,7 @@ export class InvoiceServiceImpl implements InvoiceService {
   public async list(
     filter: ListInvoicesServiceFilter,
     session: SessionEntity,
-  ): Promise<{ data: InvoiceModel[]; meta: PaginationMetaModel }> {
+  ): Promise<{ data: InvoiceListItemModel[]; meta: PaginationMetaModel }> {
     try {
       const path = "/invoices";
       const method = "GET";
@@ -47,7 +49,7 @@ export class InvoiceServiceImpl implements InvoiceService {
       const result = await this.http.request({ path, method, searchParams, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      const data = (result.data as Record<string, any>[]).map(InvoiceModel.fromJson);
+      const data = (result.data as Record<string, any>[]).map((item) => this.parseInvoiceListItem(item));
       const meta = PaginationMetaModel.fromJson(result.meta);
 
       return { data, meta };
@@ -55,6 +57,34 @@ export class InvoiceServiceImpl implements InvoiceService {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
     }
+  }
+
+  private parseInvoiceListItem(doc: Record<string, any>): InvoiceListItemModel {
+    switch (doc.type) {
+      case InvoiceType.OUTGOING:
+        return this.parseOutgoingInvoiceFromListItem(doc);
+      case InvoiceType.INCOMING:
+      default:
+        return InvoiceModel.fromJson(doc);
+    }
+  }
+
+  private parseOutgoingInvoiceFromListItem(doc: Record<string, any>): OutgoingInvoiceModel {
+    if (doc.signature) doc.signature = FileModel.fromJson(doc.signature);
+    if (doc.pdf) doc.pdf = FileModel.fromJson(doc.pdf);
+    if (doc.items) doc.items = doc.items.map(InvoiceItemModel.fromJson);
+    if (doc.recipient) doc.recipient = InvoiceRecipientModel.fromJson(doc.recipient);
+    if (doc.summary) doc.summary = InvoiceItemSummaryModel.fromJson(doc.summary);
+    if (doc.sender) doc.sender = InvoiceSenderModel.fromJson(doc.sender);
+
+    return OutgoingInvoiceModel.fromJson(doc, {
+      items: doc.items ?? [],
+      recipient: doc.recipient,
+      signature: doc.signature,
+      summary: doc.summary,
+      sender: doc.sender,
+      pdf: doc.pdf,
+    });
   }
 
   public async send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void> {

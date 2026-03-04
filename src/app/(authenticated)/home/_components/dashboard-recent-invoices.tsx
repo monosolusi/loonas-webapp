@@ -5,7 +5,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
-import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
+import { InvoiceEntity, InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
+import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
@@ -103,7 +104,7 @@ function SkeletonRow() {
 export function DashboardRecentInvoices() {
   const router = useRouter();
   const [activeFilter, setActiveFilter] = useState<InvoiceType | undefined>(undefined);
-  const { invoices, loading } = useListInvoices({ type: activeFilter, limit: 5, includes: "documents" });
+  const { invoices, loading, error } = useListInvoices({ type: activeFilter, limit: 5, includes: "documents" });
 
   return (
     <SectionCard
@@ -146,16 +147,25 @@ export function DashboardRecentInvoices() {
         </>
       )}
 
+      {/* Error state */}
+      {!loading && error && (
+        <div className="px-6 py-10 text-center text-sm text-neutral-300">Gagal memuat data faktur.</div>
+      )}
+
       {/* Empty state */}
-      {!loading && invoices?.length === 0 && (
+      {!loading && !error && invoices?.length === 0 && (
         <div className="px-6 py-10 text-center text-sm text-neutral-300">Belum ada faktur</div>
       )}
 
       {/* Rows */}
       {!loading &&
+        !error &&
         invoices?.map((inv) => {
-          const direction = inv.type === InvoiceType.INCOMING ? "in" : "out";
-          const extraInvoices = (inv.documents?.length ?? 1) - 1;
+          const isIncoming = inv instanceof InvoiceEntity;
+          const direction = isIncoming ? "in" : "out";
+          const partyName = isIncoming ? inv.receiver.name : (inv as OutgoingInvoiceEntity).recipient.fullName;
+          const total = isIncoming ? inv.total : (inv as OutgoingInvoiceEntity).summary.total;
+          const extraInvoices = isIncoming ? (inv.documents?.length ?? 1) - 1 : 0;
 
           return (
             <div
@@ -175,9 +185,7 @@ export function DashboardRecentInvoices() {
                 </div>
                 <div className="flex min-w-0 flex-col gap-1">
                   <div className="flex items-center gap-2">
-                    <span className="truncate text-sm leading-5 font-semibold text-neutral-500">
-                      {inv.receiver.name}
-                    </span>
+                    <span className="truncate text-sm leading-5 font-semibold text-neutral-500">{partyName}</span>
                     {extraInvoices > 0 && (
                       <span className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-xs leading-4 font-medium text-neutral-300">
                         +{extraInvoices}
@@ -192,7 +200,7 @@ export function DashboardRecentInvoices() {
 
               {/* Nominal — left-aligned amount */}
               <span className="text-sm leading-5 font-semibold text-neutral-500">
-                {IDRFormatter.toCurrency(inv.total)}
+                {IDRFormatter.toCurrency(total)}
               </span>
 
               {/* Status — colored text */}

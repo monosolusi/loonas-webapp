@@ -13,6 +13,7 @@ import {
 } from "@/features/invoice/domain/repositories/invoice";
 import { PaginatedData } from "@/core/resources/paginated";
 import { InvoiceEntity } from "../../domain/entities/invoice";
+import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-list-item";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { InvoiceService } from "@/features/invoice/domain/sources/invoice";
 import { OutgoingInvoiceEntity } from "../../domain/entities/outgoing-invoice";
@@ -35,7 +36,7 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
   public async list(
     filter: ListInvoicesFilter,
     session: SessionEntity,
-  ): Promise<DataState<PaginatedData<InvoiceEntity>>> {
+  ): Promise<DataState<PaginatedData<InvoiceListItemEntity>>> {
     try {
       const result = await this.invoiceService.list(
         {

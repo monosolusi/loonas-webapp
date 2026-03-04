@@ -14,6 +14,7 @@ import { PayInModel } from "../../data/models/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import { PaginationMetaModel } from "@/core/resources/pagination-meta-model";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
+import { InvoiceListItemModel } from "@/features/invoice/data/types/invoice-list-item-model";
 import { InvoiceSummaryModel } from "@/features/invoice/data/models/invoice-summary";
 import { CashFlowModel } from "@/features/invoice/data/models/cash-flow";
 
@@ -86,7 +87,7 @@ export interface InvoiceService {
   list(
     filter: ListInvoicesServiceFilter,
     session: SessionEntity,
-  ): Promise<{ data: InvoiceModel[]; meta: PaginationMetaModel }>;
+  ): Promise<{ data: InvoiceListItemModel[]; meta: PaginationMetaModel }>;
 
   get(
     filter: InvoiceServiceFilter,
