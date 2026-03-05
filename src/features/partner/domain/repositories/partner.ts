@@ -1,7 +1,7 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { DataState } from "@/core/resources/data-state";
 import { PartnerEntity } from "../entities/partner";
-import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
+import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
 
 export interface PartnerRepositorySearchParams {
   limit?: number;
@@ -27,7 +27,7 @@ export interface PartnerRepository {
     filter: { partner: { id: string } },
     params: PartnerRepositorySearchParams,
     session: SessionEntity,
-  ): Promise<DataState<InvoiceEntity[]>>;
+  ): Promise<DataState<IncomingInvoiceEntity[]>>;
 
   get(filter: PartnerRepositoryFilter, session: SessionEntity): Promise<DataState<PartnerEntity>>;
 

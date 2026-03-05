@@ -1,13 +1,13 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { DataState } from "@/core/resources/data-state";
-import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
+import { InvoiceDetailEntity } from "@/features/invoice/domain/types/invoice-detail";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { DateTime } from "luxon";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
-import { CombinedInvoiceSummaryEntity } from "@/features/invoice/domain/entities/combined-invoice-summary";
+
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { PublicOutgoingInvoiceEntity } from "../entities/public-outgoing-invoice";
 import { PayInEntity } from "../entities/pay-in";
@@ -61,9 +61,6 @@ export interface CreateOutgoingParams {
   sendChannel: NotificationChannel[];
 }
 
-export interface CombinedInvoiceSummaryFilter {
-  id: string;
-}
 
 export interface OutgoingInvoiceFilter {
   id?: string;
@@ -92,18 +89,11 @@ export interface InvoiceRepository {
     filter: InvoiceRepositoryFilter,
     params: Pick<InvoiceRepositoryFilterParams, "includes">,
     session: SessionEntity,
-  ): Promise<DataState<InvoiceEntity>>;
+  ): Promise<DataState<InvoiceDetailEntity>>;
 
   createOutgoing(params: CreateOutgoingParams, session: SessionEntity): Promise<DataState<OutgoingInvoiceEntity>>;
 
   getOutgoing(filter: OutgoingInvoiceFilter, session: SessionEntity): Promise<DataState<OutgoingInvoiceEntity>>;
-
-  listCombinedInvoiceSummary(session: SessionEntity): Promise<DataState<CombinedInvoiceSummaryEntity[]>>;
-
-  getCombinedInvoiceSummary(
-    filter: CombinedInvoiceSummaryFilter,
-    session: SessionEntity,
-  ): Promise<DataState<CombinedInvoiceSummaryEntity>>;
 
   getPublicOutgoing(filter: { invoiceId: string }): Promise<DataState<PublicOutgoingInvoiceEntity>>;
 

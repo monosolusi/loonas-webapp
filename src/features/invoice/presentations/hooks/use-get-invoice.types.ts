@@ -1,5 +1,5 @@
 import { useClerk } from "@clerk/nextjs";
-import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
+import { InvoiceDetailEntity } from "@/features/invoice/domain/types/invoice-detail";
 import { ServerError } from "@/core/resources/server-error";
 
 export type UseGetInvoiceParams = {
@@ -18,7 +18,7 @@ type InitialState = {
 };
 
 type LoadedState = {
-  invoice: InvoiceEntity;
+  invoice: InvoiceDetailEntity;
   loading: false;
   error: null;
 };

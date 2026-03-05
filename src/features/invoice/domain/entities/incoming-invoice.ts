@@ -10,7 +10,7 @@ import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-
 
 export type InvoiceStatus = PaymentRequestStatus | OutgoingInvoiceStatus;
 
-interface InvoiceEntityConstructor {
+interface IncomingInvoiceEntityConstructor {
   id: string;
   receiver: PartnerEntity;
   bankAccount: BankAccountEntity;
@@ -26,7 +26,7 @@ interface InvoiceEntityConstructor {
   deletedAt?: DateTime;
 }
 
-export class InvoiceEntity implements AbstractEntity {
+export class IncomingInvoiceEntity implements AbstractEntity {
   public id: string;
   public receiver: PartnerEntity;
   public bankAccount: BankAccountEntity;
@@ -41,7 +41,7 @@ export class InvoiceEntity implements AbstractEntity {
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
 
-  constructor(args: InvoiceEntityConstructor) {
+  constructor(args: IncomingInvoiceEntityConstructor) {
     this.id = args.id;
     this.receiver = args.receiver;
     this.bankAccount = args.bankAccount;

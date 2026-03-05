@@ -1,6 +1,6 @@
 import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
-import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
+import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { PartnerRepository } from "@/features/partner/domain/repositories/partner";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
@@ -21,7 +21,7 @@ export class ListPartnerInvoiceUseCaseParams {
   }
 }
 
-export class ListPartnerInvoiceUseCase implements UseCase<DataState<InvoiceEntity[]>, ListPartnerInvoiceUseCaseParams> {
+export class ListPartnerInvoiceUseCase implements UseCase<DataState<IncomingInvoiceEntity[]>, ListPartnerInvoiceUseCaseParams> {
   constructor(
     private readonly partnerRepository: PartnerRepository,
     private readonly sessionRepository: SessionRepository,
@@ -29,7 +29,7 @@ export class ListPartnerInvoiceUseCase implements UseCase<DataState<InvoiceEntit
     Object.freeze(this);
   }
 
-  public async execute(params: ListPartnerInvoiceUseCaseParams): Promise<DataState<InvoiceEntity[]>> {
+  public async execute(params: ListPartnerInvoiceUseCaseParams): Promise<DataState<IncomingInvoiceEntity[]>> {
     try {
       const session = await this.sessionRepository.retrieve();
       if (session instanceof DataFailed) return session;

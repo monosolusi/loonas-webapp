@@ -4,6 +4,7 @@ import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-in
 import { useGetInvoiceTimeline } from "@/features/invoice/presentations/hooks/use-get-invoice-timeline";
 import { StatusBanner } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/status-banner";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
 type StatusBannerVariant = "pending" | "received" | "processing" | "completed";
 
@@ -22,7 +23,7 @@ export function StatusBannerImpl({ id }: StatusBannerImplProps) {
   const { invoice, loading: invoiceLoading } = useGetInvoice({ id });
   const { timeline, loading: timelineLoading } = useGetInvoiceTimeline({ id });
 
-  if (invoiceLoading || timelineLoading || !invoice || !timeline) {
+  if (invoiceLoading || timelineLoading || !invoice || !timeline || !isIncomingInvoice(invoice)) {
     return (
       <div className="h-[88px] animate-pulse rounded-lg border border-neutral-200 bg-neutral-100" />
     );

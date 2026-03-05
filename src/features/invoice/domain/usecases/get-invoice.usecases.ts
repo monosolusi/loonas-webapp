@@ -1,6 +1,6 @@
 import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
-import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
+import { InvoiceDetailEntity } from "@/features/invoice/domain/types/invoice-detail";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { InvoiceRepository } from "@/features/invoice/domain/repositories/invoice";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
@@ -15,13 +15,13 @@ export class GetInvoiceUseCaseParams {
   }
 }
 
-export class GetInvoiceUseCase implements UseCase<DataState<InvoiceEntity>, GetInvoiceUseCaseParams> {
+export class GetInvoiceUseCase implements UseCase<DataState<InvoiceDetailEntity>, GetInvoiceUseCaseParams> {
   constructor(
     private readonly invoiceRepository: InvoiceRepository,
     private readonly sessionRepository: SessionRepository,
   ) {}
 
-  public async execute(params: GetInvoiceUseCaseParams): Promise<DataState<InvoiceEntity>> {
+  public async execute(params: GetInvoiceUseCaseParams): Promise<DataState<InvoiceDetailEntity>> {
     try {
       const session = await this.retrieveSession();
       return this.invoiceRepository.get({ id: params.id }, { includes: params.includes }, session);

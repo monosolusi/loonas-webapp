@@ -6,10 +6,12 @@ import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-
 import { InvoiceItemSummaryEntity } from "@/features/invoice/domain/entities/invoice-item-summary";
 import { InvoiceSenderEntity } from "@/features/invoice/domain/entities/invoice-sender";
 import { InvoiceRecipientEntity } from "@/features/invoice/domain/entities/invoice-recipient";
+import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 
 interface OutgoingInvoiceEntityConstructor {
   id: string;
+  type: InvoiceType;
   recipient: InvoiceRecipientEntity;
   invoiceNumber: string;
   invoiceDate: DateTime;
@@ -30,6 +32,7 @@ interface OutgoingInvoiceEntityConstructor {
 
 export class OutgoingInvoiceEntity implements AbstractEntity {
   public id: string;
+  public type: InvoiceType;
   public recipient: InvoiceRecipientEntity;
   public invoiceNumber: string;
   public invoiceDate: DateTime;
@@ -49,6 +52,7 @@ export class OutgoingInvoiceEntity implements AbstractEntity {
 
   constructor(args: OutgoingInvoiceEntityConstructor) {
     this.id = args.id;
+    this.type = args.type;
     this.recipient = args.recipient;
     this.invoiceNumber = args.invoiceNumber;
     this.invoiceDate = args.invoiceDate;

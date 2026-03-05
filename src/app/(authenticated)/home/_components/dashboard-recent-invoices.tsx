@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
-import { InvoiceEntity, InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
+import { IncomingInvoiceEntity, InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
@@ -161,9 +161,9 @@ export function DashboardRecentInvoices() {
       {!loading &&
         !error &&
         invoices?.map((inv) => {
-          const isIncoming = inv instanceof InvoiceEntity;
+          const isIncoming = inv instanceof IncomingInvoiceEntity;
           const direction = isIncoming ? "in" : "out";
-          const partyName = isIncoming ? inv.receiver.name : (inv as OutgoingInvoiceEntity).recipient.fullName;
+          const partyName = isIncoming ? (inv as IncomingInvoiceEntity).receiver.name : (inv as OutgoingInvoiceEntity).recipient.fullName;
           const total = isIncoming ? inv.total : (inv as OutgoingInvoiceEntity).summary.total;
           const extraInvoices = isIncoming ? (inv.documents?.length ?? 1) - 1 : 0;
 

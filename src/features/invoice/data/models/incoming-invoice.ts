@@ -1,13 +1,13 @@
 import { PartnerModel } from "@/features/partner/data/models/partner";
 import { DateTime } from "luxon";
-import { InvoiceEntity, InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
+import { IncomingInvoiceEntity, InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
 import { BankAccountModel } from "@/features/bank/data/models/bank-account";
 import { PaymentGatewayModel } from "@/features/payment/data/models/payment-gateway";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { AbstractModel } from "@/core/resources/model";
 import { InvoiceSummaryDocumentModel } from "@/features/invoice/data/models/invoice-summary-document";
 
-interface InvoiceModelConstructor {
+interface IncomingInvoiceModelConstructor {
   id: string;
   receiver: PartnerModel;
   bankAccount: BankAccountModel;
@@ -23,7 +23,7 @@ interface InvoiceModelConstructor {
   deletedAt?: DateTime;
 }
 
-export class InvoiceModel implements AbstractModel {
+export class IncomingInvoiceModel implements AbstractModel {
   public id: string;
   public receiver: PartnerModel;
   public bankAccount: BankAccountModel;
@@ -38,7 +38,7 @@ export class InvoiceModel implements AbstractModel {
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
 
-  constructor(args: InvoiceModelConstructor) {
+  constructor(args: IncomingInvoiceModelConstructor) {
     this.id = args.id;
     this.receiver = args.receiver;
     this.bankAccount = args.bankAccount;
@@ -54,8 +54,8 @@ export class InvoiceModel implements AbstractModel {
     this.deletedAt = args.deletedAt;
   }
 
-  public static fromJson(doc: Record<string, any>): InvoiceModel {
-    return new InvoiceModel({
+  public static fromJson(doc: Record<string, any>): IncomingInvoiceModel {
+    return new IncomingInvoiceModel({
       id: doc["id"],
       receiver: PartnerModel.fromJson(doc["receiver"]),
       bankAccount: BankAccountModel.fromJson(doc["bank_account"]),
@@ -72,8 +72,8 @@ export class InvoiceModel implements AbstractModel {
     });
   }
 
-  toEntity(): InvoiceEntity {
-    return new InvoiceEntity({
+  toEntity(): IncomingInvoiceEntity {
+    return new IncomingInvoiceEntity({
       id: this.id,
       receiver: this.receiver.toEntity(),
       bankAccount: this.bankAccount.toEntity(),

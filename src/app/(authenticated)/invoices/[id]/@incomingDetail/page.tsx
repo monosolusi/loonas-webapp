@@ -1,34 +1,31 @@
-import { BackButton } from "@/core/presentations/components/back-button";
-import { PageContent } from "@/core/presentations/components/page-content";
-import { InvoiceSummaryImpl } from "@/app/(authenticated)/invoices/[id]/@incomingDetail/_components/invoice-summary-impl";
-import { DocumentTableImpl } from "./_components/document-table-impl";
-import { PaymentDetailImpl } from "./_components/payment-detail-impl";
-import { TimelineImpl } from "./_components/timeline-impl";
-import { CreditCardPaymentInstruction } from "./_components/cc-payment-instruction";
-import { VirtualAccountPaymentInstructionImpl } from "./_components/va-payment-instruction-impl";
+"use client";
+
+import { useParams } from "next/navigation";
+import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
+import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
+import { TransactionTimelineImpl } from "@/features/invoice/presentations/components/transaction-timeline-impl";
+import { InvoiceDocumentListImpl } from "@/app/(authenticated)/invoices/[id]/_components/invoice-document-list-impl";
+import { PaymentSummaryImpl } from "@/app/(authenticated)/invoices/[id]/_components/payment-summary-impl";
+import { RecipientInfoImpl } from "@/app/(authenticated)/invoices/[id]/_components/recipient-info-impl";
 
 export default function IncomingInvoiceDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const { invoice, loading } = useGetInvoice({ id });
+
+  if (loading || !invoice || !(invoice instanceof IncomingInvoiceEntity)) {
+    return null;
+  }
+
   return (
-    <PageContent>
-      <div className="flex flex-col space-y-4">
-        <div className="flex flex-row justify-between space-x-4">
-          <div className="flex">
-            <BackButton />
-          </div>
-        </div>
-        <InvoiceSummaryImpl />
-        <div className="flex flex-row space-x-4">
-          <div className="flex flex-2 flex-col space-y-4">
-            <PaymentDetailImpl />
-            <DocumentTableImpl />
-          </div>
-          <div className="flex flex-1 flex-col space-y-4">
-            <VirtualAccountPaymentInstructionImpl />
-            <CreditCardPaymentInstruction />
-            <TimelineImpl />
-          </div>
-        </div>
+    <div className="flex flex-row gap-x-6">
+      <div className="flex flex-2 flex-col gap-y-6">
+        <TransactionTimelineImpl id={id} />
+        <InvoiceDocumentListImpl id={id} />
       </div>
-    </PageContent>
+      <div className="flex flex-1 flex-col gap-y-6">
+        <PaymentSummaryImpl id={id} />
+        <RecipientInfoImpl id={id} />
+      </div>
+    </div>
   );
 }

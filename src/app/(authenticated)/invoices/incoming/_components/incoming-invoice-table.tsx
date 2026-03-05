@@ -1,4 +1,4 @@
-import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
+import { InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
 import { PaginationMeta } from "@/core/resources/paginated";
 import clsx from "clsx";
 import Link from "next/link";

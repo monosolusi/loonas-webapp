@@ -1,4 +1,4 @@
-import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
+import { InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
 import { DateTime } from "luxon";
 import React, { useMemo } from "react";
 import { TableMainCell } from "@/core/presentations/components/table-main-cell";

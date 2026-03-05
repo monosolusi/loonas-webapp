@@ -5,7 +5,7 @@ import { Tab, TabGroup, TabList } from "@headlessui/react";
 import Image from "next/image";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
-import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
+import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { IncomingInvoiceRow, IncomingInvoiceTable } from "./incoming-invoice-table";
 
@@ -117,7 +117,7 @@ export function IncomingInvoiceTableImpl() {
     );
   }
 
-  const incomingInvoices = invoices.filter((inv): inv is InvoiceEntity => inv instanceof InvoiceEntity);
+  const incomingInvoices = invoices.filter((inv): inv is IncomingInvoiceEntity => inv instanceof IncomingInvoiceEntity);
 
   const filteredInvoices = incomingInvoices.filter((invoice) => {
     const isPaid = invoice.status === "COMPLETED" || invoice.status === "PAID";

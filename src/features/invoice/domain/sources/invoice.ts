@@ -1,5 +1,5 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { InvoiceModel } from "@/features/invoice/data/models/invoice";
+import { InvoiceDetailModel } from "@/features/invoice/data/types/invoice-detail-model";
 import { InvoiceTimelineModel } from "@/features/invoice/data/models/invoice-timeline";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
@@ -7,7 +7,7 @@ import { DateTime } from "luxon";
 import { OutgoingInvoiceModel } from "@/features/invoice/data/models/outgoing-invoice";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
-import { CombinedInvoiceSummaryModel } from "@/features/invoice/data/models/combined-invoice-summary";
+
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { PublicOutgoingInvoiceModel } from "../../data/models/public-outgoing-invoice";
 import { PayInModel } from "../../data/models/pay-in";
@@ -59,9 +59,6 @@ export interface CreateOutgoingParams {
   sendChannel: NotificationChannel[];
 }
 
-export interface CombinedInvoiceSummaryFilter {
-  id: string;
-}
 
 export interface OutgoingInvoiceFilter {
   id?: string;
@@ -93,18 +90,11 @@ export interface InvoiceService {
     filter: InvoiceServiceFilter,
     params: Pick<InvoiceServiceFilterParams, "includes">,
     session: SessionEntity,
-  ): Promise<InvoiceModel>;
+  ): Promise<InvoiceDetailModel>;
 
   createOutgoing(params: CreateOutgoingParams, session: SessionEntity): Promise<OutgoingInvoiceModel>;
 
   getOutgoing(filter: OutgoingInvoiceFilter, session: SessionEntity): Promise<OutgoingInvoiceModel>;
-
-  listCombinedInvoiceSummary(session: SessionEntity): Promise<CombinedInvoiceSummaryModel[]>;
-
-  getCombinedInvoiceSummary(
-    filter: CombinedInvoiceSummaryFilter,
-    session: SessionEntity,
-  ): Promise<CombinedInvoiceSummaryModel>;
 
   getPublicOutgoing(filter: { invoiceId: string }): Promise<PublicOutgoingInvoiceModel>;
 

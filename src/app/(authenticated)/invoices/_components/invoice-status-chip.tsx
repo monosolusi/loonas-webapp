@@ -1,4 +1,4 @@
-import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
+import { InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
 import React from "react";
 
 interface InvoiceStatusChipProps {

@@ -6,8 +6,9 @@ import { SectionCard } from "@/core/presentations/components/section-card";
 import { PaymentSummary } from "@/app/(authenticated)/invoices/[id]/_components/payment-summary";
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import { InvoiceStatus } from "@/features/invoice/domain/entities/invoice";
+import { InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
 import { InvoiceTimelineStepEntity } from "@/features/invoice/domain/entities/invoice-timeline";
+import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
 interface PaymentSummaryImplProps {
   id: string;
@@ -38,7 +39,7 @@ export function PaymentSummaryImpl({ id }: PaymentSummaryImplProps) {
   const { invoice, loading: invoiceLoading } = useGetInvoice({ id });
   const { timeline, loading: timelineLoading } = useGetInvoiceTimeline({ id });
 
-  if (invoiceLoading || timelineLoading || !invoice || !timeline) {
+  if (invoiceLoading || timelineLoading || !invoice || !timeline || !isIncomingInvoice(invoice)) {
     return (
       <SectionCard title="Ringkasan Pembayaran" iconSrc="/assets/images/wallet-icon-primary-300-w16-h16.svg">
         <div className="flex flex-col gap-y-5">

@@ -8,7 +8,7 @@ import {
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PartnerEntity } from "../../domain/entities/partner";
-import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
+import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
 import { PartnerService } from "@/features/partner/domain/sources/partner";
 
 export class PartnerRepositoryImpl implements PartnerRepository {
@@ -42,7 +42,7 @@ export class PartnerRepositoryImpl implements PartnerRepository {
     filter: { partner: { id: string } },
     params: PartnerRepositorySearchParams,
     session: SessionEntity,
-  ): Promise<DataState<InvoiceEntity[]>> {
+  ): Promise<DataState<IncomingInvoiceEntity[]>> {
     try {
       const invoices = await this.partnerService.listInvoice({ partnerId: filter.partner.id }, params, session);
 

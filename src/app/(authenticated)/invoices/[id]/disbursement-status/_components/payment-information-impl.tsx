@@ -2,6 +2,7 @@
 
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { PaymentInformation } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/payment-information";
+import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
 interface PaymentInformationImplProps {
   id: string;
@@ -10,7 +11,7 @@ interface PaymentInformationImplProps {
 export function PaymentInformationImpl({ id }: PaymentInformationImplProps) {
   const { invoice, loading } = useGetInvoice({ id, includes: "documents" });
 
-  if (loading || !invoice) {
+  if (loading || !invoice || !isIncomingInvoice(invoice)) {
     return <div className="h-[200px] animate-pulse rounded-lg border border-neutral-200 bg-neutral-100" />;
   }
 

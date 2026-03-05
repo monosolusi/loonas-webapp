@@ -1,6 +1,6 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PartnerModel } from "@/features/partner/data/models/partner";
-import { InvoiceModel } from "@/features/invoice/data/models/invoice";
+import { IncomingInvoiceModel } from "@/features/invoice/data/models/incoming-invoice";
 
 export type PartnerServiceFilter = {
   partnerId?: string;
@@ -26,7 +26,7 @@ export interface PartnerService {
     filter: PartnerServiceFilter,
     params: PartnerServiceSearchParams,
     session: SessionEntity,
-  ): Promise<InvoiceModel[]>;
+  ): Promise<IncomingInvoiceModel[]>;
 
   get(params: PartnerServiceFilter, session: SessionEntity): Promise<PartnerModel>;
 

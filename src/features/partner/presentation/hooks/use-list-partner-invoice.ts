@@ -9,13 +9,13 @@ import {
 } from "@/features/partner/domain/usecases/list-partner-invoice";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
+import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
 import { HttpRequest } from "@/core/helpers/http-request";
 
 type ListPartnerInvoiceFetcherParams = { partner: { id: string }; limit?: number };
 
 async function ListPartnerInvoiceFetcher([, params]: [string, ListPartnerInvoiceFetcherParams]): Promise<
-  InvoiceEntity[]
+  IncomingInvoiceEntity[]
 > {
   const http = new HttpRequest();
   const sessionService = new LocalStorageSessionService();

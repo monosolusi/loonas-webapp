@@ -7,10 +7,12 @@ import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-
 import { InvoiceItemSummaryModel } from "@/features/invoice/data/models/invoice-item-summary";
 import { InvoiceSenderModel } from "@/features/invoice/data/models/invoice-sender";
 import { InvoiceRecipientModel } from "@/features/invoice/data/models/invoice-recipient";
+import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 
 interface OutgoingInvoiceModelConstructor {
   id: string;
+  type: InvoiceType;
   recipient: InvoiceRecipientModel;
   invoiceNumber: string;
   invoiceDate: DateTime;
@@ -40,6 +42,7 @@ interface OutgoingInvoiceModelFromJsonParams {
 
 export class OutgoingInvoiceModel implements AbstractModel {
   public id: string;
+  public type: InvoiceType;
   public recipient: InvoiceRecipientModel;
   public invoiceNumber: string;
   public invoiceDate: DateTime;
@@ -59,6 +62,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
 
   constructor(args: OutgoingInvoiceModelConstructor) {
     this.id = args.id;
+    this.type = args.type;
     this.recipient = args.recipient;
     this.invoiceNumber = args.invoiceNumber;
     this.invoiceDate = args.invoiceDate;
@@ -80,6 +84,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
   public static fromJson(data: Record<string, any>, params: OutgoingInvoiceModelFromJsonParams): OutgoingInvoiceModel {
     return new OutgoingInvoiceModel({
       id: data.id,
+      type: data.type as InvoiceType,
       recipient: params.recipient,
       invoiceNumber: data.invoice_number,
       invoiceDate: DateTime.fromISO(data.invoice_date),
@@ -102,6 +107,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
   public toEntity(): OutgoingInvoiceEntity {
     return new OutgoingInvoiceEntity({
       id: this.id,
+      type: this.type,
       recipient: this.recipient.toEntity(),
       invoiceNumber: this.invoiceNumber,
       invoiceDate: this.invoiceDate,

@@ -1,9 +1,9 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { InvoiceModel } from "@/features/invoice/data/models/invoice";
+import { IncomingInvoiceModel } from "@/features/invoice/data/models/incoming-invoice";
+import { InvoiceDetailModel } from "@/features/invoice/data/types/invoice-detail-model";
 import {
   CashFlowFilter,
-  CombinedInvoiceSummaryFilter,
   CreateOutgoingParams,
   InvoiceService,
   InvoiceServiceFilter,
@@ -19,7 +19,7 @@ import { OutgoingInvoiceModel } from "../models/outgoing-invoice";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { InvoiceItemModel } from "@/features/invoice/data/models/invoice-item";
 import { FileModel } from "@/features/file/data/models/file";
-import { CombinedInvoiceSummaryModel } from "../models/combined-invoice-summary";
+
 import { InvoiceItemSummaryModel } from "@/features/invoice/data/models/invoice-item-summary";
 import { InvoiceSenderModel } from "@/features/invoice/data/models/invoice-sender";
 import { InvoiceRecipientModel } from "@/features/invoice/data/models/invoice-recipient";
@@ -65,7 +65,7 @@ export class InvoiceServiceImpl implements InvoiceService {
         return this.parseOutgoingInvoiceFromListItem(doc);
       case InvoiceType.INCOMING:
       default:
-        return InvoiceModel.fromJson(doc);
+        return IncomingInvoiceModel.fromJson(doc);
     }
   }
 
@@ -151,26 +151,6 @@ export class InvoiceServiceImpl implements InvoiceService {
       sender: result.sender,
       pdf: result.pdf,
     });
-  }
-
-  public async getCombinedInvoiceSummary(
-    filter: CombinedInvoiceSummaryFilter,
-    session: SessionEntity,
-  ): Promise<CombinedInvoiceSummaryModel> {
-    const path = `/invoices/combined/${filter.id}`;
-    const method = "GET";
-    const result = await this.http.request({ path, method, session });
-    if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-    return CombinedInvoiceSummaryModel.fromJson(result);
-  }
-
-  public async listCombinedInvoiceSummary(session: SessionEntity): Promise<CombinedInvoiceSummaryModel[]> {
-    const path = "/invoices/combined";
-    const method = "GET";
-    const result = await this.http.request({ path, method, session });
-    if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-    if (!Array.isArray(result)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-    return result.map((item) => CombinedInvoiceSummaryModel.fromJson(item));
   }
 
   public async createOutgoing(params: CreateOutgoingParams, session: SessionEntity): Promise<OutgoingInvoiceModel> {
@@ -300,7 +280,7 @@ export class InvoiceServiceImpl implements InvoiceService {
     filter: InvoiceServiceFilter,
     params: Pick<InvoiceServiceFilterParams, "includes">,
     session: SessionEntity,
-  ): Promise<InvoiceModel> {
+  ): Promise<InvoiceDetailModel> {
     try {
       const path = `/invoices/${filter.id}`;
       const method = "GET";
@@ -308,7 +288,14 @@ export class InvoiceServiceImpl implements InvoiceService {
 
       const result = await this.http.request({ path, method, searchParams, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return InvoiceModel.fromJson(result);
+
+      switch (result.type) {
+        case InvoiceType.OUTGOING:
+          return this.parseOutgoingInvoiceFromListItem(result);
+        case InvoiceType.INCOMING:
+        default:
+          return IncomingInvoiceModel.fromJson(result);
+      }
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

@@ -3,6 +3,7 @@
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { RecipientInfo } from "@/app/(authenticated)/invoices/[id]/_components/recipient-info";
+import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
 interface RecipientInfoImplProps {
   id: string;
@@ -11,7 +12,7 @@ interface RecipientInfoImplProps {
 export function RecipientInfoImpl({ id }: RecipientInfoImplProps) {
   const { invoice, loading } = useGetInvoice({ id });
 
-  if (loading || !invoice) {
+  if (loading || !invoice || !isIncomingInvoice(invoice)) {
     return (
       <SectionCard title="Informasi Penerima" iconSrc="/assets/images/person-icon-primary-300-w16-h16.svg">
         <div className="flex flex-col gap-y-5">

@@ -1,5 +1,7 @@
+"use client";
+
 import { DataFailed } from "@/core/resources/data-state";
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
+import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { InvoiceServiceImpl } from "@/features/invoice/data/sources/invoice";
@@ -11,14 +13,15 @@ import {
   GetOutgoingInvoiceUseCaseParams,
 } from "@/features/invoice/domain/usecases/get-outgoing-invoice";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
+import { useClerk } from "@clerk/nextjs";
 
 interface GetOutgoingInvoiceFetcherParams {
   id: string;
+  clerk: ReturnType<typeof useClerk>;
 }
 
 async function GetOutgoingInvoiceFetcher([_, param]: [string, GetOutgoingInvoiceFetcherParams]) {
-  const sessionService = new LocalStorageSessionService();
-  const sessionRepository = new SessionRepositoryImpl(sessionService);
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: param.clerk }));
 
   const http = new HttpRequest();
   const invoiceService = new InvoiceServiceImpl(http);
@@ -32,8 +35,12 @@ async function GetOutgoingInvoiceFetcher([_, param]: [string, GetOutgoingInvoice
   return invoice.data;
 }
 
-export function useGetOutgoingInvoice(props: GetOutgoingInvoiceFetcherParams) {
-  const { data, isLoading, error, mutate } = useSWR(["get-outgoing-invoice", props], GetOutgoingInvoiceFetcher);
+export function useGetOutgoingInvoice(props: { id: string }) {
+  const clerk = useClerk();
+  const { data, isLoading, error, mutate } = useSWR(
+    ["get-outgoing-invoice", { ...props, clerk }],
+    GetOutgoingInvoiceFetcher,
+  );
 
   return {
     invoice: data,

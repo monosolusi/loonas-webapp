@@ -2,7 +2,6 @@ import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state"
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import {
   CashFlowRepoFilter,
-  CombinedInvoiceSummaryFilter,
   CreateOutgoingParams,
   InvoiceRepository,
   InvoiceRepositoryFilter,
@@ -12,12 +11,12 @@ import {
   OutgoingInvoiceFilter,
 } from "@/features/invoice/domain/repositories/invoice";
 import { PaginatedData } from "@/core/resources/paginated";
-import { InvoiceEntity } from "../../domain/entities/invoice";
+import { InvoiceDetailEntity } from "../../domain/types/invoice-detail";
 import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-list-item";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { InvoiceService } from "@/features/invoice/domain/sources/invoice";
 import { OutgoingInvoiceEntity } from "../../domain/entities/outgoing-invoice";
-import { CombinedInvoiceSummaryEntity } from "../../domain/entities/combined-invoice-summary";
+
 import { PublicOutgoingInvoiceEntity } from "../../domain/entities/public-outgoing-invoice";
 import { PayInEntity } from "../../domain/entities/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
@@ -130,29 +129,6 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
     }
   }
 
-  public async getCombinedInvoiceSummary(
-    filter: CombinedInvoiceSummaryFilter,
-    session: SessionEntity,
-  ): Promise<DataState<CombinedInvoiceSummaryEntity>> {
-    try {
-      const invoice = await this.invoiceService.getCombinedInvoiceSummary(filter, session);
-      return new DataSuccess(invoice.toEntity());
-    } catch (err) {
-      if (err instanceof ServerError) return new DataFailed(err);
-      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
-    }
-  }
-
-  public async listCombinedInvoiceSummary(session: SessionEntity): Promise<DataState<CombinedInvoiceSummaryEntity[]>> {
-    try {
-      const invoices = await this.invoiceService.listCombinedInvoiceSummary(session);
-      return new DataSuccess(invoices.map((invoice) => invoice.toEntity()));
-    } catch (err) {
-      if (err instanceof ServerError) return new DataFailed(err);
-      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
-    }
-  }
-
   public async createOutgoing(
     params: CreateOutgoingParams,
     session: SessionEntity,
@@ -235,7 +211,7 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
     filter: InvoiceRepositoryFilter,
     params: Pick<InvoiceRepositoryFilterParams, "includes">,
     session: SessionEntity,
-  ): Promise<DataState<InvoiceEntity>> {
+  ): Promise<DataState<InvoiceDetailEntity>> {
     try {
       const invoice = await this.invoiceService.get(filter, params, session);
       return new DataSuccess(invoice.toEntity());

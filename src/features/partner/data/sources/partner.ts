@@ -1,7 +1,7 @@
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { PartnerModel } from "../models/partner";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { InvoiceModel } from "@/features/invoice/data/models/invoice";
+import { IncomingInvoiceModel } from "@/features/invoice/data/models/incoming-invoice";
 import {
   PartnerService,
   PartnerServiceFilter,
@@ -65,14 +65,14 @@ export class PartnerServiceImpl implements PartnerService {
     filter: PartnerServiceFilter,
     params: PartnerServiceSearchParams,
     session: SessionEntity,
-  ): Promise<InvoiceModel[]> {
+  ): Promise<IncomingInvoiceModel[]> {
     try {
       const path = `/partners/${filter.partnerId}/invoices`;
       const method = "GET";
       const data = await this.http.request({ path, method, session, searchParams: params });
 
       if (!data || !Array.isArray(data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return data.map(InvoiceModel.fromJson);
+      return data.map(IncomingInvoiceModel.fromJson);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

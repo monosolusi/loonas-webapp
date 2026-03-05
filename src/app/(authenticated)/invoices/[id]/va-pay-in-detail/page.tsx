@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 import { useMemo } from "react";
 import { useGetIncomingInvoice } from "@/features/invoice/presentations/hooks/use-get-incoming-invoice";
 import { useGetVirtualAccountPayInDetail } from "@/features/payment/presentations/hooks/use-get-virtual-account-pay-in-detail";
+import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
 export default function VirtualAccountPayInDetailPage() {
   // Invoice ID. However, we always assume it is a PaymentRequest ID.
@@ -21,6 +22,7 @@ export default function VirtualAccountPayInDetailPage() {
     if (payInLoading || invoiceLoading) return null;
     if (!payIn) return null;
     if (!invoice) return null;
+    if (!isIncomingInvoice(invoice)) return null;
 
     return {
       deadline: payIn.expirationTime,

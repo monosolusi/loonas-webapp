@@ -4,6 +4,7 @@ import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-in
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceDocumentList } from "@/app/(authenticated)/invoices/[id]/_components/invoice-document-list";
+import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
 interface InvoiceDocumentListImplProps {
   id: string;
@@ -12,7 +13,7 @@ interface InvoiceDocumentListImplProps {
 export function InvoiceDocumentListImpl({ id }: InvoiceDocumentListImplProps) {
   const { invoice, loading } = useGetInvoice({ id, includes: "documents" });
 
-  if (loading || !invoice) {
+  if (loading || !invoice || !isIncomingInvoice(invoice)) {
     return (
       <SectionCard
         title="Rincian Faktur"
