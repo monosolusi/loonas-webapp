@@ -32,9 +32,9 @@ src/
 │   ├── (user)/                       # Onboarding
 │   └── (external-app)/              # Public external routes
 ├── features/{feature}/               # Feature modules
-│   ├── domain/                       # Entities, repository interfaces, use cases, enums
-│   ├── data/                         # Repository impls, services, models
-│   └── presentations/                # Hooks, components, providers
+│   ├── domain/                       # Entities, guards, types, enums, repository interfaces, use cases, factories
+│   ├── data/                         # Repository impls, services (sources), models, types
+│   └── presentations/                # hooks/, components/, providers/
 └── core/                             # Shared utilities, base classes, global components
 ```
 
@@ -54,6 +54,9 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **ServerError + ErrorCodes**: Centralized error registry with Indonesian messages
 - **Factory pattern**: `PayInDetailFactory` etc. for polymorphic creation
 - **Impl components**: `*-impl.tsx` files are smart components that fetch data and pass to presentational siblings
+- **Type guards**: `domain/guards/` contains `instanceof` checks for discriminating entity types
+- **SectionCard**: Standard card component (`rounded-lg`, `border-neutral-200`, icon header) for detail pages
+- **Skeleton loading**: Loading states use `animate-pulse` placeholder divs inside `SectionCard`
 
 ### HTTP Requests
 
@@ -61,6 +64,15 @@ Custom `HttpRequest` class injects Clerk session headers:
 - `Authorization: Bearer {token}`
 - `X-Account-Id: {accountId}`
 - Base URL from `NEXT_PUBLIC_BASE_API_URL`
+
+### Deprecated — Do Not Use
+
+| Deprecated | Replacement |
+|------------|-------------|
+| `Card` (shadow-based, `text-gray-*`) | `SectionCard` |
+| `FilledButton` | `PrimaryButton` / `SecondaryButton` / `DangerButton` from `core/presentations/components/buttons/` |
+| `LocalStorageSessionService` | `ClerkSessionService` (will throw "No valid session") |
+| Lottie animations (`@lottiefiles/react-lottie-player`) | Skeleton loading (`animate-pulse`) |
 
 ## Conventions
 
@@ -76,6 +88,7 @@ Always use `@/` path alias (maps to `src/`). No relative imports.
 | Hooks | `use-{verb}-{noun}.ts` | `use-get-invoice.ts` |
 | Hook types | `use-{verb}-{noun}.types.ts` | `use-get-invoice.types.ts` |
 | Entities | `{noun}.ts` | `invoice.ts` |
+| Guards | `domain/guards/{noun}-guards.ts` | `invoice-guards.ts` |
 | Repo interfaces | `domain/repositories/{noun}.ts` | `invoice.ts` |
 | Repo impls | `data/repositories/{noun}.ts` | `invoice.ts` |
 | Services | `data/sources/{noun}.ts` | `invoice.ts` |
@@ -93,3 +106,4 @@ Directories use kebab-case. Components use kebab-case filenames.
 
 - Branch naming: `features/{description}` for new features
 - Always create branches from `dev`
+- Commit style: Conventional Commits — `feat(scope):`, `fix(scope):`, `refactor(scope):`, `chore(scope):`
