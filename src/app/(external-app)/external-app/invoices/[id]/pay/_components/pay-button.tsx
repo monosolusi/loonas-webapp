@@ -1,6 +1,6 @@
 "use client";
 
-import { FilledButton } from "@/core/presentations/components/filled-button";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useRouter } from "next/navigation";
 
 export function PayButton() {
@@ -10,5 +10,5 @@ export function PayButton() {
     router.push("./select-payment-method");
   }
 
-  return <FilledButton onClick={handleClick}>Bayar Faktur</FilledButton>;
+  return <PrimaryButton onClick={handleClick} label="Bayar Faktur" />;
 }

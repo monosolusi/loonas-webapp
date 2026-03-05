@@ -47,8 +47,8 @@ export default function PayInDetailPage() {
         </div>
         <div className="flex flex-1 flex-col space-y-4">
           <div className="flex-1">
-            <h1 className="text-base font-semibold text-gray-900">Lakukan Pembayaran</h1>
-            <p className="mt-2 text-sm text-gray-700">
+            <h1 className="text-base font-semibold text-neutral-900">Lakukan Pembayaran</h1>
+            <p className="mt-2 text-sm text-neutral-700">
               Silahkan membayar sesuai dengan instruksi yang diberikan di bawah ini.
             </p>
           </div>

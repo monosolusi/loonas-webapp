@@ -1,9 +1,9 @@
 "use client";
 
-import { Card } from "@/core/presentations/components/card";
+import { SectionCard } from "@/core/presentations/components/section-card";
 import { useGetPublicOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-outgoing-invoice";
 import { useParams, useRouter } from "next/navigation";
-import { PaymentSummary } from "../../../../../../../core/presentations/components/payment-summary";
+import { PaymentSummary } from "@/core/presentations/components/payment-summary";
 import { useMemo } from "react";
 import { useCreateOutgoingInvoicePayIn } from "@/features/invoice/presentations/hooks/use-create-outgoing-invoice-pay-in";
 import { useGetPublicPayInDetailForOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";
@@ -58,9 +58,9 @@ export function PaymentSummaryImpl(props: PaymentSummaryImplProps) {
   if (loading || !invoice) return null;
   if (!props.selectedPaymentMethod) {
     return (
-      <Card>
+      <SectionCard title="Ringkasan Pembayaran">
         <p>Silahkan pilih metode pembayaran terlebih dahulu.</p>
-      </Card>
+      </SectionCard>
     );
   }
 

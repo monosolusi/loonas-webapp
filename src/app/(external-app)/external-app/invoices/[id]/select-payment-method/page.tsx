@@ -4,7 +4,6 @@ import { LogoImage } from "@/core/presentations/components/logo-image";
 import { InvoiceMetadataImpl } from "./_components/invoice-metadata-impl";
 import { SelectPaymentMethodImpl } from "./_components/select-payment-method-impl";
 import { useEffect, useState } from "react";
-import { SelectSchemeImpl } from "./_components/select-scheme-impl";
 import { PaymentSummaryImpl } from "./_components/payment-summary-impl";
 import { useGetPublicPayInDetailForOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";
 import { useParams, useRouter } from "next/navigation";
@@ -40,9 +39,9 @@ export default function SelectPaymentMethodPage() {
     if (path) router.replace(path);
   }, [payIn]);
 
-  const handleSelectedPaymentMethodChange = (paymentMethod: SelectedPaymentMethod) => {
+  const handleChange = (paymentMethod: SelectedPaymentMethod, schemeId?: string) => {
     setSelectedPaymentMethod(paymentMethod);
-    setSelectedScheme(undefined);
+    setSelectedScheme(schemeId);
   };
 
   return (
@@ -56,18 +55,17 @@ export default function SelectPaymentMethodPage() {
         </div>
         <div className="flex flex-1 flex-col space-y-4">
           <div className="flex-1">
-            <h1 className="text-base font-semibold text-gray-900">Pilih Metode Pembayaran</h1>
-            <p className="mt-2 text-sm text-gray-700">
+            <h1 className="text-base font-semibold text-neutral-900">Pilih Metode Pembayaran</h1>
+            <p className="mt-2 text-sm text-neutral-700">
               Pilih metode pembayaran yang ingin kamu gunakan untuk membayar faktur ini.
             </p>
           </div>
           <div className="flex flex-row space-x-4">
             <div className="flex-2">
-              <SelectPaymentMethodImpl value={selectedPaymentMethod} onChange={handleSelectedPaymentMethodChange} />
-              <SelectSchemeImpl
-                selectedMethod={selectedPaymentMethod}
-                value={selectedScheme}
-                onChange={setSelectedScheme}
+              <SelectPaymentMethodImpl
+                value={selectedPaymentMethod}
+                selectedScheme={selectedScheme}
+                onChange={handleChange}
               />
             </div>
             <div className="flex-1">

@@ -1,7 +1,6 @@
-import { DetailLineItem } from "@/app/(authenticated)/invoices/incoming/create/@payment/_components/detail-line-item";
-import { Card } from "@/core/presentations/components/card";
 import { CurrencyDisplay } from "@/core/presentations/components/currency-display";
-import { FilledButton } from "@/core/presentations/components/filled-button";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
+import { SectionCard } from "@/core/presentations/components/section-card";
 
 interface PaymentSummaryProps {
   selectedPaymentMethod: { title: string };
@@ -20,24 +19,32 @@ export function PaymentSummary(props: PaymentSummaryProps) {
   };
 
   return (
-    <Card>
+    <SectionCard title="Ringkasan Pembayaran">
       <div className="flex flex-col space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">Ringkasan Pembayaran</h2>
-        <DetailLineItem title="Metode Pembayaran" description={props.selectedPaymentMethod.title} />
-        <DetailLineItem title="Nilai Faktur" description={<CurrencyDisplay value={props.invoiceValue} />} />
-        <DetailLineItem title="Biaya Layanan" description={<CurrencyDisplay value={props.fee} />} />
-        <DetailLineItem
-          title="Total Pembayaran"
-          description={
-            <CurrencyDisplay className="text-primary-default text-lg font-semibold" value={props.totalPayable} />
-          }
-        />
+        <div className="flex justify-between">
+          <span className="text-sm text-neutral-500">Metode Pembayaran</span>
+          <span className="text-sm text-neutral-900">{props.selectedPaymentMethod.title}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-sm text-neutral-500">Nilai Faktur</span>
+          <span className="text-sm text-neutral-900">
+            <CurrencyDisplay value={props.invoiceValue} />
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-sm text-neutral-500">Biaya Layanan</span>
+          <span className="text-sm text-neutral-900">
+            <CurrencyDisplay value={props.fee} />
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-sm text-neutral-500">Total Pembayaran</span>
+          <CurrencyDisplay className="text-primary-default text-lg font-semibold" value={props.totalPayable} />
+        </div>
         {props.onClick && (
-          <FilledButton disabled={props.isDisabled} onClick={handleClick} loading={props.isLoading}>
-            Bayar Sekarang
-          </FilledButton>
+          <PrimaryButton disabled={props.isDisabled} onClick={handleClick} loading={props.isLoading} label="Bayar Sekarang" />
         )}
       </div>
-    </Card>
+    </SectionCard>
   );
 }
