@@ -9,6 +9,7 @@ import { SendInvoiceButton } from "@/app/(authenticated)/invoices/[id]/@outgoing
 import { DownloadPdfButton } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/download-pdf-button";
 import { OutgoingInvoiceSummaryImpl } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/outgoing-invoice-summary-impl";
 import { OutgoingRecipientInfoImpl } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/outgoing-recipient-info-impl";
+import { PaymentLinkImpl } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/payment-link-impl";
 
 export default function OutgoingInvoiceDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +32,7 @@ export default function OutgoingInvoiceDetailPage() {
         <OutgoingRecipientInfoImpl />
         <div className="flex flex-col gap-y-2">
           <SendInvoiceButton />
+          <PaymentLinkImpl />
           <DownloadPdfButton />
         </div>
       </div>

@@ -26,6 +26,7 @@ interface OutgoingInvoiceModelConstructor {
   summary: InvoiceItemSummaryModel;
   sender: InvoiceSenderModel;
   sendChannel: NotificationChannel[];
+  paymentUrl?: string;
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
@@ -56,6 +57,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
   public summary: InvoiceItemSummaryModel;
   public sender: InvoiceSenderModel;
   public sendChannel: NotificationChannel[];
+  public paymentUrl?: string;
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
@@ -76,6 +78,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
     this.summary = args.summary;
     this.sender = args.sender;
     this.sendChannel = args.sendChannel;
+    this.paymentUrl = args.paymentUrl;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
@@ -98,6 +101,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
       summary: params.summary,
       sender: params.sender,
       sendChannel: data.send_channel,
+      paymentUrl: data.payment_url,
       createdAt: DateTime.fromISO(data.created_at),
       updatedAt: DateTime.fromISO(data.updated_at),
       deletedAt: data.deleted_at ? DateTime.fromISO(data.deleted_at) : undefined,
@@ -121,6 +125,7 @@ export class OutgoingInvoiceModel implements AbstractModel {
       summary: this.summary.toEntity(),
       sender: this.sender.toEntity(),
       sendChannel: this.sendChannel,
+      paymentUrl: this.paymentUrl,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,

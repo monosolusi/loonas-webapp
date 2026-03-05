@@ -25,6 +25,7 @@ interface OutgoingInvoiceEntityConstructor {
   summary: InvoiceItemSummaryEntity;
   sender: InvoiceSenderEntity;
   sendChannel: NotificationChannel[];
+  paymentUrl?: string;
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
@@ -46,6 +47,7 @@ export class OutgoingInvoiceEntity implements AbstractEntity {
   public summary: InvoiceItemSummaryEntity;
   public sender: InvoiceSenderEntity;
   public sendChannel: NotificationChannel[];
+  public paymentUrl?: string;
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
@@ -66,6 +68,7 @@ export class OutgoingInvoiceEntity implements AbstractEntity {
     this.summary = args.summary;
     this.sender = args.sender;
     this.sendChannel = args.sendChannel;
+    this.paymentUrl = args.paymentUrl;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
