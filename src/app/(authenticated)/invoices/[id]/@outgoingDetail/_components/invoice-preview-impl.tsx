@@ -3,12 +3,24 @@
 import { useParams } from "next/navigation";
 import { useGetOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-outgoing-invoice";
 import { InvoicePreview } from "@/app/(authenticated)/invoices/_components/invoice-preview";
+import { SectionCard } from "@/core/presentations/components/section-card";
 
 export function InvoicePreviewImpl() {
   const { id } = useParams<{ id: string }>();
   const { invoice, loading } = useGetOutgoingInvoice({ id });
 
-  if (!invoice || loading) return null;
+  if (!invoice || loading) {
+    return (
+      <SectionCard title="Pratinjau Faktur" iconSrc="/assets/images/wallet-icon-primary-300-w16-h16.svg">
+        <div className="flex flex-col gap-y-4">
+          <div className="h-6 w-48 animate-pulse rounded bg-neutral-100" />
+          <div className="h-4 w-full animate-pulse rounded bg-neutral-100" />
+          <div className="h-4 w-3/4 animate-pulse rounded bg-neutral-100" />
+          <div className="h-64 w-full animate-pulse rounded bg-neutral-100" />
+        </div>
+      </SectionCard>
+    );
+  }
   return (
     <InvoicePreview
       invoice={{
