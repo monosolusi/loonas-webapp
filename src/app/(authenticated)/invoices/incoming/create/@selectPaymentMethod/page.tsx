@@ -2,12 +2,12 @@
 
 import { useCreateIncomingInvoiceSteps } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 import Image from "next/image";
-import clsx from "clsx";
 import { useMemo, useState } from "react";
 import { useCreateIncomingInvoiceProvider } from "@/features/invoice/presentations/providers/create-incoming-invoice";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { useListPaymentMethodDisplay } from "@/features/payment/presentations/hooks/use-list-payment-method-display";
 import { PaymentMethodOptionItem } from "@/features/invoice/presentations/components/payment-method-option-item";
+import { PaymentMethodCategoryCard } from "@/features/payment/presentations/components/payment-method-category-card";
 
 export default function SelectPaymentMethodPages() {
   const { currentStep } = useCreateIncomingInvoiceSteps();
@@ -108,70 +108,22 @@ export default function SelectPaymentMethodPages() {
 
       {/*  Payment Method List */}
       <div className="flex flex-col gap-y-4">
-        {/*  Payment Method Group */}
-        {paymentMethods!.map((category) => {
-          const onCategoryClick = () => {
-            setSelectedGroup((prev) => {
-              if (prev === category.type) return undefined;
-              else return category.type;
-            });
-          };
-
-          return (
-            <div
-              key={category.type}
-              className="flex cursor-pointer flex-row gap-x-4 rounded-lg border border-neutral-200 p-4 transition-transform"
-              onClick={onCategoryClick}
-            >
-              {/* Icon */}
-              <div className="flex size-10 flex-row items-center justify-center rounded-lg bg-neutral-100">
-                <Image src="/assets/images/building-icon-neutral-500-w16-h16.svg" alt="" width={20} height={20} />
-              </div>
-
-              <div className="flex flex-1 flex-col">
-                <div className="flex flex-row items-center justify-between">
-                  {/* Description*/}
-                  <div className="flex flex-col">
-                    <div className="leading-6 font-bold">{category.title}</div>
-                    <div className="text-xs leading-4">{category.description}</div>
-                  </div>
-
-                  <Image
-                    src="/assets/images/arrow-down-icon-neutral-300-w16-h16.svg"
-                    alt=""
-                    width={16}
-                    height={16}
-                    className={clsx(
-                      "transition-transform duration-300",
-                      selectedGroup === category.type && "rotate-180",
-                    )}
-                  />
-                </div>
-
-                {/* Group Items with animation - gap included inside */}
-                <div
-                  className={clsx(
-                    "grid transition-all duration-300 ease-in-out",
-                    selectedGroup === category.type ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
-                  )}
-                >
-                  <div className="overflow-hidden">
-                    <div className="flex flex-col gap-y-3 pt-6">
-                      {category.selections.map((selection) => {
-                        return (
-                          <PaymentMethodOptionItem
-                            key={selection.scheme?.id || selection.gateway.id}
-                            selection={selection}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {paymentMethods!.map((category) => (
+          <PaymentMethodCategoryCard
+            key={category.type}
+            title={category.title}
+            description={category.description}
+            isExpanded={selectedGroup === category.type}
+            onToggle={() => setSelectedGroup((prev) => (prev === category.type ? undefined : category.type))}
+          >
+            {category.selections.map((selection) => (
+              <PaymentMethodOptionItem
+                key={selection.scheme?.id || selection.gateway.id}
+                selection={selection}
+              />
+            ))}
+          </PaymentMethodCategoryCard>
+        ))}
       </div>
     </div>
   );
