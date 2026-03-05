@@ -57,15 +57,14 @@ export function OutgoingInvoiceStatisticsImpl() {
       </div>
 
       {/* Jatuh Tempo */}
-      {/* HARDCODED: API doesn't provide overdue data yet */}
       <div className="border-b-error-200/50 border-error-50 border-error-200/60 flex flex-1 flex-row justify-between rounded-xl border border-t border-r border-b-4 border-l bg-neutral-50 p-5">
         <div className="flex flex-col gap-y-3">
           <span className="text-sm leading-5 text-neutral-300">Jatuh Tempo</span>
           <div className="flex flex-col gap-y-1.5">
             <span className="text-2xl leading-8 font-bold tracking-tight text-neutral-500">
-              {IDRFormatter.toCurrency(0)}
+              {IDRFormatter.toCurrency(summary.overdueAmount)}
             </span>
-            <span className="text-error-400 text-xs leading-4">0 faktur terlambat</span>
+            <span className="text-error-400 text-xs leading-4">{summary.overdueCount} faktur terlambat</span>
           </div>
         </div>
         <div className="bg-error-50 flex size-10 items-center justify-center rounded-lg">

@@ -6,6 +6,8 @@ interface InvoiceSummaryModelConstructor {
   unpaidCount: number;
   totalCount: number;
   paidCount: number;
+  overdueAmount: number;
+  overdueCount: number;
 }
 
 export class InvoiceSummaryModel implements AbstractModel {
@@ -13,12 +15,16 @@ export class InvoiceSummaryModel implements AbstractModel {
   public unpaidCount: number;
   public totalCount: number;
   public paidCount: number;
+  public overdueAmount: number;
+  public overdueCount: number;
 
   constructor(args: InvoiceSummaryModelConstructor) {
     this.unpaidAmount = args.unpaidAmount;
     this.unpaidCount = args.unpaidCount;
     this.totalCount = args.totalCount;
     this.paidCount = args.paidCount;
+    this.overdueAmount = args.overdueAmount;
+    this.overdueCount = args.overdueCount;
   }
 
   public static fromJson(doc: Record<string, any>): InvoiceSummaryModel {
@@ -27,6 +33,8 @@ export class InvoiceSummaryModel implements AbstractModel {
       unpaidCount: doc["unpaid"]["count"],
       totalCount: doc["total"]["count"],
       paidCount: doc["paid"]["count"],
+      overdueAmount: doc["overdue"]?.["amount"] ?? 0,
+      overdueCount: doc["overdue"]?.["count"] ?? 0,
     });
   }
 
@@ -36,6 +44,8 @@ export class InvoiceSummaryModel implements AbstractModel {
       unpaidCount: this.unpaidCount,
       totalCount: this.totalCount,
       paidCount: this.paidCount,
+      overdueAmount: this.overdueAmount,
+      overdueCount: this.overdueCount,
     });
   }
 }
