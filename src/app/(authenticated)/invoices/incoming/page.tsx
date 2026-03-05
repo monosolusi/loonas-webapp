@@ -14,7 +14,7 @@ export default function IncomingInvoicePage() {
       {/*  Header */}
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-col gap-y-1">
-          <span className="text-2xl leading-8 font-bold tracking-tight">Tagihan & Biaya</span>
+          <span className="text-2xl leading-8 font-bold tracking-tight">Tagihan</span>
           <span className="text-sm leading-5">Pantau semua pengeluaran dan status pembayaran faktur.</span>
         </div>
         <div className="flex flex-row gap-x-3">

@@ -14,8 +14,8 @@ export default function OutgoingInvoicePage() {
       {/*  Header */}
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-col gap-y-1">
-          <span className="text-2xl leading-8 font-bold tracking-tight">Faktur Keluaran</span>
-          <span className="text-sm leading-5">Pantau semua faktur yang dikirim dan status pembayarannya.</span>
+          <span className="text-2xl leading-8 font-bold tracking-tight">Penagihan</span>
+          <span className="text-sm leading-5">Pantau semua penagihan ke pelanggan dan status penerimaannya.</span>
         </div>
         <div className="flex flex-row gap-x-3">
           <div className="flex">
