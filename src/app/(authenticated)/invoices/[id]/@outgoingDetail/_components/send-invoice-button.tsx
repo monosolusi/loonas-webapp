@@ -4,7 +4,7 @@ import { useGetOutgoingInvoice } from "@/features/invoice/presentations/hooks/us
 import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
-import { FilledButton } from "@/core/presentations/components/filled-button";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SendOptionsDialogImpl } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/send-options-dialog-impl";
 
 export function SendInvoiceButton() {
@@ -26,7 +26,7 @@ export function SendInvoiceButton() {
   if (!canResend) return null;
   return (
     <>
-      <FilledButton onClick={onClick}>Kirim Faktur</FilledButton>
+      <PrimaryButton label="Kirim Faktur" onClick={onClick} />
       <SendOptionsDialogImpl open={dialogOpen} onClose={onClose} onCompleted={onCompleted} />
     </>
   );
