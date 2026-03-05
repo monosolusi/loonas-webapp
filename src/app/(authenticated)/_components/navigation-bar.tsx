@@ -19,7 +19,7 @@ export function NavigationBar() {
           selectedIconPath="/assets/images/invoice-in-icon-primary-300-w16-h16.svg"
         />
         <NavigationItem
-          href="/invoices/outgoing/create"
+          href="/invoices/outgoing"
           label="Faktur Keluaran"
           iconPath="/assets/images/invoice-out-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/invoice-out-icon-primary-300-w16-h16.svg"
