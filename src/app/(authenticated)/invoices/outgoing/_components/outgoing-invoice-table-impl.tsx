@@ -8,7 +8,7 @@ import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-fo
 import { InvoiceSearchInput } from "@/app/(authenticated)/invoices/_components/invoice-search-input";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
 import { InvoiceTabFilter } from "@/app/(authenticated)/invoices/_components/invoice-tab-filter";
-import { OutgoingInvoiceRow, OutgoingInvoiceTable } from "./outgoing-invoice-table";
+import { OutgoingInvoiceRow, OutgoingInvoiceTable } from "@/app/(authenticated)/invoices/outgoing/_components/outgoing-invoice-table";
 
 export function OutgoingInvoiceTableImpl() {
   const [page, setPage] = useState(1);
@@ -83,6 +83,7 @@ export function OutgoingInvoiceTableImpl() {
       error={!!error || !invoices || !meta}
       empty={invoices?.length === 0}
       emptyMessage="Belum ada faktur keluar."
+      filteredEmpty={!!search && rows.length === 0}
     >
       {hasData && <OutgoingInvoiceTable rows={rows} meta={meta} currentPage={page} onPageChange={setPage} />}
     </InvoiceTableShell>

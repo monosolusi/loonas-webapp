@@ -7,7 +7,7 @@ import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoi
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceSearchInput } from "@/app/(authenticated)/invoices/_components/invoice-search-input";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
-import { OutgoingInvoiceRow, OutgoingInvoiceTable } from "../../_components/outgoing-invoice-table";
+import { OutgoingInvoiceRow, OutgoingInvoiceTable } from "@/app/(authenticated)/invoices/outgoing/_components/outgoing-invoice-table";
 
 interface FilteredOutgoingInvoiceTableImplProps {
   filter: string;
@@ -81,6 +81,7 @@ export function FilteredOutgoingInvoiceTableImpl({ filter }: FilteredOutgoingInv
       error={!!error || !invoices || !meta}
       empty={invoices?.length === 0}
       emptyMessage="Belum ada faktur keluar."
+      filteredEmpty={!!search && rows.length === 0}
     >
       {hasData && <OutgoingInvoiceTable rows={rows} meta={meta} currentPage={page} onPageChange={setPage} />}
     </InvoiceTableShell>
