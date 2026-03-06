@@ -4,6 +4,7 @@ import { useGetInvoiceSummary } from "@/features/invoice/presentations/hooks/use
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import Image from "next/image";
+import Link from "next/link";
 
 function StatisticCardSkeleton() {
   return (
@@ -36,7 +37,10 @@ export function IncomingInvoiceStatisticsImpl() {
   return (
     <div className="flex flex-row gap-x-4">
       {/* Belum Dibayar */}
-      <div className="border-b-warning-200/50 border-warning-50 border-warning-200/60 flex flex-1 flex-row justify-between rounded-xl border border-t border-r border-b-4 border-l bg-neutral-50 p-5">
+      <Link
+        href="/invoices/incoming/unpaid"
+        className="border-b-warning-200/50 border-warning-50 border-warning-200/60 flex flex-1 flex-row justify-between rounded-xl border border-t border-r border-b-4 border-l bg-neutral-50 p-5 transition-shadow hover:shadow-sm"
+      >
         <div className="flex flex-col gap-y-3">
           <span className="text-sm leading-5 text-neutral-300">Belum Dibayar</span>
           <div className="flex flex-col gap-y-1.5">
@@ -54,7 +58,7 @@ export function IncomingInvoiceStatisticsImpl() {
             height={20}
           />
         </div>
-      </div>
+      </Link>
 
       {/* Total Faktur */}
       <div className="border-b-primary-200/50 border-primary-50 border-primary-200/60 flex flex-1 flex-row justify-between rounded-xl border border-t border-r border-b-4 border-l bg-neutral-50 p-5">
@@ -78,7 +82,10 @@ export function IncomingInvoiceStatisticsImpl() {
       </div>
 
       {/* Telah Dibayar */}
-      <div className="border-b-success-200/50 border-success-50 border-success-200/60 flex flex-1 flex-row justify-between rounded-xl border border-t border-r border-b-4 border-l bg-neutral-50 p-5">
+      <Link
+        href="/invoices/incoming/paid"
+        className="border-b-success-200/50 border-success-50 border-success-200/60 flex flex-1 flex-row justify-between rounded-xl border border-t border-r border-b-4 border-l bg-neutral-50 p-5 transition-shadow hover:shadow-sm"
+      >
         <div className="flex flex-col gap-y-3">
           <span className="text-sm leading-5 text-neutral-300">Telah Dibayar</span>
           <div className="flex flex-col gap-y-1.5">
@@ -91,7 +98,7 @@ export function IncomingInvoiceStatisticsImpl() {
         <div className="bg-success-50 flex size-10 items-center justify-center rounded-lg">
           <Image src="/assets/images/check-icon-success-300-w40-h40.svg" alt="Telah Dibayar" width={20} height={20} />
         </div>
-      </div>
+      </Link>
     </div>
   );
 }
