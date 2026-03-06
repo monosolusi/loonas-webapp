@@ -1,29 +1,39 @@
 import { InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
-import React from "react";
+import clsx from "clsx";
 
 interface InvoiceStatusChipProps {
   status: InvoiceStatus;
+  compact?: boolean;
 }
 
-export function InvoiceStatusChip(props: InvoiceStatusChipProps) {
-  const statusChips: Record<InvoiceStatus, { label: string; className: string }> = {
-    PENDING_INVOICE: { label: "Menunggu Invoice", className: "bg-neutral-100 text-neutral-400" },
-    PENDING_PAYMENT: { label: "Menunggu Pembayaran", className: "bg-warning-50 text-warning-500" },
-    PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Dana Diterima", className: "bg-primary-50 text-primary-500" },
-    COMPLETED: { label: "Selesai", className: "bg-success-50 text-success-500" },
-    EXPIRED: { label: "Kedaluwarsa", className: "bg-neutral-100 text-neutral-400" },
-    FAILED: { label: "Gagal", className: "bg-error-50 text-error-500" },
-    CANCELLED: { label: "Dibatalkan", className: "bg-error-50 text-error-500" },
-    DRAFT: { label: "Draft", className: "bg-neutral-100 text-neutral-400" },
-    READY_TO_SEND: { label: "Dalam Antrian Kirim", className: "bg-neutral-100 text-neutral-400" },
-    PENDING_BANK_TRANSFER: { label: "Menunggu Transfer", className: "bg-warning-50 text-warning-500" },
-    SENT: { label: "Invoice Terkirim", className: "bg-primary-50 text-primary-400" },
-    PAID: { label: "Selesai", className: "bg-success-50 text-success-500" },
-  };
+const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+  PENDING_INVOICE: { label: "Menunggu Faktur", className: "bg-neutral-100 text-neutral-400" },
+  PENDING_PAYMENT: { label: "Menunggu Pembayaran", className: "bg-warning-50 text-warning-500" },
+  PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Diproses", className: "bg-primary-50 text-primary-500" },
+  COMPLETED: { label: "Lunas", className: "bg-success-50 text-success-500" },
+  EXPIRED: { label: "Kedaluwarsa", className: "bg-error-50 text-error-500" },
+  FAILED: { label: "Gagal", className: "bg-error-50 text-error-500" },
+  CANCELLED: { label: "Dibatalkan", className: "bg-error-50 text-error-500" },
+  DRAFT: { label: "Draft", className: "bg-neutral-100 text-neutral-400" },
+  READY_TO_SEND: { label: "Siap Kirim", className: "bg-neutral-100 text-neutral-400" },
+  PENDING_BANK_TRANSFER: { label: "Menunggu Transfer", className: "bg-warning-50 text-warning-500" },
+  SENT: { label: "Terkirim", className: "bg-primary-50 text-primary-500" },
+  PAID: { label: "Lunas", className: "bg-success-50 text-success-500" },
+};
+
+const FALLBACK = { label: "Unknown", className: "bg-neutral-100 text-neutral-400" };
+
+export function InvoiceStatusChip({ status, compact }: InvoiceStatusChipProps) {
+  const { label, className } = STATUS_CONFIG[status] ?? FALLBACK;
 
   return (
-    <span className={`rounded px-2 py-1 ${statusChips[props.status].className}`}>
-      {statusChips[props.status].label}
+    <span
+      className={clsx(
+        className,
+        compact ? "rounded-sm px-2 py-0.5 text-xs leading-4 font-medium" : "rounded px-2 py-1",
+      )}
+    >
+      {label}
     </span>
   );
 }

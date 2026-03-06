@@ -1,7 +1,8 @@
 import { InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
 import { PaginationMeta } from "@/core/resources/paginated";
-import clsx from "clsx";
 import Link from "next/link";
+import { InvoiceStatusChip } from "@/app/(authenticated)/invoices/_components/invoice-status-chip";
+import { TablePagination } from "@/app/(authenticated)/invoices/_components/table-pagination";
 
 export interface IncomingInvoiceRow {
   id: string;
@@ -20,32 +21,7 @@ interface IncomingInvoiceTableProps {
   onPageChange: (page: number) => void;
 }
 
-function StatusChip({ status }: { status: InvoiceStatus }) {
-  const config: Record<string, { label: string; className: string }> = {
-    PENDING_INVOICE: { label: "Menunggu Faktur", className: "bg-neutral-100 text-neutral-400" },
-    PENDING_PAYMENT: { label: "Menunggu Pembayaran", className: "bg-warning-50 text-warning-500" },
-    PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Diproses", className: "bg-primary-50 text-primary-500" },
-    COMPLETED: { label: "Lunas", className: "bg-success-50 text-success-500" },
-    PAID: { label: "Lunas", className: "bg-success-50 text-success-500" },
-    EXPIRED: { label: "Kedaluwarsa", className: "bg-error-50 text-error-500" },
-    FAILED: { label: "Gagal", className: "bg-error-50 text-error-500" },
-    CANCELLED: { label: "Dibatalkan", className: "bg-error-50 text-error-500" },
-  };
-
-  const { label, className } = config[status] ?? {
-    label: status,
-    className: "bg-neutral-100 text-neutral-400",
-  };
-
-  return (
-    <span className={clsx("rounded-sm px-2 py-0.5 text-xs leading-4 font-medium", className)}>{label}</span>
-  );
-}
-
 export function IncomingInvoiceTable({ rows, meta, currentPage, onPageChange }: IncomingInvoiceTableProps) {
-  const totalPages = meta.totalPages;
-  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
-
   return (
     <>
       {/* Table Rows */}
@@ -66,48 +42,14 @@ export function IncomingInvoiceTable({ rows, meta, currentPage, onPageChange }: 
           </div>
           <span className="text-sm leading-5 text-neutral-400">{invoice.date}</span>
           <div className="flex flex-row items-center gap-x-1.5">
-            <StatusChip status={invoice.status} />
+            <InvoiceStatusChip status={invoice.status} compact />
           </div>
           <span className="text-right text-sm leading-5 font-semibold text-neutral-500">{invoice.amount}</span>
         </Link>
       ))}
 
       {/* Table Footer */}
-      <div className="flex flex-row items-center justify-between border-t border-neutral-100 px-6 py-3">
-        <span className="text-sm leading-5 text-neutral-300">
-          Menampilkan {rows.length} dari {meta.total} data
-        </span>
-        <div className="flex flex-row items-center gap-x-2">
-          <button
-            className="flex size-8 items-center justify-center rounded-lg text-neutral-200 hover:bg-neutral-100 disabled:opacity-50"
-            disabled={currentPage <= 1}
-            onClick={() => onPageChange(currentPage - 1)}
-          >
-            &#8249;
-          </button>
-          {pageNumbers.map((page) => (
-            <button
-              key={page}
-              className={clsx(
-                "flex size-8 items-center justify-center rounded-full text-sm font-medium",
-                page === currentPage
-                  ? "bg-neutral-500 text-neutral-50"
-                  : "text-neutral-200 hover:bg-neutral-100",
-              )}
-              onClick={() => onPageChange(page)}
-            >
-              {page}
-            </button>
-          ))}
-          <button
-            className="flex size-8 items-center justify-center rounded-lg text-neutral-200 hover:bg-neutral-100 disabled:opacity-50"
-            disabled={currentPage >= totalPages}
-            onClick={() => onPageChange(currentPage + 1)}
-          >
-            &#8250;
-          </button>
-        </div>
-      </div>
+      <TablePagination displayedCount={rows.length} meta={meta} currentPage={currentPage} onPageChange={onPageChange} />
     </>
   );
 }
