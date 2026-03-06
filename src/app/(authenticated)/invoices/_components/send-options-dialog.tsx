@@ -50,7 +50,7 @@ export function SendOptionsDialog(props: SendOptionsDialogProps) {
     <LoonasDialog title="Pilih Metode Pengiriman Faktur" open={props.open} onClose={props.onClose} allowDismiss={false}>
       <div className="flex flex-col space-y-8">
         <div className="flex flex-col space-y-1">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-neutral-300">
             Kirim faktur secara instan ke pelanggan melalui saluran yang paling sesuai. Pastikan informasi kontak sudah
             benar sebelum melanjutkan.
           </div>

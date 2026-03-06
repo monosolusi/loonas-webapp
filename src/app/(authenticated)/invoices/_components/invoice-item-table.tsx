@@ -55,8 +55,8 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
         {
           node: (
             <div className="flex max-w-[210px] flex-col space-y-1 text-balance lg:max-w-full">
-              <div className="font-bold text-gray-900 group-hover:underline">{item.name}</div>
-              <span className="text-xs text-gray-500">{item.description}</span>
+              <div className="font-bold text-neutral-500 group-hover:underline">{item.name}</div>
+              <span className="text-xs text-neutral-300">{item.description}</span>
             </div>
           ),
           hideOnMobile: false,
@@ -104,7 +104,7 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
           ]}
         />
         <TableBody items={formattedItems} />
-        <tfoot className="divide-y divide-gray-200 bg-gray-50">
+        <tfoot className="divide-y divide-neutral-200 bg-neutral-50">
           <tr>
             <td colSpan={5} className="px-3 pt-4 pb-2 text-right text-sm">
               Dasar Pengenaan Pajak (DPP)

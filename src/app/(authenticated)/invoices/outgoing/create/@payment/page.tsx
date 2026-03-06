@@ -11,8 +11,8 @@ export default function PaymentSettingSection() {
   return (
     <div className="flex flex-col gap-y-4">
       <div>
-        <h2 className="text-base font-semibold text-gray-900">Pengaturan Pembayaran</h2>
-        <p className="text-sm text-gray-500">
+        <h2 className="text-base font-semibold text-neutral-500">Pengaturan Pembayaran</h2>
+        <p className="text-sm text-neutral-300">
           Sesuaikan metode pembayaran yang ditampilkan kepada klien serta pengaturan penanggung biaya untuk setiap
           transaksi.
         </p>

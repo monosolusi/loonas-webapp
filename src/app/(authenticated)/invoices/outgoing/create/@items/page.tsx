@@ -21,8 +21,8 @@ export default function ItemsSection() {
       {/* Section 1: Data Faktur */}
       <section className="flex flex-col gap-y-4 border-b border-neutral-100 pb-10">
         <div>
-          <h2 className="text-base font-semibold text-gray-900">Data Faktur</h2>
-          <p className="text-sm text-gray-500">
+          <h2 className="text-base font-semibold text-neutral-500">Data Faktur</h2>
+          <p className="text-sm text-neutral-300">
             Masukkan data dasar faktur untuk pencatatan dan pelacakan yang akurat.
           </p>
         </div>
@@ -38,10 +38,10 @@ export default function ItemsSection() {
       {/* Section 2: Item Faktur */}
       <section className="flex flex-col gap-y-4 border-b border-neutral-100 pb-10">
         <div>
-          <h2 className="text-base font-semibold text-gray-900">Item Faktur</h2>
-          <p className="text-sm text-gray-500">
+          <h2 className="text-base font-semibold text-neutral-500">Item Faktur</h2>
+          <p className="text-sm text-neutral-300">
             Tambahkan item dalam invoice Anda untuk&nbsp;
-            <span className="font-bold text-gray-700 underline">{recipient?.name}</span> secara detail.
+            <span className="font-bold text-neutral-500 underline">{recipient?.name}</span> secara detail.
           </p>
         </div>
         <ItemTableImpl />
@@ -50,8 +50,8 @@ export default function ItemsSection() {
       {/* Section 3: Informasi Tambahan */}
       <section className="flex flex-col gap-y-4">
         <div>
-          <h2 className="text-base font-semibold text-gray-900">Informasi Tambahan</h2>
-          <p className="text-sm text-gray-500">Tambahkan catatan, syarat & ketentuan, dan tanda tangan untuk invoice.</p>
+          <h2 className="text-base font-semibold text-neutral-500">Informasi Tambahan</h2>
+          <p className="text-sm text-neutral-300">Tambahkan catatan, syarat & ketentuan, dan tanda tangan untuk invoice.</p>
         </div>
         <div className="flex flex-col gap-y-4">
           <NoteInput />

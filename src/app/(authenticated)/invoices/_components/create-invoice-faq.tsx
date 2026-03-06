@@ -37,14 +37,14 @@ const faqs = [
 export function CreateInvoiceQuestions() {
   return (
     <div className="mx-auto">
-      <h2 className="text-lg font-semibold tracking-tight text-gray-900">
+      <h2 className="text-lg font-semibold tracking-tight text-neutral-500">
         FAQ (Frequently Asked Questions)
       </h2>
-      <dl className="mt-8 divide-y divide-gray-900/10">
+      <dl className="mt-8 divide-y divide-neutral-500/10">
         {faqs.map((faq) => (
           <Disclosure key={faq.question} as="div" className="py-6 first:pt-0 last:pb-0">
             <dt>
-              <DisclosureButton className="group flex w-full items-start justify-between text-left text-gray-900">
+              <DisclosureButton className="group flex w-full items-start justify-between text-left text-neutral-500">
                 <span className="text-base/7 font-semibold">{faq.question}</span>
                 <span className="ml-6 flex h-7 items-center">
                 <PlusIcon aria-hidden="true" className="size-6 group-data-open:hidden" />
@@ -53,7 +53,7 @@ export function CreateInvoiceQuestions() {
               </DisclosureButton>
             </dt>
             <DisclosurePanel as="dd" className="mt-2  pr-12">
-              <p className="text-base/7 text-gray-600">{faq.answer}</p>
+              <p className="text-base/7 text-neutral-400">{faq.answer}</p>
             </DisclosurePanel>
           </Disclosure>
         ))}

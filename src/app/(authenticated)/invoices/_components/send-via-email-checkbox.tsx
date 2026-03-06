@@ -17,8 +17,8 @@ export function SendViaEmailCheckbox(props: SendViaEmailCheckboxProps) {
   return (
     <LoonasCheckbox checked={props.checked} onChange={props.onChange} disabled={props.disabled}>
       <div className="flex flex-col space-y-1">
-        <div className="text-base font-semibold text-gray-900">Kirim Email</div>
-        <div className="text-sm text-gray-500">
+        <div className="text-base font-semibold text-neutral-500">Kirim Email</div>
+        <div className="text-sm text-neutral-300">
           Faktur akan dikirimkan ke <span className="underline">{props.recipient.email}</span> dan{" "}
           <span className="underline">{props.recipient.name}</span> dapat membayar melalui link yang akan dkirimkan via
           email.

@@ -31,7 +31,7 @@ export function DeleteRowButton(props: DeleteRowButtonProps) {
         data={props.data}
         dataIndex={props.dataIndex}
       />
-      <TrashIcon className="size-5 text-gray-500" onClick={toggleDialog} />
+      <TrashIcon className="size-5 text-neutral-300" onClick={toggleDialog} />
     </>
   );
 }

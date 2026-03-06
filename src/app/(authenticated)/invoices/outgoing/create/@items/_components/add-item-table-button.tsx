@@ -12,7 +12,7 @@ export function AddItemTableButton() {
 
   return (
     <div className="flex flex-col items-center justify-center" onClick={handleClick}>
-      <div className="group flex flex-row items-center space-x-1 rounded-sm px-6 py-3 hover:bg-gray-50">
+      <div className="group flex flex-row items-center space-x-1 rounded-sm px-6 py-3 hover:bg-neutral-50">
         <div className="text-primary-default">Tambah Item</div>
       </div>
     </div>

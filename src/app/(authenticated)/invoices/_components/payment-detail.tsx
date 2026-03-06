@@ -25,31 +25,31 @@ export function PaymentDetail(props: PaymentDetailProps) {
 
         <div className="space-y-4">
           <div className="flex flex-col">
-            <span className="text-gray-600 text-sm">Nama Penerima</span>
+            <span className="text-neutral-400 text-sm">Nama Penerima</span>
             <span className="font-bold">{props.receiverName}</span>
           </div>
 
           <div className="flex flex-col">
-            <span className="text-gray-600 text-sm">Bank Penerima</span>
+            <span className="text-neutral-400 text-sm">Bank Penerima</span>
             <span className="font-bold">{props.bankName}</span>
           </div>
 
           <div className="flex flex-col">
-            <span className="text-gray-600 text-sm">Nomor Rekening Penerima</span>
+            <span className="text-neutral-400 text-sm">Nomor Rekening Penerima</span>
             <span className="font-bold">{props.accountNumber}</span>
           </div>
 
           <div className="flex flex-col">
-            <span className="text-gray-600 text-sm">Nama Pemilik Rekening</span>
+            <span className="text-neutral-400 text-sm">Nama Pemilik Rekening</span>
             <span className="font-bold">{props.accountHolderName}</span>
           </div>
 
           <div className="border-t border-gray-200 my-2 pt-2"></div>
 
           <div className="flex justify-between items-center">
-            <span className="text-gray-500 items-center">
+            <span className="text-neutral-300 items-center">
               <span className="group relative inline-flex items-center">
-                Dana Diteruskan <InformationCircleIcon className="h-4 w-4 ml-1 text-gray-500 cursor-help" />
+                Dana Diteruskan <InformationCircleIcon className="h-4 w-4 ml-1 text-neutral-300 cursor-help" />
                 <span
                   className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 text-xs text-white bg-black rounded-md whitespace-nowrap"
                 >
@@ -61,16 +61,16 @@ export function PaymentDetail(props: PaymentDetailProps) {
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="text-gray-500">Biaya Layanan</span>
+            <span className="text-neutral-300">Biaya Layanan</span>
             <span className="font-medium">{IDRFormatter.toCurrency(props.fee)}</span>
           </div>
 
           <div className="border-t border-gray-200 my-2 pt-2"></div>
 
           <div className="flex justify-between items-center">
-            <span className="text-gray-500 items-center">
+            <span className="text-neutral-300 items-center">
               <span className="group relative inline-flex items-center">
-                Bayar <InformationCircleIcon className="h-4 w-4 ml-1 text-gray-500 cursor-help" />
+                Bayar <InformationCircleIcon className="h-4 w-4 ml-1 text-neutral-300 cursor-help" />
                 <span
                   className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 text-xs text-white bg-black rounded-md whitespace-nowrap"
                 >

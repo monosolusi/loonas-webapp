@@ -8,8 +8,8 @@ interface ExtraInvoiceNoteProps {
 export function ExtraInvoiceNote(props: ExtraInvoiceNoteProps) {
   return (
     <div className="flex-1 flex-col space-y-1">
-      <div className="font-semibold text-gray-900">{props.title}</div>
-      <div className="text-gray-500">{props.children}</div>
+      <div className="font-semibold text-neutral-500">{props.title}</div>
+      <div className="text-neutral-300">{props.children}</div>
     </div>
   );
 }

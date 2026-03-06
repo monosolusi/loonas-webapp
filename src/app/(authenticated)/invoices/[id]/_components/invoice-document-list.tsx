@@ -44,7 +44,7 @@ export function InvoiceDocumentList({ documents, totalAmount }: InvoiceDocumentL
           {doc.file && (
             <div className="mt-4 ml-[60px]">
               <div className="flex items-center gap-x-3 rounded-lg border border-dashed border-neutral-100 px-4 py-3">
-                <div className="flex size-10 items-center justify-center rounded-lg bg-red-50">
+                <div className="flex size-10 items-center justify-center rounded-lg bg-error-50">
                   <Image
                     src="/assets/images/document-icon-red-500-w20-h20.svg"
                     alt="file-icon"

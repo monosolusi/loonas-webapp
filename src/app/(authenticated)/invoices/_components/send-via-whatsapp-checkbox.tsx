@@ -16,8 +16,8 @@ export function SendViaWhatsappCheckbox(props: SendViaWhatsappCheckboxProps) {
   return (
     <LoonasCheckbox checked={props.checked} onChange={props.onChange} disabled={props.disabled}>
       <div className="flex flex-col space-y-1">
-        <div className="text-base font-semibold text-gray-900">Kirim WhatsApp</div>
-        <div className="text-sm text-gray-500">
+        <div className="text-base font-semibold text-neutral-500">Kirim WhatsApp</div>
+        <div className="text-sm text-neutral-300">
           Faktur akan dikirimkan ke <span className="underline">{props.recipient.phoneNumber}</span> dan{" "}
           <span className="underline">{props.recipient.name}</span> dapat membayar melalui link yang akan dkirimkan via
           WhatsApp.

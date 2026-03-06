@@ -19,8 +19,8 @@ function RecipientSectionContent() {
   return (
     <div className="flex flex-col gap-y-4">
       <div className="flex flex-col">
-        <h1 className="text-base font-semibold text-gray-900">Klien</h1>
-        <p className="text-sm text-gray-500">Pilih klien tujuan agar kamu bisa mengirimkan invoice dengan mudah.</p>
+        <h1 className="text-base font-semibold text-neutral-500">Klien</h1>
+        <p className="text-sm text-neutral-300">Pilih klien tujuan agar kamu bisa mengirimkan invoice dengan mudah.</p>
       </div>
       <ListClientSearchBar />
       <Selector>

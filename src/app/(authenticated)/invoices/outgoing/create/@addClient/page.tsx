@@ -15,8 +15,8 @@ export default function AddClientSection() {
   return (
     <div className="flex flex-col gap-y-6">
       <div className="flex flex-col">
-        <h1 className="text-base font-semibold text-gray-900">Tambah Klien Baru</h1>
-        <p className="text-sm text-gray-500">Masukan detail informasi klien Anda.</p>
+        <h1 className="text-base font-semibold text-neutral-500">Tambah Klien Baru</h1>
+        <p className="text-sm text-neutral-300">Masukan detail informasi klien Anda.</p>
       </div>
       <div className="flex flex-col gap-y-4">
         <TextInput label="Nama" placeholder="Masukan nama klien" value={name} onChange={setName} required />

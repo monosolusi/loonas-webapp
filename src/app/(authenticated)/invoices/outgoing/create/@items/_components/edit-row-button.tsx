@@ -16,5 +16,5 @@ export function EditRowButton(props: EditRowButtonProps) {
     setCurrentStep?.("invoice-details.edit-item");
   };
 
-  return <PencilSquareIcon className="size-5 text-gray-500" onClick={handleClick} />;
+  return <PencilSquareIcon className="size-5 text-neutral-300" onClick={handleClick} />;
 }

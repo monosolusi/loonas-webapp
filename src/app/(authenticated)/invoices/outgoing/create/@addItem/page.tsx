@@ -38,17 +38,17 @@ export default function AddItemSection() {
     <div className="flex flex-col gap-y-8">
       {/* Page header */}
       <div className="flex flex-col">
-        <h1 className="text-base font-semibold text-gray-900">
+        <h1 className="text-base font-semibold text-neutral-500">
           {isEditMode ? "Ubah Detail Item" : "Tambah Item Baru"}
         </h1>
-        <p className="text-sm text-gray-500">Yuk, isi detail barang yang mau kamu cantumkan di faktur.</p>
+        <p className="text-sm text-neutral-300">Yuk, isi detail barang yang mau kamu cantumkan di faktur.</p>
       </div>
 
       {/* Section 1: Informasi Item */}
       <section className="flex flex-col gap-y-4">
         <div>
-          <h2 className="text-sm font-semibold text-gray-900">Informasi Item</h2>
-          <p className="text-xs text-gray-400">Detail dasar item yang akan dicantumkan di faktur.</p>
+          <h2 className="text-sm font-semibold text-neutral-500">Informasi Item</h2>
+          <p className="text-xs text-neutral-200">Detail dasar item yang akan dicantumkan di faktur.</p>
         </div>
         <NameInput />
         <DescriptionInput />
@@ -59,8 +59,8 @@ export default function AddItemSection() {
       {/* Section 2: Harga & Kuantitas */}
       <section className="flex flex-col gap-y-4">
         <div>
-          <h2 className="text-sm font-semibold text-gray-900">Harga & Kuantitas</h2>
-          <p className="text-xs text-gray-400">Tentukan jumlah dan harga satuan item.</p>
+          <h2 className="text-sm font-semibold text-neutral-500">Harga & Kuantitas</h2>
+          <p className="text-xs text-neutral-200">Tentukan jumlah dan harga satuan item.</p>
         </div>
         <div className="grid grid-cols-4 gap-3">
           <QtyInput />
@@ -76,8 +76,8 @@ export default function AddItemSection() {
       {/* Section 3: Diskon */}
       <section className="flex flex-col gap-y-4">
         <div>
-          <h2 className="text-sm font-semibold text-gray-900">Diskon</h2>
-          <p className="text-xs text-gray-400">Opsional. Pilih jenis dan nilai diskon untuk item ini.</p>
+          <h2 className="text-sm font-semibold text-neutral-500">Diskon</h2>
+          <p className="text-xs text-neutral-200">Opsional. Pilih jenis dan nilai diskon untuk item ini.</p>
         </div>
         <div className="flex flex-row space-x-3">
           <div className="flex-1">
@@ -94,8 +94,8 @@ export default function AddItemSection() {
       {/* Section 4: Perpajakan */}
       <section className="flex flex-col gap-y-4">
         <div>
-          <h2 className="text-sm font-semibold text-gray-900">Perpajakan</h2>
-          <p className="text-xs text-gray-400">
+          <h2 className="text-sm font-semibold text-neutral-500">Perpajakan</h2>
+          <p className="text-xs text-neutral-200">
             Pilih jenis pajak. Jika kena pajak, isi nilai pajak dan DPP lalu klik Hitung Pajak.
           </p>
         </div>

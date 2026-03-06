@@ -70,7 +70,7 @@ export function PaymentConfigurationTableImpl() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-sm text-gray-500">Memuat metode pembayaran...</div>
+        <div className="text-sm text-neutral-300">Memuat metode pembayaran...</div>
       </div>
     );
   }
@@ -78,7 +78,7 @@ export function PaymentConfigurationTableImpl() {
   if (error) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-sm text-red-500">Gagal memuat metode pembayaran. Silakan coba lagi.</div>
+        <div className="text-sm text-error-500">Gagal memuat metode pembayaran. Silakan coba lagi.</div>
       </div>
     );
   }

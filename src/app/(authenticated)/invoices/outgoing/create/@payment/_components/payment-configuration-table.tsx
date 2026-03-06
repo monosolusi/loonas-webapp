@@ -48,7 +48,7 @@ function PaymentMethodCard(props: {
           >
             <span className="size-4 translate-x-1 rounded-full bg-white shadow-sm transition group-data-[checked]:translate-x-6" />
           </Switch>
-          <span className="text-base font-semibold text-gray-900">{item.name}</span>
+          <span className="text-base font-semibold text-neutral-500">{item.name}</span>
         </div>
         <span className={clsx("text-xs font-medium", item.isEnabled ? "text-success-300" : "text-neutral-200")}>
           {item.isEnabled ? "Aktif" : "Non-Aktif"}
@@ -70,7 +70,7 @@ function PaymentMethodCard(props: {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-0.5">
           <span className="text-xs text-neutral-200">Biaya transaksi</span>
-          <span className="text-sm font-medium text-gray-900">{item.feeInText}</span>
+          <span className="text-sm font-medium text-neutral-500">{item.feeInText}</span>
         </div>
         <div className="sm:w-[220px]">
           <SelectInput
