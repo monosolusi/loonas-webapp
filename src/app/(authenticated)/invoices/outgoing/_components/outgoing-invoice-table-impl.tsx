@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Tab, TabGroup, TabList } from "@headlessui/react";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceSearchInput } from "@/app/(authenticated)/invoices/_components/invoice-search-input";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
+import { InvoiceTabFilter } from "@/app/(authenticated)/invoices/_components/invoice-tab-filter";
 import { OutgoingInvoiceRow, OutgoingInvoiceTable } from "./outgoing-invoice-table";
 
 export function OutgoingInvoiceTableImpl() {
@@ -36,22 +36,7 @@ export function OutgoingInvoiceTableImpl() {
 
   const toolbar = (
     <div className="flex flex-row items-center justify-between">
-      <TabGroup selectedIndex={activeTab} onChange={handleTabChange}>
-        <TabList className="flex flex-row rounded-lg bg-neutral-100 p-1">
-          {["Semua", "Belum Lunas", "Lunas"].map((label) => (
-            <Tab
-              key={label}
-              className={({ selected }) =>
-                `rounded-md px-4 py-1.5 text-sm leading-5 outline-none ${
-                  selected ? "bg-white text-neutral-500 shadow-sm" : "text-neutral-300 hover:text-neutral-400"
-                }`
-              }
-            >
-              {label}
-            </Tab>
-          ))}
-        </TabList>
-      </TabGroup>
+      <InvoiceTabFilter selectedIndex={activeTab} onChange={handleTabChange} />
 
       <InvoiceSearchInput value={search} onChange={handleSearchChange} placeholder="Cari nomor faktur atau nama klien..." />
     </div>
