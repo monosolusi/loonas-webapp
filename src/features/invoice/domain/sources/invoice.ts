@@ -78,6 +78,7 @@ export interface ListInvoicesServiceFilter {
   page?: number;
   limit?: number;
   includes?: string;
+  filter?: string;
 }
 
 export interface InvoiceService {

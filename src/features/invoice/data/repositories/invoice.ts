@@ -43,6 +43,7 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
           page: filter.page,
           limit: filter.limit,
           includes: filter.includes,
+          filter: filter.filter,
         },
         session,
       );

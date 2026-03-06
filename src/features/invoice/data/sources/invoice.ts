@@ -45,6 +45,7 @@ export class InvoiceServiceImpl implements InvoiceService {
       if (filter.page) searchParams.page = String(filter.page);
       if (filter.limit) searchParams.limit = String(filter.limit);
       if (filter.includes) searchParams.include = filter.includes;
+      if (filter.filter) searchParams.filter = filter.filter;
 
       const result = await this.http.request({ path, method, searchParams, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);

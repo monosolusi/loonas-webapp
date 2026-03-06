@@ -37,6 +37,7 @@ async function ListInvoicesFetcher([_, params]: [string, ListInvoicesFetcherPara
     page: params.page,
     limit: params.limit,
     includes: params.includes,
+    filter: params.filter,
   });
 
   const result = await list.execute(listParams);

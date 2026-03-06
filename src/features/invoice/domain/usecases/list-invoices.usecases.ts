@@ -12,12 +12,14 @@ export class ListInvoicesUseCaseParams {
   public page: number;
   public limit: number;
   public includes?: string;
+  public filter?: string;
 
-  constructor(args: { type?: InvoiceType; page?: number; limit?: number; includes?: string }) {
+  constructor(args: { type?: InvoiceType; page?: number; limit?: number; includes?: string; filter?: string }) {
     this.type = args.type;
     this.page = args.page ?? 1;
     this.limit = args.limit ?? 10;
     this.includes = args.includes;
+    this.filter = args.filter;
   }
 }
 
@@ -38,6 +40,7 @@ export class ListInvoicesUseCase
           page: params.page,
           limit: params.limit,
           includes: params.includes,
+          filter: params.filter,
         },
         session,
       );

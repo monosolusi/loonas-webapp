@@ -9,6 +9,7 @@ export type UseListInvoicesParams = {
   page?: number;
   limit?: number;
   includes?: string;
+  filter?: string;
 };
 
 export type ListInvoicesFetcherParams = UseListInvoicesParams & {

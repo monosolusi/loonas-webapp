@@ -80,6 +80,7 @@ export interface ListInvoicesFilter {
   page?: number;
   limit?: number;
   includes?: string;
+  filter?: string;
 }
 
 export interface InvoiceRepository {
