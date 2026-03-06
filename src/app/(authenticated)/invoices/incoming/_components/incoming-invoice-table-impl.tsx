@@ -14,11 +14,14 @@ export function IncomingInvoiceTableImpl() {
   const [activeTab, setActiveTab] = useState(0);
   const [search, setSearch] = useState("");
 
+  const filterMap = [undefined, "unpaid", "paid"] as const;
+
   const { invoices, meta, loading, error } = useListInvoices({
     type: InvoiceType.INCOMING,
     page,
     limit: 5,
     includes: "documents",
+    filter: filterMap[activeTab],
   });
 
   const handleTabChange = (index: number) => {
@@ -119,21 +122,14 @@ export function IncomingInvoiceTableImpl() {
 
   const incomingInvoices = invoices.filter((inv): inv is IncomingInvoiceEntity => inv instanceof IncomingInvoiceEntity);
 
-  const filteredInvoices = incomingInvoices.filter((invoice) => {
-    const isPaid = invoice.status === "COMPLETED" || invoice.status === "PAID";
-
-    if (activeTab === 1 && isPaid) return false;
-    if (activeTab === 2 && !isPaid) return false;
-
-    if (search) {
-      const query = search.toLowerCase();
-      const matchesName = invoice.receiver.name.toLowerCase().includes(query);
-      const matchesInvoiceNumber = invoice.documents?.[0]?.invoiceNumber?.toLowerCase().includes(query) ?? false;
-      if (!matchesName && !matchesInvoiceNumber) return false;
-    }
-
-    return true;
-  });
+  const filteredInvoices = search
+    ? incomingInvoices.filter((invoice) => {
+        const query = search.toLowerCase();
+        const matchesName = invoice.receiver.name.toLowerCase().includes(query);
+        const matchesInvoiceNumber = invoice.documents?.[0]?.invoiceNumber?.toLowerCase().includes(query) ?? false;
+        return matchesName || matchesInvoiceNumber;
+      })
+    : incomingInvoices;
 
   const rows: IncomingInvoiceRow[] = filteredInvoices.map((invoice) => {
     const firstDoc = invoice.documents?.[0];
