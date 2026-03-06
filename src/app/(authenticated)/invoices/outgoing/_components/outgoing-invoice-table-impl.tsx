@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
@@ -10,18 +10,28 @@ import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/in
 import { InvoiceTabFilter } from "@/app/(authenticated)/invoices/_components/invoice-tab-filter";
 import { OutgoingInvoiceRow, OutgoingInvoiceTable } from "@/app/(authenticated)/invoices/outgoing/_components/outgoing-invoice-table";
 
-export function OutgoingInvoiceTableImpl() {
+interface OutgoingInvoiceTableImplProps {
+  filter?: string;
+}
+
+export function OutgoingInvoiceTableImpl({ filter }: OutgoingInvoiceTableImplProps) {
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState(0);
   const [search, setSearch] = useState("");
 
   const filterMap = [undefined, "unpaid", "paid"] as const;
+  const resolvedFilter = filter ?? filterMap[activeTab];
+
+  useEffect(() => {
+    setSearch("");
+    setPage(1);
+  }, [filter]);
 
   const { invoices, meta, loading, error } = useListInvoices({
     type: InvoiceType.OUTGOING,
     page,
     limit: 5,
-    filter: filterMap[activeTab],
+    filter: resolvedFilter,
   });
 
   const handleTabChange = (index: number) => {
@@ -35,10 +45,10 @@ export function OutgoingInvoiceTableImpl() {
   };
 
   const toolbar = (
-    <div className="flex flex-row items-center justify-between">
-      <InvoiceTabFilter selectedIndex={activeTab} onChange={handleTabChange} />
+    <div className={`flex flex-row items-center ${filter ? "justify-end" : "justify-between"}`}>
+      {!filter && <InvoiceTabFilter selectedIndex={activeTab} onChange={handleTabChange} />}
 
-      <InvoiceSearchInput value={search} onChange={handleSearchChange} placeholder="Cari nomor faktur atau nama klien..." />
+      <InvoiceSearchInput value={search} onChange={handleSearchChange} placeholder="Filter halaman ini..." />
     </div>
   );
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
@@ -10,19 +10,29 @@ import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/in
 import { InvoiceTabFilter } from "@/app/(authenticated)/invoices/_components/invoice-tab-filter";
 import { IncomingInvoiceRow, IncomingInvoiceTable } from "@/app/(authenticated)/invoices/incoming/_components/incoming-invoice-table";
 
-export function IncomingInvoiceTableImpl() {
+interface IncomingInvoiceTableImplProps {
+  filter?: string;
+}
+
+export function IncomingInvoiceTableImpl({ filter }: IncomingInvoiceTableImplProps) {
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState(0);
   const [search, setSearch] = useState("");
 
   const filterMap = [undefined, "unpaid", "paid"] as const;
+  const resolvedFilter = filter ?? filterMap[activeTab];
+
+  useEffect(() => {
+    setSearch("");
+    setPage(1);
+  }, [filter]);
 
   const { invoices, meta, loading, error } = useListInvoices({
     type: InvoiceType.INCOMING,
     page,
     limit: 5,
     includes: "documents",
-    filter: filterMap[activeTab],
+    filter: resolvedFilter,
   });
 
   const handleTabChange = (index: number) => {
@@ -36,13 +46,13 @@ export function IncomingInvoiceTableImpl() {
   };
 
   const toolbar = (
-    <div className="flex flex-row items-center justify-between">
-      <InvoiceTabFilter selectedIndex={activeTab} onChange={handleTabChange} />
+    <div className={`flex flex-row items-center ${filter ? "justify-end" : "justify-between"}`}>
+      {!filter && <InvoiceTabFilter selectedIndex={activeTab} onChange={handleTabChange} />}
 
       <InvoiceSearchInput
         value={search}
         onChange={handleSearchChange}
-        placeholder="Cari nomor faktur atau nama pemasok..."
+        placeholder="Filter halaman ini..."
       />
     </div>
   );
@@ -75,13 +85,13 @@ export function IncomingInvoiceTableImpl() {
 
   const rows: IncomingInvoiceRow[] = filteredInvoices.map((invoice) => {
     const firstDoc = invoice.documents?.[0];
-    const extraCount = (invoice.documents?.length ?? 1) - 1;
+    const extraCount = Math.max((invoice.documents?.length ?? 0) - 1, 0);
 
     return {
       id: invoice.id,
       client: invoice.receiver.name,
       invoiceNumber: firstDoc?.invoiceNumber ?? "-",
-      extraInvoices: extraCount > 0 ? extraCount : 0,
+      extraInvoices: extraCount,
       date: invoice.createdAt.setLocale("id").toFormat("dd LLL yyyy"),
       status: invoice.status,
       amount: IDRFormatter.toCurrency(invoice.total),

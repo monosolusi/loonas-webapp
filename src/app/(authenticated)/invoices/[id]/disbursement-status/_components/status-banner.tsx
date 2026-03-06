@@ -8,10 +8,10 @@ interface StatusBannerProps {
 }
 
 const variantStyles: Record<StatusBannerVariant, { border: string; bg: string }> = {
-  pending: { border: "border-[#bdbdbd]", bg: "bg-white" },
-  received: { border: "border-[#47cd89]", bg: "bg-[#f6fef9]" },
-  processing: { border: "border-[#fdb022]", bg: "bg-[#fffcf5]" },
-  completed: { border: "border-[#4ca2ff]", bg: "bg-[#f0f7ff]" },
+  pending: { border: "border-neutral-300", bg: "bg-white" },
+  received: { border: "border-success-400", bg: "bg-success-50" },
+  processing: { border: "border-warning-400", bg: "bg-warning-50" },
+  completed: { border: "border-primary-400", bg: "bg-primary-50" },
 };
 
 export function StatusBanner(props: StatusBannerProps) {

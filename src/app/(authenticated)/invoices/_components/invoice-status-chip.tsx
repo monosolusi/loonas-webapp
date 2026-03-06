@@ -6,7 +6,7 @@ interface InvoiceStatusChipProps {
   compact?: boolean;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+const STATUS_CONFIG: Record<InvoiceStatus, { label: string; className: string }> = {
   PENDING_INVOICE: { label: "Menunggu Faktur", className: "bg-neutral-100 text-neutral-400" },
   PENDING_PAYMENT: { label: "Menunggu Pembayaran", className: "bg-warning-50 text-warning-500" },
   PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Diproses", className: "bg-primary-50 text-primary-500" },

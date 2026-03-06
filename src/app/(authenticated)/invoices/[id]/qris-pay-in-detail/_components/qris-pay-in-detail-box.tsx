@@ -10,8 +10,8 @@ export function QrisPayInDetailBox(props: QrisPayInDetailBoxProps) {
   return (
     <div className="relative overflow-hidden rounded-lg border border-neutral-200 bg-white p-6">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-0">
-        <div className="absolute top-[25%] left-[-25%] h-[220px] w-[220px] rotate-45 bg-[#e7413a]"></div>
-        <div className="absolute right-[-25%] bottom-[-25%] h-[280px] w-[280px] rotate-45 bg-[#e7413a]"></div>
+        <div className="absolute top-[25%] left-[-25%] h-[220px] w-[220px] rotate-45 bg-error-500"></div>
+        <div className="absolute right-[-25%] bottom-[-25%] h-[280px] w-[280px] rotate-45 bg-error-500"></div>
       </div>
 
       <div className="relative z-10 flex flex-col gap-y-8">

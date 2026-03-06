@@ -84,7 +84,7 @@ export function PaymentDetail(props: PaymentDetailProps) {
       </div>
 
       {/* Action Buttons - Placed directly below the payment details */}
-      {(props.showActions === undefined || props.showActions) && props.invoiceId && (
+      {props.showActions !== false && props.invoiceId && (
         <ActionButtons invoiceId={props.invoiceId} />
       )}
     </div>

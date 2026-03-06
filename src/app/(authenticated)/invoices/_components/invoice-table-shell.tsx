@@ -1,5 +1,13 @@
 import React from "react";
 
+/**
+ * Display priority (highest to lowest):
+ * 1. loading → "Memuat data..."
+ * 2. error → "Gagal memuat data faktur."
+ * 3. empty → emptyMessage
+ * 4. filteredEmpty → filteredEmptyMessage (client-side search yielded no results)
+ * 5. children (table rows)
+ */
 interface InvoiceTableShellProps {
   toolbar: React.ReactNode;
   header: React.ReactNode;

@@ -25,10 +25,10 @@ export default function AddItemSection() {
 
   useEffect(() => {
     if (isAddMode) {
-      clearInput?.();
+      clearInput();
     } else if (isEditMode && editingItemIndex !== null) {
       const item = items[editingItemIndex];
-      if (item) setInput?.(item);
+      if (item) setInput(item);
     }
   }, [currentStep]);
 

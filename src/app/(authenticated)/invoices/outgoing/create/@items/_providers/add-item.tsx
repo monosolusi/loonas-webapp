@@ -35,35 +35,23 @@ interface AddItemContextProps {
   taxBase: number;
   total: number;
   mustRecalculateTax: boolean;
-  recalculated?: () => void;
-  setCalculatedTax?: (result: { tax: number; taxBase: number; total: number }) => void;
-  clearInput?: () => void;
-  setInput?: (data: InitialItem) => void;
-  setName?: React.Dispatch<React.SetStateAction<string>>;
-  setDescription?: React.Dispatch<React.SetStateAction<string>>;
-  setQty?: React.Dispatch<React.SetStateAction<number>>;
-  setPrice?: React.Dispatch<React.SetStateAction<number>>;
-  setDiscountType?: React.Dispatch<React.SetStateAction<DiscountType>>;
-  setDiscount?: React.Dispatch<React.SetStateAction<number>>;
-  setTaxType?: React.Dispatch<React.SetStateAction<TaxType>>;
-  setTax?: React.Dispatch<React.SetStateAction<number>>;
-  setTaxBase?: React.Dispatch<React.SetStateAction<number>>;
-  setTotal?: React.Dispatch<React.SetStateAction<number>>;
+  recalculated: () => void;
+  setCalculatedTax: (result: { tax: number; taxBase: number; total: number }) => void;
+  clearInput: () => void;
+  setInput: (data: InitialItem) => void;
+  setName: React.Dispatch<React.SetStateAction<string>>;
+  setDescription: React.Dispatch<React.SetStateAction<string>>;
+  setQty: React.Dispatch<React.SetStateAction<number>>;
+  setPrice: React.Dispatch<React.SetStateAction<number>>;
+  setDiscountType: React.Dispatch<React.SetStateAction<DiscountType>>;
+  setDiscount: React.Dispatch<React.SetStateAction<number>>;
+  setTaxType: React.Dispatch<React.SetStateAction<TaxType>>;
+  setTax: React.Dispatch<React.SetStateAction<number>>;
+  setTaxBase: React.Dispatch<React.SetStateAction<number>>;
+  setTotal: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const AddItemContext = React.createContext<AddItemContextProps>({
-  name: "",
-  description: "",
-  qty: 0,
-  price: 0,
-  discountType: DiscountType.NO_DISCOUNT,
-  discount: 0,
-  taxType: TaxType.NON_TAXABLE,
-  tax: 0,
-  taxBase: 0,
-  total: 0,
-  mustRecalculateTax: true,
-});
+const AddItemContext = React.createContext<AddItemContextProps>(null!);
 
 export function AddItemProvider(props: AddItemProviderProps) {
   const [name, setName] = useState<string>(props.initialValue?.name ?? "");
@@ -135,6 +123,7 @@ export function AddItemProvider(props: AddItemProviderProps) {
   });
 
   useEffect(() => {
+    if (isCalculatingRef.current) return;
     if (taxType === TaxType.NON_TAXABLE) {
       const total = TaxCalculator.calculateAmountBeforeTax({
         price: price,
@@ -183,5 +172,7 @@ export function AddItemProvider(props: AddItemProviderProps) {
 }
 
 export function useAddItem() {
-  return React.useContext(AddItemContext);
+  const ctx = React.useContext(AddItemContext);
+  if (!ctx) throw new Error("useAddItem must be used within AddItemProvider");
+  return ctx;
 }

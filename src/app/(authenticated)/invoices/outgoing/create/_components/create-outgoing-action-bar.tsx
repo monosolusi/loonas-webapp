@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   OutgoingStep,
@@ -55,12 +55,7 @@ export function CreateOutgoingActionBar() {
     goToStep(OUTGOING_STEP_MAP[currentIndex - 1]);
   };
 
-  const isSendDisabled = useMemo(() => {
-    if (!recipient) return true;
-    if (items.length === 0) return true;
-    if (paymentConfiguration.length === 0) return true;
-    return false;
-  }, [recipient, items, paymentConfiguration]);
+  const isSendDisabled = !recipient || items.length === 0 || paymentConfiguration.length === 0;
 
   const handleSaveClient = async () => {
     if (!create) return;
@@ -69,7 +64,7 @@ export function CreateOutgoingActionBar() {
   };
 
   const handleCancelItem = () => {
-    addItemCtx.clearInput?.();
+    addItemCtx.clearInput();
     setEditingItemIndex?.(null);
     goToStep("invoice-details");
   };
@@ -96,21 +91,19 @@ export function CreateOutgoingActionBar() {
       addInvoiceItem?.(itemData);
     }
 
-    addItemCtx.clearInput?.();
+    addItemCtx.clearInput();
     setEditingItemIndex?.(null);
     goToStep("invoice-details");
   };
 
-  const isItemSaveDisabled = useMemo(() => {
-    return addItemCtx.name.trim() === "" || addItemCtx.mustRecalculateTax;
-  }, [addItemCtx.name, addItemCtx.mustRecalculateTax]);
+  const isItemSaveDisabled = addItemCtx.name.trim() === "" || addItemCtx.mustRecalculateTax;
 
   const handleSendCompleted = (item: OutgoingInvoiceEntity) => {
     setDialogOpen(false);
     router.push(`/invoices/${item.id}`);
   };
 
-  const leftButton = useMemo(() => {
+  const leftButton = (() => {
     switch (currentStep) {
       case "select-recipient":
         return <SecondaryButton outlined label="Batal" onClick={() => router.back()} />;
@@ -120,24 +113,20 @@ export function CreateOutgoingActionBar() {
       case "invoice-details.edit-item":
         return <SecondaryButton outlined label="Batal" onClick={handleCancelItem} />;
       case "invoice-details":
-        return <SecondaryButton outlined label="Kembali" onClick={goToPreviousStep} />;
       case "payment-configuration":
-        return <SecondaryButton outlined label="Kembali" onClick={goToPreviousStep} />;
       case "review-and-send":
         return <SecondaryButton outlined label="Kembali" onClick={goToPreviousStep} />;
       default:
         return null;
     }
-  }, [currentStep, router]);
+  })();
 
-  const rightButton = useMemo(() => {
+  const rightButton = (() => {
     switch (currentStep) {
       case "select-recipient":
         return <PrimaryButton label="Selanjutnya" disabled={!recipient} onClick={goToNextStep} />;
       case "select-recipient.create-new":
-        return (
-          <PrimaryButton label="Simpan Klien" loading={createPartnerLoading} onClick={handleSaveClient} />
-        );
+        return <PrimaryButton label="Simpan Klien" loading={createPartnerLoading} onClick={handleSaveClient} />;
       case "invoice-details.add-item":
       case "invoice-details.edit-item":
         return <PrimaryButton label="Simpan Item" disabled={isItemSaveDisabled} onClick={handleSaveItem} />;
@@ -159,7 +148,7 @@ export function CreateOutgoingActionBar() {
       default:
         return null;
     }
-  }, [currentStep, recipient, isInvoiceDetailsStepClean, isPaymentConfigStepClean, isSendDisabled, isItemSaveDisabled, dialogOpen, createPartnerLoading]);
+  })();
 
   return (
     <div className="flex flex-row items-center justify-between border-t border-t-neutral-200 p-6">
