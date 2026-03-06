@@ -21,17 +21,24 @@ interface IncomingInvoiceTableProps {
 }
 
 function StatusChip({ status }: { status: InvoiceStatus }) {
-  const isPaid = status === "COMPLETED" || status === "PAID";
+  const config: Record<string, { label: string; className: string }> = {
+    PENDING_INVOICE: { label: "Menunggu Faktur", className: "bg-neutral-100 text-neutral-400" },
+    PENDING_PAYMENT: { label: "Menunggu Pembayaran", className: "bg-warning-50 text-warning-500" },
+    PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Diproses", className: "bg-primary-50 text-primary-500" },
+    COMPLETED: { label: "Lunas", className: "bg-success-50 text-success-500" },
+    PAID: { label: "Lunas", className: "bg-success-50 text-success-500" },
+    EXPIRED: { label: "Kedaluwarsa", className: "bg-error-50 text-error-500" },
+    FAILED: { label: "Gagal", className: "bg-error-50 text-error-500" },
+    CANCELLED: { label: "Dibatalkan", className: "bg-error-50 text-error-500" },
+  };
+
+  const { label, className } = config[status] ?? {
+    label: status,
+    className: "bg-neutral-100 text-neutral-400",
+  };
 
   return (
-    <span
-      className={clsx(
-        "rounded-sm px-2 py-0.5 text-xs leading-4 font-medium",
-        isPaid ? "bg-success-50 text-success-500" : "bg-warning-50 text-warning-500",
-      )}
-    >
-      {isPaid ? "Lunas" : "Menunggu Pembayaran"}
-    </span>
+    <span className={clsx("rounded-sm px-2 py-0.5 text-xs leading-4 font-medium", className)}>{label}</span>
   );
 }
 
