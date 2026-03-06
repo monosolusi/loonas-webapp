@@ -1,4 +1,3 @@
-import { Card } from "@/core/presentations/components/card";
 import { QRCodeSVG } from "qrcode.react";
 
 type QrisPayInDetailBoxProps = {
@@ -9,7 +8,7 @@ type QrisPayInDetailBoxProps = {
 
 export function QrisPayInDetailBox(props: QrisPayInDetailBoxProps) {
   return (
-    <Card className="relative overflow-hidden">
+    <div className="relative overflow-hidden rounded-lg border border-neutral-200 bg-white p-6">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-0">
         <div className="absolute top-[25%] left-[-25%] h-[220px] w-[220px] rotate-45 bg-[#e7413a]"></div>
         <div className="absolute right-[-25%] bottom-[-25%] h-[280px] w-[280px] rotate-45 bg-[#e7413a]"></div>
@@ -39,11 +38,11 @@ export function QrisPayInDetailBox(props: QrisPayInDetailBoxProps) {
             </div>
           </div>
           <div className="flex flex-col gap-y-1">
-            <div className="text-sm text-gray-500">Kode Serial:</div>
-            <div className="text-sm text-gray-500">{props.payInDetail.id}</div>
+            <div className="text-sm text-neutral-300">Kode Serial:</div>
+            <div className="text-sm text-neutral-300">{props.payInDetail.id}</div>
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

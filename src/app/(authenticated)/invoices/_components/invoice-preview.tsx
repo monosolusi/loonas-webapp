@@ -1,4 +1,3 @@
-import { Card } from "@/core/presentations/components/card";
 import React from "react";
 import { SenderInformation } from "@/app/(authenticated)/invoices/_components/sender-information";
 import { InvoiceTopSummary } from "@/app/(authenticated)/invoices/_components/invoice-top-summary";
@@ -45,7 +44,7 @@ interface InvoicePreviewProps {
 
 export function InvoicePreview(props: InvoicePreviewProps) {
   return (
-    <Card className={clsx("w-full rounded-xs text-sm shadow-md", props.className)}>
+    <div className={clsx("w-full rounded-lg border border-neutral-200 bg-white p-6 text-sm shadow-md", props.className)}>
       <div className="flex flex-col space-y-4">
         <div className="flex flex-1 flex-row space-x-4">
           <div className="flex-1">
@@ -79,11 +78,11 @@ export function InvoicePreview(props: InvoicePreviewProps) {
             />
           </div>
         </div>
-        <div className="mt-8 flex flex-1 flex-col items-start justify-start text-xs font-light text-gray-400 italic">
+        <div className="mt-8 flex flex-1 flex-col items-start justify-start text-xs font-light text-neutral-300 italic">
           {props.invoice.id && <div className="flex-1">[{props.invoice.id}]</div>}
           <div className="flex-1">Invoice ini dibuat dengan aplikasi loonas.id</div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

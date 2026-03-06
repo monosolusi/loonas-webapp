@@ -7,18 +7,18 @@ interface InvoiceStatusChipProps {
 
 export function InvoiceStatusChip(props: InvoiceStatusChipProps) {
   const statusChips: Record<InvoiceStatus, { label: string; className: string }> = {
-    PENDING_INVOICE: { label: "Menunggu Invoice", className: "bg-gray-300 text-gray-800" },
-    PENDING_PAYMENT: { label: "Menunggu Pembayaran", className: "bg-yellow-100 text-yellow-700" },
-    PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Dana Diterima", className: "bg-blue-100 text-blue-700" },
-    COMPLETED: { label: "Selesai", className: "bg-emerald-100 text-emerald-700" },
-    EXPIRED: { label: "Kedaluwarsa", className: "bg-gray-100 text-gray-500" },
-    FAILED: { label: "Gagal", className: "bg-red-100 text-red-700" },
-    CANCELLED: { label: "Dibatalkan", className: "bg-pink-100 text-pink-700" },
-    DRAFT: { label: "Draft", className: "bg-gray-100 text-gray-500" },
-    READY_TO_SEND: { label: "Dalam Antrian Kirim", className: "bg-gray-100 text-gray-500" },
-    PENDING_BANK_TRANSFER: { label: "Menunggu Transfer", className: "bg-gray-100 text-gray-500" },
-    SENT: { label: "Invoice Terkirim", className: "bg-gray-100 text-gray-500" },
-    PAID: { label: "Selesai", className: "bg-emerald-100 text-emerald-700" },
+    PENDING_INVOICE: { label: "Menunggu Invoice", className: "bg-neutral-100 text-neutral-400" },
+    PENDING_PAYMENT: { label: "Menunggu Pembayaran", className: "bg-warning-50 text-warning-500" },
+    PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Dana Diterima", className: "bg-primary-50 text-primary-500" },
+    COMPLETED: { label: "Selesai", className: "bg-success-50 text-success-500" },
+    EXPIRED: { label: "Kedaluwarsa", className: "bg-neutral-100 text-neutral-400" },
+    FAILED: { label: "Gagal", className: "bg-error-50 text-error-500" },
+    CANCELLED: { label: "Dibatalkan", className: "bg-error-50 text-error-500" },
+    DRAFT: { label: "Draft", className: "bg-neutral-100 text-neutral-400" },
+    READY_TO_SEND: { label: "Dalam Antrian Kirim", className: "bg-neutral-100 text-neutral-400" },
+    PENDING_BANK_TRANSFER: { label: "Menunggu Transfer", className: "bg-warning-50 text-warning-500" },
+    SENT: { label: "Invoice Terkirim", className: "bg-primary-50 text-primary-400" },
+    PAID: { label: "Selesai", className: "bg-success-50 text-success-500" },
   };
 
   return (
