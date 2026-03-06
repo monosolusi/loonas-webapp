@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { InvoiceSearchInput } from "@/app/(authenticated)/invoices/_components/invoice-search-input";
+import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
 import { IncomingInvoiceRow, IncomingInvoiceTable } from "../../_components/incoming-invoice-table";
 
 interface FilteredIncomingInvoiceTableImplProps {
@@ -34,22 +35,17 @@ export function FilteredIncomingInvoiceTableImpl({ filter }: FilteredIncomingInv
     setPage(1);
   };
 
-  const searchContent = (
+  const toolbar = (
     <div className="flex flex-row items-center justify-end">
-      <div className="flex flex-row items-center gap-x-2 rounded-lg border border-neutral-200 px-3 py-2">
-        <Image src="/assets/images/search-icon-neutral-400-w20-h20.svg" alt="Search" width={20} height={20} />
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          placeholder="Cari nomor faktur atau nama pemasok..."
-          className="w-64 text-sm leading-5 text-neutral-500 outline-none placeholder:text-neutral-300"
-        />
-      </div>
+      <InvoiceSearchInput
+        value={search}
+        onChange={handleSearchChange}
+        placeholder="Cari nomor faktur atau nama pemasok..."
+      />
     </div>
   );
 
-  const tableHeader = (
+  const header = (
     <div className="grid grid-cols-[2fr_1.5fr_1fr_1.5fr_1fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
       <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Client</span>
       <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">No. Faktur</span>
@@ -61,49 +57,10 @@ export function FilteredIncomingInvoiceTableImpl({ filter }: FilteredIncomingInv
     </div>
   );
 
-  if (loading) {
-    return (
-      <>
-        {searchContent}
-        <div className="overflow-hidden rounded-xl border border-neutral-100">
-          {tableHeader}
-          <div className="flex items-center justify-center py-12">
-            <span className="text-sm text-neutral-300">Memuat data...</span>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (error || !invoices || !meta) {
-    return (
-      <>
-        {searchContent}
-        <div className="overflow-hidden rounded-xl border border-neutral-100">
-          {tableHeader}
-          <div className="flex items-center justify-center py-12">
-            <span className="text-sm text-neutral-300">Gagal memuat data faktur.</span>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (invoices.length === 0) {
-    return (
-      <>
-        {searchContent}
-        <div className="overflow-hidden rounded-xl border border-neutral-100">
-          {tableHeader}
-          <div className="flex items-center justify-center py-12">
-            <span className="text-sm text-neutral-300">Belum ada faktur masuk.</span>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  const incomingInvoices = invoices.filter((inv): inv is IncomingInvoiceEntity => inv instanceof IncomingInvoiceEntity);
+  const hasData = !loading && !error && invoices && meta;
+  const incomingInvoices = hasData
+    ? invoices.filter((inv): inv is IncomingInvoiceEntity => inv instanceof IncomingInvoiceEntity)
+    : [];
 
   const filteredInvoices = search
     ? incomingInvoices.filter((invoice) => {
@@ -130,12 +87,15 @@ export function FilteredIncomingInvoiceTableImpl({ filter }: FilteredIncomingInv
   });
 
   return (
-    <>
-      {searchContent}
-      <div className="overflow-hidden rounded-xl border border-neutral-100">
-        {tableHeader}
-        <IncomingInvoiceTable rows={rows} meta={meta} currentPage={page} onPageChange={setPage} />
-      </div>
-    </>
+    <InvoiceTableShell
+      toolbar={toolbar}
+      header={header}
+      loading={loading}
+      error={!!error || !invoices || !meta}
+      empty={invoices?.length === 0}
+      emptyMessage="Belum ada faktur masuk."
+    >
+      {hasData && <IncomingInvoiceTable rows={rows} meta={meta} currentPage={page} onPageChange={setPage} />}
+    </InvoiceTableShell>
   );
 }
