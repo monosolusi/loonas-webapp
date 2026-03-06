@@ -34,74 +34,102 @@ export function OutgoingInvoiceStatisticsImpl() {
     );
   }
 
+  const unpaidCard = (
+    <>
+      <div className="flex flex-col gap-y-3">
+        <span className="text-sm leading-5 text-neutral-300">Belum Dibayar</span>
+        <div className="flex flex-col gap-y-1.5">
+          <span className="text-2xl leading-8 font-bold tracking-tight text-neutral-500">
+            {IDRFormatter.toCurrency(summary.unpaidAmount)}
+          </span>
+          <span className="text-warning-400 text-xs leading-4">{summary.unpaidCount} faktur menunggu</span>
+        </div>
+      </div>
+      <div className="bg-warning-50 flex size-10 items-center justify-center rounded-lg">
+        <Image
+          src="/assets/images/circle-dollar-sign-icon-warning-300-w20-h20.svg"
+          alt="Belum Dibayar"
+          width={20}
+          height={20}
+        />
+      </div>
+    </>
+  );
+
+  const overdueCard = (
+    <>
+      <div className="flex flex-col gap-y-3">
+        <span className="text-sm leading-5 text-neutral-300">Jatuh Tempo</span>
+        <div className="flex flex-col gap-y-1.5">
+          <span className="text-2xl leading-8 font-bold tracking-tight text-neutral-500">
+            {IDRFormatter.toCurrency(summary.overdueAmount)}
+          </span>
+          <span className="text-error-400 text-xs leading-4">{summary.overdueCount} faktur terlambat</span>
+        </div>
+      </div>
+      <div className="bg-error-50 flex size-10 items-center justify-center rounded-lg">
+        <Image
+          src="/assets/images/circle-dollar-sign-icon-warning-300-w20-h20.svg"
+          alt="Jatuh Tempo"
+          width={20}
+          height={20}
+        />
+      </div>
+    </>
+  );
+
+  const paidCard = (
+    <>
+      <div className="flex flex-col gap-y-3">
+        <span className="text-sm leading-5 text-neutral-300">Telah Dibayar</span>
+        <div className="flex flex-col gap-y-1.5">
+          <span className="text-2xl leading-8 font-bold tracking-tight text-neutral-500">
+            {summary.paidCount}
+          </span>
+          <span className="text-success-400 text-xs leading-4">Pembayaran selesai</span>
+        </div>
+      </div>
+      <div className="bg-success-50 flex size-10 items-center justify-center rounded-lg">
+        <Image src="/assets/images/check-icon-success-300-w40-h40.svg" alt="Telah Dibayar" width={20} height={20} />
+      </div>
+    </>
+  );
+
+  const warningBase =
+    "border-b-warning-200/50 border-warning-50 border-warning-200/60 flex flex-1 flex-row justify-between rounded-xl border border-t border-r border-b-4 border-l bg-neutral-50 p-5";
+  const errorBase =
+    "border-b-error-200/50 border-error-50 border-error-200/60 flex flex-1 flex-row justify-between rounded-xl border border-t border-r border-b-4 border-l bg-neutral-50 p-5";
+  const successBase =
+    "border-b-success-200/50 border-success-50 border-success-200/60 flex flex-1 flex-row justify-between rounded-xl border border-t border-r border-b-4 border-l bg-neutral-50 p-5";
+
   return (
     <div className="flex flex-row gap-x-4">
       {/* Belum Dibayar */}
-      <Link
-        href="/invoices/outgoing/unpaid"
-        className="border-b-warning-200/50 border-warning-50 border-warning-200/60 flex flex-1 flex-row justify-between rounded-xl border border-t border-r border-b-4 border-l bg-neutral-50 p-5 transition-shadow hover:shadow-sm"
-      >
-        <div className="flex flex-col gap-y-3">
-          <span className="text-sm leading-5 text-neutral-300">Belum Dibayar</span>
-          <div className="flex flex-col gap-y-1.5">
-            <span className="text-2xl leading-8 font-bold tracking-tight text-neutral-500">
-              {IDRFormatter.toCurrency(summary.unpaidAmount)}
-            </span>
-            <span className="text-warning-400 text-xs leading-4">{summary.unpaidCount} faktur menunggu</span>
-          </div>
-        </div>
-        <div className="bg-warning-50 flex size-10 items-center justify-center rounded-lg">
-          <Image
-            src="/assets/images/circle-dollar-sign-icon-warning-300-w20-h20.svg"
-            alt="Belum Dibayar"
-            width={20}
-            height={20}
-          />
-        </div>
-      </Link>
+      {summary.unpaidCount > 0 ? (
+        <Link href="/invoices/outgoing/unpaid" className={`${warningBase} transition-shadow hover:shadow-sm`}>
+          {unpaidCard}
+        </Link>
+      ) : (
+        <div className={`${warningBase} opacity-50`}>{unpaidCard}</div>
+      )}
 
       {/* Jatuh Tempo */}
-      <Link
-        href="/invoices/outgoing/overdue"
-        className="border-b-error-200/50 border-error-50 border-error-200/60 flex flex-1 flex-row justify-between rounded-xl border border-t border-r border-b-4 border-l bg-neutral-50 p-5 transition-shadow hover:shadow-sm"
-      >
-        <div className="flex flex-col gap-y-3">
-          <span className="text-sm leading-5 text-neutral-300">Jatuh Tempo</span>
-          <div className="flex flex-col gap-y-1.5">
-            <span className="text-2xl leading-8 font-bold tracking-tight text-neutral-500">
-              {IDRFormatter.toCurrency(summary.overdueAmount)}
-            </span>
-            <span className="text-error-400 text-xs leading-4">{summary.overdueCount} faktur terlambat</span>
-          </div>
-        </div>
-        <div className="bg-error-50 flex size-10 items-center justify-center rounded-lg">
-          <Image
-            src="/assets/images/circle-dollar-sign-icon-warning-300-w20-h20.svg"
-            alt="Jatuh Tempo"
-            width={20}
-            height={20}
-          />
-        </div>
-      </Link>
+      {summary.overdueCount > 0 ? (
+        <Link href="/invoices/outgoing/overdue" className={`${errorBase} transition-shadow hover:shadow-sm`}>
+          {overdueCard}
+        </Link>
+      ) : (
+        <div className={`${errorBase} opacity-50`}>{overdueCard}</div>
+      )}
 
       {/* Telah Dibayar */}
-      <Link
-        href="/invoices/outgoing/paid"
-        className="border-b-success-200/50 border-success-50 border-success-200/60 flex flex-1 flex-row justify-between rounded-xl border border-t border-r border-b-4 border-l bg-neutral-50 p-5 transition-shadow hover:shadow-sm"
-      >
-        <div className="flex flex-col gap-y-3">
-          <span className="text-sm leading-5 text-neutral-300">Telah Dibayar</span>
-          <div className="flex flex-col gap-y-1.5">
-            <span className="text-2xl leading-8 font-bold tracking-tight text-neutral-500">
-              {summary.paidCount}
-            </span>
-            <span className="text-success-400 text-xs leading-4">Pembayaran selesai</span>
-          </div>
-        </div>
-        <div className="bg-success-50 flex size-10 items-center justify-center rounded-lg">
-          <Image src="/assets/images/check-icon-success-300-w40-h40.svg" alt="Telah Dibayar" width={20} height={20} />
-        </div>
-      </Link>
+      {summary.paidCount > 0 ? (
+        <Link href="/invoices/outgoing/paid" className={`${successBase} transition-shadow hover:shadow-sm`}>
+          {paidCard}
+        </Link>
+      ) : (
+        <div className={`${successBase} opacity-50`}>{paidCard}</div>
+      )}
     </div>
   );
 }
