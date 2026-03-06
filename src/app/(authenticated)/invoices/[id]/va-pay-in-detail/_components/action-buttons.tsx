@@ -1,6 +1,5 @@
-import { FilledButton } from "@/core/presentations/components/filled-button";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
-import React from "react";
 import { useRouter } from "next/navigation";
 
 interface ActionButtonsProps {
@@ -20,9 +19,7 @@ export function ActionButtons(props: ActionButtonsProps) {
 
   return (
     <div className="mt-4 flex flex-col gap-3">
-      <FilledButton onClick={handlePaymentDone}>
-        Sudah Bayar
-      </FilledButton>
+      <PrimaryButton label="Sudah Bayar" onClick={handlePaymentDone} />
       <SecondaryButton outlined label="Bayar Nanti" onClick={handlePayLater} />
     </div>
   );

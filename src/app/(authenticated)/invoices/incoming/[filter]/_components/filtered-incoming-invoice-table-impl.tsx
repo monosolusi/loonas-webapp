@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
@@ -15,6 +15,11 @@ interface FilteredIncomingInvoiceTableImplProps {
 export function FilteredIncomingInvoiceTableImpl({ filter }: FilteredIncomingInvoiceTableImplProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    setSearch("");
+    setPage(1);
+  }, [filter]);
 
   const { invoices, meta, loading, error } = useListInvoices({
     type: InvoiceType.INCOMING,

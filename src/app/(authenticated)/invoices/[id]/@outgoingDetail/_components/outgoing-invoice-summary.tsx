@@ -46,9 +46,9 @@ const statusBanners: Record<OutgoingInvoiceStatus, { label: string; bgClass: str
   },
   [OutgoingInvoiceStatus.CANCELLED]: {
     label: "Dibatalkan",
-    bgClass: "bg-red-50",
-    textClass: "text-red-500",
-    dotClass: "bg-red-400",
+    bgClass: "bg-error-50",
+    textClass: "text-error-500",
+    dotClass: "bg-error-400",
   },
 };
 

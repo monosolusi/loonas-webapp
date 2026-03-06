@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,10 +18,11 @@ export default function OutgoingFilteredInvoicePage() {
 
   const config = FILTER_CONFIG[filter];
 
-  if (!config) {
-    router.replace("/invoices/outgoing");
-    return null;
-  }
+  useEffect(() => {
+    if (!config) router.replace("/invoices/outgoing");
+  }, [config, router]);
+
+  if (!config) return null;
 
   return (
     <div className="flex flex-col gap-y-6">
