@@ -3,8 +3,8 @@
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { useRouter } from "next/navigation";
-import { IncomingInvoiceTableImpl } from "./_components/incoming-invoice-table-impl";
-import { IncomingInvoiceStatisticsImpl } from "./_components/incoming-invoice-statistics-impl";
+import { IncomingInvoiceTableImpl } from "@/app/(authenticated)/invoices/incoming/_components/incoming-invoice-table-impl";
+import { IncomingInvoiceStatisticsImpl } from "@/app/(authenticated)/invoices/incoming/_components/incoming-invoice-statistics-impl";
 
 export default function IncomingInvoicePage() {
   const router = useRouter();

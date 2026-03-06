@@ -10,7 +10,7 @@ import { useCreateNewPartnerProvider } from "@/features/partner/presentation/pro
 import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
-import { SendOptionsDialogImpl } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/send-options-dialog-impl";
+import { CreateInvoiceSendOptionsDialogImpl } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/send-options-dialog-impl";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 
 const OUTGOING_STEP_MAP: OutgoingStep[] = [
@@ -149,7 +149,7 @@ export function CreateOutgoingActionBar() {
         return (
           <>
             <PrimaryButton label="Kirim Faktur" disabled={isSendDisabled} onClick={() => setDialogOpen(true)} />
-            <SendOptionsDialogImpl
+            <CreateInvoiceSendOptionsDialogImpl
               open={dialogOpen}
               onClose={() => setDialogOpen(false)}
               onCompleted={handleSendCompleted}

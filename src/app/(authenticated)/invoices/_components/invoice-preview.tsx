@@ -2,7 +2,7 @@ import React from "react";
 import { SenderInformation } from "@/app/(authenticated)/invoices/_components/sender-information";
 import { InvoiceTopSummary } from "@/app/(authenticated)/invoices/_components/invoice-top-summary";
 import { DateTime } from "luxon";
-import { BilLTo } from "@/app/(authenticated)/invoices/_components/bill-to";
+import { BillTo } from "@/app/(authenticated)/invoices/_components/bill-to";
 import { InvoiceItemTable } from "@/app/(authenticated)/invoices/_components/invoice-item-table";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { Note } from "@/app/(authenticated)/invoices/_components/note";
@@ -59,7 +59,7 @@ export function InvoicePreview(props: InvoicePreviewProps) {
           </div>
         </div>
         <div className="mt-16 flex w-1/3 flex-col space-y-1">
-          <BilLTo name={props.recipient.name} phoneNumber={props.recipient.phoneNumber} email={props.recipient.email} />
+          <BillTo name={props.recipient.name} phoneNumber={props.recipient.phoneNumber} email={props.recipient.email} />
         </div>
         <div className="flex flex-1">
           <InvoiceItemTable items={props.items} />

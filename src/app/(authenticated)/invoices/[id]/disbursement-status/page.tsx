@@ -18,9 +18,9 @@ export default function DisbursementStatusPage() {
     <div className="flex flex-col gap-y-8">
       {/* Title & Description */}
       <div className="flex flex-col">
-        <div className="text-2xl leading-8 font-bold tracking-tighter">Faktur Masukan</div>
+        <div className="text-2xl leading-8 font-bold tracking-tighter">Status Pencairan</div>
         <div className="text-base leading-6 font-normal text-neutral-300">
-          Bayar faktur dari Client kamu disini. Ikuti langkah-langkah dibawah ini untuk mencatat faktur masukan baru
+          Lihat status pencairan dana dan detail transaksi faktur kamu di sini
         </div>
       </div>
 

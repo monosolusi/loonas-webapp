@@ -24,7 +24,7 @@ export default function SelectPaymentMethodPages() {
       paymentMethods.length > 0 &&
       !isPaymentMethodLoading
     );
-  }, [recipient, bankAccount, invoices]);
+  }, [recipient, bankAccount, invoices, paymentMethods, isPaymentMethodLoading]);
 
   const totalAmount = useMemo(() => {
     return invoices.reduce((acc, curr) => acc + curr.amount, 0);

@@ -20,7 +20,7 @@ interface PaymentDetailProps {
 export function PaymentDetail(props: PaymentDetailProps) {
   return (
     <div className="w-full flex flex-col">
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
+      <div className="bg-white border border-neutral-200 rounded-lg p-6">
         <h3 className="text-lg font-semibold mb-4">Rincian Pembayaran</h3>
 
         <div className="space-y-4">
@@ -44,7 +44,7 @@ export function PaymentDetail(props: PaymentDetailProps) {
             <span className="font-bold">{props.accountHolderName}</span>
           </div>
 
-          <div className="border-t border-gray-200 my-2 pt-2"></div>
+          <div className="border-t border-neutral-200 my-2 pt-2"></div>
 
           <div className="flex justify-between items-center">
             <span className="text-neutral-300 items-center">
@@ -65,7 +65,7 @@ export function PaymentDetail(props: PaymentDetailProps) {
             <span className="font-medium">{IDRFormatter.toCurrency(props.fee)}</span>
           </div>
 
-          <div className="border-t border-gray-200 my-2 pt-2"></div>
+          <div className="border-t border-neutral-200 my-2 pt-2"></div>
 
           <div className="flex justify-between items-center">
             <span className="text-neutral-300 items-center">
@@ -84,7 +84,7 @@ export function PaymentDetail(props: PaymentDetailProps) {
       </div>
 
       {/* Action Buttons - Placed directly below the payment details */}
-      {((props.showActions === undefined || props.showActions && props.invoiceId) && props.invoiceId) && (
+      {(props.showActions === undefined || props.showActions) && props.invoiceId && (
         <ActionButtons invoiceId={props.invoiceId} />
       )}
     </div>

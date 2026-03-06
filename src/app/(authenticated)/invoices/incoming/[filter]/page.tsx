@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { FilteredIncomingInvoiceTableImpl } from "./_components/filtered-incoming-invoice-table-impl";
+import { FilteredIncomingInvoiceTableImpl } from "@/app/(authenticated)/invoices/incoming/[filter]/_components/filtered-incoming-invoice-table-impl";
 
 const FILTER_CONFIG: Record<string, { title: string }> = {
   unpaid: { title: "Tagihan Belum Dibayar" },

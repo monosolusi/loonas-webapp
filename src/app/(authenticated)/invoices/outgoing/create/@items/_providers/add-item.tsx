@@ -109,6 +109,7 @@ export function AddItemProvider(props: AddItemProviderProps) {
   };
 
   const setInput = (data: InitialItem) => {
+    isCalculatingRef.current = true;
     setName(data.name);
     setDescription(data.description ?? "");
     setQty(data.qty);
@@ -119,6 +120,7 @@ export function AddItemProvider(props: AddItemProviderProps) {
     setTax(data.tax);
     setTaxBase(data.taxBase);
     setTotal(data.total);
+    setMustRecalculateTax(false);
   };
 
   useEffect(() => {

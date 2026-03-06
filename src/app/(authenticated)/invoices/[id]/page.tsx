@@ -10,7 +10,7 @@ export default function InvoiceDetailPage() {
   const router = useRouter();
   const { invoice } = useGetInvoice({ id });
 
-  const title = invoice?.type === InvoiceType.OUTGOING ? "Faktur Keluaran" : "Faktur Masukan";
+  const title = !invoice ? "Memuat..." : invoice.type === InvoiceType.OUTGOING ? "Faktur Keluaran" : "Faktur Masukan";
   const shortId = id.slice(0, 8);
   const createdDate = invoice?.createdAt.setLocale("id").toFormat("dd LLL yyyy");
 

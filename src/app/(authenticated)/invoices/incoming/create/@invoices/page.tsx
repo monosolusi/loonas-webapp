@@ -36,10 +36,7 @@ export default function InvoiceDetailPage() {
           };
 
           const onChange = (newInvoice: InvoiceDocument) => {
-            setInvoices?.((prev) => {
-              prev[index] = newInvoice;
-              return [...prev];
-            });
+            setInvoices?.((prev) => prev.map((item, i) => (i === index ? newInvoice : item)));
           };
 
           return (
