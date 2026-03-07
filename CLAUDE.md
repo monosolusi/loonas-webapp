@@ -16,6 +16,8 @@ No test framework is configured.
 
 - **Next.js 15** (App Router) / **React 19** / **TypeScript 5** (strict)
 - **Tailwind CSS 4** with `prettier-plugin-tailwindcss` for class sorting
+- **clsx** for className composition (preferred over template literals)
+- **Headless UI** (`@headlessui/react`) + **Heroicons** (`@heroicons/react`) for UI primitives
 - **Clerk** for authentication (middleware + session management)
 - **SWR** for client-side data fetching
 - **Luxon** for dates, **Joi** for validation
@@ -49,6 +51,7 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 
 ### Key Patterns
 
+- **Presentation layer naming**: Older features use `presentation/` (singular), newer ones use `presentations/` (plural). Match the existing directory name when adding to a feature.
 - **DataState pattern**: Use cases return `DataSuccess<T>` or `DataFailed` instead of throwing
 - **Hook return types**: Discriminated unions (`InitialState | LoadedState | ErrorState`)
 - **ServerError + ErrorCodes**: Centralized error registry with Indonesian messages
@@ -73,6 +76,16 @@ Custom `HttpRequest` class injects Clerk session headers:
 | `FilledButton` | `PrimaryButton` / `SecondaryButton` / `DangerButton` from `core/presentations/components/buttons/` |
 | `LocalStorageSessionService` | `ClerkSessionService` (will throw "No valid session") |
 | Lottie animations (`@lottiefiles/react-lottie-player`) | Skeleton loading (`animate-pulse`) |
+| `OutlinedButton` | `SecondaryButton` with `outlined` prop |
+| Template literal classNames (`` `${a} ${b}` ``) | `clsx(a, b)` |
+| `text-gray-*` color classes | `text-neutral-*` equivalents |
+
+### Environment
+
+Required env vars (see `.env.local`):
+- `NEXT_PUBLIC_BASE_API_URL` — Backend API base URL
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` — Clerk publishable key
+- `CLERK_SECRET_KEY` — Clerk secret key
 
 ## Conventions
 
@@ -84,7 +97,7 @@ Always use `@/` path alias (maps to `src/`). No relative imports.
 
 | Type | Pattern | Example |
 |------|---------|---------|
-| Use cases | `{verb}-{noun}.usecases.ts` | `get-invoice.usecases.ts` |
+| Use cases | `{verb}-{noun}.usecases.ts` (new) or `{verb}-{noun}.ts` (legacy) | `get-invoice.usecases.ts` |
 | Hooks | `use-{verb}-{noun}.ts` | `use-get-invoice.ts` |
 | Hook types | `use-{verb}-{noun}.types.ts` | `use-get-invoice.types.ts` |
 | Entities | `{noun}.ts` | `invoice.ts` |
