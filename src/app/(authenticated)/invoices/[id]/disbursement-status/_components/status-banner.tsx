@@ -1,3 +1,5 @@
+import clsx from "clsx";
+
 type StatusBannerVariant = "pending" | "received" | "processing" | "completed";
 
 interface StatusBannerProps {
@@ -19,7 +21,7 @@ export function StatusBanner(props: StatusBannerProps) {
 
   return (
     <div
-      className={`relative flex flex-row items-center justify-between overflow-hidden rounded-lg border p-6 ${styles.border} ${styles.bg}`}
+      className={clsx("relative flex flex-row items-center justify-between overflow-hidden rounded-lg border p-6", styles.border, styles.bg)}
     >
       {/* Decorative blur */}
       <div className="absolute right-0 top-[-16px] size-32 rounded-full bg-white/10 blur-[24px]" />

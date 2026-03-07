@@ -1,4 +1,5 @@
 import { Tab, TabGroup, TabList } from "@headlessui/react";
+import clsx from "clsx";
 
 interface InvoiceTabFilterProps {
   selectedIndex: number;
@@ -15,9 +16,10 @@ export function InvoiceTabFilter({ selectedIndex, onChange }: InvoiceTabFilterPr
           <Tab
             key={label}
             className={({ selected }) =>
-              `rounded-md px-4 py-1.5 text-sm leading-5 outline-none ${
-                selected ? "bg-white text-neutral-500 shadow-sm" : "text-neutral-300 hover:text-neutral-400"
-              }`
+              clsx(
+                "rounded-md px-4 py-1.5 text-sm leading-5 outline-none",
+                selected ? "bg-white text-neutral-500 shadow-sm" : "text-neutral-300 hover:text-neutral-400",
+              )
             }
           >
             {label}

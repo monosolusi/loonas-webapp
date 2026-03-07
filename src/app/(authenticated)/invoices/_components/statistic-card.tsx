@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,30 +15,32 @@ interface StatisticCardProps {
 
 const themeStyles: Record<string, { border: string; iconBg: string; subtitleText: string }> = {
   warning: {
-    border: "border-b-warning-200/50 border-warning-50 border-warning-200/60",
+    border: "border-t-warning-50 border-r-warning-50 border-l-warning-50 border-b-warning-200/50",
     iconBg: "bg-warning-50",
     subtitleText: "text-warning-400",
   },
   error: {
-    border: "border-b-error-200/50 border-error-50 border-error-200/60",
+    border: "border-t-error-50 border-r-error-50 border-l-error-50 border-b-error-200/50",
     iconBg: "bg-error-50",
     subtitleText: "text-error-400",
   },
   success: {
-    border: "border-b-success-200/50 border-success-50 border-success-200/60",
+    border: "border-t-success-50 border-r-success-50 border-l-success-50 border-b-success-200/50",
     iconBg: "bg-success-50",
     subtitleText: "text-success-400",
   },
   primary: {
-    border: "border-b-primary-200/50 border-primary-50 border-primary-200/60",
+    border: "border-t-primary-50 border-r-primary-50 border-l-primary-50 border-b-primary-200/50",
     iconBg: "bg-primary-50",
     subtitleText: "text-primary-300",
   },
 };
 
+const BASE_CLASS = "flex flex-1 flex-row justify-between rounded-xl border border-b-4 bg-neutral-50 p-5";
+
 export function StatisticCard({ label, value, subtitle, iconSrc, iconSize = 20, theme, href, count }: StatisticCardProps) {
   const styles = themeStyles[theme];
-  const baseClass = `${styles.border} flex flex-1 flex-row justify-between rounded-xl border border-t border-r border-b-4 border-l bg-neutral-50 p-5`;
+  const cardClass = clsx(BASE_CLASS, styles.border);
 
   const content = (
     <>
@@ -45,10 +48,10 @@ export function StatisticCard({ label, value, subtitle, iconSrc, iconSize = 20, 
         <span className="text-sm leading-5 text-neutral-300">{label}</span>
         <div className="flex flex-col gap-y-1.5">
           <span className="text-2xl leading-8 font-bold tracking-tight text-neutral-500">{value}</span>
-          <span className={`${styles.subtitleText} text-xs leading-4`}>{subtitle}</span>
+          <span className={clsx("text-xs leading-4", styles.subtitleText)}>{subtitle}</span>
         </div>
       </div>
-      <div className={`${styles.iconBg} flex size-10 items-center justify-center rounded-lg`}>
+      <div className={clsx("flex size-10 items-center justify-center rounded-lg", styles.iconBg)}>
         <Image src={iconSrc} alt={label} width={iconSize} height={iconSize} />
       </div>
     </>
@@ -56,17 +59,17 @@ export function StatisticCard({ label, value, subtitle, iconSrc, iconSize = 20, 
 
   if (href && count > 0) {
     return (
-      <Link href={href} className={`${baseClass} transition-shadow hover:shadow-sm`}>
+      <Link href={href} className={clsx(cardClass, "transition-shadow hover:shadow-sm")}>
         {content}
       </Link>
     );
   }
 
   if (href) {
-    return <div className={`${baseClass} opacity-50`}>{content}</div>;
+    return <div className={clsx(cardClass, "opacity-50")}>{content}</div>;
   }
 
-  return <div className={baseClass}>{content}</div>;
+  return <div className={cardClass}>{content}</div>;
 }
 
 export function StatisticCardSkeleton() {

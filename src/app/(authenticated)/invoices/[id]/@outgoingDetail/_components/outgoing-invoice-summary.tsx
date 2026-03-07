@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 
 interface OutgoingInvoiceSummaryProps {
@@ -67,12 +68,12 @@ export function OutgoingInvoiceSummary({
   return (
     <div className="flex flex-col gap-y-5">
       {/* Status Banner */}
-      <div className={`flex flex-col gap-y-1 rounded-lg px-3 py-2.5 ${banner.bgClass}`}>
+      <div className={clsx("flex flex-col gap-y-1 rounded-lg px-3 py-2.5", banner.bgClass)}>
         <div className="flex flex-row items-center gap-x-2">
-          <span className={`size-2 rounded-full ${banner.dotClass}`} />
-          <span className={`text-xs leading-4 font-semibold ${banner.textClass}`}>{banner.label}</span>
+          <span className={clsx("size-2 rounded-full", banner.dotClass)} />
+          <span className={clsx("text-xs leading-4 font-semibold", banner.textClass)}>{banner.label}</span>
         </div>
-        <span className={`pl-4 text-xs leading-4 ${banner.textClass}`}>{createdAt}</span>
+        <span className={clsx("pl-4 text-xs leading-4", banner.textClass)}>{createdAt}</span>
       </div>
 
       {/* Total */}
