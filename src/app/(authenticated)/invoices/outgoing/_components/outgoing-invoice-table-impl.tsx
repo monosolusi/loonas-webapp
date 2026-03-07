@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import clsx from "clsx";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
@@ -36,6 +37,7 @@ export function OutgoingInvoiceTableImpl({ filter }: OutgoingInvoiceTableImplPro
 
   const handleTabChange = (index: number) => {
     setActiveTab(index);
+    setSearch("");
     setPage(1);
   };
 
@@ -45,7 +47,7 @@ export function OutgoingInvoiceTableImpl({ filter }: OutgoingInvoiceTableImplPro
   };
 
   const toolbar = (
-    <div className={`flex flex-row items-center ${filter ? "justify-end" : "justify-between"}`}>
+    <div className={clsx("flex flex-row items-center", filter ? "justify-end" : "justify-between")}>
       {!filter && <InvoiceTabFilter selectedIndex={activeTab} onChange={handleTabChange} />}
 
       <InvoiceSearchInput value={search} onChange={handleSearchChange} placeholder="Filter halaman ini..." />
@@ -90,7 +92,7 @@ export function OutgoingInvoiceTableImpl({ filter }: OutgoingInvoiceTableImplPro
       toolbar={toolbar}
       header={header}
       loading={loading}
-      error={!!error || !invoices || !meta}
+      error={!!error}
       empty={invoices?.length === 0}
       emptyMessage="Belum ada faktur keluar."
       filteredEmpty={!!search && rows.length === 0}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import clsx from "clsx";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
@@ -37,6 +38,7 @@ export function IncomingInvoiceTableImpl({ filter }: IncomingInvoiceTableImplPro
 
   const handleTabChange = (index: number) => {
     setActiveTab(index);
+    setSearch("");
     setPage(1);
   };
 
@@ -46,7 +48,7 @@ export function IncomingInvoiceTableImpl({ filter }: IncomingInvoiceTableImplPro
   };
 
   const toolbar = (
-    <div className={`flex flex-row items-center ${filter ? "justify-end" : "justify-between"}`}>
+    <div className={clsx("flex flex-row items-center", filter ? "justify-end" : "justify-between")}>
       {!filter && <InvoiceTabFilter selectedIndex={activeTab} onChange={handleTabChange} />}
 
       <InvoiceSearchInput
@@ -103,7 +105,7 @@ export function IncomingInvoiceTableImpl({ filter }: IncomingInvoiceTableImplPro
       toolbar={toolbar}
       header={header}
       loading={loading}
-      error={!!error || !invoices || !meta}
+      error={!!error}
       empty={invoices?.length === 0}
       emptyMessage="Belum ada faktur masuk."
       filteredEmpty={!!search && rows.length === 0}

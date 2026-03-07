@@ -91,7 +91,7 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
   }, [props.items]);
 
   return (
-    <TableContainer className="rounded-xs shadow-none">
+    <TableContainer className="rounded-sm shadow-none">
       <Table>
         <TableHeader
           items={[
@@ -112,7 +112,6 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
             <td className="px-3 pt-4 pb-2 text-right text-sm">
               {totalTaxBase === 0 ? "-" : <CurrencyDisplay value={totalTaxBase} />}
             </td>
-            <td></td>
           </tr>
           <tr>
             <td colSpan={5} className="px-3 py-2 text-right text-sm">
@@ -121,7 +120,6 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
             <td className="px-3 py-2 text-right text-sm">
               {totalTax === 0 ? "-" : <CurrencyDisplay value={totalTax} />}
             </td>
-            <td></td>
           </tr>
           <tr>
             <td colSpan={5} className="px-3 py-2 text-right text-sm">
@@ -130,7 +128,6 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
             <td className="px-3 py-2 text-right text-sm">
               {nonTaxableAmount === 0 ? "-" : <CurrencyDisplay value={nonTaxableAmount} />}
             </td>
-            <td></td>
           </tr>
           <tr>
             <td colSpan={5} className="px-3 pt-2 pb-4 text-right text-sm">

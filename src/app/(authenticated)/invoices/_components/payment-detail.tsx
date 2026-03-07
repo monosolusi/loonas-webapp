@@ -51,7 +51,7 @@ export function PaymentDetail(props: PaymentDetailProps) {
               <span className="group relative inline-flex items-center">
                 Dana Diteruskan <InformationCircleIcon className="h-4 w-4 ml-1 text-neutral-300 cursor-help" />
                 <span
-                  className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 text-xs text-white bg-black rounded-md whitespace-nowrap"
+                  className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 text-xs text-neutral-50 bg-neutral-700 rounded-md whitespace-nowrap"
                 >
                   Dana yang akan diteruskan ke rekening tujuan
                 </span>
@@ -72,7 +72,7 @@ export function PaymentDetail(props: PaymentDetailProps) {
               <span className="group relative inline-flex items-center">
                 Bayar <InformationCircleIcon className="h-4 w-4 ml-1 text-neutral-300 cursor-help" />
                 <span
-                  className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 text-xs text-white bg-black rounded-md whitespace-nowrap"
+                  className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 text-xs text-neutral-50 bg-neutral-700 rounded-md whitespace-nowrap"
                 >
                   Total yang harus kamu bayar, sudah termasuk biaya tambahan
                 </span>

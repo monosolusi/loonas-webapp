@@ -3,7 +3,7 @@
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { SendViaEmailCheckbox } from "@/app/(authenticated)/invoices/_components/send-via-email-checkbox";
 import { SendViaWhatsappCheckbox } from "@/app/(authenticated)/invoices/_components/send-via-whatsapp-checkbox";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
@@ -21,22 +21,31 @@ export function SendOptionsDialog(props: SendOptionsDialogProps) {
   const [sendWhatsApp, setSendWhatsApp] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (props.open) {
+      setSendEmail(false);
+      setSendWhatsApp(false);
+    }
+  }, [props.open]);
+
   const isSendDisabled = useMemo(() => {
     return !sendEmail && !sendWhatsApp;
   }, [sendEmail, sendWhatsApp]);
 
   const onSendClick = async () => {
     setIsLoading(true);
-    if (props.onSendClick) {
-      const channels = [
-        ...(!sendEmail ? [] : [NotificationChannel.EMAIL]),
-        ...(!sendWhatsApp ? [] : [NotificationChannel.WHATSAPP]),
-      ];
+    try {
+      if (props.onSendClick) {
+        const channels = [
+          ...(!sendEmail ? [] : [NotificationChannel.EMAIL]),
+          ...(!sendWhatsApp ? [] : [NotificationChannel.WHATSAPP]),
+        ];
 
-      await props.onSendClick(channels);
+        await props.onSendClick(channels);
+      }
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const onCancelClick = () => {

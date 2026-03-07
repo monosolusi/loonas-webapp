@@ -48,7 +48,7 @@ export function CreateInvoiceQuestions() {
                 <span className="text-base/7 font-semibold">{faq.question}</span>
                 <span className="ml-6 flex h-7 items-center">
                 <PlusIcon aria-hidden="true" className="size-6 group-data-open:hidden" />
-                <MinusIcon aira-hidden="true" className="size-6 group-not-data-open:hidden" />
+                <MinusIcon aria-hidden="true" className="size-6 group-not-data-open:hidden" />
               </span>
               </DisclosureButton>
             </dt>
