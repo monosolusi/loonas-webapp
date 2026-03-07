@@ -1,39 +1,18 @@
 "use client";
 
-import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
-import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
-import { useRouter } from "next/navigation";
-import { IncomingInvoiceTableImpl } from "@/app/(authenticated)/invoices/incoming/_components/incoming-invoice-table-impl";
+import { InvoiceListPageShell } from "@/app/(authenticated)/invoices/_components/invoice-list-page-shell";
 import { IncomingInvoiceStatisticsImpl } from "@/app/(authenticated)/invoices/incoming/_components/incoming-invoice-statistics-impl";
+import { IncomingInvoiceTableImpl } from "@/app/(authenticated)/invoices/incoming/_components/incoming-invoice-table-impl";
 
 export default function IncomingInvoicePage() {
-  const router = useRouter();
-
   return (
-    <div className="flex flex-col gap-y-6">
-      {/*  Header */}
-      <div className="flex flex-row items-center justify-between">
-        <div className="flex flex-col gap-y-1">
-          <span className="text-2xl leading-8 font-bold tracking-tight">Tagihan</span>
-          <span className="text-sm leading-5">Pantau semua pengeluaran dan status pembayaran faktur.</span>
-        </div>
-        <div className="flex flex-row gap-x-3">
-          <div className="flex">
-            <SecondaryButton outlined label="Export Laporan" />
-          </div>
-          <div className="flex">
-            <PrimaryButton label="Buat Faktur Baru" onClick={() => router.push("/invoices/incoming/create")} />
-          </div>
-        </div>
-      </div>
-
-      {/*  Statistics */}
-      <IncomingInvoiceStatisticsImpl />
-
-      {/* Table */}
-      <div className="flex flex-col gap-y-4">
-        <IncomingInvoiceTableImpl />
-      </div>
-    </div>
+    <InvoiceListPageShell
+      title="Tagihan"
+      description="Pantau semua pengeluaran dan status pembayaran faktur."
+      createHref="/invoices/incoming/create"
+      statistics={<IncomingInvoiceStatisticsImpl />}
+    >
+      <IncomingInvoiceTableImpl />
+    </InvoiceListPageShell>
   );
 }

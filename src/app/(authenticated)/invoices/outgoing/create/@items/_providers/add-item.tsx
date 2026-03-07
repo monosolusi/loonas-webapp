@@ -39,16 +39,15 @@ interface AddItemContextProps {
   setCalculatedTax: (result: { tax: number; taxBase: number; total: number }) => void;
   clearInput: () => void;
   setInput: (data: InitialItem) => void;
-  setName: React.Dispatch<React.SetStateAction<string>>;
-  setDescription: React.Dispatch<React.SetStateAction<string>>;
-  setQty: React.Dispatch<React.SetStateAction<number>>;
-  setPrice: React.Dispatch<React.SetStateAction<number>>;
-  setDiscountType: React.Dispatch<React.SetStateAction<DiscountType>>;
-  setDiscount: React.Dispatch<React.SetStateAction<number>>;
-  setTaxType: React.Dispatch<React.SetStateAction<TaxType>>;
-  setTax: React.Dispatch<React.SetStateAction<number>>;
-  setTaxBase: React.Dispatch<React.SetStateAction<number>>;
-  setTotal: React.Dispatch<React.SetStateAction<number>>;
+  setName: (value: string) => void;
+  setDescription: (value: string) => void;
+  setQty: (value: number) => void;
+  setPrice: (value: number) => void;
+  setDiscountType: (value: DiscountType) => void;
+  setDiscount: (value: number) => void;
+  setTaxType: (value: TaxType) => void;
+  setTax: (value: number) => void;
+  setTaxBase: (value: number) => void;
 }
 
 const AddItemContext = React.createContext<AddItemContextProps>(null!);
@@ -83,6 +82,7 @@ export function AddItemProvider(props: AddItemProviderProps) {
   };
 
   const clearInput = () => {
+    isCalculatingRef.current = true;
     setName("");
     setDescription("");
     setQty(1);
@@ -117,11 +117,6 @@ export function AddItemProvider(props: AddItemProviderProps) {
     else setMustRecalculateTax(true);
   }, [qty, price, taxType, discount, discountType, tax, taxBase]);
 
-  // Always reset the calculating flag after each render so it never stays stale
-  useEffect(() => {
-    isCalculatingRef.current = false;
-  });
-
   useEffect(() => {
     if (isCalculatingRef.current) return;
     if (taxType === TaxType.NON_TAXABLE) {
@@ -135,6 +130,11 @@ export function AddItemProvider(props: AddItemProviderProps) {
       setTotal(total);
     }
   }, [taxType, qty, price, discountType, discount]);
+
+  // Reset the calculating flag AFTER all guarded effects so they can check it first
+  useEffect(() => {
+    isCalculatingRef.current = false;
+  });
 
   return (
     <AddItemContext.Provider
@@ -163,7 +163,6 @@ export function AddItemProvider(props: AddItemProviderProps) {
         setTaxType,
         setTax,
         setTaxBase,
-        setTotal,
       }}
     >
       {props.children}
