@@ -1,26 +1,30 @@
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { useClerk } from "@clerk/nextjs";
 import useSWR from "swr";
 import { PaymentMethodPayInDetailEntity } from "@/features/payment/domain/entities/payment-method-pay-in-detail-entity";
 import {
   GetIncomingInvoicePayInDetailUseCase,
   GetIncomingInvoicePayInDetailUseCaseParams,
 } from "@/features/payment/domain/usecases/get-incoming-invoice-pay-in-detail-use-case";
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
+import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { InvoiceRepositoryImpl } from "@/features/invoice/data/repositories/invoice";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { InvoiceServiceImpl } from "@/features/invoice/data/sources/invoice";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 
-type GetIncomingInvoicePayInDetailFetcherParams = { invoice: { id: string } };
+type GetIncomingInvoicePayInDetailFetcherParams = {
+  invoice: { id: string };
+  clerk: ReturnType<typeof useClerk>;
+};
 
 async function GetIncomingInvoicePayInDetailFetcher([, params]: [
   string,
   GetIncomingInvoicePayInDetailFetcherParams,
 ]): Promise<PaymentMethodPayInDetailEntity> {
   const http = new HttpRequest();
-  const sessionRepository = new SessionRepositoryImpl(new LocalStorageSessionService());
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const invoiceRepository = new InvoiceRepositoryImpl(new InvoiceServiceImpl(http), new PayInDetailFactory());
   const get = new GetIncomingInvoicePayInDetailUseCase(invoiceRepository, sessionRepository);
   const getParams = new GetIncomingInvoicePayInDetailUseCaseParams({ invoice: { id: params.invoice.id } });
@@ -32,9 +36,10 @@ async function GetIncomingInvoicePayInDetailFetcher([, params]: [
   return result.data;
 }
 
-export function useGetIncomingInvoicePayInDetail(params: GetIncomingInvoicePayInDetailFetcherParams) {
+export function useGetIncomingInvoicePayInDetail(params: { invoice: { id: string } }) {
+  const clerk = useClerk();
   const { data, error, isLoading } = useSWR(
-    ["get-incoming-invoice-pay-in-detail", params],
+    ["get-incoming-invoice-pay-in-detail", { ...params, clerk }],
     GetIncomingInvoicePayInDetailFetcher,
   );
 

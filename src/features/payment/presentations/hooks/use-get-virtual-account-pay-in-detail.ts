@@ -1,24 +1,25 @@
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
-import { VirtualAccountPayInService } from "../../data/sources/va-pay-in";
-import { VirtualAccountPayInRepository } from "../../data/repositories/va-pay-in";
+import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
+import { VirtualAccountPayInService } from "@/features/payment/data/sources/va-pay-in";
+import { VirtualAccountPayInRepository } from "@/features/payment/data/repositories/va-pay-in";
 import {
   RetrieveVirtualAccountPayInDetailUseCase,
   RetrieveVirtualAccountPayInDetailUseCaseParams,
-} from "../../domain/usecases/retrieve-virtual-account-pay-in-detail";
+} from "@/features/payment/domain/usecases/retrieve-virtual-account-pay-in-detail";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { useClerk } from "@clerk/nextjs";
 import useSWR from "swr";
 import { HttpRequest } from "@/core/helpers/http-request";
 
 interface GetVirtualAccountPayInDetailParams {
   requestId: string;
+  clerk: ReturnType<typeof useClerk>;
 }
 
-async function GetVirtualAccountPayInDetailFetcher([_, params]: [string, GetVirtualAccountPayInDetailParams]) {
+async function GetVirtualAccountPayInDetailFetcher([, params]: [string, GetVirtualAccountPayInDetailParams]) {
   const http = new HttpRequest();
-  const sessionService = new LocalStorageSessionService();
-  const sessionRepository = new SessionRepositoryImpl(sessionService);
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const payInService = new VirtualAccountPayInService(http);
   const payInRepository = new VirtualAccountPayInRepository(payInService);
   const retrieve = new RetrieveVirtualAccountPayInDetailUseCase(sessionRepository, payInRepository);
@@ -31,9 +32,10 @@ async function GetVirtualAccountPayInDetailFetcher([_, params]: [string, GetVirt
   return result.data;
 }
 
-export function useGetVirtualAccountPayInDetail(params: GetVirtualAccountPayInDetailParams) {
+export function useGetVirtualAccountPayInDetail(params: { requestId: string }) {
+  const clerk = useClerk();
   const { data, error, isLoading } = useSWR(
-    ["get-virtual-account-pay-in-detail", params],
+    ["get-virtual-account-pay-in-detail", { ...params, clerk }],
     GetVirtualAccountPayInDetailFetcher,
   );
 
