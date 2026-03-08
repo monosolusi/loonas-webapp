@@ -4,17 +4,24 @@ import { CreateIncomingSteppers } from "@/features/invoice/presentations/compone
 import Image from "next/image";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { useParams } from "next/navigation";
-import {
-  useGetCreditCardFullRedirectPayInDetail
-} from "@/features/payment/presentations/hooks/use-get-credit-card-full-redirect-pay-in-detail";
+import { useGetIncomingInvoicePayInDetail } from "@/features/payment/presentations/hooks/use-get-incoming-invoice-pay-in-detail";
+import { usePayInRouteGuard } from "@/features/payment/presentations/hooks/use-pay-in-route-guard";
+import { CreditCardFullRedirectPayInDetailEntity } from "@/features/payment/domain/entities/cc-full-redirect-pay-in-detail";
 
 export default function EnterCardDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { data: payInDetail, isLoading: isLoadingPayInDetail } = useGetCreditCardFullRedirectPayInDetail({
-    invoice: { id },
+  const { payInDetail, loading } = useGetIncomingInvoicePayInDetail({ invoice: { id } });
+
+  const redirecting = usePayInRouteGuard({
+    invoiceId: id,
+    currentRoute: "cc-enter-card-detail",
+    payInDetail,
+    loading,
   });
 
-  if (isLoadingPayInDetail || !payInDetail) return null;
+  if (loading || redirecting || !payInDetail) return null;
+  if (!(payInDetail instanceof CreditCardFullRedirectPayInDetailEntity)) return null;
+
   return (
     <div className="flex flex-col gap-y-8">
       {/* Title & Description */}

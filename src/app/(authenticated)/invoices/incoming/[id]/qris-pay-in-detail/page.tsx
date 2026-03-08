@@ -9,6 +9,7 @@ import { SecondaryButton } from "@/core/presentations/components/buttons/seconda
 import { useParams, useRouter } from "next/navigation";
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { useGetIncomingInvoicePayInDetail } from "@/features/payment/presentations/hooks/use-get-incoming-invoice-pay-in-detail";
+import { usePayInRouteGuard } from "@/features/payment/presentations/hooks/use-pay-in-route-guard";
 import { QrisPayInDetailEntity } from "@/features/payment/domain/entities/qris-pay-in-detail-entity";
 import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
@@ -18,8 +19,15 @@ export default function QrisPayInDetailPage() {
   const { invoice, loading: invoiceLoading } = useGetInvoice({ id });
   const { payInDetail, loading: payInLoading } = useGetIncomingInvoicePayInDetail({ invoice: { id } });
 
+  const redirecting = usePayInRouteGuard({
+    invoiceId: id,
+    currentRoute: "qris-pay-in-detail",
+    payInDetail,
+    loading: payInLoading,
+  });
+
   const isLoading = invoiceLoading || payInLoading;
-  if (isLoading || !payInDetail || !invoice) return null;
+  if (isLoading || redirecting || !payInDetail || !invoice) return null;
   if (!(payInDetail instanceof QrisPayInDetailEntity)) return null;
   if (!isIncomingInvoice(invoice)) return null;
 

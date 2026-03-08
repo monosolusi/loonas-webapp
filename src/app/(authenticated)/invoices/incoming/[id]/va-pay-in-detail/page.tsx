@@ -8,17 +8,27 @@ import { PrimaryButton } from "@/core/presentations/components/buttons/primary-b
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { useParams, useRouter } from "next/navigation";
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
-import { useGetVirtualAccountPayInDetail } from "@/features/payment/presentations/hooks/use-get-virtual-account-pay-in-detail";
+import { useGetIncomingInvoicePayInDetail } from "@/features/payment/presentations/hooks/use-get-incoming-invoice-pay-in-detail";
+import { usePayInRouteGuard } from "@/features/payment/presentations/hooks/use-pay-in-route-guard";
+import { VirtualAccountPayInDetailEntity } from "@/features/payment/domain/entities/va-pay-in-detail";
 import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
 export default function VirtualAccountPayInDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { invoice, loading: invoiceLoading } = useGetInvoice({ id });
-  const { payIn, loading: payInLoading } = useGetVirtualAccountPayInDetail({ requestId: id });
+  const { payInDetail, loading: payInLoading } = useGetIncomingInvoicePayInDetail({ invoice: { id } });
+
+  const redirecting = usePayInRouteGuard({
+    invoiceId: id,
+    currentRoute: "va-pay-in-detail",
+    payInDetail,
+    loading: payInLoading,
+  });
 
   const isLoading = invoiceLoading || payInLoading;
-  if (isLoading || !payIn || !invoice) return null;
+  if (isLoading || redirecting || !payInDetail || !invoice) return null;
+  if (!(payInDetail instanceof VirtualAccountPayInDetailEntity)) return null;
   if (!isIncomingInvoice(invoice)) return null;
 
   return (
@@ -46,14 +56,14 @@ export default function VirtualAccountPayInDetailPage() {
                 </div>
 
                 {/* Countdown Timer */}
-                <RemainingPaymentTime deadline={payIn.expirationTime} />
+                <RemainingPaymentTime deadline={payInDetail.expirationTime} />
 
                 {/* VA Detail */}
                 <VirtualAccountDetailBox
-                  logoUrl={payIn.paymentScheme.logoUrl}
-                  bankName={payIn.paymentScheme.name}
-                  accountNumber={payIn.accountNumber}
-                  totalPayment={payIn.amount}
+                  logoUrl={payInDetail.paymentScheme.logoUrl}
+                  bankName={payInDetail.paymentScheme.name}
+                  accountNumber={payInDetail.accountNumber}
+                  totalPayment={payInDetail.amount}
                 />
 
                 {/* Payment Detail */}
