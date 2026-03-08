@@ -1,5 +1,7 @@
 "use client";
 
+import { useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { useGetInvoiceTimeline } from "@/features/invoice/presentations/hooks/use-get-invoice-timeline";
 import { SectionCard } from "@/core/presentations/components/section-card";
@@ -9,6 +11,7 @@ import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-fo
 import { InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
 import { InvoiceTimelineStepEntity } from "@/features/invoice/domain/entities/invoice-timeline";
 import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
+import { PayInType } from "@/features/payment/domain/enums/pay-in-type";
 
 interface PaymentSummaryImplProps {
   id: string;
@@ -35,9 +38,32 @@ function getCompletedAt(steps: InvoiceTimelineStepEntity[]): string | undefined 
   return lastStep.completedAt.toFormat("dd LLLL yyyy, HH:mm", { locale: "id" });
 }
 
+function getPaymentPath(invoiceId: string, type: string): string | null {
+  switch (type) {
+    case PayInType.VIRTUAL_ACCOUNT:
+      return `/invoices/incoming/${invoiceId}/va-pay-in-detail`;
+    case PayInType.QRIS:
+      return `/invoices/incoming/${invoiceId}/qris-pay-in-detail`;
+    case PayInType.CREDIT_CARD_FULL_REDIRECT:
+    case PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_3_MONTHS:
+    case PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_6_MONTHS:
+    case PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_12_MONTHS:
+      return `/invoices/incoming/${invoiceId}/cc-enter-card-detail`;
+    default:
+      return null;
+  }
+}
+
 export function PaymentSummaryImpl({ id }: PaymentSummaryImplProps) {
+  const router = useRouter();
   const { invoice, loading: invoiceLoading } = useGetInvoice({ id });
   const { timeline, loading: timelineLoading } = useGetInvoiceTimeline({ id });
+
+  const handleContinuePayment = useCallback(() => {
+    if (!invoice || !isIncomingInvoice(invoice)) return;
+    const path = getPaymentPath(id, invoice.paymentMethod.type);
+    if (path) router.push(path);
+  }, [id, invoice, router]);
 
   if (invoiceLoading || timelineLoading || !invoice || !timeline || !isIncomingInvoice(invoice)) {
     return (
@@ -87,6 +113,7 @@ export function PaymentSummaryImpl({ id }: PaymentSummaryImplProps) {
         paymentMethod={invoice.paymentMethod.title}
         status={uiStatus}
         completedAt={completedAt}
+        onContinuePayment={handleContinuePayment}
       />
     </SectionCard>
   );

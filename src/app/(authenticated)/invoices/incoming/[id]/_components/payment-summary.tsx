@@ -12,9 +12,18 @@ interface PaymentSummaryProps {
   paymentMethod: string;
   status: PaymentSummaryStatus;
   completedAt?: string;
+  onContinuePayment?: () => void;
 }
 
-export function PaymentSummary({ total, subtotal, adminFee, paymentMethod, status, completedAt }: PaymentSummaryProps) {
+export function PaymentSummary({
+  total,
+  subtotal,
+  adminFee,
+  paymentMethod,
+  status,
+  completedAt,
+  onContinuePayment,
+}: PaymentSummaryProps) {
   return (
     <div className="flex flex-col gap-y-5">
       {/* Total Tagihan */}
@@ -60,7 +69,7 @@ export function PaymentSummary({ total, subtotal, adminFee, paymentMethod, statu
       )}
 
       {/* Status-based CTA */}
-      {status === "pending" && <PrimaryButton label="Lanjutkan Pembayaran" />}
+      {status === "pending" && <PrimaryButton label="Lanjutkan Pembayaran" onClick={onContinuePayment} />}
       {status === "processing" && <SecondaryButton outlined disabled label="Menunggu Proses" />}
       {status === "completed" && <SecondaryButton outlined label="Unduh Bukti" />}
     </div>
