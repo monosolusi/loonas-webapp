@@ -170,7 +170,7 @@ export function DashboardRecentInvoices() {
           return (
             <div
               key={inv.id}
-              onClick={() => router.push(`/invoices/${inv.id}`)}
+              onClick={() => router.push(`/invoices/${isIncoming ? "incoming" : "outgoing"}/${inv.id}`)}
               className="hover:border-l-primary-300 hover:bg-primary-50 grid cursor-pointer grid-cols-[2fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0"
             >
               {/* Pihak — icon + client name + relative time */}

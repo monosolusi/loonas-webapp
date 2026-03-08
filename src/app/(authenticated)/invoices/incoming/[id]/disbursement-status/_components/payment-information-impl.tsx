@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
-import { PaymentInformation } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/payment-information";
+import { PaymentInformation } from "@/app/(authenticated)/invoices/incoming/[id]/disbursement-status/_components/payment-information";
 import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
 interface PaymentInformationImplProps {

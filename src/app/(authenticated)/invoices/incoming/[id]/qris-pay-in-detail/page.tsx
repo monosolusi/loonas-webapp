@@ -2,9 +2,9 @@
 
 import { PageContent } from "@/core/presentations/components/page-content";
 import { TextHeadingWithUnderline } from "@/core/presentations/components/text-heading-with-underline";
-import { RemainingPaymentTimeImpl } from "@/app/(authenticated)/invoices/[id]/qris-pay-in-detail/_components/remaining-payment-time-impl";
-import { QrisPayInDetailBoxImpl } from "@/app/(authenticated)/invoices/[id]/qris-pay-in-detail/_components/qris-pay-in-detail-box-impl";
-import { PaymentDetailImpl } from "@/app/(authenticated)/invoices/[id]/qris-pay-in-detail/_components/payment-detail-impl";
+import { RemainingPaymentTimeImpl } from "@/app/(authenticated)/invoices/incoming/[id]/qris-pay-in-detail/_components/remaining-payment-time-impl";
+import { QrisPayInDetailBoxImpl } from "@/app/(authenticated)/invoices/incoming/[id]/qris-pay-in-detail/_components/qris-pay-in-detail-box-impl";
+import { PaymentDetailImpl } from "@/app/(authenticated)/invoices/incoming/[id]/qris-pay-in-detail/_components/payment-detail-impl";
 
 export default function QrisPayInDetailPage() {
   return (

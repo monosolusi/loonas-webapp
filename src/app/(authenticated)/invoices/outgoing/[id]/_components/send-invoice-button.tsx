@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
-import { SendOptionsDialogImpl } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/send-options-dialog-impl";
+import { SendOptionsDialogImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/send-options-dialog-impl";
 
 export function SendInvoiceButton() {
   const { id } = useParams<{ id: string }>();

@@ -3,10 +3,10 @@
 import {PrimaryButton} from "@/core/presentations/components/buttons/primary-button";
 import {CreateIncomingSteppers} from "@/features/invoice/presentations/components/create-incoming-steppers";
 import Image from "next/image";
-import {StatusBannerImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/status-banner-impl";
+import {StatusBannerImpl} from "@/app/(authenticated)/invoices/incoming/[id]/disbursement-status/_components/status-banner-impl";
 import {TransactionTimelineImpl} from "@/features/invoice/presentations/components/transaction-timeline-impl";
-import {PaymentInformationImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/payment-information-impl";
-import {InvoiceDetailImpl} from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/invoice-detail-impl";
+import {PaymentInformationImpl} from "@/app/(authenticated)/invoices/incoming/[id]/disbursement-status/_components/payment-information-impl";
+import {InvoiceDetailImpl} from "@/app/(authenticated)/invoices/incoming/[id]/disbursement-status/_components/invoice-detail-impl";
 import {useParams, useRouter} from "next/navigation";
 import {useCopyToClipboard} from "@/core/presentations/hooks/use-copy-to-clipboard";
 
@@ -61,7 +61,7 @@ export default function DisbursementStatusPage() {
             {/*  Action Buttons */}
             <div className="flex flex-row items-center justify-end border-t border-t-neutral-200 p-6">
               <div className="flex">
-                <PrimaryButton label="Lihat Faktur" onClick={() => router.replace(`/invoices/${id}`)} />
+                <PrimaryButton label="Lihat Faktur" onClick={() => router.replace(`/invoices/incoming/${id}`)} />
               </div>
             </div>
           </div>

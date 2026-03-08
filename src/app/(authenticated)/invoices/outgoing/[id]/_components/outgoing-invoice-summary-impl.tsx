@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useGetOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-outgoing-invoice";
 import { SectionCard } from "@/core/presentations/components/section-card";
-import { OutgoingInvoiceSummary } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/outgoing-invoice-summary";
+import { OutgoingInvoiceSummary } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/outgoing-invoice-summary";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 
 export function OutgoingInvoiceSummaryImpl() {

@@ -100,7 +100,7 @@ export function CreateOutgoingActionBar() {
 
   const handleSendCompleted = (item: OutgoingInvoiceEntity) => {
     setDialogOpen(false);
-    router.push(`/invoices/${item.id}`);
+    router.push(`/invoices/outgoing/${item.id}`);
   };
 
   const leftButton = (() => {

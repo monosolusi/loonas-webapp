@@ -26,16 +26,16 @@ export function CreateIncomingSaveButton() {
     const result = await createInvoice();
     const type = result.paymentMethod.type;
     if (type === PayInType.VIRTUAL_ACCOUNT) {
-      router.replace(`/invoices/${result.id}/va-pay-in-detail`);
+      router.replace(`/invoices/incoming/${result.id}/va-pay-in-detail`);
     } else if (type === PayInType.QRIS) {
-      router.replace(`/invoices/${result.id}/qris-pay-in-detail`);
+      router.replace(`/invoices/incoming/${result.id}/qris-pay-in-detail`);
     } else if (
       type === PayInType.CREDIT_CARD_FULL_REDIRECT ||
       type === PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_3_MONTHS ||
       type === PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_6_MONTHS ||
       type === PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_12_MONTHS
     ) {
-      router.replace(`/invoices/${result.id}/cc-enter-card-detail`);
+      router.replace(`/invoices/incoming/${result.id}/cc-enter-card-detail`);
     } else {
       throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
     }

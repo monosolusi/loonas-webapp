@@ -27,7 +27,7 @@ export function OutgoingInvoiceTable({ rows, meta, currentPage, onPageChange }: 
       {rows.map((invoice) => (
         <Link
           key={invoice.id}
-          href={`/invoices/${invoice.id}`}
+          href={`/invoices/outgoing/${invoice.id}`}
           className="group hover:border-l-primary-300 hover:bg-primary-50 grid cursor-pointer grid-cols-[2fr_1.5fr_1fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0"
         >
           <span className="truncate text-sm leading-5 font-semibold text-neutral-500">{invoice.client}</span>

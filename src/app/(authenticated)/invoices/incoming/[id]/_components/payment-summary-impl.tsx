@@ -3,7 +3,7 @@
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { useGetInvoiceTimeline } from "@/features/invoice/presentations/hooks/use-get-invoice-timeline";
 import { SectionCard } from "@/core/presentations/components/section-card";
-import { PaymentSummary } from "@/app/(authenticated)/invoices/[id]/_components/payment-summary";
+import { PaymentSummary } from "@/app/(authenticated)/invoices/incoming/[id]/_components/payment-summary";
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";

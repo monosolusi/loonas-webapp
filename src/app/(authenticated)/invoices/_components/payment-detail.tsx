@@ -2,7 +2,7 @@
 
 import React from "react";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import { ActionButtons } from "@/app/(authenticated)/invoices/[id]/va-pay-in-detail/_components/action-buttons";
+import { ActionButtons } from "@/app/(authenticated)/invoices/incoming/[id]/va-pay-in-detail/_components/action-buttons";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 interface PaymentDetailProps {

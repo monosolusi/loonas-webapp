@@ -1,6 +1,6 @@
 "use client";
 
-import { QrisPayInDetailBox } from "@/app/(authenticated)/invoices/[id]/qris-pay-in-detail/_components/qris-pay-in-detail-box";
+import { QrisPayInDetailBox } from "@/app/(authenticated)/invoices/incoming/[id]/qris-pay-in-detail/_components/qris-pay-in-detail-box";
 import { useParams } from "next/navigation";
 import { useGetIncomingInvoicePayInDetail } from "@/features/payment/presentations/hooks/use-get-incoming-invoice-pay-in-detail";
 import { QrisPayInDetailEntity } from "@/features/payment/domain/entities/qris-pay-in-detail-entity";

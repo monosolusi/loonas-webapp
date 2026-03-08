@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
-import { InvoiceDetail } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/invoice-detail";
+import { InvoiceDetail } from "@/app/(authenticated)/invoices/incoming/[id]/disbursement-status/_components/invoice-detail";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 

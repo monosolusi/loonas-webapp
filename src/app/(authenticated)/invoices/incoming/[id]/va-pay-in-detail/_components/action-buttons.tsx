@@ -10,11 +10,11 @@ export function ActionButtons(props: ActionButtonsProps) {
   const router = useRouter();
 
   const handlePayLater = () => {
-    router.push("/invoices");
+    router.push("/invoices/incoming");
   };
 
   const handlePaymentDone = () => {
-    router.replace(`/invoices/${props.invoiceId}/disbursement-status`);
+    router.replace(`/invoices/incoming/${props.invoiceId}/disbursement-status`);
   };
 
   return (

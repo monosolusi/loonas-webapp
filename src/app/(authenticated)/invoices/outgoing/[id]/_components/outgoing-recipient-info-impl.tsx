@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useGetOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-outgoing-invoice";
 import { SectionCard } from "@/core/presentations/components/section-card";
-import { OutgoingRecipientInfo } from "@/app/(authenticated)/invoices/[id]/@outgoingDetail/_components/outgoing-recipient-info";
+import { OutgoingRecipientInfo } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/outgoing-recipient-info";
 
 export function OutgoingRecipientInfoImpl() {
   const { id } = useParams<{ id: string }>();

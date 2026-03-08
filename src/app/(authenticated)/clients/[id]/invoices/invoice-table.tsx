@@ -29,7 +29,7 @@ export function InvoiceTable(props: InvoiceTableProps) {
     return props.data.map((item) => ({
       row: [
         {
-          node: <TableMainCell href={`/invoices/${item.invoiceId}`}>{formatId(item.invoiceId)}</TableMainCell>,
+          node: <TableMainCell href={`/invoices/incoming/${item.invoiceId}`}>{formatId(item.invoiceId)}</TableMainCell>,
           hideOnMobile: false
         },
         { node: IDRFormatter.toCurrency(item.amount), hideOnMobile: false },

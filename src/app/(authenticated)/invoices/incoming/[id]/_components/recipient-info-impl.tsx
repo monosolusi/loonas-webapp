@@ -2,7 +2,7 @@
 
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { SectionCard } from "@/core/presentations/components/section-card";
-import { RecipientInfo } from "@/app/(authenticated)/invoices/[id]/_components/recipient-info";
+import { RecipientInfo } from "@/app/(authenticated)/invoices/incoming/[id]/_components/recipient-info";
 import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
 interface RecipientInfoImplProps {

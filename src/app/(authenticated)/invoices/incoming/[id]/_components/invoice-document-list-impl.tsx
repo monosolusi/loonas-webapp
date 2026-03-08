@@ -3,7 +3,7 @@
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import { InvoiceDocumentList } from "@/app/(authenticated)/invoices/[id]/_components/invoice-document-list";
+import { InvoiceDocumentList } from "@/app/(authenticated)/invoices/incoming/[id]/_components/invoice-document-list";
 import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
 interface InvoiceDocumentListImplProps {

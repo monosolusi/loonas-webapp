@@ -2,7 +2,7 @@
 
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { useGetInvoiceTimeline } from "@/features/invoice/presentations/hooks/use-get-invoice-timeline";
-import { StatusBanner } from "@/app/(authenticated)/invoices/[id]/disbursement-status/_components/status-banner";
+import { StatusBanner } from "@/app/(authenticated)/invoices/incoming/[id]/disbursement-status/_components/status-banner";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
