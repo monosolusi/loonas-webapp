@@ -36,11 +36,12 @@ async function GetIncomingInvoicePayInDetailFetcher([, params]: [
   return result.data;
 }
 
-export function useGetIncomingInvoicePayInDetail(params: { invoice: { id: string } }) {
+export function useGetIncomingInvoicePayInDetail(params: { invoice: { id: string }; refreshInterval?: number }) {
   const clerk = useClerk();
   const { data, error, isLoading } = useSWR(
-    ["get-incoming-invoice-pay-in-detail", { ...params, clerk }],
+    ["get-incoming-invoice-pay-in-detail", { invoice: params.invoice, clerk }],
     GetIncomingInvoicePayInDetailFetcher,
+    { refreshInterval: params.refreshInterval },
   );
 
   return {

@@ -6,18 +6,31 @@ import { QrisPayInDetailBox } from "@/app/(authenticated)/invoices/incoming/[id]
 import { PaymentDetail } from "@/app/(authenticated)/invoices/_components/payment-detail";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
+import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { useGetIncomingInvoicePayInDetail } from "@/features/payment/presentations/hooks/use-get-incoming-invoice-pay-in-detail";
 import { usePayInRouteGuard } from "@/features/payment/presentations/hooks/use-pay-in-route-guard";
 import { QrisPayInDetailEntity } from "@/features/payment/domain/entities/qris-pay-in-detail-entity";
+import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
 import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
+
+const POLL_INTERVAL_MS = 5000;
 
 export default function QrisPayInDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { invoice, loading: invoiceLoading } = useGetInvoice({ id });
-  const { payInDetail, loading: payInLoading } = useGetIncomingInvoicePayInDetail({ invoice: { id } });
+  const { payInDetail, loading: payInLoading } = useGetIncomingInvoicePayInDetail({
+    invoice: { id },
+    refreshInterval: POLL_INTERVAL_MS,
+  });
+
+  useEffect(() => {
+    if (payInDetail instanceof QrisPayInDetailEntity && payInDetail.status === PayInStatus.PAID) {
+      router.replace(`/invoices/incoming/${id}/disbursement-status`);
+    }
+  }, [payInDetail, id, router]);
 
   const redirecting = usePayInRouteGuard({
     invoiceId: id,
