@@ -7,6 +7,7 @@ import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account"
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { InvoiceSummaryDocumentEntity } from "@/features/invoice/domain/entities/invoice-summary-document";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
+import { FileEntity } from "@/features/file/domain/entities/file";
 
 export type InvoiceStatus = PaymentRequestStatus | OutgoingInvoiceStatus;
 
@@ -21,6 +22,7 @@ interface IncomingInvoiceEntityConstructor {
   status: InvoiceStatus;
   type: InvoiceType;
   documents?: InvoiceSummaryDocumentEntity[];
+  receipt?: FileEntity;
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
@@ -37,6 +39,7 @@ export class IncomingInvoiceEntity implements AbstractEntity {
   public status: InvoiceStatus;
   public type: InvoiceType;
   public documents?: InvoiceSummaryDocumentEntity[];
+  public receipt?: FileEntity;
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
@@ -52,6 +55,7 @@ export class IncomingInvoiceEntity implements AbstractEntity {
     this.status = args.status;
     this.type = args.type;
     this.documents = args.documents;
+    this.receipt = args.receipt;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;

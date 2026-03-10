@@ -6,6 +6,7 @@ import { PaymentGatewayModel } from "@/features/payment/data/models/payment-gate
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { AbstractModel } from "@/core/resources/model";
 import { InvoiceSummaryDocumentModel } from "@/features/invoice/data/models/invoice-summary-document";
+import { FileModel } from "@/features/file/data/models/file";
 
 interface IncomingInvoiceModelConstructor {
   id: string;
@@ -18,6 +19,7 @@ interface IncomingInvoiceModelConstructor {
   status: InvoiceStatus;
   type: InvoiceType;
   documents?: InvoiceSummaryDocumentModel[];
+  receipt?: FileModel;
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
@@ -34,6 +36,7 @@ export class IncomingInvoiceModel implements AbstractModel {
   public status: InvoiceStatus;
   public type: InvoiceType;
   public documents?: InvoiceSummaryDocumentModel[];
+  public receipt?: FileModel;
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
@@ -49,6 +52,7 @@ export class IncomingInvoiceModel implements AbstractModel {
     this.status = args.status;
     this.type = args.type;
     this.documents = args.documents;
+    this.receipt = args.receipt;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
@@ -66,6 +70,7 @@ export class IncomingInvoiceModel implements AbstractModel {
       status: doc["status"],
       type: doc["type"],
       documents: doc["documents"]?.map((doc: Record<string, any>) => InvoiceSummaryDocumentModel.fromJson(doc)),
+      receipt: doc["receipt"] ? FileModel.fromJson(doc["receipt"]) : undefined,
       createdAt: DateTime.fromISO(doc["created_at"]),
       updatedAt: DateTime.fromISO(doc["updated_at"]),
       deletedAt: doc["deleted_at"] ? DateTime.fromISO(doc["deleted_at"]) : undefined,
@@ -84,6 +89,7 @@ export class IncomingInvoiceModel implements AbstractModel {
       status: this.status,
       type: this.type,
       documents: this.documents?.map((doc) => doc.toEntity()),
+      receipt: this.receipt?.toEntity(),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,

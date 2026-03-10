@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { useGetInvoiceTimeline } from "@/features/invoice/presentations/hooks/use-get-invoice-timeline";
@@ -59,11 +59,39 @@ export function PaymentSummaryImpl({ id }: PaymentSummaryImplProps) {
   const { invoice, loading: invoiceLoading } = useGetInvoice({ id });
   const { timeline, loading: timelineLoading } = useGetInvoiceTimeline({ id });
 
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const handleContinuePayment = useCallback(() => {
     if (!invoice || !isIncomingInvoice(invoice)) return;
     const path = getPaymentPath(id, invoice.paymentMethod.type);
     if (path) router.push(path);
   }, [id, invoice, router]);
+
+  const handleDownloadReceipt = useCallback(async () => {
+    if (!invoice || !isIncomingInvoice(invoice) || !invoice.receipt) return;
+    const { publicUrl, name } = invoice.receipt;
+    setIsDownloading(true);
+    try {
+      const response = await fetch(publicUrl, { credentials: "omit", mode: "cors" });
+      if (!response.ok) throw new Error("Failed to fetch PDF");
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = name;
+      link.rel = "noopener";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(objectUrl);
+    } catch (_) {
+      window.open(publicUrl, "_blank", "noopener,noreferrer");
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [invoice]);
 
   if (invoiceLoading || timelineLoading || !invoice || !timeline || !isIncomingInvoice(invoice)) {
     return (
@@ -114,6 +142,8 @@ export function PaymentSummaryImpl({ id }: PaymentSummaryImplProps) {
         status={uiStatus}
         completedAt={completedAt}
         onContinuePayment={handleContinuePayment}
+        onDownloadReceipt={handleDownloadReceipt}
+        isDownloading={isDownloading}
       />
     </SectionCard>
   );
