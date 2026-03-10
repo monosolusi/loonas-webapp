@@ -24,6 +24,7 @@ import { InvoiceItemSummaryModel } from "@/features/invoice/data/models/invoice-
 import { InvoiceSenderModel } from "@/features/invoice/data/models/invoice-sender";
 import { InvoiceRecipientModel } from "@/features/invoice/data/models/invoice-recipient";
 import { PublicOutgoingInvoiceModel } from "../models/public-outgoing-invoice";
+import { PublicIncomingInvoiceModel } from "../models/public-incoming-invoice";
 import { PayInModel } from "../models/pay-in";
 import { InvoiceTimelineModel } from "../models/invoice-timeline";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
@@ -275,6 +276,15 @@ export class InvoiceServiceImpl implements InvoiceService {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
     }
+  }
+
+  public async getPublicIncoming(filter: { invoiceId: string }): Promise<PublicIncomingInvoiceModel> {
+    const path = `/invoices/public-incoming/${filter.invoiceId}/receipt`;
+    const method = "GET";
+
+    const config = { requireAuth: false, requireAccount: false };
+    const result = await this.http.request({ path, method }, config);
+    return PublicIncomingInvoiceModel.fromJson(result);
   }
 
   public async get(

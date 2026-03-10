@@ -10,6 +10,7 @@ import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { PublicOutgoingInvoiceEntity } from "../entities/public-outgoing-invoice";
+import { PublicIncomingInvoiceEntity } from "../entities/public-incoming-invoice";
 import { PayInEntity } from "../entities/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import { PaymentMethodPayInDetailEntity } from "@/features/payment/domain/entities/payment-method-pay-in-detail-entity";
@@ -116,4 +117,6 @@ export interface InvoiceRepository {
   getSummary(filter: InvoiceSummaryRepoFilter, session: SessionEntity): Promise<DataState<InvoiceSummaryEntity>>;
 
   getCashFlow(filter: CashFlowRepoFilter, session: SessionEntity): Promise<DataState<CashFlowEntity>>;
+
+  getPublicIncoming(filter: { invoiceId: string }): Promise<DataState<PublicIncomingInvoiceEntity>>;
 }

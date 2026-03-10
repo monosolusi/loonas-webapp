@@ -10,6 +10,7 @@ import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { PublicOutgoingInvoiceModel } from "../../data/models/public-outgoing-invoice";
+import { PublicIncomingInvoiceModel } from "../../data/models/public-incoming-invoice";
 import { PayInModel } from "../../data/models/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import { PaginationMetaModel } from "@/core/resources/pagination-meta-model";
@@ -112,4 +113,6 @@ export interface InvoiceService {
   getSummary(filter: InvoiceSummaryFilter, session: SessionEntity): Promise<InvoiceSummaryModel>;
 
   getCashFlow(filter: CashFlowFilter, session: SessionEntity): Promise<CashFlowModel>;
+
+  getPublicIncoming(filter: { invoiceId: string }): Promise<PublicIncomingInvoiceModel>;
 }
