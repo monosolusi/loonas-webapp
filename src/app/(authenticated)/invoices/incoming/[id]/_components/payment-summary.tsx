@@ -13,6 +13,7 @@ interface PaymentSummaryProps {
   status: PaymentSummaryStatus;
   completedAt?: string;
   onContinuePayment?: () => void;
+  hasReceipt?: boolean;
   onDownloadReceipt?: () => void;
   isDownloading?: boolean;
 }
@@ -25,6 +26,7 @@ export function PaymentSummary({
   status,
   completedAt,
   onContinuePayment,
+  hasReceipt,
   onDownloadReceipt,
   isDownloading,
 }: PaymentSummaryProps) {
@@ -75,8 +77,11 @@ export function PaymentSummary({
       {/* Status-based CTA */}
       {status === "pending" && <PrimaryButton label="Lanjutkan Pembayaran" onClick={onContinuePayment} />}
       {status === "processing" && <SecondaryButton outlined disabled label="Menunggu Proses" />}
-      {status === "completed" && (
+      {status === "completed" && hasReceipt && (
         <SecondaryButton outlined label={isDownloading ? "Mengunduh..." : "Unduh Bukti"} disabled={isDownloading} onClick={onDownloadReceipt} />
+      )}
+      {status === "completed" && !hasReceipt && (
+        <SecondaryButton outlined disabled label="Bukti Belum Tersedia" />
       )}
     </div>
   );

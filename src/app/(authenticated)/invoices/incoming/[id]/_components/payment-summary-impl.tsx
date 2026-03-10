@@ -142,6 +142,7 @@ export function PaymentSummaryImpl({ id }: PaymentSummaryImplProps) {
         status={uiStatus}
         completedAt={completedAt}
         onContinuePayment={handleContinuePayment}
+        hasReceipt={isIncomingInvoice(invoice) && invoice.receipt !== undefined}
         onDownloadReceipt={handleDownloadReceipt}
         isDownloading={isDownloading}
       />
