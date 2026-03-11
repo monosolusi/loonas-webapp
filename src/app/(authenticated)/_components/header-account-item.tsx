@@ -25,7 +25,7 @@ export function HeaderAccountItem(props: HeaderAccountItemProps) {
 
   return (
     <MenuItem as="div" className="flex cursor-pointer flex-row items-center gap-x-3 p-3" onClick={onClick}>
-      <AccountAvatar type={props.account.type} />
+      <AccountAvatar type={props.account.type} name={props.account.fullName} />
 
       <div className="flex flex-col">
         <div className="text-sm leading-4 font-semibold">{props.account.fullName}</div>
