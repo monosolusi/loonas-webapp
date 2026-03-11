@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { PasswordInput } from "@/core/presentations/components/text-inputs/password-input";
@@ -34,7 +35,7 @@ export function CredentialForm() {
 
       {/*  Forget Password */}
       <div className="flex flex-row-reverse">
-        <span className="text-primary-300 cursor-pointer text-base">Lupa kata sandi?</span>
+        <Link href="/forget-password" className="text-primary-300 text-base hover:underline">Lupa kata sandi?</Link>
       </div>
 
       {/*  Sign In Button - Primary Button */}
