@@ -3,16 +3,15 @@ import Link from "next/link";
 import { FeatureItem } from "@/app/(authentication)/sign-in/_components/feature-item";
 import { RegisterButton } from "@/app/(authentication)/sign-in/_components/register-button";
 
-export default function ForgetPasswordSuccessPage() {
+export default function ForgetPasswordCompletedPage() {
   return (
     <div className="flex h-full flex-row">
       <div className="flex w-1/2 flex-col justify-center px-24">
         <Image src="/assets/images/logo-w165-h48.png" alt="Loonas Logo" width={165} height={48} />
         <div className="mt-10 flex flex-col gap-2">
-          <span className="text-base">Cek Email Anda</span>
-          <span className="text-base">
-            Jika email Anda terdaftar di sistem kami, kami telah mengirimkan tautan untuk mengatur ulang kata sandi.
-            Silakan cek inbox dan folder spam Anda.
+          <span className="text-base font-medium">Kata Sandi Berhasil Diubah</span>
+          <span className="text-base text-neutral-600">
+            Kata sandi Anda telah berhasil diperbarui. Silakan masuk dengan kata sandi baru Anda.
           </span>
         </div>
         <div className="mt-8">
@@ -20,7 +19,7 @@ export default function ForgetPasswordSuccessPage() {
             href="/sign-in"
             className="bg-primary-300 hover:bg-primary-300/90 inline-block rounded-lg px-6 py-3 text-base font-medium text-white transition-colors duration-200"
           >
-            Kembali ke Halaman Masuk
+            Masuk ke Akun
           </Link>
         </div>
       </div>
@@ -46,7 +45,10 @@ export default function ForgetPasswordSuccessPage() {
                 </span>
               </div>
               <div className="flex flex-col gap-3">
-                <FeatureItem iconPath="/assets/images/analytic-icon-w16-h16.svg" label="Pantau pertumbuhan real-time" />
+                <FeatureItem
+                  iconPath="/assets/images/analytic-icon-w16-h16.svg"
+                  label="Pantau pertumbuhan real-time"
+                />
                 <FeatureItem iconPath="/assets/images/shield-icon-w16-h16.svg" label="Keamanan data terjamin" />
                 <FeatureItem iconPath="/assets/images/thunder-icon-w16-h16.svg" label="Otomasi proses bisnis" />
               </div>

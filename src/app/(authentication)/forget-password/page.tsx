@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { EmailInput } from "@/core/presentations/components/text-inputs/email-input";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { FeatureItem } from "@/app/(authentication)/sign-in/_components/feature-item";
@@ -11,15 +11,8 @@ import { RegisterButton } from "@/app/(authentication)/sign-in/_components/regis
 import { useSendPasswordResetEmail } from "@/features/authentication/presentation/hooks/use-send-password-reset-email";
 
 export default function ForgetPasswordPage() {
-  const router = useRouter();
   const { state, submit, cooldownSeconds } = useSendPasswordResetEmail();
   const [email, setEmail] = useState("");
-
-  useEffect(() => {
-    if (state.success) {
-      router.push("/forget-password/success");
-    }
-  }, [state.success, router]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,6 +29,15 @@ export default function ForgetPasswordPage() {
           <span className="text-base">Lupa kata sandi?</span>
           <span className="text-base">Masukkan email Anda untuk menerima tautan reset kata sandi.</span>
         </div>
+        {state.success && (
+          <div className="mt-4 flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-3">
+            <CheckCircleIcon className="mt-0.5 size-5 shrink-0 text-green-500" />
+            <span className="text-sm text-green-700">
+              Jika email Anda terdaftar, kami telah mengirimkan tautan untuk mengatur ulang kata sandi. Silakan cek
+              inbox dan folder spam Anda.
+            </span>
+          </div>
+        )}
         <form className="mt-8 flex flex-col gap-5" onSubmit={onSubmit}>
           <EmailInput label="Email" placeholder="Masukan email Anda" value={email} onChange={setEmail} required />
           <PrimaryButton
