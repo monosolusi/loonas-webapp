@@ -139,11 +139,11 @@
 
 import { MenuItem } from "@headlessui/react";
 import Image from "next/image";
-import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
+import { useListApprovedAccounts } from "@/features/account/presentation/hooks/use-list-approved-accounts";
 import { HeaderAccountItem } from "@/app/(authenticated)/_components/header-account-item";
 
 export function HeaderAccountList() {
-  const { accounts } = useListAccount();
+  const { accounts } = useListApprovedAccounts();
 
   return (
     <div className="flex flex-col gap-y-1 p-2">
