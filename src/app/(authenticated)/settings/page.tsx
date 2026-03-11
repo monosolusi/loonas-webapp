@@ -12,7 +12,7 @@ interface SettingsCategoryCardProps {
 function SettingsCategoryCard(props: SettingsCategoryCardProps) {
   if (!props.active) {
     return (
-      <div className="flex cursor-not-allowed flex-col gap-y-3 rounded-xl border border-neutral-100 bg-white p-6 opacity-50">
+      <div className="flex h-full cursor-not-allowed flex-col gap-y-3 rounded-lg border border-neutral-200 bg-white p-6 opacity-50">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-50">
           <Image src={props.iconSrc} alt={props.title} width={20} height={20} />
         </div>
@@ -30,8 +30,8 @@ function SettingsCategoryCard(props: SettingsCategoryCardProps) {
   }
 
   return (
-    <Link href={props.href}>
-      <div className="group flex cursor-pointer flex-col gap-y-3 rounded-xl border border-neutral-100 bg-white p-6 transition-all duration-200 hover:border-primary-300/30 hover:shadow-sm">
+    <Link href={props.href} className="h-full">
+      <div className="group flex h-full cursor-pointer flex-col gap-y-3 rounded-lg border border-neutral-200 bg-white p-6 transition-all duration-200 hover:border-primary-300/30 hover:shadow-sm">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-300/10">
           <Image src={props.iconSrc} alt={props.title} width={20} height={20} />
         </div>
