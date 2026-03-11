@@ -8,6 +8,16 @@ export class AuthRepositoryImpl implements AuthRepository {
   constructor(private authService: AuthService) {
   }
 
+  public async verifyResetToken(token: string): Promise<DataState<boolean>> {
+    try {
+      await this.authService.verifyResetToken(token);
+      return new DataSuccess(true);
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
   public async submitNewPassword(resetToken: string, password: string): Promise<DataState<boolean>> {
     try {
       await this.authService.submitNewPassword(resetToken, password);

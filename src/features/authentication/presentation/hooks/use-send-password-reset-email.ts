@@ -3,6 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { isValidEmail } from "@/core/utilities/validation-patterns";
 import { UseSendPasswordResetEmailReturnType } from "@/features/authentication/presentation/hooks/use-send-password-reset-email.types";
+import { AuthServiceImpl } from "@/features/authentication/data/sources/auth";
+import { AuthRepositoryImpl } from "@/features/authentication/data/repositories/auth";
+import {
+  SendPasswordResetEmailUseCase,
+  SendPasswordResetEmailUseCaseParams,
+} from "@/features/authentication/domain/usecases/send-password-reset-email";
+import { DataFailed } from "@/core/resources/data-state";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 const COOLDOWN_DURATION = 30;
 
@@ -44,19 +52,32 @@ export function useSendPasswordResetEmail(): UseSendPasswordResetEmailReturnType
   }, [cooldownSeconds]);
 
   const submit = useCallback(
-    (email: string) => {
+    async (email: string) => {
       if (state.loading || cooldownSeconds > 0) return;
       if (!email || !isValidEmail(email)) return;
 
       setState({ loading: true, success: false, error: null });
 
-      // TODO: Wire to SendPasswordResetEmailUseCase
-      // const useCase = new SendPasswordResetEmailUseCase(new AuthRepositoryImpl(new AuthServiceImpl()));
-      // const result = await useCase.execute(email);
-      setTimeout(() => {
+      try {
+        const authService = new AuthServiceImpl();
+        const authRepository = new AuthRepositoryImpl(authService);
+        const useCase = new SendPasswordResetEmailUseCase(authRepository);
+        const result = await useCase.execute(new SendPasswordResetEmailUseCaseParams(email));
+
+        if (result instanceof DataFailed) {
+          setState({ loading: false, success: false, error: result.error as ServerError });
+          return;
+        }
+
         setState({ loading: false, success: true, error: null });
         setCooldownSeconds(COOLDOWN_DURATION);
-      }, 1500);
+      } catch (err) {
+        setState({
+          loading: false,
+          success: false,
+          error: err instanceof ServerError ? err : new ServerError(ErrorCodes.UNKNOWN),
+        });
+      }
     },
     [state.loading, cooldownSeconds],
   );
