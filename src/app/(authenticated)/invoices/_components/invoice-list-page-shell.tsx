@@ -3,7 +3,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
-import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 
 interface InvoiceListPageShellProps {
   title: string;
@@ -23,13 +22,8 @@ export function InvoiceListPageShell({ title, description, createHref, statistic
           <span className="text-2xl leading-8 font-bold tracking-tight">{title}</span>
           <span className="text-sm leading-5">{description}</span>
         </div>
-        <div className="flex flex-row gap-x-3">
-          <div className="flex">
-            <SecondaryButton outlined label="Export Laporan" />
-          </div>
-          <div className="flex">
-            <PrimaryButton label="Buat Faktur Baru" onClick={() => router.push(createHref)} />
-          </div>
+        <div className="flex">
+          <PrimaryButton label="Buat Faktur Baru" onClick={() => router.push(createHref)} />
         </div>
       </div>
 
