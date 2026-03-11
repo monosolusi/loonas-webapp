@@ -212,10 +212,7 @@ export class InvoiceServiceImpl implements InvoiceService {
         signature = FileModel.fromJson(signatureResult);
       }
 
-      const finalisePath = `/invoices/outgoing/${result.id}/finalise`;
-      const finaliseMethod = "POST";
-      const finaliseResult = await this.http.request({ path: finalisePath, method: finaliseMethod, session });
-      if (!finaliseResult) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      const finaliseResult = await this.finaliseOutgoing(result.id, session);
 
       // Generate InvoiceItemModel[] from result.items
       const items = finaliseResult.items.map(InvoiceItemModel.fromJson);
@@ -230,6 +227,22 @@ export class InvoiceServiceImpl implements InvoiceService {
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  private async finaliseOutgoing(invoiceId: string, session: SessionEntity, maxRetries = 3): Promise<any> {
+    const path = `/invoices/outgoing/${invoiceId}/finalise`;
+    const method = "POST";
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const result = await this.http.request({ path, method, session });
+        if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+        return result;
+      } catch (err) {
+        if (attempt === maxRetries) throw err;
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+      }
     }
   }
 
