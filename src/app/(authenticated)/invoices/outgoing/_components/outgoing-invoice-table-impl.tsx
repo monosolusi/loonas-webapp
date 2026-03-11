@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
+import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceSearchInput } from "@/app/(authenticated)/invoices/_components/invoice-search-input";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
@@ -66,7 +67,9 @@ export function OutgoingInvoiceTableImpl({ filter }: OutgoingInvoiceTableImplPro
 
   const hasData = !loading && !error && invoices && meta;
   const outgoingInvoices = hasData
-    ? invoices.filter((inv): inv is OutgoingInvoiceEntity => inv instanceof OutgoingInvoiceEntity)
+    ? invoices
+        .filter((inv): inv is OutgoingInvoiceEntity => inv instanceof OutgoingInvoiceEntity)
+        .filter((inv) => inv.status !== OutgoingInvoiceStatus.DRAFT)
     : [];
 
   const filteredInvoices = search
