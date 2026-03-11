@@ -1,6 +1,6 @@
 import { DashboardStatistics } from "@/app/(authenticated)/home/_components/dashboard-statistics";
 import { DashboardRecentInvoices } from "@/app/(authenticated)/home/_components/dashboard-recent-invoices";
-import { DashboardAttentionItems } from "@/app/(authenticated)/home/_components/dashboard-attention-items";
+
 import { DashboardCashflowSummary } from "@/app/(authenticated)/home/_components/dashboard-cashflow-summary";
 import { DashboardWelcomeHeader } from "@/app/(authenticated)/home/_components/dashboard-welcome-header";
 import React from "react";
@@ -15,7 +15,6 @@ export default function InvoiceHomePage() {
           <DashboardRecentInvoices />
         </div>
         <div className="space-y-4 xl:col-span-2">
-          <DashboardAttentionItems />
           <DashboardCashflowSummary />
         </div>
       </div>

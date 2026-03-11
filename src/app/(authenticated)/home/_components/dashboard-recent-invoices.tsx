@@ -165,7 +165,7 @@ export function DashboardRecentInvoices() {
           const direction = isIncoming ? "in" : "out";
           const partyName = isIncoming ? (inv as IncomingInvoiceEntity).receiver.name : (inv as OutgoingInvoiceEntity).recipient.fullName;
           const total = isIncoming ? inv.total : (inv as OutgoingInvoiceEntity).summary.total;
-          const extraInvoices = isIncoming ? (inv.documents?.length ?? 1) - 1 : 0;
+
 
           return (
             <div
@@ -186,11 +186,6 @@ export function DashboardRecentInvoices() {
                 <div className="flex min-w-0 flex-col gap-1">
                   <div className="flex items-center gap-2">
                     <span className="truncate text-sm leading-5 font-semibold text-neutral-500">{partyName}</span>
-                    {extraInvoices > 0 && (
-                      <span className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-xs leading-4 font-medium text-neutral-300">
-                        +{extraInvoices}
-                      </span>
-                    )}
                   </div>
                   <span className="text-xs leading-4 text-neutral-300">
                     {inv.createdAt.setLocale("id").toRelative()}
