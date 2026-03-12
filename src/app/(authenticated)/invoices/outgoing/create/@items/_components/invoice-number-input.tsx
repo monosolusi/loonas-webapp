@@ -7,7 +7,7 @@ export function InvoiceNumberInput() {
   return (
     <TextInput
       placeholder="cth. INV/2025/05/0001"
-      title="No. Faktur"
+      label="No. Faktur"
       value={invoiceNumber}
       onChange={setInvoiceNumber}
     />

@@ -98,7 +98,7 @@ export function UpdatePartnerDialog(props: UpdatePartnerDialogProps) {
                 <div className="my-4">
                   <div className="flex flex-col gap-y-2">
                     <TextInput
-                      title="Nama"
+                      label="Nama"
                       className="flex-1"
                       value={name}
                       onChange={setName}
@@ -113,7 +113,7 @@ export function UpdatePartnerDialog(props: UpdatePartnerDialogProps) {
                       required
                     />
                     <TextInput
-                      title="Nomor Telpon"
+                      label="Nomor Telpon"
                       className="flex-1"
                       value={phone}
                       onChange={setPhone}

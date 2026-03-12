@@ -70,7 +70,9 @@ export const STEP_MAP: Record<Step, { next: Step | null; prev: Step | null }> = 
   ["invoices"]: { next: "client-bank-account", prev: "select-client" },
   ["client-bank-account"]: { next: "select-payment-method", prev: "invoices" },
   ["client-bank-account.create-new"]: { next: null, prev: null },
-  ["select-payment-method"]: { next: null, prev: "client-bank-account" },
+  ["select-payment-method"]: { next: "payment", prev: "client-bank-account" },
+  ["payment"]: { next: "invoice-created", prev: "select-payment-method" },
+  ["invoice-created"]: { next: null, prev: null },
 };
 
 const CreateIncomingInvoiceStepsContext = React.createContext<CreateIncomingInvoiceStepsContextProps>({
