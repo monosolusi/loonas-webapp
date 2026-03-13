@@ -24,6 +24,7 @@ export function SWRProvider(props: SWRProviderProps) {
         case ErrorCodes.RESOURCE_EXPIRED.code:
           await triggerSignOut();
           router.replace("/sign-in");
+          break;
         case ErrorCodes.NO_VALID_SESSION.code:
           // The handling of NO_VALID_SESSION is handled by a respective component
           break;

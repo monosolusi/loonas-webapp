@@ -7,7 +7,6 @@ import { PayInType } from "@/features/payment/domain/enums/pay-in-type";
 import { VirtualAccountPayInDetailModel } from "@/features/payment/data/models/va-pay-in-detail";
 import { CreditCardFullRedirectPayInDetailModel } from "@/features/payment/data/models/cc-full-redirect-pay-in-detail";
 import { QrisPayInDetailModel } from "@/features/payment/data/models/qris-pay-in-detail-model";
-import { PaymentMethodPayInDetailModel } from "@/features/payment/domain/types/payment-method-pay-in-detail-model";
 import { OutgoingInvoicePayInDetailService } from "@/features/payment/data/sources/outgoing-invoice-pay-in-detail-service";
 
 type INCOMING_INVOICE = { type: InvoiceType.INCOMING };
@@ -44,10 +43,9 @@ export class PayInDetailFactory {
     }
   }
 
-  // @ts-ignore
-  public getModel(params: QRIS): QrisPayInDetailModel;
-  public getModel(params: VIRTUAL_ACCOUNT): VirtualAccountPayInDetailModel;
-  public getModel(params: CREDIT_CARD_FULL_REDIRECT): CreditCardFullRedirectPayInDetailModel;
+  public getModel(params: QRIS): typeof QrisPayInDetailModel;
+  public getModel(params: VIRTUAL_ACCOUNT): typeof VirtualAccountPayInDetailModel;
+  public getModel(params: CREDIT_CARD_FULL_REDIRECT): typeof CreditCardFullRedirectPayInDetailModel;
   public getModel(
     params: CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_3_MONTHS,
   ): typeof CreditCardFullRedirectPayInDetailModel;
@@ -57,7 +55,9 @@ export class PayInDetailFactory {
   public getModel(
     params: CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_12_MONTHS,
   ): typeof CreditCardFullRedirectPayInDetailModel;
-  public getModel(params: PAY_IN_TYPE): PaymentMethodPayInDetailModel;
+  public getModel(
+    params: PAY_IN_TYPE,
+  ): typeof QrisPayInDetailModel | typeof VirtualAccountPayInDetailModel | typeof CreditCardFullRedirectPayInDetailModel;
   public getModel(params: PAY_IN_TYPE) {
     switch (params.type) {
       case PayInType.CREDIT_CARD_FULL_REDIRECT:

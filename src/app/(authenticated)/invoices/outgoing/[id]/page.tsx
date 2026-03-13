@@ -22,7 +22,6 @@ const FILTER_CONFIG: Record<string, { title: string }> = {
 
 export default function OutgoingInvoiceDynamicPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const filterConfig = FILTER_CONFIG[id];
 
   // Filter view: /invoices/outgoing/unpaid, /invoices/outgoing/paid, /invoices/outgoing/overdue

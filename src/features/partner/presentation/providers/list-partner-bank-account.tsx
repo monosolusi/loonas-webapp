@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 import {
   ListPartnerBankAccountContextProps,
   ListPartnerBankAccountProviderProps,
@@ -8,16 +8,14 @@ import { useCreateIncomingInvoiceProvider } from "@/features/invoice/presentatio
 
 const ListPartnerBankAccountContext = createContext<ListPartnerBankAccountContextProps>({
   banks: [],
-  searchQuery: "",
 });
 
 export function ListPartnerBankAccountProvider(props: ListPartnerBankAccountProviderProps) {
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const { recipient } = useCreateIncomingInvoiceProvider();
   const { banks } = useListPartnerBankAccount({ partner: recipient });
 
   return (
-    <ListPartnerBankAccountContext.Provider value={{ searchQuery, banks }}>
+    <ListPartnerBankAccountContext.Provider value={{ banks }}>
       {props.children}
     </ListPartnerBankAccountContext.Provider>
   );

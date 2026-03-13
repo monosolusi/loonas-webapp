@@ -2,7 +2,7 @@
 
 import { ClipboardDocumentIcon } from "@heroicons/react/24/outline";
 import React from "react";
-import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+
 import { CurrencyDisplay } from "./currency-display";
 import { useCopyToClipboard } from "@/core/presentations/hooks/use-copy-to-clipboard";
 

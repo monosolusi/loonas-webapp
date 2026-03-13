@@ -7,7 +7,7 @@ import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-
 
 export default function InvoiceLayoutPage(props: { children: React.ReactNode }) {
   const { id } = useParams<{ id: string }>();
-  const { invoice, loading } = useGetPublicOutgoingInvoice({ id });
+  const { invoice } = useGetPublicOutgoingInvoice({ id });
   const router = useRouter();
 
   useEffect(() => {

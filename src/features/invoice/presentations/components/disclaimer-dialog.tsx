@@ -39,8 +39,6 @@ export function DisclaimerDialog(props: DisclaimerDialogProps) {
     return checkboxes.every((checkbox) => checkbox.checked);
   }, [checkboxes]);
 
-  const onCheckboxChange = (id: string, checked: boolean) => {};
-
   return (
     <Dialog open={props.open} onClose={() => {}} className="relative z-10">
       <DialogBackdrop

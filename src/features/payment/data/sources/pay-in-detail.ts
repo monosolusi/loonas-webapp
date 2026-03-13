@@ -22,7 +22,7 @@ export class PayInDetailServiceImpl implements PayInDetailService {
     }
   }
 
-  public async getDetail(params: { requestId: string }, session: SessionEntity): Promise<GetDetailReturnType> {
+  public async getDetail(_params: { requestId: string }, _session: SessionEntity): Promise<GetDetailReturnType> {
     throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
   }
 

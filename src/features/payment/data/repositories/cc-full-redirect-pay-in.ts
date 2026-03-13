@@ -11,8 +11,8 @@ import { PublicPayInDetailEntity } from "../../domain/entities/public-pay-in-det
 export class CreditCardFullRedirectPayInRepository implements PayInDetailRepository {
   constructor(private readonly payInService: PayInDetailService) {}
 
-  public async getPublic(params: { invoiceId: string }): Promise<DataState<PublicPayInDetailEntity>> {
-    throw new Error("Method not implemented.");
+  public async getPublic(_params: { invoiceId: string }): Promise<DataState<PublicPayInDetailEntity>> {
+    throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
   }
 
   public async getDetail(

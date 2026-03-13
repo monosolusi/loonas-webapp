@@ -4,7 +4,6 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CreateAccountProvider } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { useAuth } from "@clerk/nextjs";
-import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
 
 type AccountOnboardingLayoutProps = {
   accountType: React.ReactNode;
@@ -14,7 +13,6 @@ type AccountOnboardingLayoutProps = {
 
 export default function AccountOnboardingLayout(props: AccountOnboardingLayoutProps) {
   const router = useRouter();
-  const { accounts, loading, error } = useListAccount();
   const { isLoaded: authLoaded, isSignedIn } = useAuth();
 
   useEffect(() => {
@@ -22,7 +20,6 @@ export default function AccountOnboardingLayout(props: AccountOnboardingLayoutPr
     if (!isSignedIn) router.replace("/sign-in");
   }, [authLoaded, isSignedIn]);
 
-  if (loading) return null;
   return (
     <CreateAccountProvider>
       {props.accountType}

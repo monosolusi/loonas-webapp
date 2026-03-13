@@ -13,7 +13,7 @@ import { DateTime } from "luxon";
  */
 export const passwordSchema = Joi.string()
   .min(8)
-  .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).+$/)
+  .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).+$/)
   .message(
     "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character",
   );
@@ -27,7 +27,7 @@ export const emailSchema = Joi.string().email();
  * Validation regex patterns for client-side use
  */
 export const ValidationPatterns = {
-  password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/,
+  password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   phoneNumber: /^(\+?[1-9]\d{0,2})?\d{8,12}$/,
 } as const;

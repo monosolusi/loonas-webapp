@@ -11,7 +11,7 @@ import { PaymentMethodCategoryCard } from "@/features/payment/presentations/comp
 
 export default function SelectPaymentMethodPages() {
   const { currentStep } = useCreateIncomingInvoiceSteps();
-  const { invoices, recipient, bankAccount, paymentMethod, setPaymentMethod } = useCreateIncomingInvoiceProvider();
+  const { invoices, recipient, bankAccount, paymentMethod } = useCreateIncomingInvoiceProvider();
   const { data: paymentMethods, isLoading: isPaymentMethodLoading } = useListPaymentMethodDisplay();
   const [selectedGroup, setSelectedGroup] = useState<string>();
 
@@ -99,7 +99,7 @@ export default function SelectPaymentMethodPages() {
             <div className="flex flex-row justify-between">
               <div className="flex-1 text-sm leading-5">Biaya Admin</div>
               <div className="flex-1 text-right text-sm leading-5 font-semibold">
-                {!!paymentMethod ? paymentMethod.display.feeInString : "-"}
+                {paymentMethod ? paymentMethod.display.feeInString : "-"}
               </div>
             </div>
           </div>

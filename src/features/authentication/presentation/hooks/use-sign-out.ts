@@ -4,9 +4,7 @@ import { SessionRepositoryImpl } from "@/features/authentication/data/repositori
 import { UserSignOutUseCase } from "@/features/authentication/domain/usecases/user-sign-out";
 import { DataFailed } from "@/core/resources/data-state";
 
-type SignOutFetcherParams = { arg?: {} };
-
-async function SignOutFetcher(_: string, { arg }: SignOutFetcherParams) {
+async function SignOutFetcher(_: string) {
   const sessionRepository = new SessionRepositoryImpl(new LocalStorageSessionService());
   const signOut = new UserSignOutUseCase(sessionRepository);
   const result = await signOut.execute();

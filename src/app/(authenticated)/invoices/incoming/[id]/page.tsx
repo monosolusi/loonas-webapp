@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
@@ -19,7 +18,6 @@ const FILTER_CONFIG: Record<string, { title: string }> = {
 
 export default function IncomingInvoiceDynamicPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const filterConfig = FILTER_CONFIG[id];
 
   // Filter view: /invoices/incoming/unpaid, /invoices/incoming/paid

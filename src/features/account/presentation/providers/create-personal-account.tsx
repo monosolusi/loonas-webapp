@@ -112,7 +112,7 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
 
       setDob(dobDate);
       setDobError(false);
-    } catch (err) {
+    } catch (_) {
       setDobError(true);
     }
   }, [dobDay, dobMonth, dobYear]);

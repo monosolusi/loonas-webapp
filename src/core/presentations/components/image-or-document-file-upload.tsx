@@ -22,7 +22,7 @@ interface FullStateImageProps {
   onDeleteFile?: () => void;
 }
 
-interface FullStatePdfProps extends FullStateImageProps {}
+type FullStatePdfProps = FullStateImageProps;
 
 type EmptyStateProps = Pick<ImageFileUploadProps, "onChange" | "file" | "acceptedFormatDescription" | "acceptedFormat">;
 

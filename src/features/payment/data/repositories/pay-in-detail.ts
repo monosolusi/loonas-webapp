@@ -8,8 +8,8 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 export class PayInDetailRepositoryImpl implements PayInDetailRepository {
   constructor(private readonly payInDetailService: PayInDetailService) {}
 
-  public async getDetail(params: { requestId: string }, session: SessionEntity): Promise<DataState<PayInReturnType>> {
-    throw new Error("Method not implemented.");
+  public async getDetail(_params: { requestId: string }, _session: SessionEntity): Promise<DataState<PayInReturnType>> {
+    throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
   }
 
   public async getPublic(params: { invoiceId: string }): Promise<DataState<PublicPayInDetailEntity>> {

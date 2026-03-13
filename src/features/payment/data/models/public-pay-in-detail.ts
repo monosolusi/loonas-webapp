@@ -50,21 +50,43 @@ export class PublicPayInDetailModel implements AbstractModel {
   }
 
   public static fromJson(json: Record<string, any>): PublicPayInDetailModel {
+    const type = json.pay_in.type as PayInType;
+    let payIn: VirtualAccountPayInDetail | CreditCardFullRedirectPayInDetail | QrisPayInDetail;
+
+    switch (type) {
+      case PayInType.VIRTUAL_ACCOUNT:
+        payIn = {
+          type,
+          id: json.pay_in.id,
+          bank: { name: json.pay_in.bank.name, logoUrl: json.pay_in.bank.logo_url },
+          accountNumber: json.pay_in.account_number,
+          expirationTime: DateTime.fromISO(json.pay_in.expiration_time),
+        };
+        break;
+      case PayInType.QRIS:
+        payIn = {
+          type,
+          id: json.pay_in.id,
+          qrString: json.pay_in.qr_string,
+          expirationTime: DateTime.fromISO(json.pay_in.expiration_time),
+        };
+        break;
+      case PayInType.CREDIT_CARD_FULL_REDIRECT:
+      case PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_3_MONTHS:
+      case PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_6_MONTHS:
+      case PayInType.CREDIT_CARD_FULL_REDIRECT_INSTALLMENT_12_MONTHS:
+        payIn = {
+          type,
+          id: json.pay_in.id,
+          paymentUrl: json.pay_in.payment_url,
+        };
+        break;
+      default:
+        throw new Error(`Unknown pay-in type: ${type}`);
+    }
+
     return new PublicPayInDetailModel({
-      // TODO: Fix this in the future
-      // @ts-ignore
-      payIn: {
-        type: json.pay_in.type as PayInType,
-        id: json.pay_in.id,
-        bank: json.pay_in.bank && {
-          name: json.pay_in.bank.name,
-          logoUrl: json.pay_in.bank.logo_url,
-        },
-        accountNumber: json.pay_in.account_number,
-        expirationTime: json.pay_in.expiration_time && DateTime.fromISO(json.pay_in.expiration_time),
-        paymentUrl: json.pay_in.payment_url,
-        qrString: json.pay_in.qr_string,
-      },
+      payIn,
       summary: {
         invoiceValue: json.summary.invoice_value,
         fee: json.summary.fee,

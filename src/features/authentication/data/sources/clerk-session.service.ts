@@ -35,11 +35,11 @@ export class ClerkSessionService implements SessionService {
     throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
   }
 
-  saveSession(accessToken: string): Promise<SessionModel> {
+  saveSession(_accessToken: string): Promise<SessionModel> {
     throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
   }
 
-  selectAccount(account: AccountTypeEntity): Promise<AccountTypeModel> {
+  selectAccount(_account: AccountTypeEntity): Promise<AccountTypeModel> {
     throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
   }
 

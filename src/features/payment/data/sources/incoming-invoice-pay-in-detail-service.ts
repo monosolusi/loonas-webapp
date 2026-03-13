@@ -28,7 +28,6 @@ export class IncomingInvoicePayInDetailService implements IPayInDetailService {
 
       const Model = this.payInDetailFactory.getModel({ type: result.type as PayInType });
 
-      // @ts-ignore
       return Model.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
