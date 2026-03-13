@@ -15,7 +15,9 @@ export default [
     settings: { react: { version: "detect" } },
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_", ignoreRestSiblings: true }],
       "react/react-in-jsx-scope": "off",
+      "@next/next/no-img-element": "off",
     },
   },
 ];
