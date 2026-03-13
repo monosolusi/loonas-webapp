@@ -3,18 +3,19 @@ FROM node:22-alpine AS base
 WORKDIR /app
 ENV NODE_ENV=production
 
-# 2) Layer dependencies (maksimalkan cache)
+# 2) Layer dependencies (semua, termasuk devDependencies untuk build)
 FROM base AS deps
-# Salin file yang diperlukan untuk install dependencies
 COPY package.json package-lock.json ./
-# Install sesuai lockfile
-RUN npm ci
+# Install semua dependencies (dev + prod) untuk build
+RUN npm ci --ignore-scripts --include=dev
 
 # 3) Build aplikasi
 FROM deps AS build
 # Public env untuk client bundle (ditanam saat build)
 ARG NEXT_PUBLIC_BASE_API_URL
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_BASE_API_URL=${NEXT_PUBLIC_BASE_API_URL}
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
 
 # Salin source code
 COPY . .
@@ -33,8 +34,9 @@ COPY --chown=nextjs:nextjs --from=build /app/package.json ./package.json
 COPY --chown=nextjs:nextjs --from=build /app/public ./public
 COPY --chown=nextjs:nextjs --from=build /app/.next ./.next
 
-# Salin dependency runtime
-COPY --chown=nextjs:nextjs --from=deps /app/node_modules ./node_modules
+# Install hanya production dependencies untuk runtime
+COPY --chown=nextjs:nextjs --from=build /app/package.json /app/package-lock.json ./
+RUN npm ci --omit=dev && chown -R nextjs:nextjs node_modules
 
 # Beralih ke user non-root
 USER nextjs
