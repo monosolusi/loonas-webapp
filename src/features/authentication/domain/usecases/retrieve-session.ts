@@ -8,7 +8,7 @@ export class RetrieveSessionUseCase implements UseCase<DataState<SessionEntity>,
   constructor(private sessionRepository: SessionRepository) {
   }
 
-  public async execute(params: void): Promise<DataState<SessionEntity>> {
+  public async execute(): Promise<DataState<SessionEntity>> {
     return await this.sessionRepository.retrieve();
   }
 }

@@ -13,7 +13,7 @@ export class CheckSessionUseCase implements UseCase<DataState<UserEntity>, void>
   ) {
   }
 
-  public async execute(params: void): Promise<DataState<UserEntity>> {
+  public async execute(): Promise<DataState<UserEntity>> {
     try {
       const session = await this.sessionRepository.retrieve();
       if (session instanceof DataFailed) return session;

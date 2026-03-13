@@ -11,7 +11,7 @@ export class ListAccountBankAccountUseCase implements UseCase<DataState<AccountB
     private readonly sessionRepository: SessionRepository,
   ) {}
 
-  public async execute(params: void): Promise<DataState<AccountBankAccountEntity[]>> {
+  public async execute(): Promise<DataState<AccountBankAccountEntity[]>> {
     try {
       const session = await this.sessionRepository.retrieve();
       if (session instanceof DataFailed) throw session.error;

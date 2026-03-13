@@ -12,7 +12,7 @@ export class RetrieveMeUseCase implements UseCase<DataState<UserEntity>, void> {
   ) {
   }
 
-  public async execute(params: void): Promise<DataState<UserEntity>> {
+  public async execute(): Promise<DataState<UserEntity>> {
     const session = await this.sessionRepository.retrieve();
     if (session instanceof DataFailed) return session;
     if (!session.data) return new DataFailed(new ServerError(ErrorCodes.INVALID_INSTANCE));

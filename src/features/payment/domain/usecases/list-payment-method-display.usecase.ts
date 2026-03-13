@@ -12,7 +12,7 @@ export class ListPaymentMethodDisplayUseCase implements UseCase<DataState<Paymen
     private readonly sessionRepository: SessionRepository,
   ) {}
 
-  public async execute(params: void): Promise<DataState<PaymentMethodCategoryEntity[]>> {
+  public async execute(): Promise<DataState<PaymentMethodCategoryEntity[]>> {
     try {
       const session = await this.getSession();
       return this.paymentMethodRepository.listDisplay(session);

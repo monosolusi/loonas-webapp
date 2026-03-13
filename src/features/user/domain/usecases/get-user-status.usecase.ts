@@ -12,7 +12,7 @@ export class GetUserStatusUseCase implements UseCase<DataState<UserStatusEntity>
     private readonly sessionRepository: SessionRepository,
   ) {}
 
-  public async execute(params: void): Promise<DataState<UserStatusEntity>> {
+  public async execute(): Promise<DataState<UserStatusEntity>> {
     try {
       const session = await this.getSession();
       const status = await this.getStatus(session);

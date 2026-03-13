@@ -11,7 +11,7 @@ export class GetCurrentAccountUseCase implements UseCase<DataState<AccountTypeEn
     private readonly sessionRepository: SessionRepository,
   ) {}
 
-  public async execute(params: void): Promise<DataState<AccountTypeEntity>> {
+  public async execute(): Promise<DataState<AccountTypeEntity>> {
     try {
       const session = await this.retrieveSession();
       return this.accountRepository.getCurrent(session);

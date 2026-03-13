@@ -11,7 +11,7 @@ export class GetNotificationConfigUseCase implements UseCase<DataState<Notificat
     private readonly sessionRepository: SessionRepository,
   ) {}
 
-  public async execute(params: void): Promise<DataState<NotificationConfigEntity>> {
+  public async execute(): Promise<DataState<NotificationConfigEntity>> {
     try {
       const session = await this.sessionRepository.retrieve();
       if (session instanceof DataFailed) throw session.error;
