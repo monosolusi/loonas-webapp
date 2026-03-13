@@ -141,6 +141,7 @@ import { MenuItem } from "@headlessui/react";
 import Image from "next/image";
 import { useListApprovedAccounts } from "@/features/account/presentation/hooks/use-list-approved-accounts";
 import { HeaderAccountItem } from "@/app/(authenticated)/_components/header-account-item";
+import Link from "next/link";
 
 export function HeaderAccountList() {
   const { accounts } = useListApprovedAccounts();
@@ -153,17 +154,19 @@ export function HeaderAccountList() {
         <HeaderAccountItem account={account} key={account.id} />
       ))}
 
-      <MenuItem
-        as="div"
-        className="hover hover:bg-primary-300/5 flex cursor-pointer flex-row items-center gap-x-3 rounded-lg p-3"
-      >
-        <div className="bg-primary-300/10 border-primary-300/20 text-primary-300 flex size-8 flex-col items-center justify-center rounded-full border">
-          <Image src="/assets/images/plus-icon-neutral-300-w16-h16.svg" alt="Plus Icon" width={16} height={16} />
-        </div>
-        <div className="flex flex-col">
-          <div className="text-primary-300 text-sm leading-4 font-medium">Tambah Akun Baru</div>
-        </div>
-      </MenuItem>
+      <Link href="/onboarding/account">
+        <MenuItem
+          as="div"
+          className="hover hover:bg-primary-300/5 flex cursor-pointer flex-row items-center gap-x-3 rounded-lg p-3"
+        >
+          <div className="bg-primary-300/10 border-primary-300/20 text-primary-300 flex size-8 flex-col items-center justify-center rounded-full border">
+            <Image src="/assets/images/plus-icon-neutral-300-w16-h16.svg" alt="Plus Icon" width={16} height={16} />
+          </div>
+          <div className="flex flex-col">
+            <div className="text-primary-300 text-sm leading-4 font-medium">Tambah Akun Baru</div>
+          </div>
+        </MenuItem>
+      </Link>
     </div>
   );
 }
