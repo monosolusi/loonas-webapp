@@ -1,5 +1,6 @@
 import { LogoImage } from "@/core/presentations/components/logo-image";
 import { NavigationItem } from "@/app/(authenticated)/_components/navigation-item";
+import { KycReviewNavItem } from "@/app/(authenticated)/_components/kyc-review-nav-item";
 
 export function NavigationBar() {
   return (
@@ -30,6 +31,7 @@ export function NavigationBar() {
           iconPath="/assets/images/people-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/people-icon-primary-300-w16-h16.svg"
         />
+        <KycReviewNavItem />
         <NavigationItem
           href="/settings"
           label="Pengaturan"
