@@ -60,13 +60,15 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **Type guards**: `domain/guards/` contains `instanceof` checks for discriminating entity types
 - **SectionCard**: Standard card component (`rounded-lg`, `border-neutral-200`, icon header) for detail pages
 - **Skeleton loading**: Loading states use `animate-pulse` placeholder divs inside `SectionCard`
+- **Account resolution**: Backend resolves account from Clerk JWT `orgId` (set via `setActive({ organization })`). Frontend never sends account ID in headers or params — only `Authorization: Bearer {token}`
 
 ### HTTP Requests
 
 Custom `HttpRequest` class injects Clerk session headers:
-- `Authorization: Bearer {token}`
-- `X-Account-Id: {accountId}`
+- `Authorization: Bearer {token}` (account resolved from Clerk JWT `orgId` on the backend)
 - Base URL from `NEXT_PUBLIC_BASE_API_URL`
+- `FetchConfig` supports `requireAuth` (default `true`), `contentType`, and `headers` — no account-level config
+- Services that bypass `HttpRequest` (manual `fetch`) must still set `Authorization` header manually
 
 ### Deprecated — Do Not Use
 
@@ -79,6 +81,10 @@ Custom `HttpRequest` class injects Clerk session headers:
 | `OutlinedButton` | `SecondaryButton` with `outlined` prop |
 | Template literal classNames (`` `${a} ${b}` ``) | `clsx(a, b)` |
 | `text-gray-*` color classes | `text-neutral-*` equivalents |
+| `X-Account-Id` header | Backend resolves account from Clerk JWT `orgId` — do not add account headers |
+| `selectedAccount` on `SessionEntity`/`SessionModel` | Account resolved server-side from JWT; no client-side account on session |
+| `requireAccount` in `HttpRequest` config | Removed — account resolution is implicit via JWT |
+| `SelectedAccountProvider` context value | Deprecated — provider only handles redirects; use `useGetCurrentAccount()` for account data |
 
 ### Environment
 
@@ -113,7 +119,7 @@ Directories use kebab-case. Components use kebab-case filenames.
 
 - Prettier: 2-space indent, 120 char width
 - `@typescript-eslint/no-explicit-any` is disabled
-- Domain layer must not import from data or presentation layers
+- Domain layer must not import from presentation layers. Domain source interfaces (`domain/sources/`) may import data models since they define the service contract that data layer implements.
 
 ### Git
 

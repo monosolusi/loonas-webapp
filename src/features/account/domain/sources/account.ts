@@ -59,12 +59,7 @@ export interface AccountService {
 
   list(session: SessionEntity): Promise<AccountTypeModel[]>;
 
-  listBankAccount(
-    params: {
-      accountId: string;
-    },
-    session: SessionEntity,
-  ): Promise<AccountBankAccountModel[]>;
+  listBankAccount(session: SessionEntity): Promise<AccountBankAccountModel[]>;
 
   getCurrent(session: SessionEntity): Promise<AccountTypeModel>;
 }

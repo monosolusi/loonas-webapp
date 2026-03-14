@@ -57,15 +57,12 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
 
   public async get(params: PaymentRequestServiceGetParams, session: SessionEntity): Promise<PaymentRequestModel> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const url = `${baseUrl}/payment-requests/${params.id}${params.includes ? `?include=${params.includes}` : ""}`;
       const headers = {
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id,
       };
 
       const response = await fetch(url, { method: "GET", headers });
@@ -121,15 +118,12 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
     session: SessionEntity,
   ): Promise<void> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const url = `${baseUrl}/payment-requests/${params.requestId}/invoice-documents`;
       const headers = {
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id,
       };
 
       const formData = new FormData();
@@ -159,8 +153,6 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
 
   public async create(params: PaymentRequestServiceCreateParams, session: SessionEntity): Promise<PaymentRequestModel> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
@@ -168,7 +160,6 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id,
       };
 
       const body = {

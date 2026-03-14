@@ -15,7 +15,6 @@ export class BankRepositoryImpl implements BankRepository {
     params: {
       bankId: string;
       accountNumber: string;
-      account: { id: string };
     },
     session: SessionEntity,
   ): Promise<DataState<AccountBankAccountEntity>> {
@@ -24,7 +23,6 @@ export class BankRepositoryImpl implements BankRepository {
         {
           bankId: params.bankId,
           accountNumber: params.accountNumber,
-          accountId: params.account.id,
         },
         session,
       );

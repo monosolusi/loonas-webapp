@@ -109,7 +109,7 @@ export class InvoiceServiceImpl implements InvoiceService {
       ...(params.paymentSchemeId && { payment_scheme_id: params.paymentSchemeId }),
     };
 
-    const config = { requireAuth: false, requireAccount: false, contentType: "application/json" };
+    const config = { requireAuth: false, contentType: "application/json" };
     const result = await this.http.request({ path, method, body }, config);
 
     if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
@@ -121,7 +121,7 @@ export class InvoiceServiceImpl implements InvoiceService {
     const path = `/invoices/public-outgoing/${filter.invoiceId}`;
     const method = "GET";
 
-    const config = { requireAuth: false, requireAccount: false };
+    const config = { requireAuth: false };
     const result = await this.http.request({ path, method }, config);
     return PublicOutgoingInvoiceModel.fromJson(result);
   }
@@ -295,7 +295,7 @@ export class InvoiceServiceImpl implements InvoiceService {
     const path = `/invoices/public-incoming/${filter.invoiceId}/receipt`;
     const method = "GET";
 
-    const config = { requireAuth: false, requireAccount: false };
+    const config = { requireAuth: false };
     const result = await this.http.request({ path, method }, config);
     return PublicIncomingInvoiceModel.fromJson(result);
   }

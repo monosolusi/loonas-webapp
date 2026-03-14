@@ -33,13 +33,11 @@ export class CreateAccountBankAccountUseCase
       const session = await this.sessionRepository.retrieve();
       if (session instanceof DataFailed) return session;
       if (!session.data) return new DataFailed(new ServerError(ErrorCodes.INVALID_INSTANCE));
-      if (!session.data.selectedAccount) return new DataFailed(new ServerError(ErrorCodes.INVALID_INSTANCE));
 
       const cBankAccount = await this.bankRepository.createBankAccountForAccount(
         {
           bankId: params.bankId,
           accountNumber: params.accountNumber,
-          account: { id: session.data.selectedAccount.id },
         },
         session.data,
       );

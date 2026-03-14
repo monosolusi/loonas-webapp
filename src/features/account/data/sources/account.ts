@@ -70,7 +70,7 @@ export class AccountServiceImpl implements AccountService {
           body: formData,
           session,
         },
-        { contentType: undefined, requireAccount: false },
+        { contentType: undefined },
       );
 
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
@@ -81,23 +81,14 @@ export class AccountServiceImpl implements AccountService {
     }
   }
 
-  public async listBankAccount(
-    params: {
-      accountId: string;
-    },
-    session: SessionEntity,
-  ): Promise<AccountBankAccountModel[]> {
+  public async listBankAccount(session: SessionEntity): Promise<AccountBankAccountModel[]> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-      if (!params.accountId) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const url = `${baseUrl}/accounts/bank-accounts`;
       const headers = {
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id,
       };
 
       const response = await fetch(url, { headers });
@@ -123,7 +114,7 @@ export class AccountServiceImpl implements AccountService {
     try {
       const path = "/accounts";
       const method = "GET";
-      const result = await this.http.request({ path, method, session }, { requireAccount: false });
+      const result = await this.http.request({ path, method, session });
 
       // The result will be an array, therefore, we need to check if it is a personal or business account
       if (!Array.isArray(result)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);

@@ -11,7 +11,6 @@ interface FetchParams {
 
 interface FetchConfig {
   requireAuth?: boolean;
-  requireAccount?: boolean;
   contentType?: string;
   inferContentType?: boolean;
   headers?: Record<string, string>;
@@ -22,24 +21,19 @@ export class HttpRequest {
     params: FetchParams,
     config: FetchConfig = {
       requireAuth: true,
-      requireAccount: true,
       contentType: "application/json",
       headers: {},
     },
   ): Promise<Record<string, any>> {
     const mergedConfig = {
       requireAuth: config.requireAuth ?? true,
-      requireAccount: config.requireAccount ?? true,
       contentType: config.contentType,
       headers: Object.assign({}, config.headers),
     };
 
-    if (mergedConfig.requireAuth || mergedConfig.requireAccount) {
+    if (mergedConfig.requireAuth) {
       if (!params.session) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
       if (!params.session.accessToken) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
-      if (mergedConfig.requireAccount && !params.session.selectedAccount) {
-        throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-      }
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
@@ -53,9 +47,6 @@ export class HttpRequest {
     const headers: Record<string, string> = {};
     if (mergedConfig.requireAuth && params.session) headers["Authorization"] = `Bearer ${params.session.accessToken}`;
     if (mergedConfig.contentType) headers["Content-Type"] = mergedConfig.contentType;
-    if (mergedConfig.requireAccount && params.session && params.session.selectedAccount) {
-      headers["X-Account-Id"] = params.session.selectedAccount.id;
-    }
 
     const generateBody = (body?: Record<string, any> | FormData) => {
       if (!body) return undefined;

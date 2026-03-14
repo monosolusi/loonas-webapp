@@ -10,7 +10,7 @@ export class UserServiceImpl implements UserService {
   public async getStatus(session: SessionEntity): Promise<UserStatusModel> {
     const path = "/users/me/status";
     const method = "GET";
-    const response = await this.http.request({ path, method, session }, { requireAccount: false });
+    const response = await this.http.request({ path, method, session });
     return UserStatusModel.fromJson(response);
   }
 
@@ -21,7 +21,6 @@ export class UserServiceImpl implements UserService {
     await this.http.request(
       { path, method },
       {
-        requireAccount: false,
         requireAuth: false,
         headers: { Authorization: `Basic ${basicAuth}` },
       },
@@ -31,7 +30,7 @@ export class UserServiceImpl implements UserService {
   public async retrieveMe(session: SessionEntity): Promise<UserModel> {
     const path = "/users/me";
     const method = "GET";
-    const response = await this.http.request({ path, method, session }, { requireAccount: false });
+    const response = await this.http.request({ path, method, session });
     return UserModel.fromJson(response);
   }
 }

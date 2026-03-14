@@ -21,7 +21,6 @@ export class PartnerServiceImpl implements PartnerService {
     session: SessionEntity,
   ): Promise<PartnerModel> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
       if (!session.accessToken) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
 
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
@@ -31,7 +30,6 @@ export class PartnerServiceImpl implements PartnerService {
       const method = "PUT";
       const headers = {
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id,
         "Content-Type": "application/json",
       };
 
@@ -81,7 +79,6 @@ export class PartnerServiceImpl implements PartnerService {
 
   public async get(params: PartnerServiceFilter, session: SessionEntity): Promise<PartnerModel> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
       if (!params.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
@@ -90,7 +87,6 @@ export class PartnerServiceImpl implements PartnerService {
       const url = `${baseUrl}/partners/${params.id}`;
       const headers = {
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id,
       };
 
       const response = await fetch(url, { method: "GET", headers });
@@ -116,8 +112,6 @@ export class PartnerServiceImpl implements PartnerService {
 
   public async create(name: string, email: string, phone: string, session: SessionEntity): Promise<boolean> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
@@ -125,7 +119,6 @@ export class PartnerServiceImpl implements PartnerService {
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id,
       };
 
       const body = {
@@ -155,15 +148,12 @@ export class PartnerServiceImpl implements PartnerService {
 
   public async list(session: SessionEntity): Promise<PartnerModel[]> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const url = `${baseUrl}/partners`;
       const headers = {
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id,
       };
 
       const response = await fetch(url, { method: "GET", headers });

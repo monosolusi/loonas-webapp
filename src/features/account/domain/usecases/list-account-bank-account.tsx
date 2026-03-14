@@ -17,10 +17,7 @@ export class ListAccountBankAccountUseCase implements UseCase<DataState<AccountB
       if (session instanceof DataFailed) throw session.error;
       if (!session.data) return new DataFailed(new ServerError(ErrorCodes.INVALID_INSTANCE));
 
-      const account = session.data.selectedAccount;
-      if (!account) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
-      const bankAccounts = await this.accountRepository.listBankAccount({ id: account.id }, session.data);
+      const bankAccounts = await this.accountRepository.listBankAccount(session.data);
       if (bankAccounts instanceof DataFailed) throw bankAccounts.error;
       if (!bankAccounts.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
       if (bankAccounts.data.length === 0) throw new ServerError(ErrorCodes.ACCOUNT_HAS_NO_BANK_ACCOUNT);

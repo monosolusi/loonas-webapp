@@ -41,12 +41,9 @@ export class AccountRepositoryImpl implements AccountRepository {
     }
   }
 
-  public async listBankAccount(
-    account: { id: string },
-    session: SessionEntity,
-  ): Promise<DataState<AccountBankAccountEntity[]>> {
+  public async listBankAccount(session: SessionEntity): Promise<DataState<AccountBankAccountEntity[]>> {
     try {
-      const accounts = await this.accountService.listBankAccount({ accountId: account.id }, session);
+      const accounts = await this.accountService.listBankAccount(session);
       return new DataSuccess(accounts.map((account) => account.toEntity()));
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);

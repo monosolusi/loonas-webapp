@@ -49,6 +49,5 @@ export interface BankService {
   createBankAccountForAccount(params: {
     bankId: string,
     accountNumber: string,
-    accountId: string
   }, session: SessionEntity): Promise<AccountBankAccountModel>;
 }

@@ -1,6 +1,5 @@
 import { DataState } from "@/core/resources/data-state";
 import { SessionEntity } from "../entities/session";
-import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
 export abstract class SessionRepository {
   public abstract signOut(): Promise<DataState<void>>;
@@ -8,8 +7,4 @@ export abstract class SessionRepository {
   public abstract retrieve(): Promise<DataState<SessionEntity>>;
 
   public abstract saveSession(accessToken: string): Promise<DataState<SessionEntity>>;
-
-  public abstract selectAccount(account: AccountTypeEntity): Promise<DataState<AccountTypeEntity>>;
-
-  public abstract retrieveAccount(): Promise<DataState<AccountTypeEntity>>;
 }

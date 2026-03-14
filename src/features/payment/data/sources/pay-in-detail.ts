@@ -11,7 +11,7 @@ export class PayInDetailServiceImpl implements PayInDetailService {
     try {
       const method = "GET";
       const path = `/invoices/public-outgoing/${params.invoiceId}/pay-in`;
-      const config = { requireAuth: false, requireAccount: false };
+      const config = { requireAuth: false };
       const result = await this.http.request({ path, method }, config);
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
@@ -28,8 +28,6 @@ export class PayInDetailServiceImpl implements PayInDetailService {
 
   // TODO: the below is weird implementation. Please change this in the future.
   protected async getDetailImpl(params: { requestId: string }, session: SessionEntity): Promise<Record<string, any>> {
-    if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-
     const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
     if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
@@ -38,7 +36,6 @@ export class PayInDetailServiceImpl implements PayInDetailService {
       method: "GET",
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id,
       },
     });
 

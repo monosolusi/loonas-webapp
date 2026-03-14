@@ -10,12 +10,9 @@ export class BankServiceImpl implements BankService {
   public async createBankAccountForAccount(params: {
     bankId: string;
     accountNumber: string;
-    accountId: string;
   }, session: SessionEntity): Promise<AccountBankAccountModel> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
       if (!session.accessToken) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
-      if (session.selectedAccount.id !== params.accountId) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
@@ -25,7 +22,6 @@ export class BankServiceImpl implements BankService {
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id
       };
 
       const body = {
@@ -59,15 +55,12 @@ export class BankServiceImpl implements BankService {
     id: string;
   }, session: SessionEntity): Promise<BankAccountModel> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const url = `${baseUrl}/partners/${params.partnerId}/bank-accounts/${params.id}`;
       const headers = {
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id
       };
 
       const response = await fetch(url, { method: "GET", headers });
@@ -129,15 +122,12 @@ export class BankServiceImpl implements BankService {
 
   public async listBankAccounts(partnerId: string, session: SessionEntity): Promise<BankAccountModel[]> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const url = `${baseUrl}/partners/${partnerId}/bank-accounts`;
       const headers = {
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id
       };
 
       const response = await fetch(url, { method: "GET", headers });
@@ -199,8 +189,6 @@ export class BankServiceImpl implements BankService {
 
   public async createBankAccount(bankId: string, accountNumber: string, accountHolderName: string, partnerId: string, session: SessionEntity): Promise<BankAccountModel> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
@@ -208,7 +196,6 @@ export class BankServiceImpl implements BankService {
       const headers = {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id
       };
 
       const body = {
