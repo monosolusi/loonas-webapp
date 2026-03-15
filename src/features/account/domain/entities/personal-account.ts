@@ -6,6 +6,7 @@ import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
 import { AccountType } from "@/features/account/domain/enums/account-type";
+import { MembershipEntity } from "@/features/account/domain/entities/membership";
 
 type Metadata = { clerkId: string };
 
@@ -27,6 +28,7 @@ type PersonalAccountEntityConstructor = {
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
+  membership?: MembershipEntity;
 };
 
 export class PersonalAccountEntity implements AbstractEntity {
@@ -47,6 +49,7 @@ export class PersonalAccountEntity implements AbstractEntity {
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
+  public membership?: MembershipEntity;
 
   constructor(args: PersonalAccountEntityConstructor) {
     this.id = args.id;
@@ -66,6 +69,7 @@ export class PersonalAccountEntity implements AbstractEntity {
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
+    this.membership = args.membership;
   }
 
   public get fullAddress() {

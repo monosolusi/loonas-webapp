@@ -1,6 +1,7 @@
 import { AbstractEntity } from "@/core/resources/entity";
 import { DateTime } from "luxon";
 import { AccountType } from "@/features/account/domain/enums/account-type";
+import { MembershipEntity } from "@/features/account/domain/entities/membership";
 
 type Metadata = { clerkId: string };
 
@@ -27,6 +28,7 @@ type BusinessAccountEntityConstructor = {
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
+  membership?: MembershipEntity;
 };
 
 export class BusinessAccountEntity implements AbstractEntity {
@@ -37,6 +39,7 @@ export class BusinessAccountEntity implements AbstractEntity {
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
+  public membership?: MembershipEntity;
 
   constructor(args: BusinessAccountEntityConstructor) {
     this.id = args.id;
@@ -46,6 +49,7 @@ export class BusinessAccountEntity implements AbstractEntity {
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
+    this.membership = args.membership;
   }
 
   public get fullAddress() {

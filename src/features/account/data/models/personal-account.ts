@@ -7,6 +7,7 @@ import { ProvinceModel } from "@/core/utilities/address/data/model/province";
 import { CityModel } from "@/core/utilities/address/data/model/city";
 import { AbstractModel } from "@/core/resources/model";
 import { AccountType } from "@/features/account/domain/enums/account-type";
+import { MembershipModel } from "@/features/account/data/models/membership";
 
 type Metadata = { clerkId: string };
 
@@ -28,6 +29,7 @@ type PersonalAccountModelConstructor = {
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
+  membership?: MembershipModel;
 };
 
 export class PersonalAccountModel implements AbstractModel {
@@ -48,6 +50,7 @@ export class PersonalAccountModel implements AbstractModel {
   public readonly createdAt: DateTime;
   public readonly updatedAt: DateTime;
   public readonly deletedAt?: DateTime;
+  public readonly membership?: MembershipModel;
 
   constructor(args: PersonalAccountModelConstructor) {
     this.id = args.id;
@@ -67,6 +70,7 @@ export class PersonalAccountModel implements AbstractModel {
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
+    this.membership = args.membership;
   }
 
   public static fromJson(data: Record<string, any>): PersonalAccountModel {
@@ -88,6 +92,7 @@ export class PersonalAccountModel implements AbstractModel {
       createdAt: DateTime.fromISO(data["created_at"]),
       updatedAt: DateTime.fromISO(data["updated_at"]),
       deletedAt: data["deleted_at"] ? DateTime.fromISO(data["deleted_at"]) : undefined,
+      membership: data["membership"] ? MembershipModel.fromJson(data["membership"]) : undefined,
     });
   }
 
@@ -157,6 +162,7 @@ export class PersonalAccountModel implements AbstractModel {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,
+      membership: this.membership?.toEntity(),
     });
   }
 }

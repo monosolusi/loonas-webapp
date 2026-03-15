@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { AbstractModel } from "@/core/resources/model";
 import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
 import { AccountType } from "@/features/account/domain/enums/account-type";
+import { MembershipModel } from "@/features/account/data/models/membership";
 
 type Metadata = { clerkId: string };
 
@@ -28,6 +29,7 @@ type BusinessAccountModelConstructor = {
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
+  membership?: MembershipModel;
 };
 
 export class BusinessAccountModel implements AbstractModel {
@@ -38,6 +40,7 @@ export class BusinessAccountModel implements AbstractModel {
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
+  public membership?: MembershipModel;
 
   constructor(args: BusinessAccountModelConstructor) {
     this.id = args.id;
@@ -47,6 +50,7 @@ export class BusinessAccountModel implements AbstractModel {
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
+    this.membership = args.membership;
   }
 
   public static fromJson(doc: Record<string, any>): BusinessAccountModel {
@@ -81,6 +85,7 @@ export class BusinessAccountModel implements AbstractModel {
       createdAt: DateTime.fromISO(doc["created_at"]),
       updatedAt: DateTime.fromISO(doc["updated_at"]),
       deletedAt: doc["deleted_at"] ? DateTime.fromISO(doc["deleted_at"]) : undefined,
+      membership: doc["membership"] ? MembershipModel.fromJson(doc["membership"]) : undefined,
     });
   }
 
@@ -120,6 +125,7 @@ export class BusinessAccountModel implements AbstractModel {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,
+      membership: this.membership?.toEntity(),
     });
   }
 }
