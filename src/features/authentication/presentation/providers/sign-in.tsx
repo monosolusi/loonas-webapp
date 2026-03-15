@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth, useSignIn } from "@clerk/nextjs";
 
 type SignInContextProps = {
@@ -31,6 +31,8 @@ export function SignInProvider({ children }: { children: any }) {
   const { isLoaded, isSignedIn } = useAuth();
   const { signIn, setActive } = useSignIn();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect_url") ?? "/home";
 
   useEffect(() => {
     if (error) {
@@ -43,7 +45,7 @@ export function SignInProvider({ children }: { children: any }) {
 
   useEffect(() => {
     if (!isLoaded) return;
-    if (isSignedIn) router.replace("/home");
+    if (isSignedIn) router.replace(redirectUrl);
   }, [isLoaded, isSignedIn]);
 
   function checkCleanInput() {
@@ -70,7 +72,7 @@ export function SignInProvider({ children }: { children: any }) {
       });
 
       if (!createdSessionId) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
-      await setActive({ session: createdSessionId, redirectUrl: "/home" });
+      await setActive({ session: createdSessionId, redirectUrl });
     } catch (err: any) {
       setError(err);
       setIsLoggingIn(false);

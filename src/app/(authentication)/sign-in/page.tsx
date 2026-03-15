@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import { FeatureItem } from "@/app/(authentication)/sign-in/_components/feature-item";
 import { SignInProvider } from "@/features/authentication/presentation/providers/sign-in";
@@ -7,6 +8,7 @@ import { RegisterButton } from "@/app/(authentication)/sign-in/_components/regis
 
 export default function SignInPage() {
   return (
+    <Suspense>
     <SignInProvider>
       <div className="flex h-full flex-row">
         <div className="flex w-1/2 flex-col justify-center px-24">
@@ -74,5 +76,6 @@ export default function SignInPage() {
         </div>
       </div>
     </SignInProvider>
+    </Suspense>
   );
 }

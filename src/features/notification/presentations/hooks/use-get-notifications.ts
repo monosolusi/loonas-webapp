@@ -1,31 +1,24 @@
 "use client";
 
 import { useMemo } from "react";
-import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
+import { useListInvitations } from "@/features/member/presentations/hooks/use-list-invitations";
 import { InvitationNotificationEntity } from "@/features/notification/domain/entities/invitation-notification";
-import { MembershipStatus } from "@/features/account/domain/enums/membership-status";
 
 export function useGetNotifications() {
-  const { accounts, loading } = useListAccount();
+  const { invitations, loading } = useListInvitations();
 
   const notifications = useMemo(() => {
-    if (!accounts) return [];
-
-    return accounts
-      .filter((account) => {
-        return account.membership && account.membership.status === MembershipStatus.PENDING && !account.membership.isOwner;
-      })
-      .map((account) => {
-        return new InvitationNotificationEntity({
-          id: `invitation-${account.membership!.id}`,
-          accountId: account.id,
-          accountName: account.fullName,
-          accountType: account.type,
-          invitedByEmail: account.membership!.invitedBy?.email ?? "",
-          membershipId: account.membership!.id,
-        });
+    return invitations.map((invite) => {
+      return new InvitationNotificationEntity({
+        id: `invitation-${invite.id}`,
+        accountId: invite.accountId,
+        accountName: invite.accountName,
+        accountType: invite.accountType,
+        invitedByEmail: invite.invitedBy.email,
+        membershipId: invite.id,
       });
-  }, [accounts]);
+    });
+  }, [invitations]);
 
   return {
     notifications,

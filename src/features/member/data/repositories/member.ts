@@ -2,12 +2,23 @@ import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state"
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { MemberEntity } from "@/features/member/domain/entities/member";
+import { InviteEntity } from "@/features/member/domain/entities/invite";
 import { MemberRepository } from "@/features/member/domain/repositories/member";
 import { MemberService } from "@/features/member/domain/sources/member";
 import { InviteAction } from "@/features/member/domain/enums/invite-action";
 
 export class MemberRepositoryImpl implements MemberRepository {
   constructor(private readonly memberService: MemberService) {}
+
+  public async listInvites(session: SessionEntity): Promise<DataState<InviteEntity[]>> {
+    try {
+      const invites = await this.memberService.listInvites(session);
+      return new DataSuccess(invites.map((invite) => invite.toEntity()));
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
 
   public async list(session: SessionEntity): Promise<DataState<MemberEntity[]>> {
     try {
