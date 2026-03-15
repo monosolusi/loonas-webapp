@@ -33,4 +33,8 @@ export class MembershipEntity implements AbstractEntity {
   public get isAccepted(): boolean {
     return this.status === MembershipStatus.ACCEPTED;
   }
+
+  public get isRejected(): boolean {
+    return this.status === MembershipStatus.REJECTED;
+  }
 }

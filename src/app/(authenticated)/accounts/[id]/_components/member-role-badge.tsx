@@ -22,10 +22,21 @@ const BADGE_CONFIG = {
     dotColor: "bg-warning-300",
     className: "bg-warning-300/10 text-warning-300",
   },
+  rejected: {
+    label: "Ditolak",
+    dotColor: "bg-error-300",
+    className: "bg-error-300/10 text-error-300",
+  },
+};
+
+const STATUS_CONFIG_MAP: Record<MemberStatus, keyof typeof BADGE_CONFIG> = {
+  [MemberStatus.ACCEPTED]: "accepted",
+  [MemberStatus.PENDING]: "pending",
+  [MemberStatus.REJECTED]: "rejected",
 };
 
 export function MemberRoleBadge({ isOwner, status }: MemberRoleBadgeProps) {
-  const config = isOwner ? BADGE_CONFIG.owner : status === MemberStatus.ACCEPTED ? BADGE_CONFIG.accepted : BADGE_CONFIG.pending;
+  const config = isOwner ? BADGE_CONFIG.owner : BADGE_CONFIG[STATUS_CONFIG_MAP[status]];
 
   return (
     <span

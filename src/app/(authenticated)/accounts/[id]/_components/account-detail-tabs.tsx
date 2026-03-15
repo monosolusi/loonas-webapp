@@ -3,6 +3,7 @@
 import { useState } from "react";
 import clsx from "clsx";
 import { MembersTab } from "@/app/(authenticated)/accounts/[id]/_components/members-tab";
+import { BankAccountsTableImpl } from "@/app/(authenticated)/accounts/[id]/_components/bank-accounts-table-impl";
 
 type Tab = "anggota" | "rekening" | "klien";
 
@@ -48,14 +49,7 @@ export function AccountDetailTabs({ isOwner }: AccountDetailTabsProps) {
           <p className="text-sm text-neutral-200">Hanya pemilik akun yang dapat mengelola anggota.</p>
         </div>
       )}
-      {activeTab === "rekening" && (
-        <div className="flex flex-col items-center justify-center gap-y-2 rounded-lg border border-neutral-200 bg-white py-16">
-          <span className="rounded-md bg-warning-300/10 px-3 py-1 text-xs font-medium text-warning-300">
-            Segera Hadir
-          </span>
-          <p className="text-sm text-neutral-200">Fitur rekening bank akan tersedia segera.</p>
-        </div>
-      )}
+      {activeTab === "rekening" && <BankAccountsTableImpl />}
       {activeTab === "klien" && (
         <div className="flex flex-col items-center justify-center gap-y-2 rounded-lg border border-neutral-200 bg-white py-16">
           <span className="rounded-md bg-warning-300/10 px-3 py-1 text-xs font-medium text-warning-300">

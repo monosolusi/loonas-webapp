@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useSWRConfig } from "swr";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useListMembers } from "@/features/member/presentations/hooks/use-list-members";
+import { useInviteMember } from "@/features/member/presentations/hooks/use-invite-member";
 import { MemberEntity } from "@/features/member/domain/entities/member";
 import { MemberRow } from "@/app/(authenticated)/accounts/[id]/_components/member-row";
 import { InviteMemberDialog } from "@/app/(authenticated)/accounts/[id]/_components/invite-member-dialog";
@@ -12,8 +14,19 @@ import { RemoveMemberDialog } from "@/app/(authenticated)/accounts/[id]/_compone
 
 export function MembersTab() {
   const { members, loading } = useListMembers();
+  const { trigger: resendInvite, isMutating: isResending } = useInviteMember();
+  const { mutate } = useSWRConfig();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [removingMember, setRemovingMember] = useState<MemberEntity | null>(null);
+
+  const handleResend = async (member: MemberEntity) => {
+    try {
+      await resendInvite({ email: member.email });
+      await mutate((key: unknown) => Array.isArray(key) && key[0] === "list-members");
+    } catch {
+      // Error captured by SWR
+    }
+  };
 
   return (
     <>
@@ -45,13 +58,19 @@ export function MembersTab() {
         ) : members && members.length > 0 ? (
           <div>
             {members.map((member) => (
-              <MemberRow key={member.id} member={member} onRemove={setRemovingMember} />
+              <MemberRow
+                key={member.id}
+                member={member}
+                onRemove={setRemovingMember}
+                onResend={handleResend}
+                isResending={isResending}
+              />
             ))}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center gap-y-4 py-16">
-            <div className="flex size-12 items-center justify-center rounded-full bg-neutral-50">
-              <Image src="/assets/images/people-icon-neutral-200-w20-h20.svg" alt="" width={20} height={20} />
+            <div className="flex size-14 items-center justify-center rounded-full bg-neutral-50">
+              <Image src="/assets/images/user-plus-icon-neutral-200-w32-h32.svg" alt="" width={32} height={32} />
             </div>
             <div className="flex flex-col items-center gap-y-1 text-center">
               <p className="text-sm font-semibold text-neutral-500">Belum ada anggota</p>

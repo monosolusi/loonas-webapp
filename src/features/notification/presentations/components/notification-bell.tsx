@@ -15,7 +15,7 @@ export function NotificationBell() {
         <div className="relative">
           <Image src="/assets/images/bell-icon-neutral-300-w16-h16.svg" alt="bell icon" width={16} height={16} />
           {count > 0 && (
-            <div className="bg-error-300 absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full border-2 border-white">
+            <div className="bg-error-300 absolute -top-2.5 -right-2.5 flex size-4 items-center justify-center rounded-full border-2 border-white">
               <span className="text-[10px] font-medium text-white">{count > 9 ? "9+" : count}</span>
             </div>
           )}

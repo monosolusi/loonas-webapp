@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
 
 interface SettingsCategoryCardProps {
   href: string;
@@ -44,31 +47,35 @@ function SettingsCategoryCard(props: SettingsCategoryCardProps) {
   );
 }
 
-const SETTINGS_CATEGORIES: SettingsCategoryCardProps[] = [
-  {
-    href: "/settings/bank-accounts",
-    iconSrc: "/assets/images/credit-card-icon-primary-300-w16-h16.svg",
-    title: "Rekening Bank",
-    description: "Kelola rekening bank bisnis yang terdaftar untuk pembayaran faktur.",
-    active: true,
-  },
-  {
-    href: "/settings/business-profile",
-    iconSrc: "/assets/images/building-icon-neutral-400-w16-h16.svg",
-    title: "Profil Bisnis",
-    description: "Atur informasi bisnis, logo, dan detail kontak perusahaan.",
-    active: false,
-  },
-  {
-    href: "/settings/clients",
-    iconSrc: "/assets/images/people-icon-neutral-300-w16-h16.svg",
-    title: "Klien",
-    description: "Kelola daftar klien dan informasi kontak untuk pembuatan faktur.",
-    active: false,
-  },
-];
-
 export default function SettingsPage() {
+  const { account } = useGetCurrentAccount();
+
+  const accountHref = account ? `/accounts/${account.id}` : "/accounts";
+
+  const categories: SettingsCategoryCardProps[] = [
+    {
+      href: accountHref,
+      iconSrc: "/assets/images/people-icon-primary-300-w16-h16.svg",
+      title: "Pengaturan Akun",
+      description: "Kelola anggota, rekening bank, dan informasi akun.",
+      active: true,
+    },
+    {
+      href: "/settings/business-profile",
+      iconSrc: "/assets/images/building-icon-neutral-400-w16-h16.svg",
+      title: "Profil Bisnis",
+      description: "Atur informasi bisnis, logo, dan detail kontak perusahaan.",
+      active: false,
+    },
+    {
+      href: "/settings/clients",
+      iconSrc: "/assets/images/people-icon-neutral-300-w16-h16.svg",
+      title: "Klien",
+      description: "Kelola daftar klien dan informasi kontak untuk pembuatan faktur.",
+      active: false,
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-y-6">
       <div className="flex flex-col gap-y-1">
@@ -76,7 +83,7 @@ export default function SettingsPage() {
         <p className="text-sm text-neutral-300">Kelola preferensi dan konfigurasi bisnis kamu.</p>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {SETTINGS_CATEGORIES.map((category) => (
+        {categories.map((category) => (
           <SettingsCategoryCard key={category.href} {...category} />
         ))}
       </div>

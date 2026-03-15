@@ -4,8 +4,8 @@ import { useListAccountBankAccout } from "@/features/bank/presentation/hooks/use
 import {
   BankAccountsTable,
   BankAccountRow,
-} from "@/app/(authenticated)/settings/bank-accounts/_components/bank-accounts-table";
-import { CreateBankAccountDialog } from "@/app/(authenticated)/settings/bank-accounts/_components/create-bank-account-dialog";
+} from "@/app/(authenticated)/accounts/[id]/_components/bank-accounts-table";
+import { CreateBankAccountDialog } from "@/app/(authenticated)/accounts/[id]/_components/create-bank-account-dialog";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import Image from "next/image";

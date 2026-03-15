@@ -2,10 +2,16 @@
 
 import { use } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
+import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { AccountDetailLeftPanel } from "@/app/(authenticated)/accounts/[id]/_components/account-detail-left-panel";
 import { AccountDetailTabs } from "@/app/(authenticated)/accounts/[id]/_components/account-detail-tabs";
+import { AccountType } from "@/features/account/domain/enums/account-type";
+
+const ACCOUNT_TYPE_LABEL = {
+  [AccountType.PERSONAL]: "Personal",
+  [AccountType.BUSINESS]: "Bisnis",
+};
 
 type AccountDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -20,7 +26,13 @@ export default function AccountDetailPage(props: AccountDetailPageProps) {
   if (loading) {
     return (
       <div className="flex flex-col gap-y-6">
-        <div className="h-5 w-48 animate-pulse rounded bg-neutral-100" />
+        <div className="flex flex-row items-center gap-x-4">
+          <div className="size-9 animate-pulse rounded-lg bg-neutral-100" />
+          <div className="flex flex-col gap-y-1">
+            <div className="h-5 w-32 animate-pulse rounded bg-neutral-100" />
+            <div className="h-4 w-48 animate-pulse rounded bg-neutral-100" />
+          </div>
+        </div>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <div className="h-64 animate-pulse rounded-lg bg-neutral-100" />
@@ -45,25 +57,24 @@ export default function AccountDetailPage(props: AccountDetailPageProps) {
   }
 
   const isOwner = account.membership?.isOwner ?? true;
+  const typeLabel = ACCOUNT_TYPE_LABEL[account.type];
+  const shortId = account.generateShortAccountId();
 
   return (
     <div className="flex flex-col gap-y-6">
-      {/* Back Navigation */}
-      <Link href="/accounts" className="flex flex-row items-center gap-x-2 text-sm text-neutral-300 hover:text-primary-300">
-        <Image src="/assets/images/arrow-left-icon-neutral-500-w16-h16.svg" alt="back" width={16} height={16} />
-        <span>Kembali ke Daftar Akun</span>
-      </Link>
+      <DetailPageHeader
+        backHref="/accounts"
+        title="Detail Akun"
+        subtitle={`${typeLabel} · ID: ${shortId}`}
+      />
 
-      {/* Split Layout */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* Left Panel */}
         <div className="lg:col-span-4">
           <div className="lg:sticky lg:top-8">
             <AccountDetailLeftPanel account={account} />
           </div>
         </div>
 
-        {/* Right Panel */}
         <div className="lg:col-span-8">
           <AccountDetailTabs isOwner={isOwner} />
         </div>
