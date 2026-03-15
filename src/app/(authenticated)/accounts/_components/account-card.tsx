@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 import { AccountStatusBadge } from "@/app/(authenticated)/accounts/_components/account-status-badge";
 import { AccountCardIcon } from "@/app/(authenticated)/accounts/_components/account-card-icon";
@@ -17,6 +19,13 @@ export function AccountCard(props: AccountCardProps) {
       <div className="flex flex-col gap-y-1">
         <div className="truncate text-xl leading-7 font-bold">{props.account.fullName}</div>
         <AccountStatusBadge account={props.account} />
+        <Link
+          href={`/accounts/${props.account.id}`}
+          className="text-primary-300 hover:text-primary-400 mt-1 flex items-center gap-x-1 text-sm font-medium"
+        >
+          Lihat Detail
+          <ChevronRightIcon className="size-4" />
+        </Link>
       </div>
 
       {/*  Action */}

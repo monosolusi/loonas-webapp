@@ -16,6 +16,7 @@ import {
 } from "@/features/account/domain/usecases/retrieve-account-verification-work";
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
+import { MembershipStatus } from "@/features/account/domain/enums/membership-status";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 import { UseListApprovedAccountsReturnType } from "@/features/account/presentation/hooks/use-list-approved-accounts.types";
 
@@ -39,7 +40,10 @@ async function listApprovedAccountsFetcher([_, params]: [string, FetcherParams])
     accountsResult.data.map((account) => verifyUseCase.execute(new RetrieveAccountVerificationWorkUseCaseParams(account.id))),
   );
 
-  return accountsResult.data.filter((_, index) => {
+  return accountsResult.data.filter((account, index) => {
+    // Exclude accounts with pending membership (not yet accepted invites)
+    if (account.membership && account.membership.status === MembershipStatus.PENDING) return false;
+
     const result = verificationResults[index];
     if (result.status !== "fulfilled") return false;
 
