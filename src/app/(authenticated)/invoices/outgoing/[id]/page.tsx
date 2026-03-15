@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
+import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { InvoicePreviewImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/invoice-preview-impl";
 import { ErrorDisplayImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/error-display-impl";
 import { SendInvoiceButton } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/send-invoice-button";
@@ -38,7 +38,6 @@ export default function OutgoingInvoiceDynamicPage() {
 }
 
 function OutgoingInvoiceDetail({ id }: { id: string }) {
-  const router = useRouter();
   const { invoice, loading } = useGetInvoice({ id });
 
   const shortId = id.slice(0, 8);
@@ -46,28 +45,11 @@ function OutgoingInvoiceDetail({ id }: { id: string }) {
 
   return (
     <div className="flex flex-col gap-y-6">
-      {/* Header */}
-      <div className="flex flex-row items-center gap-x-4">
-        <button
-          onClick={() => router.back()}
-          className="flex size-9 cursor-pointer flex-col items-center justify-center rounded-lg border border-neutral-100"
-        >
-          <Image
-            src="/assets/images/arrow-left-icon-neutral-500-w16-h16.svg"
-            alt="arrow-left-icon"
-            width={16}
-            height={16}
-          />
-        </button>
-        <div className="flex flex-col gap-y-1">
-          <div className="text-xl leading-5 font-bold tracking-tight">Faktur Keluaran</div>
-          <div className="text-sm leading-5 text-neutral-200">
-            ID: {shortId}{createdDate ? ` · ${createdDate}` : ""}
-          </div>
-        </div>
-      </div>
+      <DetailPageHeader
+        title="Faktur Keluaran"
+        subtitle={`ID: ${shortId}${createdDate ? ` · ${createdDate}` : ""}`}
+      />
 
-      {/* Detail */}
       {!loading && invoice instanceof OutgoingInvoiceEntity && (
         <div className="flex flex-row gap-x-6">
           {/* Left column */}
