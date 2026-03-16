@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { useSWRConfig } from "swr";
+import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useListMembers } from "@/features/member/presentations/hooks/use-list-members";
@@ -15,14 +15,13 @@ import { RemoveMemberDialog } from "@/app/(authenticated)/accounts/[id]/_compone
 export function MembersTab() {
   const { members, loading } = useListMembers();
   const { trigger: resendInvite, isMutating: isResending } = useInviteMember();
-  const { mutate } = useSWRConfig();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [removingMember, setRemovingMember] = useState<MemberEntity | null>(null);
 
   const handleResend = async (member: MemberEntity) => {
     try {
       await resendInvite({ email: member.email });
-      await mutate((key: unknown) => Array.isArray(key) && key[0] === "list-members");
+      await revalidateSWRKey("list-members");
     } catch {
       // Error captured by SWR
     }

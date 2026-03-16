@@ -7,7 +7,7 @@ import { InviteEntity } from "@/features/member/domain/entities/invite";
 import { useRespondToInvite } from "@/features/member/presentations/hooks/use-respond-to-invite";
 import { InviteAction } from "@/features/member/domain/enums/invite-action";
 import { AccountType } from "@/features/account/domain/enums/account-type";
-import { useSWRConfig } from "swr";
+import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { DateTime } from "luxon";
 
 type InvitationItemProps = {
@@ -26,7 +26,6 @@ const ACCOUNT_COLOR_MAP = {
 
 export function InvitationItem({ invite }: InvitationItemProps) {
   const { trigger, isMutating } = useRespondToInvite();
-  const { mutate } = useSWRConfig();
   const [responded, setResponded] = useState<InviteAction | null>(null);
 
   const createdDate = DateTime.fromISO(invite.createdAt).setLocale("id").toFormat("dd LLL yyyy");
@@ -35,7 +34,7 @@ export function InvitationItem({ invite }: InvitationItemProps) {
     try {
       await trigger({ id: invite.id, action });
       setResponded(action);
-      await mutate((key: unknown) => Array.isArray(key) && key[0] === "list-invitations");
+      await revalidateSWRKey("list-invitations");
     } catch {
       // Error captured by SWR
     }

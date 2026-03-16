@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSWRConfig } from "swr";
+import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { SelectInput } from "@/core/presentations/components/select-input";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
@@ -18,7 +18,7 @@ type CategorySelectProps = {
 export function CategorySelect({ value, onChange }: CategorySelectProps) {
   const { categories, loading } = useListProductCategories();
   const { trigger: createCategory, isMutating } = useCreateProductCategory();
-  const { mutate } = useSWRConfig();
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newName, setNewName] = useState("");
 
@@ -26,7 +26,7 @@ export function CategorySelect({ value, onChange }: CategorySelectProps) {
     if (!newName.trim() || isMutating) return;
     try {
       const category = await createCategory({ name: newName.trim() });
-      await mutate((key: unknown) => Array.isArray(key) && key[0] === "list-product-categories");
+      await revalidateSWRKey("list-product-categories");
       onChange(category.id);
       setNewName("");
       setDialogOpen(false);

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import clsx from "clsx";
-import { useSWRConfig } from "swr";
+import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 import { AccountType } from "@/features/account/domain/enums/account-type";
 import { useRespondToInvite } from "@/features/member/presentations/hooks/use-respond-to-invite";
@@ -26,7 +26,6 @@ const ACCOUNT_LABEL_MAP = {
 
 export function InvitationCard({ account }: InvitationCardProps) {
   const { trigger, isMutating } = useRespondToInvite();
-  const { mutate } = useSWRConfig();
   const [responded, setResponded] = useState<InviteAction | null>(null);
   const membership = account.membership!;
   const colorClass = ACCOUNT_AVATAR_COLOR_MAP[account.type];
@@ -35,7 +34,7 @@ export function InvitationCard({ account }: InvitationCardProps) {
     try {
       await trigger({ id: membership.id, action });
       setResponded(action);
-      await mutate((key: unknown) => Array.isArray(key) && key[0] === "list-account");
+      await revalidateSWRKey("list-account");
     } catch {
       // Error captured by SWR
     }

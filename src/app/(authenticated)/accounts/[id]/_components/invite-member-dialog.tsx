@@ -6,7 +6,7 @@ import { TextInput } from "@/core/presentations/components/text-inputs/text-inpu
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { useInviteMember } from "@/features/member/presentations/hooks/use-invite-member";
-import { useSWRConfig } from "swr";
+import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 
 type InviteMemberDialogProps = {
   open: boolean;
@@ -16,7 +16,6 @@ type InviteMemberDialogProps = {
 export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
   const [email, setEmail] = useState("");
   const { trigger, isMutating } = useInviteMember();
-  const { mutate } = useSWRConfig();
 
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -32,7 +31,7 @@ export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
   const handleSubmit = async () => {
     try {
       await trigger({ email });
-      await mutate((key: unknown) => Array.isArray(key) && key[0] === "list-members");
+      await revalidateSWRKey("list-members");
       handleClose();
     } catch {
       // Error captured by SWR
