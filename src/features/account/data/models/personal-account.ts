@@ -30,6 +30,8 @@ type PersonalAccountModelConstructor = {
   updatedAt: DateTime;
   deletedAt?: DateTime;
   membership?: MembershipModel;
+  role?: string;
+  features?: string[];
 };
 
 export class PersonalAccountModel implements AbstractModel {
@@ -51,6 +53,8 @@ export class PersonalAccountModel implements AbstractModel {
   public readonly updatedAt: DateTime;
   public readonly deletedAt?: DateTime;
   public readonly membership?: MembershipModel;
+  public readonly role?: string;
+  public readonly features?: string[];
 
   constructor(args: PersonalAccountModelConstructor) {
     this.id = args.id;
@@ -71,6 +75,8 @@ export class PersonalAccountModel implements AbstractModel {
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
     this.membership = args.membership;
+    this.role = args.role;
+    this.features = args.features;
   }
 
   public static fromJson(data: Record<string, any>): PersonalAccountModel {
@@ -93,31 +99,8 @@ export class PersonalAccountModel implements AbstractModel {
       updatedAt: DateTime.fromISO(data["updated_at"]),
       deletedAt: data["deleted_at"] ? DateTime.fromISO(data["deleted_at"]) : undefined,
       membership: data["membership"] ? MembershipModel.fromJson(data["membership"]) : undefined,
-    });
-  }
-
-  public static fromLocalStorage(encodedData: string): PersonalAccountModel {
-    const jsonAccount = atob(encodedData);
-    const data = JSON.parse(jsonAccount);
-
-    return new PersonalAccountModel({
-      id: data.id,
-      type: AccountType.PERSONAL,
-      nationality: data.nationality,
-      idNumber: data.idNumber,
-      fullName: data.fullName,
-      occupation: new OccupationModel({ id: data.occupation.id, label: data.occupation.label }),
-      pob: data.pob,
-      dob: data.dob,
-      province: new ProvinceModel({ id: data.province.id, label: data.province.label }),
-      city: new CityModel({ id: data.city.id, label: data.city.label }),
-      district: new DistrictModel({ id: data.district.id, label: data.district.label }),
-      subdistrict: new SubdistrictModel({ id: data.subdistrict.id, label: data.subdistrict.label }),
-      address: data.address,
-      metadata: data.metadata,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-      deletedAt: data.deletedAt,
+      role: data["role"],
+      features: Array.isArray(data["features"]) ? data["features"] : [],
     });
   }
 
@@ -163,6 +146,8 @@ export class PersonalAccountModel implements AbstractModel {
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,
       membership: this.membership?.toEntity(),
+      role: this.role,
+      features: this.features,
     });
   }
 }

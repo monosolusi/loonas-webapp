@@ -30,6 +30,8 @@ type BusinessAccountModelConstructor = {
   updatedAt: DateTime;
   deletedAt?: DateTime;
   membership?: MembershipModel;
+  role?: string;
+  features?: string[];
 };
 
 export class BusinessAccountModel implements AbstractModel {
@@ -41,6 +43,8 @@ export class BusinessAccountModel implements AbstractModel {
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
   public membership?: MembershipModel;
+  public role?: string;
+  public features?: string[];
 
   constructor(args: BusinessAccountModelConstructor) {
     this.id = args.id;
@@ -51,6 +55,8 @@ export class BusinessAccountModel implements AbstractModel {
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
     this.membership = args.membership;
+    this.role = args.role;
+    this.features = args.features;
   }
 
   public static fromJson(doc: Record<string, any>): BusinessAccountModel {
@@ -86,21 +92,8 @@ export class BusinessAccountModel implements AbstractModel {
       updatedAt: DateTime.fromISO(doc["updated_at"]),
       deletedAt: doc["deleted_at"] ? DateTime.fromISO(doc["deleted_at"]) : undefined,
       membership: doc["membership"] ? MembershipModel.fromJson(doc["membership"]) : undefined,
-    });
-  }
-
-  public static fromLocalStorage(encodedData: string): BusinessAccountModel {
-    const jsonAccount = atob(encodedData);
-    const data = JSON.parse(jsonAccount);
-
-    return new BusinessAccountModel({
-      id: data.id,
-      type: data.type,
-      company: data.company,
-      metadata: data.metadata,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-      deletedAt: data.deletedAt,
+      role: doc["role"],
+      features: Array.isArray(doc["features"]) ? doc["features"] : [],
     });
   }
 
@@ -126,6 +119,8 @@ export class BusinessAccountModel implements AbstractModel {
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,
       membership: this.membership?.toEntity(),
+      role: this.role,
+      features: this.features,
     });
   }
 }

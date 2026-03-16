@@ -1,11 +1,11 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import { NavigationItem } from "@/app/(authenticated)/_components/navigation-item";
+import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
 
 export function KycReviewNavItem() {
-  const { user } = useUser();
-  if (user?.publicMetadata?.role !== "internal") return null;
+  const { account } = useGetCurrentAccount();
+  if (!account?.hasFeature("kyc")) return null;
 
   return (
     <NavigationItem

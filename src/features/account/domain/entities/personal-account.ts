@@ -29,6 +29,8 @@ type PersonalAccountEntityConstructor = {
   updatedAt: DateTime;
   deletedAt?: DateTime;
   membership?: MembershipEntity;
+  role?: string;
+  features?: string[];
 };
 
 export class PersonalAccountEntity implements AbstractEntity {
@@ -50,6 +52,8 @@ export class PersonalAccountEntity implements AbstractEntity {
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
   public membership?: MembershipEntity;
+  public role: string;
+  public features: string[];
 
   constructor(args: PersonalAccountEntityConstructor) {
     this.id = args.id;
@@ -70,6 +74,12 @@ export class PersonalAccountEntity implements AbstractEntity {
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
     this.membership = args.membership;
+    this.role = args.role ?? "user";
+    this.features = args.features ?? [];
+  }
+
+  public hasFeature(feature: string): boolean {
+    return this.features.includes(feature);
   }
 
   public get fullAddress() {
