@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSWRConfig } from "swr";
+import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
+import { useToast } from "@/core/presentations/hooks/use-toast";
 import { useCreateProduct } from "@/features/product/presentations/hooks/use-create-product";
 import { useUploadProductPhoto } from "@/features/product/presentations/hooks/use-upload-product-photo";
 import { ProductFormLayout } from "@/app/(authenticated)/products/_components/product-form-layout";
@@ -17,9 +18,10 @@ import { VariantFormRow } from "@/app/(authenticated)/products/_components/varia
 
 export function CreateProductForm() {
   const router = useRouter();
+  const { showToast } = useToast();
   const { trigger: createProduct, isMutating: isCreating } = useCreateProduct();
   const { trigger: uploadPhoto } = useUploadProductPhoto();
-  const { mutate } = useSWRConfig();
+
   const [isUploading, setIsUploading] = useState(false);
   const isMutating = isCreating || isUploading;
 
@@ -70,10 +72,12 @@ export function CreateProductForm() {
         setIsUploading(false);
       }
 
-      await mutate((key: unknown) => Array.isArray(key) && key[0] === "list-products");
+      await revalidateSWRKey("list-products");
+      showToast("Produk berhasil ditambahkan");
       router.push(`/products/${product.id}`);
     } catch {
       setIsUploading(false);
+      showToast("Gagal menambahkan produk", "error");
     }
   };
 
@@ -85,7 +89,7 @@ export function CreateProductForm() {
         left={
           <>
             <ProductInfoCard name={name} sku={sku} onNameChange={setName} onSkuChange={setSku} />
-            <ProductPhotoCard photos={photos} onPhotosChange={setPhotos} />
+            <ProductPhotoCard newPhotos={photos} onNewPhotosChange={setPhotos} />
             <ProductVariantCard
               hasVariants={hasVariants}
               singlePrice={singlePrice}
