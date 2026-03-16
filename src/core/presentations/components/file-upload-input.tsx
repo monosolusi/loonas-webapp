@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 type FileUploadInputBaseProps = {
@@ -38,6 +38,18 @@ export function FileUploadInput(props: FileUploadInputProps) {
 
   // Use controlled value if provided, otherwise use internal state
   const file = props.value !== undefined ? props.value : internalFile;
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const isImage = file?.type.startsWith("image/") ?? false;
+
+  useEffect(() => {
+    if (!file || !isImage) {
+      setPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file, isImage]);
 
   const handleFile = useCallback(
     (selectedFile: File | null) => {
@@ -127,6 +139,20 @@ export function FileUploadInput(props: FileUploadInputProps) {
               </span>
               <span className="text-center text-base leading-6 font-normal text-neutral-200">atau drag and drop</span>
             </div>
+          </div>
+        ) : isImage && previewUrl ? (
+          // Image Preview State
+          <div className="flex flex-col items-center gap-3">
+            <div className="relative w-full overflow-hidden rounded-lg">
+              <img src={previewUrl} alt="Preview" className="h-auto w-full object-cover" />
+            </div>
+            <button
+              type="button"
+              onClick={handleRemove}
+              className="text-sm text-neutral-200 transition-colors hover:text-error-300"
+            >
+              Hapus foto
+            </button>
           </div>
         ) : (
           // File Selected State
