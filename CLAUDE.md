@@ -61,6 +61,7 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **SectionCard**: Standard card component (`rounded-lg`, `border-neutral-200`, icon header) for detail pages
 - **Skeleton loading**: Loading states use `animate-pulse` placeholder divs inside `SectionCard`
 - **Account resolution**: Backend resolves account from Clerk JWT `orgId` (set via `setActive({ organization })`). Frontend never sends account ID in headers or params — only `Authorization: Bearer {token}`
+- **Session parameter order**: In repository and service method signatures, `session: SessionEntity` must always be the **last** parameter. Business params come first: `list(search, session)`, `invite(email, session)`, `update(id, params, session)`.
 
 ### HTTP Requests
 
