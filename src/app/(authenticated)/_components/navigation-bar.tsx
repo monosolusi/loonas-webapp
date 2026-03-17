@@ -1,5 +1,7 @@
 import { LogoImage } from "@/core/presentations/components/logo-image";
 import { NavigationItem } from "@/app/(authenticated)/_components/navigation-item";
+import { NavigationGroup } from "@/app/(authenticated)/_components/navigation-group";
+import { NavigationChildItem } from "@/app/(authenticated)/_components/navigation-child-item";
 import { KycReviewNavItem } from "@/app/(authenticated)/_components/kyc-review-nav-item";
 
 export function NavigationBar() {
@@ -31,6 +33,15 @@ export function NavigationBar() {
           iconPath="/assets/images/box-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/box-icon-primary-300-w16-h16.svg"
         />
+        <NavigationGroup
+          label="Keuangan"
+          iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
+          selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
+          matchPrefixes={["/finance/ledger", "/finance/journals"]}
+        >
+          <NavigationChildItem href="/finance/ledger" label="Buku Besar" />
+          <NavigationChildItem href="/finance/journals" label="Jurnal Umum" />
+        </NavigationGroup>
         <NavigationItem
           href="/accounts"
           label="Manajemen Akun"
