@@ -5,11 +5,11 @@ import Image from "next/image";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
-import { DangerButton } from "@/core/presentations/components/buttons/danger-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import { DialogFooter } from "@/core/presentations/components/dialog-footer";
+import { ConfirmationDialog } from "@/core/presentations/components/confirmation-dialog";
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
@@ -226,28 +226,21 @@ export function CategoryListImpl() {
       </LoonasDialog>
 
       {/* Delete Dialog */}
-      <LoonasDialog
-        title="Hapus Kategori"
-        width="sm"
+      <ConfirmationDialog
         open={!!deletingCategory}
         onClose={() => setDeletingCategory(null)}
-      >
-        <div className="mt-2 flex flex-col gap-y-4">
-          <div className="border-error-300/20 bg-error-300/5 rounded-lg border px-4 py-3">
-            <p className="text-error-300 text-sm">
-              Produk yang menggunakan kategori ini akan kehilangan referensi kategorinya.
-            </p>
-          </div>
-          <p className="text-sm text-neutral-300">
+        title="Hapus Kategori"
+        warning="Produk yang menggunakan kategori ini akan kehilangan referensi kategorinya."
+        description={
+          <p>
             Apakah Anda yakin ingin menghapus kategori{" "}
             <span className="font-semibold text-neutral-500">{deletingCategory?.name}</span>?
           </p>
-          <DialogFooter>
-            <SecondaryButton outlined label="Batal" onClick={() => setDeletingCategory(null)} />
-            <DangerButton label="Hapus" loading={isDeleting} onClick={handleDelete} className="w-auto px-6" />
-          </DialogFooter>
-        </div>
-      </LoonasDialog>
+        }
+        confirmLabel="Hapus"
+        loading={isDeleting}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

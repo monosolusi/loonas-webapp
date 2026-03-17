@@ -5,10 +5,7 @@ import { useRouter } from "next/navigation";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
-import { DangerButton } from "@/core/presentations/components/buttons/danger-button";
-import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
-import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
-import { DialogFooter } from "@/core/presentations/components/dialog-footer";
+import { ConfirmationDialog } from "@/core/presentations/components/confirmation-dialog";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { ProductStatus } from "@/features/product/domain/enums/product-status";
 import { DEFAULT_VARIANT_NAME } from "@/features/product/domain/constants/default-variant";
@@ -284,22 +281,20 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
         }
       />
 
-      <LoonasDialog title="Hapus Produk" width="sm" open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <div className="mt-2 flex flex-col gap-y-4">
-          <div className="rounded-lg border border-error-300/20 bg-error-300/5 px-4 py-3">
-            <p className="text-sm text-error-300">
-              Tindakan ini tidak dapat dibatalkan. Produk beserta semua data varian akan dihapus secara permanen.
-            </p>
-          </div>
-          <p className="text-sm text-neutral-300">
+      <ConfirmationDialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        title="Hapus Produk"
+        warning="Tindakan ini tidak dapat dibatalkan. Produk beserta semua data varian akan dihapus secara permanen."
+        description={
+          <p>
             Apakah Anda yakin ingin menghapus produk <span className="font-semibold text-neutral-500">{product.name}</span> (SKU: {product.sku})?
           </p>
-          <DialogFooter>
-            <SecondaryButton outlined label="Batal" onClick={() => setDeleteDialogOpen(false)} />
-            <DangerButton label="Hapus Produk" loading={isDeleting} onClick={handleDelete} className="w-auto px-6" />
-          </DialogFooter>
-        </div>
-      </LoonasDialog>
+        }
+        confirmLabel="Hapus Produk"
+        loading={isDeleting}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

@@ -5,10 +5,7 @@ import { Switch } from "@headlessui/react";
 import clsx from "clsx";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { CurrencyInput } from "@/core/presentations/components/text-inputs/currency-input";
-import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
-import { DangerButton } from "@/core/presentations/components/buttons/danger-button";
-import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
-import { DialogFooter } from "@/core/presentations/components/dialog-footer";
+import { ConfirmationDialog } from "@/core/presentations/components/confirmation-dialog";
 import { VariantTable, VariantFormRow } from "@/app/(authenticated)/products/_components/variant-table";
 
 type ProductVariantCardProps = {
@@ -87,15 +84,14 @@ export function ProductVariantCard({
         </div>
       </SectionCard>
 
-      <LoonasDialog title="Nonaktifkan Varian" width="sm" open={disableDialogOpen} onClose={() => setDisableDialogOpen(false)}>
-        <div className="mt-2 flex flex-col gap-y-4">
-          <p className="text-sm text-neutral-300">Data varian yang telah diisi akan dihapus. Apakah Anda yakin ingin melanjutkan?</p>
-          <DialogFooter>
-            <SecondaryButton outlined label="Batal" onClick={() => setDisableDialogOpen(false)} />
-            <DangerButton label="Lanjutkan" onClick={applyDisable} className="w-auto px-6" />
-          </DialogFooter>
-        </div>
-      </LoonasDialog>
+      <ConfirmationDialog
+        open={disableDialogOpen}
+        onClose={() => setDisableDialogOpen(false)}
+        title="Nonaktifkan Varian"
+        description="Data varian yang telah diisi akan dihapus. Apakah Anda yakin ingin melanjutkan?"
+        confirmLabel="Lanjutkan"
+        onConfirm={applyDisable}
+      />
     </>
   );
 }

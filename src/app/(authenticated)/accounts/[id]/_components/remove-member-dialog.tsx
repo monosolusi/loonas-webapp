@@ -1,9 +1,6 @@
 "use client";
 
-import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
-import { DialogFooter } from "@/core/presentations/components/dialog-footer";
-import { DangerButton } from "@/core/presentations/components/buttons/danger-button";
-import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
+import { ConfirmationDialog } from "@/core/presentations/components/confirmation-dialog";
 import { useRemoveMember } from "@/features/member/presentations/hooks/use-remove-member";
 import { MemberEntity } from "@/features/member/domain/entities/member";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
@@ -29,17 +26,18 @@ export function RemoveMemberDialog({ open, member, onClose }: RemoveMemberDialog
   };
 
   return (
-    <LoonasDialog title="Hapus Anggota" width="sm" open={open} onClose={onClose}>
-      <div className="mt-4 flex flex-col gap-y-4">
-        <p className="text-sm text-neutral-300">
+    <ConfirmationDialog
+      open={open}
+      onClose={onClose}
+      title="Hapus Anggota"
+      description={
+        <p>
           Apakah Anda yakin ingin menghapus <span className="font-semibold">{member?.email}</span> dari akun ini?
         </p>
-
-        <DialogFooter>
-          <SecondaryButton outlined type="button" label="Batal" onClick={onClose} className="w-auto px-6" />
-          <DangerButton loading={isMutating} onClick={handleRemove} label="Hapus" className="w-auto px-6" />
-        </DialogFooter>
-      </div>
-    </LoonasDialog>
+      }
+      confirmLabel="Hapus"
+      loading={isMutating}
+      onConfirm={handleRemove}
+    />
   );
 }
