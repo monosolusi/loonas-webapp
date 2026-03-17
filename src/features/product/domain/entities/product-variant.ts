@@ -1,4 +1,5 @@
 import { AbstractEntity } from "@/core/resources/entity";
+import { DEFAULT_VARIANT_NAME } from "@/features/product/domain/constants/default-variant";
 
 type ProductVariantEntityConstructor = {
   id: string;
@@ -21,6 +22,6 @@ export class ProductVariantEntity implements AbstractEntity {
   }
 
   public get isDefault(): boolean {
-    return this.name === "Default";
+    return this.name === DEFAULT_VARIANT_NAME;
   }
 }

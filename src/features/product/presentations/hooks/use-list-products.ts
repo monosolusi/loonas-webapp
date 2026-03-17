@@ -11,6 +11,7 @@ import { ProductRepositoryImpl } from "@/features/product/data/repositories/prod
 import { ProductServiceImpl } from "@/features/product/data/sources/product";
 import { ListProductsUseCase, ListProductsUseCaseParams } from "@/features/product/domain/usecases/list-products.usecases";
 import { ProductEntity } from "@/features/product/domain/entities/product";
+import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 
 type UseListProductsParams = {
   page?: number;
@@ -47,7 +48,7 @@ type UseListProductsReturnType = {
 export function useListProducts(params: UseListProductsParams = {}): UseListProductsReturnType {
   const clerk = useClerk();
   const { data, isLoading, error } = useSWR(
-    ["list-products", { clerk, params }],
+    [PRODUCT_SWR_KEYS.LIST_PRODUCTS, { clerk, params }],
     ListProductsFetcher,
   );
 

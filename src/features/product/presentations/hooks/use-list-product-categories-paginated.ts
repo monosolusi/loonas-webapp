@@ -12,6 +12,7 @@ import { ProductCategoryRepositoryImpl } from "@/features/product/data/repositor
 import { ProductCategoryServiceImpl } from "@/features/product/data/sources/product-category";
 import { ProductCategoryEntity } from "@/features/product/domain/entities/product-category";
 import { ListCategoriesParams } from "@/features/product/domain/sources/product-category";
+import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 
 type FetcherParams = {
   clerk: ReturnType<typeof useClerk>;
@@ -51,7 +52,7 @@ export function useListProductCategoriesPaginated(
 ): UseListProductCategoriesPaginatedReturnType {
   const clerk = useClerk();
   const { data, isLoading, error } = useSWR(
-    ["list-product-categories-paginated", { clerk, params }],
+    [PRODUCT_SWR_KEYS.LIST_PRODUCT_CATEGORIES_PAGINATED, { clerk, params }],
     Fetcher,
   );
 

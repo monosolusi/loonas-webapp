@@ -7,6 +7,7 @@ import { TextInput } from "@/core/presentations/components/text-inputs/text-inpu
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
+import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useListProductCategories } from "@/features/product/presentations/hooks/use-list-product-categories";
 import { useCreateProductCategory } from "@/features/product/presentations/hooks/use-create-product-category";
 
@@ -26,7 +27,7 @@ export function CategorySelect({ value, onChange }: CategorySelectProps) {
     if (!newName.trim() || isMutating) return;
     try {
       const category = await createCategory({ name: newName.trim() });
-      await revalidateSWRKey("list-product-categories");
+      await revalidateSWRKey(PRODUCT_SWR_KEYS.LIST_PRODUCT_CATEGORIES);
       onChange(category.id);
       setNewName("");
       setDialogOpen(false);

@@ -1,5 +1,6 @@
 import { AbstractEntity } from "@/core/resources/entity";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { ProductStatus } from "@/features/product/domain/enums/product-status";
 import { ProductCategoryEntity } from "@/features/product/domain/entities/product-category";
 import { ProductPhotoEntity } from "@/features/product/domain/entities/product-photo";
 import { ProductVariantEntity } from "@/features/product/domain/entities/product-variant";
@@ -40,7 +41,7 @@ export class ProductEntity implements AbstractEntity {
   }
 
   public get isActive(): boolean {
-    return this.status === "active";
+    return this.status === ProductStatus.ACTIVE;
   }
 
   public get primaryPhoto(): ProductPhotoEntity | null {

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import clsx from "clsx";
 import { PaginationMeta } from "@/core/resources/paginated";
+import { ProductStatus } from "@/features/product/domain/enums/product-status";
 import { TablePagination } from "@/app/(authenticated)/invoices/_components/table-pagination";
 
 export interface ProductTableRow {
@@ -53,7 +54,7 @@ function ProductRow({
 }) {
   const [optimisticStatus, setOptimisticStatus] = useState(product.status);
   const prevServerStatus = useRef(product.status);
-  const isActive = optimisticStatus === "active";
+  const isActive = optimisticStatus === ProductStatus.ACTIVE;
 
   // Sync when server data actually changes (after revalidation)
   useEffect(() => {
@@ -68,7 +69,7 @@ function ProductRow({
     e.stopPropagation();
     if (!onToggleStatus) return;
 
-    const newStatus = isActive ? "inactive" : "active";
+    const newStatus = isActive ? ProductStatus.INACTIVE : ProductStatus.ACTIVE;
     setOptimisticStatus(newStatus);
 
     try {

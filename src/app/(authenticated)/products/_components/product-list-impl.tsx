@@ -10,6 +10,8 @@ import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
+import { ProductStatus } from "@/features/product/domain/enums/product-status";
+import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useListProducts } from "@/features/product/presentations/hooks/use-list-products";
 import { useUpdateProduct } from "@/features/product/presentations/hooks/use-update-product";
 import { useListProductCategories } from "@/features/product/presentations/hooks/use-list-product-categories";
@@ -17,8 +19,8 @@ import { ProductTable, ProductTableRow } from "@/app/(authenticated)/products/_c
 import { FilterDropdown, FilterPill } from "@/app/(authenticated)/products/_components/filter-dropdown";
 
 const STATUS_OPTIONS = [
-  { label: "Aktif", value: "active" },
-  { label: "Nonaktif", value: "inactive" },
+  { label: "Aktif", value: ProductStatus.ACTIVE },
+  { label: "Nonaktif", value: ProductStatus.INACTIVE },
 ];
 
 export function ProductListImpl() {
@@ -35,8 +37,8 @@ export function ProductListImpl() {
   const handleToggleStatus = async (productId: string, newStatus: string) => {
     try {
       await updateProduct({ id: productId, status: newStatus });
-      await revalidateSWRKey("list-products");
-      showToast(newStatus === "active" ? "Produk diaktifkan" : "Produk dinonaktifkan", "success");
+      await revalidateSWRKey(PRODUCT_SWR_KEYS.LIST_PRODUCTS);
+      showToast(newStatus === ProductStatus.ACTIVE ? "Produk diaktifkan" : "Produk dinonaktifkan", "success");
     } catch (err) {
       showToast("Gagal mengubah status produk", "error");
       throw err;

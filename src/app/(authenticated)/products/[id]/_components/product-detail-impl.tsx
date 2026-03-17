@@ -9,6 +9,9 @@ import { DangerButton } from "@/core/presentations/components/buttons/danger-but
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import { useToast } from "@/core/presentations/hooks/use-toast";
+import { ProductStatus } from "@/features/product/domain/enums/product-status";
+import { DEFAULT_VARIANT_NAME } from "@/features/product/domain/constants/default-variant";
+import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useGetProduct } from "@/features/product/presentations/hooks/use-get-product";
 import { useUpdateProduct } from "@/features/product/presentations/hooks/use-update-product";
 import { useDeleteProduct } from "@/features/product/presentations/hooks/use-delete-product";
@@ -49,7 +52,7 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
 
   const [name, setName] = useState("");
   const [sku, setSku] = useState("");
-  const [status, setStatus] = useState("active");
+  const [status, setStatus] = useState<string>(ProductStatus.ACTIVE);
   const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
   const [photos, setPhotos] = useState<File[]>([]);
   const [deletedPhotoIds, setDeletedPhotoIds] = useState<string[]>([]);
@@ -115,7 +118,7 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
     return false;
   }, [product, name, sku, status, categoryId, photos, deletedPhotoIds, hasVariants, singlePrice, variants, hydratedVersion]);
 
-  const refreshProduct = () => revalidateSWRKey("get-product", "list-products");
+  const refreshProduct = () => revalidateSWRKey(PRODUCT_SWR_KEYS.GET_PRODUCT, PRODUCT_SWR_KEYS.LIST_PRODUCTS);
 
   const handleSave = async () => {
     if (isUpdating || !product) return;
@@ -145,7 +148,7 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
         (async () => {
           const currentVariants = hasVariants
             ? variants
-            : [{ key: "default", name: "Default", sku: "", price: singlePrice }];
+            : [{ key: "default", name: DEFAULT_VARIANT_NAME, sku: "", price: singlePrice }];
 
           const originalIds = new Set(product.variants.map((v) => v.id));
           const currentKeys = new Set(currentVariants.map((v) => v.key));
@@ -204,7 +207,7 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
     if (isDeleting) return;
     try {
       await deleteProduct({ id });
-      await revalidateSWRKey("list-products");
+      await revalidateSWRKey(PRODUCT_SWR_KEYS.LIST_PRODUCTS);
       showToast("Produk berhasil dihapus");
       router.push("/products");
     } catch {

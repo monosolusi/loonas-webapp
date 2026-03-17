@@ -14,6 +14,7 @@ import {
   ListProductCategoriesUseCaseParams,
 } from "@/features/product/domain/usecases/list-product-categories.usecases";
 import { ProductCategoryEntity } from "@/features/product/domain/entities/product-category";
+import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 
 type FetcherParams = {
   clerk: ReturnType<typeof useClerk>;
@@ -41,7 +42,7 @@ type UseListProductCategoriesReturnType = {
 export function useListProductCategories(search?: string): UseListProductCategoriesReturnType {
   const clerk = useClerk();
   const { data, isLoading, error } = useSWR(
-    ["list-product-categories", { clerk, search }],
+    [PRODUCT_SWR_KEYS.LIST_PRODUCT_CATEGORIES, { clerk, search }],
     ListCategoriesFetcher,
   );
 

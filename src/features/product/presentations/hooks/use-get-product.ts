@@ -11,6 +11,7 @@ import { ProductRepositoryImpl } from "@/features/product/data/repositories/prod
 import { ProductServiceImpl } from "@/features/product/data/sources/product";
 import { GetProductUseCase, GetProductUseCaseParams } from "@/features/product/domain/usecases/get-product.usecases";
 import { ProductEntity } from "@/features/product/domain/entities/product";
+import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 
 type FetcherParams = {
   clerk: ReturnType<typeof useClerk>;
@@ -38,7 +39,7 @@ type UseGetProductReturnType = {
 export function useGetProduct(id: string): UseGetProductReturnType {
   const clerk = useClerk();
   const { data, isLoading, error } = useSWR(
-    ["get-product", { clerk, id }],
+    [PRODUCT_SWR_KEYS.GET_PRODUCT, { clerk, id }],
     GetProductFetcher,
   );
 

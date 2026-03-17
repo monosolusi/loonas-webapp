@@ -14,6 +14,7 @@ import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
 import { TablePagination } from "@/app/(authenticated)/invoices/_components/table-pagination";
+import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useListProductCategoriesPaginated } from "@/features/product/presentations/hooks/use-list-product-categories-paginated";
 import { useCreateProductCategory } from "@/features/product/presentations/hooks/use-create-product-category";
 import { useUpdateProductCategory } from "@/features/product/presentations/hooks/use-update-product-category";
@@ -41,7 +42,8 @@ export function CategoryListImpl() {
   const [deletingCategory, setDeletingCategory] = useState<ProductCategoryEntity | null>(null);
   const [formName, setFormName] = useState("");
 
-  const revalidate = () => revalidateSWRKey("list-product-categories", "list-product-categories-paginated");
+  const revalidate = () =>
+    revalidateSWRKey(PRODUCT_SWR_KEYS.LIST_PRODUCT_CATEGORIES, PRODUCT_SWR_KEYS.LIST_PRODUCT_CATEGORIES_PAGINATED);
 
   const handleCreate = async () => {
     if (!formName.trim() || isCreating) return;

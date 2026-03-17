@@ -1,5 +1,6 @@
 import { AbstractModel } from "@/core/resources/model";
 import { ProductEntity } from "@/features/product/domain/entities/product";
+import { ProductStatus } from "@/features/product/domain/enums/product-status";
 import { ProductCategoryModel } from "@/features/product/data/models/product-category";
 import { ProductPhotoModel } from "@/features/product/data/models/product-photo";
 import { ProductVariantModel } from "@/features/product/data/models/product-variant";
@@ -44,7 +45,7 @@ export class ProductModel implements AbstractModel {
       id: data["id"],
       name: data["name"],
       sku: data["sku"],
-      status: data["status"] ?? "active",
+      status: data["status"] ?? ProductStatus.ACTIVE,
       category: data["category"] ? ProductCategoryModel.fromJson(data["category"]) : null,
       photos: Array.isArray(data["photos"]) ? data["photos"].map(ProductPhotoModel.fromJson) : [],
       variants: Array.isArray(data["variants"]) ? data["variants"].map(ProductVariantModel.fromJson) : [],

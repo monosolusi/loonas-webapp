@@ -6,6 +6,9 @@ import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useToast } from "@/core/presentations/hooks/use-toast";
+import { ProductStatus } from "@/features/product/domain/enums/product-status";
+import { DEFAULT_VARIANT_NAME } from "@/features/product/domain/constants/default-variant";
+import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useCreateProduct } from "@/features/product/presentations/hooks/use-create-product";
 import { useUploadProductPhoto } from "@/features/product/presentations/hooks/use-upload-product-photo";
 import { ProductFormLayout } from "@/app/(authenticated)/products/_components/product-form-layout";
@@ -27,7 +30,7 @@ export function CreateProductForm() {
 
   const [name, setName] = useState("");
   const [sku, setSku] = useState("");
-  const [status, setStatus] = useState("active");
+  const [status, setStatus] = useState<string>(ProductStatus.ACTIVE);
   const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
   const [photos, setPhotos] = useState<File[]>([]);
   const [hasVariants, setHasVariants] = useState(false);
@@ -53,7 +56,7 @@ export function CreateProductForm() {
           sku: v.sku.trim() || undefined,
           price: v.price,
         }))
-      : [{ name: "Default", price: singlePrice }];
+      : [{ name: DEFAULT_VARIANT_NAME, price: singlePrice }];
 
     try {
       const product = await createProduct({
@@ -72,7 +75,7 @@ export function CreateProductForm() {
         setIsUploading(false);
       }
 
-      await revalidateSWRKey("list-products");
+      await revalidateSWRKey(PRODUCT_SWR_KEYS.LIST_PRODUCTS);
       showToast("Produk berhasil ditambahkan");
       router.push(`/products/${product.id}`);
     } catch {
