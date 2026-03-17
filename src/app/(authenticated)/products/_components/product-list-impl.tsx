@@ -7,8 +7,11 @@ import { XMarkIcon } from "@heroicons/react/16/solid";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
+import { useToast } from "@/core/presentations/hooks/use-toast";
+import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
 import { useListProducts } from "@/features/product/presentations/hooks/use-list-products";
+import { useUpdateProduct } from "@/features/product/presentations/hooks/use-update-product";
 import { useListProductCategories } from "@/features/product/presentations/hooks/use-list-product-categories";
 import { ProductTable, ProductTableRow } from "@/app/(authenticated)/products/_components/product-table";
 import { FilterDropdown, FilterPill } from "@/app/(authenticated)/products/_components/filter-dropdown";
@@ -25,6 +28,20 @@ export function ProductListImpl() {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search.trim(), 500);
   const searchQuery = debouncedSearch.length >= 2 ? debouncedSearch : undefined;
+
+  const { trigger: updateProduct } = useUpdateProduct();
+  const { showToast } = useToast();
+
+  const handleToggleStatus = async (productId: string, newStatus: string) => {
+    try {
+      await updateProduct({ id: productId, status: newStatus });
+      await revalidateSWRKey("list-products");
+      showToast(newStatus === "active" ? "Produk diaktifkan" : "Produk dinonaktifkan", "success");
+    } catch (err) {
+      showToast("Gagal mengubah status produk", "error");
+      throw err;
+    }
+  };
 
   const { products, meta, loading, error } = useListProducts({
     page,
@@ -175,7 +192,7 @@ export function ProductListImpl() {
         empty={products.length === 0 && !loading}
         emptyMessage="Belum ada produk. Tambahkan produk pertama Anda."
       >
-        {meta && <ProductTable rows={rows} meta={meta} currentPage={page} onPageChange={setPage} />}
+        {meta && <ProductTable rows={rows} meta={meta} currentPage={page} onPageChange={setPage} onToggleStatus={handleToggleStatus} />}
       </InvoiceTableShell>
     </div>
   );
