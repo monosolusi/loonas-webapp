@@ -8,6 +8,7 @@ import { CurrencyInput } from "@/core/presentations/components/text-inputs/curre
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { DangerButton } from "@/core/presentations/components/buttons/danger-button";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
+import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { VariantTable, VariantFormRow } from "@/app/(authenticated)/products/_components/variant-table";
 
 type ProductVariantCardProps = {
@@ -89,10 +90,10 @@ export function ProductVariantCard({
       <LoonasDialog title="Nonaktifkan Varian" width="sm" open={disableDialogOpen} onClose={() => setDisableDialogOpen(false)}>
         <div className="mt-2 flex flex-col gap-y-4">
           <p className="text-sm text-neutral-300">Data varian yang telah diisi akan dihapus. Apakah Anda yakin ingin melanjutkan?</p>
-          <div className="-mx-4 flex flex-row justify-end gap-x-3 border-t border-neutral-100 px-4 pt-4 sm:-mx-6 sm:px-6">
+          <DialogFooter>
             <SecondaryButton outlined label="Batal" onClick={() => setDisableDialogOpen(false)} />
             <DangerButton label="Lanjutkan" onClick={applyDisable} className="w-auto px-6" />
-          </div>
+          </DialogFooter>
         </div>
       </LoonasDialog>
     </>

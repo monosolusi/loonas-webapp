@@ -1,6 +1,7 @@
 "use client";
 
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
+import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { DangerButton } from "@/core/presentations/components/buttons/danger-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { useRemoveMember } from "@/features/member/presentations/hooks/use-remove-member";
@@ -34,10 +35,10 @@ export function RemoveMemberDialog({ open, member, onClose }: RemoveMemberDialog
           Apakah Anda yakin ingin menghapus <span className="font-semibold">{member?.email}</span> dari akun ini?
         </p>
 
-        <div className="-mx-4 flex flex-row justify-end gap-x-3 border-t border-neutral-100 px-4 pt-4 sm:-mx-6 sm:px-6">
+        <DialogFooter>
           <SecondaryButton outlined type="button" label="Batal" onClick={onClose} className="w-auto px-6" />
           <DangerButton loading={isMutating} onClick={handleRemove} label="Hapus" className="w-auto px-6" />
-        </div>
+        </DialogFooter>
       </div>
     </LoonasDialog>
   );

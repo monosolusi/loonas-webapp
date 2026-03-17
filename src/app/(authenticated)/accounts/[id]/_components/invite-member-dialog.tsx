@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
+import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
@@ -45,7 +46,7 @@ export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
 
         <p className="text-sm text-neutral-200">Undangan akan dikirim melalui email ke alamat di atas.</p>
 
-        <div className="-mx-4 flex flex-row justify-end gap-x-3 border-t border-neutral-100 px-4 pt-4 sm:-mx-6 sm:px-6">
+        <DialogFooter>
           <SecondaryButton outlined type="button" label="Batal" onClick={handleClose} className="w-auto px-6" />
           <PrimaryButton
             disabled={!isValidEmail}
@@ -54,7 +55,7 @@ export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
             label="Undang"
             className="w-auto px-6"
           />
-        </div>
+        </DialogFooter>
       </div>
     </LoonasDialog>
   );

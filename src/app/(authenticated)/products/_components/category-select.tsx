@@ -7,6 +7,7 @@ import { TextInput } from "@/core/presentations/components/text-inputs/text-inpu
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
+import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useListProductCategories } from "@/features/product/presentations/hooks/use-list-product-categories";
 import { useCreateProductCategory } from "@/features/product/presentations/hooks/use-create-product-category";
@@ -68,7 +69,7 @@ export function CategorySelect({ value, onChange }: CategorySelectProps) {
             onChange={setNewName}
             required
           />
-          <div className="-mx-4 flex flex-row justify-end gap-x-3 border-t border-neutral-100 px-4 pt-4 sm:-mx-6 sm:px-6">
+          <DialogFooter>
             <SecondaryButton outlined label="Batal" onClick={() => { setDialogOpen(false); setNewName(""); }} />
             <PrimaryButton
               label="Simpan"
@@ -77,7 +78,7 @@ export function CategorySelect({ value, onChange }: CategorySelectProps) {
               onClick={handleCreate}
               className="w-auto px-6"
             />
-          </div>
+          </DialogFooter>
         </div>
       </LoonasDialog>
     </>

@@ -1,4 +1,5 @@
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
+import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { DangerButton } from "@/core/presentations/components/buttons/danger-button";
 
@@ -17,14 +18,14 @@ export function DeleteItemConfirmationDialog(props: DeleteItemConfirmationDialog
 
   return (
     <LoonasDialog open={props.open} title="Hapus Item?" width="md" onClose={props.onClose}>
-      <p className="text-base text-gray-500">Apakah Anda yakin ingin menghapus item ini?</p>
+      <p className="text-base text-neutral-500">Apakah Anda yakin ingin menghapus item ini?</p>
       <div className="my-4 flex gap-y-1">
-        <p className="text-sm text-gray-500">Nama Item: {props.data.name}</p>
+        <p className="text-sm text-neutral-500">Nama Item: {props.data.name}</p>
       </div>
-      <div className="-mx-4 flex flex-row justify-end space-x-4 border-t border-gray-200 px-4 pt-4 sm:-mx-6 sm:px-6">
+      <DialogFooter>
         <SecondaryButton outlined type="button" label="Batal" onClick={props.onClose} />
         <DangerButton type="button" label="Hapus" onClick={onSubmit} />
-      </div>
+      </DialogFooter>
     </LoonasDialog>
   );
 }

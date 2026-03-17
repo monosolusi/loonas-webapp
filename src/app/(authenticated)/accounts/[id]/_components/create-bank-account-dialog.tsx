@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
+import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { BankCombobox } from "@/features/bank/presentation/components/bank-combobox";
 import { BankEntity } from "@/features/bank/domain/entities/bank";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
@@ -61,7 +62,7 @@ export function CreateBankAccountDialog(props: CreateBankAccountDialogProps) {
   return (
     <LoonasDialog title="Tambah Rekening Bank Baru" width="lg" open={props.open} onClose={handleClose}>
       <div className="mt-2 flex flex-col gap-y-6">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-neutral-500">
           Pastikan rekening ini terdaftar atas nama bisnismu. Ini penting untuk kelancaran proses pembayaran.
         </p>
 
@@ -93,7 +94,7 @@ export function CreateBankAccountDialog(props: CreateBankAccountDialogProps) {
           </div>
         )}
 
-        <div className="-mx-4 flex flex-row justify-end gap-x-3 border-t border-gray-200 px-4 pt-4 sm:-mx-6 sm:px-6">
+        <DialogFooter>
           <SecondaryButton outlined type="button" label="Batal" onClick={handleClose} />
           <PrimaryButton
             disabled={isDisabled}
@@ -102,7 +103,7 @@ export function CreateBankAccountDialog(props: CreateBankAccountDialogProps) {
             label="Tambah Rekening"
             className="w-auto px-6"
           />
-        </div>
+        </DialogFooter>
       </div>
     </LoonasDialog>
   );

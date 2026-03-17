@@ -9,6 +9,7 @@ import { DangerButton } from "@/core/presentations/components/buttons/danger-but
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
+import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
@@ -188,7 +189,7 @@ export function CategoryListImpl() {
             onChange={setFormName}
             required
           />
-          <div className="-mx-4 flex flex-row justify-end gap-x-3 border-t border-neutral-100 px-4 pt-4 sm:-mx-6 sm:px-6">
+          <DialogFooter>
             <SecondaryButton outlined label="Batal" onClick={() => setCreateDialogOpen(false)} />
             <PrimaryButton
               label="Simpan"
@@ -197,7 +198,7 @@ export function CategoryListImpl() {
               onClick={handleCreate}
               className="w-auto px-6"
             />
-          </div>
+          </DialogFooter>
         </div>
       </LoonasDialog>
 
@@ -211,7 +212,7 @@ export function CategoryListImpl() {
             onChange={setFormName}
             required
           />
-          <div className="-mx-4 flex flex-row justify-end gap-x-3 border-t border-neutral-100 px-4 pt-4 sm:-mx-6 sm:px-6">
+          <DialogFooter>
             <SecondaryButton outlined label="Batal" onClick={() => setEditingCategory(null)} />
             <PrimaryButton
               label="Simpan"
@@ -220,7 +221,7 @@ export function CategoryListImpl() {
               onClick={handleUpdate}
               className="w-auto px-6"
             />
-          </div>
+          </DialogFooter>
         </div>
       </LoonasDialog>
 
@@ -241,10 +242,10 @@ export function CategoryListImpl() {
             Apakah Anda yakin ingin menghapus kategori{" "}
             <span className="font-semibold text-neutral-500">{deletingCategory?.name}</span>?
           </p>
-          <div className="-mx-4 flex flex-row justify-end gap-x-3 border-t border-neutral-100 px-4 pt-4 sm:-mx-6 sm:px-6">
+          <DialogFooter>
             <SecondaryButton outlined label="Batal" onClick={() => setDeletingCategory(null)} />
             <DangerButton label="Hapus" loading={isDeleting} onClick={handleDelete} className="w-auto px-6" />
-          </div>
+          </DialogFooter>
         </div>
       </LoonasDialog>
     </div>
