@@ -7,7 +7,6 @@ import { DetailPageHeader } from "@/core/presentations/components/detail-page-he
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { ConfirmationDialog } from "@/core/presentations/components/confirmation-dialog";
 import { useToast } from "@/core/presentations/hooks/use-toast";
-import { DEFAULT_VARIANT_NAME } from "@/features/product/domain/constants/default-variant";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useGetProduct } from "@/features/product/presentations/hooks/use-get-product";
 import { useUpdateProduct } from "@/features/product/presentations/hooks/use-update-product";
@@ -24,16 +23,11 @@ import { ProductPhotoCard, productPhotosToExisting } from "@/app/(authenticated)
 import { ProductVariantCard } from "@/app/(authenticated)/products/_components/product-variant-card";
 import { ProductStatusCard } from "@/app/(authenticated)/products/_components/product-status-card";
 import { ProductCategoryCard } from "@/app/(authenticated)/products/_components/product-category-card";
-import { VariantFormRow } from "@/app/(authenticated)/products/_components/variant-table";
-import { ProductVariantEntity } from "@/features/product/domain/entities/product-variant";
+import { syncVariants, isVariantChanged } from "@/app/(authenticated)/products/[id]/_utils/sync-variants";
 
 type ProductDetailImplProps = {
   id: string;
 };
-
-function isVariantChanged(local: VariantFormRow, original: ProductVariantEntity): boolean {
-  return local.name !== original.name || local.sku !== (original.sku ?? "") || local.price !== original.price;
-}
 
 export function ProductDetailImpl({ id }: ProductDetailImplProps) {
   const router = useRouter();
@@ -109,6 +103,17 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
 
   const refreshProduct = () => revalidateSWRKey(PRODUCT_SWR_KEYS.GET_PRODUCT, PRODUCT_SWR_KEYS.LIST_PRODUCTS);
 
+  const syncPhotos = async () => {
+    if (deletedPhotoIds.length > 0) {
+      await Promise.all(deletedPhotoIds.map((photoId) => deletePhoto({ productId: id, photoId })));
+      setDeletedPhotoIds([]);
+    }
+    if (form.photos.length > 0) {
+      await Promise.all(form.photos.map((file) => uploadPhoto({ productId: id, file })));
+      form.setPhotos([]);
+    }
+  };
+
   const handleSave = async () => {
     if (isUpdating || !product) return;
     try {
@@ -122,63 +127,17 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
 
       // Sync photos and variants in parallel
       await Promise.all([
-        // Photos: delete then upload
-        (async () => {
-          if (deletedPhotoIds.length > 0) {
-            await Promise.all(deletedPhotoIds.map((photoId) => deletePhoto({ productId: id, photoId })));
-            setDeletedPhotoIds([]);
-          }
-          if (form.photos.length > 0) {
-            await Promise.all(form.photos.map((file) => uploadPhoto({ productId: id, file })));
-            form.setPhotos([]);
-          }
-        })(),
-        // Variants: delete → update → add
-        (async () => {
-          const currentVariants = form.hasVariants
-            ? form.variants
-            : [{ key: "default", name: DEFAULT_VARIANT_NAME, sku: "", price: form.singlePrice }];
-
-          const originalIds = new Set(product.variants.map((v) => v.id));
-          const currentKeys = new Set(currentVariants.map((v) => v.key));
-
-          await Promise.all(
-            product.variants
-              .filter((v) => !currentKeys.has(v.id))
-              .map((v) => deleteVariant({ productId: id, variantId: v.id })),
-          );
-
-          await Promise.all(
-            currentVariants
-              .filter((v) => originalIds.has(v.key))
-              .filter((v) => {
-                const original = product.variants.find((pv) => pv.id === v.key);
-                return original && isVariantChanged(v, original);
-              })
-              .map((v) =>
-                updateVariant({
-                  productId: id,
-                  variantId: v.key,
-                  name: v.name.trim(),
-                  sku: v.sku.trim() || undefined,
-                  price: v.price,
-                }),
-              ),
-          );
-
-          await Promise.all(
-            currentVariants
-              .filter((v) => !originalIds.has(v.key))
-              .map((v) =>
-                addVariant({
-                  productId: id,
-                  name: v.name.trim(),
-                  sku: v.sku.trim() || undefined,
-                  price: v.price,
-                }),
-              ),
-          );
-        })(),
+        syncPhotos(),
+        syncVariants({
+          productId: id,
+          hasVariants: form.hasVariants,
+          variants: form.variants,
+          singlePrice: form.singlePrice,
+          originalVariants: product.variants,
+          addVariant,
+          updateVariant,
+          deleteVariant,
+        }),
       ]);
 
       await refreshProduct();
