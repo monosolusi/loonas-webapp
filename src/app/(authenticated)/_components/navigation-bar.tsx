@@ -26,6 +26,12 @@ export function NavigationBar() {
           selectedIconPath="/assets/images/invoice-out-icon-primary-300-w16-h16.svg"
         />
         <NavigationItem
+          href="/products"
+          label="Produk"
+          iconPath="/assets/images/box-icon-neutral-300-w16-h16.svg"
+          selectedIconPath="/assets/images/box-icon-primary-300-w16-h16.svg"
+        />
+        <NavigationItem
           href="/accounts"
           label="Manajemen Akun"
           iconPath="/assets/images/people-icon-neutral-300-w16-h16.svg"

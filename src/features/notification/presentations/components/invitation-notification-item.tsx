@@ -5,7 +5,7 @@ import { InvitationNotificationEntity } from "@/features/notification/domain/ent
 import { useRespondToInvite } from "@/features/member/presentations/hooks/use-respond-to-invite";
 import { InviteAction } from "@/features/member/domain/enums/invite-action";
 import { AccountType } from "@/features/account/domain/enums/account-type";
-import { useSWRConfig } from "swr";
+import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import clsx from "clsx";
 import Image from "next/image";
 
@@ -15,14 +15,13 @@ type InvitationNotificationItemProps = {
 
 export function InvitationNotificationItem({ notification }: InvitationNotificationItemProps) {
   const { trigger, isMutating } = useRespondToInvite();
-  const { mutate } = useSWRConfig();
   const [responded, setResponded] = useState<InviteAction | null>(null);
 
   const handleRespond = async (action: InviteAction) => {
     try {
       await trigger({ id: notification.membershipId, action });
       setResponded(action);
-      await mutate((key: unknown) => Array.isArray(key) && key[0] === "list-account");
+      await revalidateSWRKey("list-account");
     } catch {
       // Error captured by SWR
     }

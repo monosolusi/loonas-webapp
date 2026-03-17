@@ -1,39 +1,29 @@
 import { InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
-import clsx from "clsx";
+import { StatusChip, StatusChipVariant } from "@/core/presentations/components/status-chip";
 
 interface InvoiceStatusChipProps {
   status: InvoiceStatus;
   compact?: boolean;
 }
 
-const STATUS_CONFIG: Record<InvoiceStatus, { label: string; className: string }> = {
-  PENDING_INVOICE: { label: "Menunggu Faktur", className: "bg-neutral-100 text-neutral-400" },
-  PENDING_PAYMENT: { label: "Menunggu Pembayaran", className: "bg-warning-50 text-warning-500" },
-  PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Diproses", className: "bg-primary-50 text-primary-500" },
-  COMPLETED: { label: "Lunas", className: "bg-success-50 text-success-500" },
-  EXPIRED: { label: "Kedaluwarsa", className: "bg-error-50 text-error-500" },
-  FAILED: { label: "Gagal", className: "bg-error-50 text-error-500" },
-  CANCELLED: { label: "Dibatalkan", className: "bg-error-50 text-error-500" },
-  DRAFT: { label: "Draft", className: "bg-neutral-100 text-neutral-400" },
-  READY_TO_SEND: { label: "Siap Kirim", className: "bg-neutral-100 text-neutral-400" },
-  PENDING_BANK_TRANSFER: { label: "Menunggu Transfer", className: "bg-warning-50 text-warning-500" },
-  SENT: { label: "Terkirim", className: "bg-primary-50 text-primary-500" },
-  PAID: { label: "Lunas", className: "bg-success-50 text-success-500" },
+const STATUS_CONFIG: Record<InvoiceStatus, { label: string; variant: StatusChipVariant }> = {
+  PENDING_INVOICE: { label: "Menunggu Faktur", variant: "neutral" },
+  PENDING_PAYMENT: { label: "Menunggu Pembayaran", variant: "warning" },
+  PAYMENT_RECEIVED_PENDING_DELIVERY: { label: "Diproses", variant: "primary" },
+  COMPLETED: { label: "Lunas", variant: "success" },
+  EXPIRED: { label: "Kedaluwarsa", variant: "error" },
+  FAILED: { label: "Gagal", variant: "error" },
+  CANCELLED: { label: "Dibatalkan", variant: "error" },
+  DRAFT: { label: "Draft", variant: "neutral" },
+  READY_TO_SEND: { label: "Siap Kirim", variant: "neutral" },
+  PENDING_BANK_TRANSFER: { label: "Menunggu Transfer", variant: "warning" },
+  SENT: { label: "Terkirim", variant: "primary" },
+  PAID: { label: "Lunas", variant: "success" },
 };
 
-const FALLBACK = { label: "Unknown", className: "bg-neutral-100 text-neutral-400" };
+const FALLBACK = { label: "Unknown", variant: "neutral" as StatusChipVariant };
 
 export function InvoiceStatusChip({ status, compact }: InvoiceStatusChipProps) {
-  const { label, className } = STATUS_CONFIG[status] ?? FALLBACK;
-
-  return (
-    <span
-      className={clsx(
-        className,
-        compact ? "rounded-sm px-2 py-0.5 text-xs leading-4 font-medium" : "rounded px-2 py-1",
-      )}
-    >
-      {label}
-    </span>
-  );
+  const { label, variant } = STATUS_CONFIG[status] ?? FALLBACK;
+  return <StatusChip label={label} variant={variant} compact={compact} />;
 }

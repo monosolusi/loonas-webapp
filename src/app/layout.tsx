@@ -2,6 +2,7 @@ import React from "react";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SWRProvider } from "@/core/presentations/providers/swr-provider";
+import { ToastProvider } from "@/core/presentations/providers/toast-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
@@ -31,7 +32,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           />
         </head>
         <body className="h-full">
-          <SWRProvider>{children}</SWRProvider>
+          <ToastProvider>
+            <SWRProvider>{children}</SWRProvider>
+          </ToastProvider>
         </body>
       </html>
     </ClerkProvider>

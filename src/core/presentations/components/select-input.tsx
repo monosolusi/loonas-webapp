@@ -59,7 +59,7 @@ export function SelectInput(props: SelectInputProps) {
       )}
       <div
         className={clsx(
-          "relative flex flex-row items-center gap-3 rounded-lg border border-solid border-neutral-100 p-3 transition-all",
+          "relative flex h-11 flex-row items-center gap-3 rounded-lg border border-solid border-neutral-100 p-3 transition-all",
           props.disabled
             ? "cursor-not-allowed bg-neutral-50"
             : "focus-within:ring-primary-300/20 focus-within:border-primary-300 focus-within:ring-2",

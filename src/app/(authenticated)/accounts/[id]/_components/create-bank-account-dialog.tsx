@@ -10,7 +10,7 @@ import { AccountInquiryResultEntity } from "@/features/bank/domain/entities/acco
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { useCreateAccountBankAccount } from "@/features/bank/presentation/hooks/use-create-account-bank-account";
-import { useSWRConfig } from "swr";
+import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { useMemo } from "react";
 
 interface CreateBankAccountDialogProps {
@@ -23,7 +23,6 @@ export function CreateBankAccountDialog(props: CreateBankAccountDialogProps) {
   const [accountNumber, setAccountNumber] = useState<string>("");
   const [inquiredAccount, setInquiredAccount] = useState<AccountInquiryResultEntity>();
   const { trigger, isMutating } = useCreateAccountBankAccount();
-  const { mutate } = useSWRConfig();
 
   const isDisabled = useMemo((): boolean => {
     if (!accountNumber) return true;
@@ -52,7 +51,7 @@ export function CreateBankAccountDialog(props: CreateBankAccountDialogProps) {
         accountNumber: accountNumber,
       });
 
-      await mutate((key: unknown) => Array.isArray(key) && key[0] === "list-account-bank-account");
+      await revalidateSWRKey("list-account-bank-account");
       handleClose();
     } catch {
       // Error is captured by SWR's `error` state — user can retry

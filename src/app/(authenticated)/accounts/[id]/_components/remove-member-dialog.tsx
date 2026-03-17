@@ -5,7 +5,7 @@ import { DangerButton } from "@/core/presentations/components/buttons/danger-but
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { useRemoveMember } from "@/features/member/presentations/hooks/use-remove-member";
 import { MemberEntity } from "@/features/member/domain/entities/member";
-import { useSWRConfig } from "swr";
+import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 
 type RemoveMemberDialogProps = {
   open: boolean;
@@ -15,13 +15,12 @@ type RemoveMemberDialogProps = {
 
 export function RemoveMemberDialog({ open, member, onClose }: RemoveMemberDialogProps) {
   const { trigger, isMutating } = useRemoveMember();
-  const { mutate } = useSWRConfig();
 
   const handleRemove = async () => {
     if (!member) return;
     try {
       await trigger({ id: member.id });
-      await mutate((key: unknown) => Array.isArray(key) && key[0] === "list-members");
+      await revalidateSWRKey("list-members");
       onClose();
     } catch {
       // Error captured by SWR

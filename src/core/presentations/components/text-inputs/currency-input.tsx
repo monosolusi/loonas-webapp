@@ -13,6 +13,7 @@ export function CurrencyInput({
   label = "Total Tagihan (Rp)",
   placeholder = "0",
   leftIcon = <div className="leading-6 font-semibold text-neutral-400">Rp</div>,
+  required = true,
   value,
   onChange: onChangeProp,
   ...restProps
@@ -36,7 +37,7 @@ export function CurrencyInput({
       leftIcon={leftIcon}
       value={formatDisplayValue(value)}
       onChange={onChange}
-      required
+      required={required}
     />
   );
 }

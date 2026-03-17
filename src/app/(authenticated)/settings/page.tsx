@@ -74,6 +74,13 @@ export default function SettingsPage() {
       description: "Kelola daftar klien dan informasi kontak untuk pembuatan faktur.",
       active: false,
     },
+    {
+      href: "/settings/product-categories",
+      iconSrc: "/assets/images/box-icon-primary-300-w16-h16.svg",
+      title: "Kategori Produk",
+      description: "Kelola kategori untuk mengorganisasi katalog produk Anda.",
+      active: true,
+    },
   ];
 
   return (

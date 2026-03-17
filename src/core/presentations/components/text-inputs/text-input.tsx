@@ -40,10 +40,12 @@ export function TextInput(props: TextInputProps) {
 
   return (
     <div className="flex min-w-0 flex-col gap-2 transition-all">
-      <span className={clsx("text-base", isDisabled && "text-neutral-200")}>
-        {props.label}
-        {props.required && <span className="text-red-500"> *</span>}
-      </span>
+      {props.label && (
+        <span className={clsx("text-base", isDisabled && "text-neutral-200")}>
+          {props.label}
+          {props.required && <span className="text-red-500"> *</span>}
+        </span>
+      )}
       <div
         className={clsx(
           "display flex h-11 min-w-0 flex-row items-center gap-3 rounded-lg border border-solid p-3 transition-all focus-within:ring-2",
