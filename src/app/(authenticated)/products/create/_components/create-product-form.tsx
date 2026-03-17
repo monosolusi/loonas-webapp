@@ -6,70 +6,51 @@ import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useToast } from "@/core/presentations/hooks/use-toast";
-import { ProductStatus } from "@/features/product/domain/enums/product-status";
 import { DEFAULT_VARIANT_NAME } from "@/features/product/domain/constants/default-variant";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useCreateProduct } from "@/features/product/presentations/hooks/use-create-product";
 import { useUploadProductPhoto } from "@/features/product/presentations/hooks/use-upload-product-photo";
+import { useProductFormState } from "@/features/product/presentations/hooks/use-product-form-state";
 import { ProductFormLayout } from "@/app/(authenticated)/products/_components/product-form-layout";
 import { ProductInfoCard } from "@/app/(authenticated)/products/_components/product-info-card";
 import { ProductPhotoCard } from "@/app/(authenticated)/products/_components/product-photo-card";
 import { ProductVariantCard } from "@/app/(authenticated)/products/_components/product-variant-card";
 import { ProductStatusCard } from "@/app/(authenticated)/products/_components/product-status-card";
 import { ProductCategoryCard } from "@/app/(authenticated)/products/_components/product-category-card";
-import { VariantFormRow } from "@/app/(authenticated)/products/_components/variant-table";
 
 export function CreateProductForm() {
   const router = useRouter();
   const { showToast } = useToast();
   const { trigger: createProduct, isMutating: isCreating } = useCreateProduct();
   const { trigger: uploadPhoto } = useUploadProductPhoto();
+  const form = useProductFormState();
 
   const [isUploading, setIsUploading] = useState(false);
   const isMutating = isCreating || isUploading;
 
-  const [name, setName] = useState("");
-  const [sku, setSku] = useState("");
-  const [status, setStatus] = useState<string>(ProductStatus.ACTIVE);
-  const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
-  const [photos, setPhotos] = useState<File[]>([]);
-  const [hasVariants, setHasVariants] = useState(false);
-  const [singlePrice, setSinglePrice] = useState(0);
-  const [variants, setVariants] = useState<VariantFormRow[]>([
-    { key: crypto.randomUUID(), name: "", sku: "", price: 0 },
-  ]);
-
-  const isValid = () => {
-    if (!name.trim() || !sku.trim()) return false;
-    if (hasVariants) {
-      return variants.every((v) => v.name.trim() && v.price > 0);
-    }
-    return singlePrice > 0;
-  };
-
   const handleSubmit = async () => {
-    if (!isValid() || isMutating) return;
+    if (!form.isValid() || isMutating) return;
 
-    const variantParams = hasVariants
-      ? variants.map((v) => ({
+    const variantParams = form.hasVariants
+      ? form.variants.map((v) => ({
           name: v.name.trim(),
           sku: v.sku.trim() || undefined,
           price: v.price,
         }))
-      : [{ name: DEFAULT_VARIANT_NAME, price: singlePrice }];
+      : [{ name: DEFAULT_VARIANT_NAME, price: form.singlePrice }];
 
     try {
       const product = await createProduct({
-        name: name.trim(),
-        sku: sku.trim(),
-        status,
-        categoryId,
+        name: form.name.trim(),
+        sku: form.sku.trim(),
+        status: form.status,
+        categoryId: form.categoryId,
         variants: variantParams,
       });
 
-      if (photos.length > 0) {
+      if (form.photos.length > 0) {
         setIsUploading(true);
-        for (const file of photos) {
+        for (const file of form.photos) {
           await uploadPhoto({ productId: product.id, file });
         }
         setIsUploading(false);
@@ -91,25 +72,25 @@ export function CreateProductForm() {
       <ProductFormLayout
         left={
           <>
-            <ProductInfoCard name={name} sku={sku} onNameChange={setName} onSkuChange={setSku} />
-            <ProductPhotoCard newPhotos={photos} onNewPhotosChange={setPhotos} />
+            <ProductInfoCard name={form.name} sku={form.sku} onNameChange={form.setName} onSkuChange={form.setSku} />
+            <ProductPhotoCard newPhotos={form.photos} onNewPhotosChange={form.setPhotos} />
             <ProductVariantCard
-              hasVariants={hasVariants}
-              singlePrice={singlePrice}
-              variants={variants}
-              onHasVariantsChange={setHasVariants}
-              onSinglePriceChange={setSinglePrice}
-              onVariantsChange={setVariants}
+              hasVariants={form.hasVariants}
+              singlePrice={form.singlePrice}
+              variants={form.variants}
+              onHasVariantsChange={form.setHasVariants}
+              onSinglePriceChange={form.setSinglePrice}
+              onVariantsChange={form.setVariants}
             />
           </>
         }
         right={
           <>
-            <ProductStatusCard status={status} onStatusChange={setStatus} />
-            <ProductCategoryCard categoryId={categoryId} onCategoryChange={setCategoryId} />
+            <ProductStatusCard status={form.status} onStatusChange={form.setStatus} />
+            <ProductCategoryCard categoryId={form.categoryId} onCategoryChange={form.setCategoryId} />
             <PrimaryButton
               label="Simpan Produk"
-              disabled={!isValid()}
+              disabled={!form.isValid()}
               loading={isMutating}
               onClick={handleSubmit}
               className="w-full"

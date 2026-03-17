@@ -7,7 +7,6 @@ import { DetailPageHeader } from "@/core/presentations/components/detail-page-he
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { ConfirmationDialog } from "@/core/presentations/components/confirmation-dialog";
 import { useToast } from "@/core/presentations/hooks/use-toast";
-import { ProductStatus } from "@/features/product/domain/enums/product-status";
 import { DEFAULT_VARIANT_NAME } from "@/features/product/domain/constants/default-variant";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useGetProduct } from "@/features/product/presentations/hooks/use-get-product";
@@ -18,6 +17,7 @@ import { useDeleteProductPhoto } from "@/features/product/presentations/hooks/us
 import { useAddVariant } from "@/features/product/presentations/hooks/use-add-variant";
 import { useUpdateVariant } from "@/features/product/presentations/hooks/use-update-variant";
 import { useDeleteVariant } from "@/features/product/presentations/hooks/use-delete-variant";
+import { useProductFormState } from "@/features/product/presentations/hooks/use-product-form-state";
 import { ProductFormLayout } from "@/app/(authenticated)/products/_components/product-form-layout";
 import { ProductInfoCard } from "@/app/(authenticated)/products/_components/product-info-card";
 import { ProductPhotoCard, productPhotosToExisting } from "@/app/(authenticated)/products/_components/product-photo-card";
@@ -48,17 +48,8 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
   const { trigger: deleteVariant } = useDeleteVariant();
 
 
-  const [name, setName] = useState("");
-  const [sku, setSku] = useState("");
-  const [status, setStatus] = useState<string>(ProductStatus.ACTIVE);
-  const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
-  const [photos, setPhotos] = useState<File[]>([]);
+  const form = useProductFormState();
   const [deletedPhotoIds, setDeletedPhotoIds] = useState<string[]>([]);
-  const [hasVariants, setHasVariants] = useState(false);
-  const [singlePrice, setSinglePrice] = useState(0);
-  const [variants, setVariants] = useState<VariantFormRow[]>([
-    { key: crypto.randomUUID(), name: "", sku: "", price: 0 },
-  ]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [hydratedVersion, setHydratedVersion] = useState<string | null>(null);
 
@@ -66,16 +57,16 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
 
   useEffect(() => {
     if (!product || productVersion === hydratedVersion) return;
-    setName(product.name);
-    setSku(product.sku);
-    setStatus(product.status);
-    setCategoryId(product.category?.id);
-    setPhotos([]);
+    form.setName(product.name);
+    form.setSku(product.sku);
+    form.setStatus(product.status);
+    form.setCategoryId(product.category?.id);
+    form.setPhotos([]);
     setDeletedPhotoIds([]);
 
     if (product.hasVariants) {
-      setHasVariants(true);
-      setVariants(
+      form.setHasVariants(true);
+      form.setVariants(
         product.variants.map((v) => ({
           key: v.id,
           name: v.name,
@@ -84,37 +75,37 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
         })),
       );
     } else {
-      setHasVariants(false);
-      setSinglePrice(product.variants[0]?.price ?? 0);
+      form.setHasVariants(false);
+      form.setSinglePrice(product.variants[0]?.price ?? 0);
     }
     setHydratedVersion(productVersion);
   }, [product, productVersion, hydratedVersion]);
 
   const hasChanges = useMemo(() => {
     if (!product || !hydratedVersion) return false;
-    if (name !== product.name) return true;
-    if (sku !== product.sku) return true;
-    if (status !== product.status) return true;
-    if (categoryId !== product.category?.id) return true;
-    if (photos.length > 0) return true;
+    if (form.name !== product.name) return true;
+    if (form.sku !== product.sku) return true;
+    if (form.status !== product.status) return true;
+    if (form.categoryId !== product.category?.id) return true;
+    if (form.photos.length > 0) return true;
     if (deletedPhotoIds.length > 0) return true;
-    if (hasVariants !== product.hasVariants) return true;
+    if (form.hasVariants !== product.hasVariants) return true;
 
-    if (!hasVariants) {
-      if (singlePrice !== (product.variants[0]?.price ?? 0)) return true;
+    if (!form.hasVariants) {
+      if (form.singlePrice !== (product.variants[0]?.price ?? 0)) return true;
     }
 
-    if (hasVariants) {
-      if (variants.length !== product.variants.length) return true;
+    if (form.hasVariants) {
+      if (form.variants.length !== product.variants.length) return true;
       const originalMap = new Map(product.variants.map((pv) => [pv.id, pv]));
-      for (const v of variants) {
+      for (const v of form.variants) {
         const original = originalMap.get(v.key);
         if (!original || isVariantChanged(v, original)) return true;
       }
     }
 
     return false;
-  }, [product, name, sku, status, categoryId, photos, deletedPhotoIds, hasVariants, singlePrice, variants, hydratedVersion]);
+  }, [product, form.name, form.sku, form.status, form.categoryId, form.photos, deletedPhotoIds, form.hasVariants, form.singlePrice, form.variants, hydratedVersion]);
 
   const refreshProduct = () => revalidateSWRKey(PRODUCT_SWR_KEYS.GET_PRODUCT, PRODUCT_SWR_KEYS.LIST_PRODUCTS);
 
@@ -123,10 +114,10 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
     try {
       await updateProduct({
         id,
-        name: name.trim(),
-        sku: sku.trim(),
-        status,
-        categoryId: categoryId ?? null,
+        name: form.name.trim(),
+        sku: form.sku.trim(),
+        status: form.status,
+        categoryId: form.categoryId ?? null,
       });
 
       // Sync photos and variants in parallel
@@ -137,16 +128,16 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
             await Promise.all(deletedPhotoIds.map((photoId) => deletePhoto({ productId: id, photoId })));
             setDeletedPhotoIds([]);
           }
-          if (photos.length > 0) {
-            await Promise.all(photos.map((file) => uploadPhoto({ productId: id, file })));
-            setPhotos([]);
+          if (form.photos.length > 0) {
+            await Promise.all(form.photos.map((file) => uploadPhoto({ productId: id, file })));
+            form.setPhotos([]);
           }
         })(),
         // Variants: delete → update → add
         (async () => {
-          const currentVariants = hasVariants
-            ? variants
-            : [{ key: "default", name: DEFAULT_VARIANT_NAME, sku: "", price: singlePrice }];
+          const currentVariants = form.hasVariants
+            ? form.variants
+            : [{ key: "default", name: DEFAULT_VARIANT_NAME, sku: "", price: form.singlePrice }];
 
           const originalIds = new Set(product.variants.map((v) => v.id));
           const currentKeys = new Set(currentVariants.map((v) => v.key));
@@ -242,27 +233,27 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
       <ProductFormLayout
         left={
           <>
-            <ProductInfoCard name={name} sku={sku} onNameChange={setName} onSkuChange={setSku} />
+            <ProductInfoCard name={form.name} sku={form.sku} onNameChange={form.setName} onSkuChange={form.setSku} />
             <ProductPhotoCard
               existingPhotos={productPhotosToExisting(product.photos).filter((p) => !deletedPhotoIds.includes(p.id))}
-              newPhotos={photos}
-              onNewPhotosChange={setPhotos}
+              newPhotos={form.photos}
+              onNewPhotosChange={form.setPhotos}
               onDeleteExisting={handleDeletePhoto}
             />
             <ProductVariantCard
-              hasVariants={hasVariants}
-              singlePrice={singlePrice}
-              variants={variants}
-              onHasVariantsChange={setHasVariants}
-              onSinglePriceChange={setSinglePrice}
-              onVariantsChange={setVariants}
+              hasVariants={form.hasVariants}
+              singlePrice={form.singlePrice}
+              variants={form.variants}
+              onHasVariantsChange={form.setHasVariants}
+              onSinglePriceChange={form.setSinglePrice}
+              onVariantsChange={form.setVariants}
             />
           </>
         }
         right={
           <>
-            <ProductStatusCard status={status} onStatusChange={setStatus} />
-            <ProductCategoryCard categoryId={categoryId} onCategoryChange={setCategoryId} />
+            <ProductStatusCard status={form.status} onStatusChange={form.setStatus} />
+            <ProductCategoryCard categoryId={form.categoryId} onCategoryChange={form.setCategoryId} />
             <PrimaryButton
               label="Simpan Perubahan"
               disabled={!hasChanges}
