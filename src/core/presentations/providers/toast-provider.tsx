@@ -2,22 +2,61 @@
 
 import { createContext, useCallback, useState } from "react";
 import clsx from "clsx";
+import {
+  InformationCircleIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  ExclamationCircleIcon,
+  XMarkIcon,
+} from "@heroicons/react/20/solid";
 
-type ToastType = "success" | "error";
+type ToastType = "info" | "success" | "error" | "warning";
 
 type Toast = {
   id: string;
-  message: string;
+  title: string;
+  description?: string;
   type: ToastType;
+  dismissible: boolean;
+};
+
+type ShowToastOptions = {
+  title: string;
+  description?: string;
+  type?: ToastType;
+  dismissible?: boolean;
 };
 
 type ToastContextValue = {
-  showToast: (message: string, type?: ToastType) => void;
+  showToast: (titleOrOptions: string | ShowToastOptions, type?: ToastType) => void;
 };
 
 export const ToastContext = createContext<ToastContextValue | null>(null);
 
-const TOAST_DURATION = 3000;
+const TOAST_DURATION = 4000;
+
+const TOAST_CONFIG: Record<ToastType, { icon: typeof InformationCircleIcon; iconClass: string; titleClass: string }> = {
+  info: {
+    icon: InformationCircleIcon,
+    iconClass: "text-primary-300",
+    titleClass: "text-primary-300",
+  },
+  success: {
+    icon: CheckCircleIcon,
+    iconClass: "text-success-300",
+    titleClass: "text-success-300",
+  },
+  error: {
+    icon: XCircleIcon,
+    iconClass: "text-error-300",
+    titleClass: "text-error-300",
+  },
+  warning: {
+    icon: ExclamationCircleIcon,
+    iconClass: "text-warning-300",
+    titleClass: "text-warning-300",
+  },
+};
 
 type ToastProviderProps = {
   children: React.ReactNode;
@@ -26,30 +65,57 @@ type ToastProviderProps = {
 export function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((message: string, type: ToastType = "success") => {
-    const id = crypto.randomUUID();
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, TOAST_DURATION);
+  const dismiss = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
+
+  const showToast = useCallback((titleOrOptions: string | ShowToastOptions, type?: ToastType) => {
+    const id = crypto.randomUUID();
+    const dismissible =
+      typeof titleOrOptions === "string" ? false : (titleOrOptions.dismissible ?? false);
+    const toast: Toast =
+      typeof titleOrOptions === "string"
+        ? { id, title: titleOrOptions, type: type ?? "success", dismissible }
+        : { id, title: titleOrOptions.title, description: titleOrOptions.description, type: titleOrOptions.type ?? "success", dismissible };
+
+    setToasts((prev) => [...prev, toast]);
+    if (!dismissible) {
+      setTimeout(() => dismiss(id), TOAST_DURATION);
+    }
+  }, [dismiss]);
 
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="fixed right-6 bottom-6 z-50 flex flex-col gap-y-2">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={clsx(
-              "animate-slide-in-right rounded-lg px-4 py-3 text-sm font-medium shadow-lg",
-              toast.type === "success" && "bg-primary-300 text-white",
-              toast.type === "error" && "bg-error-300 text-white",
-            )}
-          >
-            {toast.message}
-          </div>
-        ))}
+      <div className="fixed right-6 bottom-6 z-50 flex flex-col-reverse gap-y-3">
+        {toasts.map((toast) => {
+          const config = TOAST_CONFIG[toast.type];
+          const Icon = config.icon;
+
+          return (
+            <div
+              key={toast.id}
+              className="animate-slide-in-right flex w-[360px] items-start gap-x-3 rounded-xl border border-neutral-100 bg-white px-4 py-3.5 shadow-lg"
+            >
+              <Icon className={clsx("mt-0.5 size-5 shrink-0", config.iconClass)} />
+              <div className="flex min-w-0 flex-1 flex-col gap-y-0.5">
+                <span className={clsx("text-sm font-semibold", config.titleClass)}>{toast.title}</span>
+                {toast.description && (
+                  <span className="text-sm text-neutral-300">{toast.description}</span>
+                )}
+              </div>
+              {toast.dismissible && (
+                <button
+                  type="button"
+                  onClick={() => dismiss(toast.id)}
+                  className="shrink-0 p-0.5 text-neutral-200 transition-colors hover:text-neutral-400"
+                >
+                  <XMarkIcon className="size-5" />
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
     </ToastContext.Provider>
   );
