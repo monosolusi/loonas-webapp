@@ -15,6 +15,7 @@ type ProductVariantCardProps = {
   onHasVariantsChange: (enabled: boolean) => void;
   onSinglePriceChange: (price: number) => void;
   onVariantsChange: (variants: VariantFormRow[]) => void;
+  hideVariantToggle?: boolean;
 };
 
 export function ProductVariantCard({
@@ -24,6 +25,7 @@ export function ProductVariantCard({
   onHasVariantsChange,
   onSinglePriceChange,
   onVariantsChange,
+  hideVariantToggle,
 }: ProductVariantCardProps) {
   const [disableDialogOpen, setDisableDialogOpen] = useState(false);
 
@@ -54,27 +56,29 @@ export function ProductVariantCard({
     <>
       <SectionCard title="Harga & Varian" iconSrc="/assets/images/credit-card-icon-primary-300-w16-h16.svg">
         <div className="flex flex-col gap-y-5">
-          <div className="flex flex-row items-center justify-between">
-            <div className="flex flex-col gap-y-0.5">
-              <span className="text-sm font-medium text-neutral-500">Produk ini memiliki varian</span>
-              <span className="text-xs text-neutral-200">Aktifkan jika produk memiliki ukuran, rasa, atau kemasan berbeda</span>
-            </div>
-            <Switch
-              checked={hasVariants}
-              onChange={handleToggle}
-              className={clsx(
-                "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
-                hasVariants ? "bg-primary-300" : "bg-neutral-100",
-              )}
-            >
-              <span
+          {!hideVariantToggle && (
+            <div className="flex flex-row items-center justify-between">
+              <div className="flex flex-col gap-y-0.5">
+                <span className="text-sm font-medium text-neutral-500">Produk ini memiliki varian</span>
+                <span className="text-xs text-neutral-200">Aktifkan jika produk memiliki ukuran, rasa, atau kemasan berbeda</span>
+              </div>
+              <Switch
+                checked={hasVariants}
+                onChange={handleToggle}
                 className={clsx(
-                  "pointer-events-none inline-block size-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                  hasVariants ? "translate-x-5" : "translate-x-0",
+                  "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
+                  hasVariants ? "bg-primary-300" : "bg-neutral-100",
                 )}
-              />
-            </Switch>
-          </div>
+              >
+                <span
+                  className={clsx(
+                    "pointer-events-none inline-block size-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                    hasVariants ? "translate-x-5" : "translate-x-0",
+                  )}
+                />
+              </Switch>
+            </div>
+          )}
 
           {hasVariants ? (
             <VariantTable variants={variants} onChange={onVariantsChange} />

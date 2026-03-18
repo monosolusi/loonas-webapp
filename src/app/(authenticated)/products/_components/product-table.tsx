@@ -6,12 +6,16 @@ import Image from "next/image";
 import clsx from "clsx";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { ProductStatus } from "@/features/product/domain/enums/product-status";
+import { ProductType, ProductTypeLabel, ProductTypeType } from "@/features/product/domain/enums/product-type";
+import { ProductionModeLabel, ProductionModeType } from "@/features/product/domain/enums/production-mode";
 import { TablePagination } from "@/app/(authenticated)/invoices/_components/table-pagination";
 
 export interface ProductTableRow {
   id: string;
   name: string;
   sku: string;
+  type: string;
+  productionMode: string | null;
   category: string | null;
   status: string;
   displayPrice: string;
@@ -83,7 +87,7 @@ function ProductRow({
     <Link
       href={`/products/${product.id}`}
       className={clsx(
-        "hover:border-l-primary-300 hover:bg-primary-50 grid cursor-pointer grid-cols-[2fr_1.5fr_1fr_0.7fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0 transition-opacity",
+        "hover:border-l-primary-300 hover:bg-primary-50 grid cursor-pointer grid-cols-[2fr_1fr_0.8fr_0.8fr_0.7fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0 transition-opacity",
         !isActive && "opacity-50",
       )}
     >
@@ -101,6 +105,16 @@ function ProductRow({
         </div>
       </div>
       <span className="text-sm leading-5 text-neutral-400">{product.sku}</span>
+      <div className="flex flex-col">
+        <span className="text-sm leading-5 font-medium text-neutral-400">
+          {ProductTypeLabel[product.type as ProductTypeType] ?? product.type}
+        </span>
+        {product.type === ProductType.MANUFACTURED && product.productionMode && (
+          <span className="text-xs leading-4 text-neutral-200">
+            {ProductionModeLabel[product.productionMode as ProductionModeType]}
+          </span>
+        )}
+      </div>
       <span className="text-sm leading-5 text-neutral-400">{product.category ?? "-"}</span>
       <button
         type="button"
