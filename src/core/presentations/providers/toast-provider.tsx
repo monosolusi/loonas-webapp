@@ -87,7 +87,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="fixed right-6 bottom-6 z-50 flex flex-col-reverse gap-y-3">
+      <div className="fixed bottom-6 left-6 z-50 flex flex-col-reverse gap-y-3">
         {toasts.map((toast) => {
           const config = TOAST_CONFIG[toast.type];
           const Icon = config.icon;
@@ -95,7 +95,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
           return (
             <div
               key={toast.id}
-              className="animate-slide-in-right flex w-[360px] items-start gap-x-3 rounded-xl border border-neutral-100 bg-white px-4 py-3.5 shadow-lg"
+              className="animate-slide-in-left flex w-[360px] items-start gap-x-3 rounded-xl border border-neutral-100 bg-white px-4 py-3.5 shadow-lg"
             >
               <Icon className={clsx("mt-0.5 size-5 shrink-0", config.iconClass)} />
               <div className="flex min-w-0 flex-1 flex-col gap-y-0.5">

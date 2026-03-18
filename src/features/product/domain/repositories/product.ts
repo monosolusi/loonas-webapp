@@ -6,6 +6,8 @@ import { ProductPhotoEntity } from "@/features/product/domain/entities/product-p
 export type CreateProductParams = {
   name: string;
   sku: string;
+  type: string;
+  productionMode?: string | null;
   status?: string;
   categoryId?: string;
   variants: { name: string; sku?: string; price: number }[];
@@ -14,6 +16,8 @@ export type CreateProductParams = {
 export type UpdateProductParams = {
   name?: string;
   sku?: string;
+  type?: string;
+  productionMode?: string | null;
   status?: string;
   categoryId?: string | null;
 };
@@ -21,6 +25,7 @@ export type UpdateProductParams = {
 export type ListProductsParams = {
   page?: number;
   limit?: number;
+  type?: string;
   categoryIds?: string[];
   status?: string;
   search?: string;

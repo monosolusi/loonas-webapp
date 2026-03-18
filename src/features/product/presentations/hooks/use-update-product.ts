@@ -30,6 +30,8 @@ async function UpdateProductFetcher(_: string, { arg }: { arg: UpdateProductFetc
     new UpdateProductUseCaseParams(arg.id, {
       name: arg.name,
       sku: arg.sku,
+      type: arg.type,
+      productionMode: arg.productionMode,
       status: arg.status,
       categoryId: arg.categoryId,
     }),

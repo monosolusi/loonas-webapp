@@ -6,6 +6,7 @@ import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useToast } from "@/core/presentations/hooks/use-toast";
+import { ProductType } from "@/features/product/domain/enums/product-type";
 import { DEFAULT_VARIANT_NAME } from "@/features/product/domain/constants/default-variant";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useCreateProduct } from "@/features/product/presentations/hooks/use-create-product";
@@ -43,6 +44,8 @@ export function CreateProductForm() {
       const product = await createProduct({
         name: form.name.trim(),
         sku: form.sku.trim(),
+        type: form.type,
+        productionMode: form.productionMode,
         status: form.status,
         categoryId: form.categoryId,
         variants: variantParams,
@@ -73,21 +76,31 @@ export function CreateProductForm() {
         left={
           <>
             <ProductInfoCard name={form.name} sku={form.sku} onNameChange={form.setName} onSkuChange={form.setSku} />
-            <ProductPhotoCard newPhotos={form.photos} onNewPhotosChange={form.setPhotos} />
+            {form.type !== ProductType.SERVICE && (
+              <ProductPhotoCard newPhotos={form.photos} onNewPhotosChange={form.setPhotos} />
+            )}
             <ProductVariantCard
-              hasVariants={form.hasVariants}
+              hasVariants={form.type !== ProductType.SERVICE && form.hasVariants}
               singlePrice={form.singlePrice}
               variants={form.variants}
               onHasVariantsChange={form.setHasVariants}
               onSinglePriceChange={form.setSinglePrice}
               onVariantsChange={form.setVariants}
+              hideVariantToggle={form.type === ProductType.SERVICE}
             />
           </>
         }
         right={
           <>
             <ProductStatusCard status={form.status} onStatusChange={form.setStatus} />
-            <ProductCategoryCard categoryId={form.categoryId} onCategoryChange={form.setCategoryId} />
+            <ProductCategoryCard
+              type={form.type}
+              productionMode={form.productionMode}
+              categoryId={form.categoryId}
+              onTypeChange={form.setType}
+              onProductionModeChange={form.setProductionMode}
+              onCategoryChange={form.setCategoryId}
+            />
             <PrimaryButton
               label="Simpan Produk"
               disabled={!form.isValid()}

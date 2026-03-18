@@ -9,6 +9,8 @@ type ProductEntityConstructor = {
   id: string;
   name: string;
   sku: string;
+  type: string;
+  productionMode: string | null;
   status: string;
   category: ProductCategoryEntity | null;
   photos: ProductPhotoEntity[];
@@ -21,6 +23,8 @@ export class ProductEntity implements AbstractEntity {
   public id: string;
   public name: string;
   public sku: string;
+  public type: string;
+  public productionMode: string | null;
   public status: string;
   public category: ProductCategoryEntity | null;
   public photos: ProductPhotoEntity[];
@@ -32,6 +36,8 @@ export class ProductEntity implements AbstractEntity {
     this.id = args.id;
     this.name = args.name;
     this.sku = args.sku;
+    this.type = args.type;
+    this.productionMode = args.productionMode;
     this.status = args.status;
     this.category = args.category;
     this.photos = args.photos;

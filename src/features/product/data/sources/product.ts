@@ -21,6 +21,7 @@ export class ProductServiceImpl implements ProductService {
       if (params.page) searchParams["page"] = String(params.page);
       if (params.limit) searchParams["limit"] = String(params.limit);
       if (params.categoryIds && params.categoryIds.length > 0) searchParams["category_id"] = params.categoryIds.join(",");
+      if (params.type) searchParams["type"] = params.type;
       if (params.status) searchParams["status"] = params.status;
       if (params.search) searchParams["search"] = params.search;
 
@@ -69,8 +70,10 @@ export class ProductServiceImpl implements ProductService {
       const body: Record<string, any> = {
         name: params.name,
         sku: params.sku,
+        type: params.type,
         variants: params.variants,
       };
+      if (params.productionMode) body["production_mode"] = params.productionMode;
       if (params.status) body["status"] = params.status;
       if (params.categoryId) body["category_id"] = params.categoryId;
 
@@ -93,6 +96,8 @@ export class ProductServiceImpl implements ProductService {
       const body: Record<string, any> = {};
       if (params.name !== undefined) body["name"] = params.name;
       if (params.sku !== undefined) body["sku"] = params.sku;
+      if (params.type !== undefined) body["type"] = params.type;
+      if (params.type !== undefined) body["production_mode"] = params.productionMode ?? null;
       if (params.status !== undefined) body["status"] = params.status;
       if (params.categoryId !== undefined) body["category_id"] = params.categoryId;
 

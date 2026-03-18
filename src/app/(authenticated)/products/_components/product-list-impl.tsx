@@ -11,12 +11,18 @@ import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
 import { ProductStatus } from "@/features/product/domain/enums/product-status";
+import { ProductType, ProductTypeLabel, ProductTypeType } from "@/features/product/domain/enums/product-type";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useListProducts } from "@/features/product/presentations/hooks/use-list-products";
 import { useUpdateProduct } from "@/features/product/presentations/hooks/use-update-product";
 import { useListProductCategories } from "@/features/product/presentations/hooks/use-list-product-categories";
 import { ProductTable, ProductTableRow } from "@/app/(authenticated)/products/_components/product-table";
 import { FilterDropdown, FilterPill } from "@/app/(authenticated)/products/_components/filter-dropdown";
+
+const TYPE_OPTIONS = Object.values(ProductType).map((value) => ({
+  label: ProductTypeLabel[value as ProductTypeType],
+  value,
+}));
 
 const STATUS_OPTIONS = [
   { label: "Aktif", value: ProductStatus.ACTIVE },
@@ -25,6 +31,7 @@ const STATUS_OPTIONS = [
 
 export function ProductListImpl() {
   const [page, setPage] = useState(1);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [search, setSearch] = useState("");
@@ -48,6 +55,7 @@ export function ProductListImpl() {
   const { products, meta, loading, error } = useListProducts({
     page,
     limit: 10,
+    type: selectedTypes.length > 0 ? selectedTypes.join(",") : undefined,
     categoryIds: selectedCategories.length > 0 ? selectedCategories : undefined,
     status: selectedStatuses.length === 1 ? selectedStatuses[0] : undefined,
     search: searchQuery,
@@ -56,9 +64,14 @@ export function ProductListImpl() {
 
   const categoryOptions = categories.map((cat) => ({ label: cat.name, value: cat.id }));
 
-  const hasActiveFilters = selectedCategories.length > 0 || selectedStatuses.length > 0;
+  const hasActiveFilters = selectedTypes.length > 0 || selectedCategories.length > 0 || selectedStatuses.length > 0;
 
   const handleFilterChange = () => setPage(1);
+
+  const handleTypesChange = (values: string[]) => {
+    setSelectedTypes(values);
+    handleFilterChange();
+  };
 
   const handleCategoriesChange = (values: string[]) => {
     setSelectedCategories(values);
@@ -67,6 +80,11 @@ export function ProductListImpl() {
 
   const handleStatusesChange = (values: string[]) => {
     setSelectedStatuses(values);
+    handleFilterChange();
+  };
+
+  const removeType = (value: string) => {
+    setSelectedTypes((prev) => prev.filter((v) => v !== value));
     handleFilterChange();
   };
 
@@ -81,6 +99,7 @@ export function ProductListImpl() {
   };
 
   const clearAllFilters = () => {
+    setSelectedTypes([]);
     setSelectedCategories([]);
     setSelectedStatuses([]);
     handleFilterChange();
@@ -90,6 +109,13 @@ export function ProductListImpl() {
     <div className="flex flex-col gap-y-3">
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-x-2">
+          <FilterDropdown
+            label="Tipe"
+            options={TYPE_OPTIONS}
+            selected={selectedTypes}
+            onChange={handleTypesChange}
+            multiple
+          />
           <FilterDropdown
             label="Status"
             options={STATUS_OPTIONS}
@@ -140,6 +166,12 @@ export function ProductListImpl() {
 
       {hasActiveFilters && (
         <div className="flex flex-row flex-wrap items-center gap-2">
+          {selectedTypes.map((value) => {
+            const opt = TYPE_OPTIONS.find((o) => o.value === value);
+            return opt ? (
+              <FilterPill key={value} label={`Tipe: ${opt.label}`} onRemove={() => removeType(value)} />
+            ) : null;
+          })}
           {selectedStatuses.map((value) => {
             const opt = STATUS_OPTIONS.find((o) => o.value === value);
             return opt ? (
@@ -165,9 +197,10 @@ export function ProductListImpl() {
   );
 
   const header = (
-    <div className="grid grid-cols-[2fr_1.5fr_1fr_0.7fr_1fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
+    <div className="grid grid-cols-[2fr_1fr_0.8fr_0.8fr_0.7fr_1fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
       <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Produk</span>
       <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">SKU</span>
+      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tipe</span>
       <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Kategori</span>
       <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Status</span>
       <span className="text-right text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Harga</span>
@@ -178,6 +211,8 @@ export function ProductListImpl() {
     id: product.id,
     name: product.name,
     sku: product.sku,
+    type: product.type,
+    productionMode: product.productionMode,
     category: product.category?.name ?? null,
     status: product.status,
     displayPrice: product.displayPrice,
