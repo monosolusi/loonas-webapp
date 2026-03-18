@@ -16,6 +16,7 @@ import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr
 type UseListProductsParams = {
   page?: number;
   limit?: number;
+  type?: string;
   categoryIds?: string[];
   status?: string;
   search?: string;

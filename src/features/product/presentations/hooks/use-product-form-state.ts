@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ProductStatus } from "@/features/product/domain/enums/product-status";
+import { ProductType } from "@/features/product/domain/enums/product-type";
 import { VariantFormRow } from "@/app/(authenticated)/products/_components/variant-table";
 
 function createEmptyVariantRow(): VariantFormRow {
@@ -11,6 +12,8 @@ function createEmptyVariantRow(): VariantFormRow {
 export function useProductFormState() {
   const [name, setName] = useState("");
   const [sku, setSku] = useState("");
+  const [type, setType] = useState<string>(ProductType.TRADING);
+  const [productionMode, setProductionMode] = useState<string | null>(null);
   const [status, setStatus] = useState<string>(ProductStatus.ACTIVE);
   const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
   const [photos, setPhotos] = useState<File[]>([]);
@@ -29,6 +32,8 @@ export function useProductFormState() {
   const resetForm = () => {
     setName("");
     setSku("");
+    setType(ProductType.TRADING);
+    setProductionMode(null);
     setStatus(ProductStatus.ACTIVE);
     setCategoryId(undefined);
     setPhotos([]);
@@ -42,6 +47,10 @@ export function useProductFormState() {
     setName,
     sku,
     setSku,
+    type,
+    setType,
+    productionMode,
+    setProductionMode,
     status,
     setStatus,
     categoryId,

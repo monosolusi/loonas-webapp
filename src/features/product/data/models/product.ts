@@ -1,6 +1,7 @@
 import { AbstractModel } from "@/core/resources/model";
 import { ProductEntity } from "@/features/product/domain/entities/product";
 import { ProductStatus } from "@/features/product/domain/enums/product-status";
+import { ProductType } from "@/features/product/domain/enums/product-type";
 import { ProductCategoryModel } from "@/features/product/data/models/product-category";
 import { ProductPhotoModel } from "@/features/product/data/models/product-photo";
 import { ProductVariantModel } from "@/features/product/data/models/product-variant";
@@ -9,6 +10,8 @@ type ProductModelConstructor = {
   id: string;
   name: string;
   sku: string;
+  type: string;
+  productionMode: string | null;
   status: string;
   category: ProductCategoryModel | null;
   photos: ProductPhotoModel[];
@@ -21,6 +24,8 @@ export class ProductModel implements AbstractModel {
   public readonly id: string;
   public readonly name: string;
   public readonly sku: string;
+  public readonly type: string;
+  public readonly productionMode: string | null;
   public readonly status: string;
   public readonly category: ProductCategoryModel | null;
   public readonly photos: ProductPhotoModel[];
@@ -32,6 +37,8 @@ export class ProductModel implements AbstractModel {
     this.id = args.id;
     this.name = args.name;
     this.sku = args.sku;
+    this.type = args.type;
+    this.productionMode = args.productionMode;
     this.status = args.status;
     this.category = args.category;
     this.photos = args.photos;
@@ -45,6 +52,8 @@ export class ProductModel implements AbstractModel {
       id: data["id"],
       name: data["name"],
       sku: data["sku"],
+      type: data["type"] ?? ProductType.TRADING,
+      productionMode: data["production_mode"] ?? null,
       status: data["status"] ?? ProductStatus.ACTIVE,
       category: data["category"] ? ProductCategoryModel.fromJson(data["category"]) : null,
       photos: Array.isArray(data["photos"]) ? data["photos"].map(ProductPhotoModel.fromJson) : [],
@@ -59,6 +68,8 @@ export class ProductModel implements AbstractModel {
       id: this.id,
       name: this.name,
       sku: this.sku,
+      type: this.type,
+      productionMode: this.productionMode,
       status: this.status,
       category: this.category?.toEntity() ?? null,
       photos: this.photos.map((p) => p.toEntity()),

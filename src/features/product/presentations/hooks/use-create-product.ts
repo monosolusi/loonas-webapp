@@ -28,6 +28,8 @@ async function CreateProductFetcher(_: string, { arg }: { arg: CreateProductFetc
     new CreateProductUseCaseParams({
       name: arg.name,
       sku: arg.sku,
+      type: arg.type,
+      productionMode: arg.productionMode,
       status: arg.status,
       categoryId: arg.categoryId,
       variants: arg.variants,
