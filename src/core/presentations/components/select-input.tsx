@@ -3,6 +3,7 @@
 import React, { useMemo } from "react";
 import Image from "next/image";
 import clsx from "clsx";
+import { InfoTooltip } from "@/core/presentations/components/info-tooltip";
 
 export type SelectOption = {
   label: string;
@@ -15,6 +16,7 @@ type SelectInputBaseProps = {
   onChange?: (value: string) => void;
   placeholder?: string;
   leftIcon?: React.ReactNode; // Must be width and height props of 20x20
+  tooltip?: React.ReactNode;
 };
 
 type SelectInputWithLabel = SelectInputBaseProps & {
@@ -43,7 +45,7 @@ export function SelectInput(props: SelectInputProps) {
   };
 
   const cleanedInputProps = useMemo(() => {
-    const { leftIcon, label, onChange, description, options, placeholder, noLabel, ...cleanedProps } = props;
+    const { leftIcon, label, onChange, description, options, placeholder, noLabel, tooltip, ...cleanedProps } = props;
     return cleanedProps;
   }, [props]);
 
@@ -52,9 +54,10 @@ export function SelectInput(props: SelectInputProps) {
   return (
     <div className={clsx("flex flex-col gap-2 transition-all", props.disabled && "opacity-50")}>
       {!props.noLabel && (
-        <span className="text-base">
+        <span className="flex items-center gap-x-1.5 text-base">
           {props.label}
           {props.required && <span className="text-red-500"> *</span>}
+          {props.tooltip && <InfoTooltip text={props.tooltip} />}
         </span>
       )}
       <div
