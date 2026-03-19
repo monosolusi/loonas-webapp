@@ -37,10 +37,11 @@ export function NavigationBar() {
           label="Keuangan"
           iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
-          matchPrefixes={["/finance/ledger", "/finance/journals"]}
+          matchPrefixes={["/finance/ledger", "/finance/journals", "/finance/fixed-costs"]}
         >
           <NavigationChildItem href="/finance/ledger" label="Buku Besar" />
           <NavigationChildItem href="/finance/journals" label="Jurnal Umum" />
+          <NavigationChildItem href="/finance/fixed-costs" label="Biaya Tetap" />
         </NavigationGroup>
         <NavigationItem
           href="/accounts"
