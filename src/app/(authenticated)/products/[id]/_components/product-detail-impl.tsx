@@ -25,6 +25,7 @@ import { ProductPhotoCard, productPhotosToExisting } from "@/app/(authenticated)
 import { ProductVariantCard } from "@/app/(authenticated)/products/_components/product-variant-card";
 import { ProductStatusCard } from "@/app/(authenticated)/products/_components/product-status-card";
 import { ProductCategoryCard } from "@/app/(authenticated)/products/_components/product-category-card";
+import { RecipeCard } from "@/app/(authenticated)/products/_components/recipe-card";
 import { syncVariants, isVariantChanged } from "@/app/(authenticated)/products/[id]/_utils/sync-variants";
 
 type ProductDetailImplProps = {
@@ -224,6 +225,9 @@ export function ProductDetailImpl({ id }: ProductDetailImplProps) {
               onVariantsChange={form.setVariants}
               hideVariantToggle={form.type === ProductType.SERVICE}
             />
+            {form.type === ProductType.MANUFACTURED && product && (
+              <RecipeCard productId={product.id} variants={product.variants} />
+            )}
           </>
         }
         right={

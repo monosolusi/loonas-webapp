@@ -3,6 +3,7 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { ProductEntity } from "@/features/product/domain/entities/product";
 import { ProductPhotoEntity } from "@/features/product/domain/entities/product-photo";
+import { RecipeItemEntity } from "@/features/product/domain/entities/recipe-item";
 import {
   ProductRepository,
   CreateProductParams,
@@ -11,6 +12,7 @@ import {
   ListProductsResult,
   AddVariantParams,
   UpdateVariantParams,
+  SaveRecipeParams,
 } from "@/features/product/domain/repositories/product";
 import { ProductService } from "@/features/product/domain/sources/product";
 
@@ -118,6 +120,26 @@ export class ProductRepositoryImpl implements ProductRepository {
   public async deleteVariant(productId: string, variantId: string, session: SessionEntity): Promise<DataState<void>> {
     try {
       await this.service.deleteVariant(productId, variantId, session);
+      return new DataSuccess(undefined);
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async getRecipe(productId: string, variantId: string, session: SessionEntity): Promise<DataState<RecipeItemEntity[]>> {
+    try {
+      const items = await this.service.getRecipe(productId, variantId, session);
+      return new DataSuccess(items.map((item) => item.toEntity()));
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async saveRecipe(productId: string, variantId: string, params: SaveRecipeParams, session: SessionEntity): Promise<DataState<void>> {
+    try {
+      await this.service.saveRecipe(productId, variantId, params, session);
       return new DataSuccess(undefined);
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
