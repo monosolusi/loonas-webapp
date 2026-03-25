@@ -13,7 +13,7 @@ export class ProductCategoryServiceImpl implements ProductCategoryService {
       if (search) searchParams["search"] = search;
 
       const result = await this.http.request({
-        path: "/product-categories",
+        path: "/categories",
         method: "GET",
         searchParams,
         session,
@@ -36,7 +36,7 @@ export class ProductCategoryServiceImpl implements ProductCategoryService {
       if (params.search) searchParams["search"] = params.search;
 
       const result = await this.http.request({
-        path: "/product-categories",
+        path: "/categories",
         method: "GET",
         searchParams,
         session,
@@ -63,7 +63,7 @@ export class ProductCategoryServiceImpl implements ProductCategoryService {
   public async create(name: string, session: SessionEntity): Promise<ProductCategoryModel> {
     try {
       const result = await this.http.request({
-        path: "/product-categories",
+        path: "/categories",
         method: "POST",
         body: { name },
         session,
@@ -79,7 +79,7 @@ export class ProductCategoryServiceImpl implements ProductCategoryService {
   public async update(id: string, name: string, session: SessionEntity): Promise<ProductCategoryModel> {
     try {
       const result = await this.http.request({
-        path: `/product-categories/${id}`,
+        path: `/categories/${id}`,
         method: "PUT",
         body: { name },
         session,
@@ -95,7 +95,7 @@ export class ProductCategoryServiceImpl implements ProductCategoryService {
   public async delete(id: string, session: SessionEntity): Promise<void> {
     try {
       await this.http.request({
-        path: `/product-categories/${id}`,
+        path: `/categories/${id}`,
         method: "DELETE",
         session,
       });
