@@ -75,7 +75,7 @@ export default function SettingsPage() {
       active: false,
     },
     {
-      href: "/settings/product-categories",
+      href: "/settings/categories",
       iconSrc: "/assets/images/box-icon-primary-300-w16-h16.svg",
       title: "Kategori Produk",
       description: "Kelola kategori untuk mengorganisasi katalog produk Anda.",
