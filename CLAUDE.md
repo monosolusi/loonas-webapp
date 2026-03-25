@@ -64,7 +64,7 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **Type guards**: `domain/guards/` contains `instanceof` checks for discriminating entity types
 - **SectionCard**: Standard card component (`rounded-lg`, `border-neutral-200`, icon header) for detail pages
 - **Skeleton loading**: Loading states use `animate-pulse` placeholder divs inside `SectionCard`
-- **Interactive element height**: All interactive elements (buttons, inputs, selects, custom controls) use `h-11` (44px) for consistent vertical rhythm
+- **Interactive element height**: All interactive elements (buttons, inputs, selects, custom controls) use `h-11` (44px) for consistent vertical rhythm. Exception: icon-only action buttons (edit, delete) in tables use `size-8` (32px).
 - **Account resolution**: Backend resolves account from Clerk JWT `orgId` (set via `setActive({ organization })`). Frontend never sends account ID in headers or params — only `Authorization: Bearer {token}`
 - **Session parameter order**: In repository and service method signatures, `session: SessionEntity` must always be the **last** parameter. Methods have **maximum 2 parameters**: `(params, session)`. All business parameters grouped into a single object: `list({ search, page }, session)`, `update({ id, name, status }, session)`.
 - **SWR key management**: SWR keys defined as constants in `presentations/constants/swr-keys.ts`. Use `revalidateSWRKey()` to invalidate cache after mutations. Hooks use these constants, never hardcoded strings.
@@ -98,6 +98,8 @@ Custom `HttpRequest` class injects Clerk session headers:
 | `selectedAccount` on `SessionEntity`/`SessionModel` | Account resolved server-side from JWT; no client-side account on session |
 | `requireAccount` in `HttpRequest` config | Removed — account resolution is implicit via JWT |
 | `SelectedAccountProvider` context value | Deprecated — provider only handles redirects; use `useGetCurrentAccount()` for account data |
+| `*-impl.tsx` monolith pattern (new code) | Provider + split components pattern. Page composes provider + components, each component consumes context. Existing pages will be migrated gradually. |
+| `InvoiceTableShell` (new code) | `TableToolbar`, `TableSearch`, `TableHeader`, `TableContainer` from `core/presentations/components/table/`. Existing pages will be migrated gradually. |
 
 ### Environment
 

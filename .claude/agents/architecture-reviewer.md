@@ -112,6 +112,8 @@ The following patterns MUST NOT appear in new or modified code:
 | `selectedAccount` on `SessionEntity`/`SessionModel` | Account resolved server-side from JWT |
 | `requireAccount` in `HttpRequest` config | Removed — account resolution is implicit via JWT |
 | `SelectedAccountProvider` context value | Use `useGetCurrentAccount()` for account data |
+| `*-impl.tsx` monolith pattern (**new code only**) | Provider + split components. Page composes provider + components, each consumes context. Do NOT flag existing `*-impl.tsx` files — they will be migrated gradually. Only flag if a NEW page uses this pattern. |
+| `InvoiceTableShell` (**new code only**) | `TableToolbar`, `TableSearch`, `TableHeader`, `TableContainer` from `core/presentations/components/table/`. Do NOT flag existing pages using `InvoiceTableShell` — they will be migrated gradually. Only flag if a NEW page imports `InvoiceTableShell`. |
 
 ### Rule 3: File naming conventions
 
@@ -152,7 +154,7 @@ Repository and source methods MUST have **maximum 2 parameters**: `(params, sess
 
 - Use `SectionCard` for detail page cards (`rounded-lg`, `border-neutral-200`, icon header)
 - Loading states use `animate-pulse` placeholder divs inside `SectionCard`
-- Interactive elements (buttons, inputs, selects, custom controls) use `h-11` (44px) for consistent height
+- Interactive elements (buttons, inputs, selects, custom controls) use `h-11` (44px) for consistent height. Exception: icon-only action buttons (edit, delete) in tables use `size-8` (32px) — do NOT flag these as violations.
 - Use `clsx()` for className composition, never template literals
 
 ### Rule 7: Provider pattern
