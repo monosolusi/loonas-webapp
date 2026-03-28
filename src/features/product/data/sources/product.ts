@@ -73,7 +73,14 @@ export class ProductServiceImpl implements ProductService {
         name: params.name,
         sku: params.sku,
         type: params.type,
-        variants: params.variants,
+        variants: params.variants.map((v) => {
+          const variant: Record<string, any> = { name: v.name, price: v.price };
+          if (v.sku) variant["sku"] = v.sku;
+          if (v.recipe && v.recipe.length > 0) {
+            variant["recipe"] = v.recipe.map((r) => ({ raw_material_id: r.rawMaterialId, quantity: r.quantity }));
+          }
+          return variant;
+        }),
       };
       if (params.productionMode) body["production_mode"] = params.productionMode;
       if (params.status) body["status"] = params.status;

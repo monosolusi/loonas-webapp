@@ -11,7 +11,7 @@ export type CreateProductParams = {
   productionMode?: string | null;
   status?: string;
   categoryId?: string;
-  variants: { name: string; sku?: string; price: number }[];
+  variants: { name: string; sku?: string; price: number; recipe?: { rawMaterialId: string; quantity: number }[] }[];
 };
 
 export type UpdateProductParams = {
