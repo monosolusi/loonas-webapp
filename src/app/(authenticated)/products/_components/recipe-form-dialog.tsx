@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
@@ -19,11 +19,16 @@ export type RecipeRow = {
   quantity: number;
 };
 
-type RecipeEditDialogProps = {
-  open: boolean;
-  onClose: () => void;
+export type RecipeFormVariant = {
+  variantId: string;
   variantName: string;
-  initialItems: RecipeRow[];
+  items: RecipeRow[];
+};
+
+type RecipeFormDialogProps = {
+  open: boolean;
+  variant: RecipeFormVariant | null;
+  onClose: () => void;
   onSave: (items: RecipeRow[]) => Promise<void>;
 };
 
@@ -31,10 +36,16 @@ function createEmptyRow(): RecipeRow {
   return { key: crypto.randomUUID(), rawMaterial: null, quantity: 0 };
 }
 
-export function RecipeEditDialog({ open, onClose, variantName, initialItems, onSave }: RecipeEditDialogProps) {
-  const [items, setItems] = useState<RecipeRow[]>(() =>
-    initialItems.length > 0 ? initialItems : [createEmptyRow()],
-  );
+export function RecipeFormDialog({ open, variant, onClose, onSave }: RecipeFormDialogProps) {
+  const [items, setItems] = useState<RecipeRow[]>([createEmptyRow()]);
+
+  useEffect(() => {
+    if (variant) {
+      setItems(variant.items.length > 0 ? variant.items : [createEmptyRow()]);
+    }
+  }, [variant]);
+
+  if (!variant) return null;
 
   const updateItem = (key: string, updates: Partial<RecipeRow>) => {
     setItems((prev) => prev.map((item) => (item.key === key ? { ...item, ...updates } : item)));
@@ -52,7 +63,6 @@ export function RecipeEditDialog({ open, onClose, variantName, initialItems, onS
   };
 
   const selectedIds = items.filter((item) => item.rawMaterial).map((item) => item.rawMaterial!.id);
-
   const isValid = items.some((item) => item.rawMaterial && item.quantity > 0);
 
   const handleSave = async () => {
@@ -62,35 +72,35 @@ export function RecipeEditDialog({ open, onClose, variantName, initialItems, onS
     onClose();
   };
 
-  const handleClose = () => {
-    setItems(initialItems.length > 0 ? initialItems : [createEmptyRow()]);
-    onClose();
-  };
-
   return (
-    <LoonasDialog title={`Resep — ${variantName}`} width="lg" open={open} onClose={handleClose}>
+    <LoonasDialog title={`Resep — ${variant.variantName}`} width="lg" open={open} onClose={onClose}>
       <div className="mt-4 flex flex-col gap-y-4">
-        <div className="flex flex-col gap-y-2">
+        {/* Column headers */}
+        <div className="grid grid-cols-[1fr_120px_60px_32px] items-end gap-x-3">
+          <span className="text-sm font-medium text-neutral-400">Bahan Baku</span>
+          <span className="text-sm font-medium text-neutral-400">Jumlah</span>
+          <span className="text-sm font-medium text-neutral-400">Satuan</span>
+          <span />
+        </div>
+
+        {/* Rows */}
+        <div className="flex flex-col gap-y-3">
           {items.map((item) => (
-            <div key={item.key} className="flex flex-row items-center gap-x-3">
-              <div className="flex-[3]">
-                <RawMaterialCombobox
-                  value={item.rawMaterial}
-                  onChange={(val) => updateItem(item.key, { rawMaterial: val })}
-                  excludeIds={selectedIds.filter((id) => id !== item.rawMaterial?.id)}
-                />
-              </div>
-              <div className="flex-[1]">
-                <CurrencyInput
-                  label=""
-                  leftIcon={null}
-                  placeholder="0"
-                  value={item.quantity}
-                  onChange={(val) => updateItem(item.key, { quantity: val })}
-                  required={false}
-                />
-              </div>
-              <span className="w-12 shrink-0 text-sm text-neutral-300">
+            <div key={item.key} className="grid grid-cols-[1fr_120px_60px_32px] items-center gap-x-3">
+              <RawMaterialCombobox
+                value={item.rawMaterial}
+                onChange={(val) => updateItem(item.key, { rawMaterial: val })}
+                excludeIds={selectedIds.filter((id) => id !== item.rawMaterial?.id)}
+              />
+              <CurrencyInput
+                label=""
+                leftIcon={null}
+                placeholder="0"
+                value={item.quantity}
+                onChange={(val) => updateItem(item.key, { quantity: val })}
+                required={false}
+              />
+              <span className="flex h-11 items-center text-sm text-neutral-300">
                 {item.rawMaterial
                   ? (RawMaterialUnitLabel[item.rawMaterial.unit as RawMaterialUnitType]?.split(" ")[0]?.toLowerCase() ??
                     item.rawMaterial.unit)
@@ -116,7 +126,7 @@ export function RecipeEditDialog({ open, onClose, variantName, initialItems, onS
         </button>
 
         <DialogFooter>
-          <SecondaryButton outlined label="Batal" onClick={handleClose} />
+          <SecondaryButton outlined label="Batal" onClick={onClose} />
           <PrimaryButton label="Simpan Resep" disabled={!isValid} onClick={handleSave} className="w-auto px-6" />
         </DialogFooter>
       </div>
