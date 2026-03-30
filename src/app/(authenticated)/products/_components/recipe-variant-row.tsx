@@ -9,6 +9,7 @@ import { RecipeRow } from "@/app/(authenticated)/products/_components/recipe-for
 type RecipeVariantRowProps = {
   variantId: string;
   variantName: string;
+  hasRecipe: boolean;
   recipeItems: RecipeRow[];
   loading: boolean;
   expanded: boolean;
@@ -19,6 +20,7 @@ type RecipeVariantRowProps = {
 
 export function RecipeVariantRow({
   variantName,
+  hasRecipe,
   recipeItems,
   loading,
   expanded,
@@ -26,7 +28,6 @@ export function RecipeVariantRow({
   onToggleExpand,
   onEdit,
 }: RecipeVariantRowProps) {
-  const hasRecipe = recipeItems.length > 0;
 
   return (
     <div className={clsx(!isLast && "border-b border-neutral-100")}>
@@ -55,18 +56,29 @@ export function RecipeVariantRow({
 
       {expanded && hasRecipe && (
         <div className="border-t border-neutral-50 bg-neutral-50/50 px-11 py-2">
-          {recipeItems.map((item) => (
-            <div key={item.key} className="py-1 text-sm text-neutral-400">
-              {item.rawMaterial?.label}{" "}
-              <span className="text-neutral-300">
-                {item.quantity}{" "}
-                {item.rawMaterial
-                  ? (RawMaterialUnitLabel[item.rawMaterial.unit as RawMaterialUnitType]?.split(" ")[0]?.toLowerCase() ??
-                      item.rawMaterial.unit)
-                  : ""}
-              </span>
-            </div>
-          ))}
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs font-medium text-neutral-300">
+                <th className="pb-1 font-medium">Bahan Baku</th>
+                <th className="pb-1 font-medium">Jumlah</th>
+                <th className="pb-1 font-medium">Satuan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recipeItems.map((item) => (
+                <tr key={item.key}>
+                  <td className="py-1 text-neutral-400">{item.rawMaterial?.label}</td>
+                  <td className="py-1 text-neutral-400">{item.quantity}</td>
+                  <td className="py-1 text-neutral-300">
+                    {item.rawMaterial
+                      ? (RawMaterialUnitLabel[item.rawMaterial.unit as RawMaterialUnitType]?.split(" ")[0]?.toLowerCase() ??
+                          item.rawMaterial.unit)
+                      : ""}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

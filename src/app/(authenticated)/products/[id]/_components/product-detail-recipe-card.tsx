@@ -41,6 +41,7 @@ function ProductDetailRecipeCardInner() {
               productId={product.id}
               variantId={variant.id}
               variantName={recipe.applyAll ? "Semua Varian" : variant.name}
+              hasRecipe={variant.metadata?.hasRecipe ?? false}
               expanded={recipe.applyAll || recipe.expandedId === variant.id}
               isLast={index === displayVariants.length - 1}
               onToggleExpand={() => recipe.setExpandedId(recipe.expandedId === variant.id ? null : variant.id)}
@@ -71,6 +72,7 @@ function VariantRowWithData({
   productId,
   variantId,
   variantName,
+  hasRecipe,
   expanded,
   isLast,
   onToggleExpand,
@@ -79,6 +81,7 @@ function VariantRowWithData({
   productId: string;
   variantId: string;
   variantName: string;
+  hasRecipe: boolean;
   expanded: boolean;
   isLast: boolean;
   onToggleExpand: () => void;
@@ -90,6 +93,7 @@ function VariantRowWithData({
     <RecipeVariantRow
       variantId={variantId}
       variantName={variantName}
+      hasRecipe={hasRecipe}
       recipeItems={recipeRows}
       loading={loading}
       expanded={expanded}

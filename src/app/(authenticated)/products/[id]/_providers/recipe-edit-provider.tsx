@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
-import { ProductVariantEntity } from "@/features/product/domain/entities/product-variant";
+import { VariantEntity } from "@/features/product/domain/entities/variant";
 import { RecipeItemEntity } from "@/features/product/domain/entities/recipe-item";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useGetRecipe } from "@/features/product/presentations/hooks/use-get-recipe";
@@ -19,7 +19,7 @@ function recipeItemsToRows(items: RecipeItemEntity[]): RecipeRow[] {
   }));
 }
 
-export function useRecipeEdit(productId: string, variants: ProductVariantEntity[]) {
+export function useRecipeEdit(productId: string, variants: VariantEntity[]) {
   const { showToast } = useToast();
   const { trigger: saveRecipe } = useSaveRecipe();
 
@@ -57,7 +57,7 @@ export function useRecipeEdit(productId: string, variants: ProductVariantEntity[
       } else {
         await saveRecipe({ productId, variantId: formVariant.variantId, items: saveItems });
       }
-      await revalidateSWRKey(PRODUCT_SWR_KEYS.GET_RECIPE);
+      await revalidateSWRKey(PRODUCT_SWR_KEYS.GET_RECIPE, PRODUCT_SWR_KEYS.GET_PRODUCT);
       showToast("Resep berhasil disimpan", "success");
     } catch {
       showToast("Gagal menyimpan resep", "error");

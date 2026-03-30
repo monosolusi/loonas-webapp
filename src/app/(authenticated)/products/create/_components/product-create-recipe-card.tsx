@@ -61,6 +61,7 @@ export function ProductCreateRecipeCard() {
               key={variant.key}
               variantId={variant.key}
               variantName={applyAll ? "Semua Varian" : variant.name}
+              hasRecipe={getVariantRecipe(variant.key).length > 0}
               recipeItems={getVariantRecipe(variant.key)}
               loading={false}
               expanded={applyAll || expandedId === variant.key}
