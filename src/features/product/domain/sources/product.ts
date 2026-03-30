@@ -1,12 +1,14 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { ProductModel } from "@/features/product/data/models/product";
 import { ProductPhotoModel } from "@/features/product/data/models/product-photo";
+import { RecipeItemModel } from "@/features/product/data/models/recipe-item";
 import {
   CreateProductParams,
   UpdateProductParams,
   ListProductsParams,
   AddVariantParams,
   UpdateVariantParams,
+  SaveRecipeParams,
 } from "@/features/product/domain/repositories/product";
 
 export type ListProductsServiceResult = {
@@ -25,4 +27,6 @@ export interface ProductService {
   addVariant(productId: string, params: AddVariantParams, session: SessionEntity): Promise<void>;
   updateVariant(productId: string, variantId: string, params: UpdateVariantParams, session: SessionEntity): Promise<void>;
   deleteVariant(productId: string, variantId: string, session: SessionEntity): Promise<void>;
+  getRecipe(productId: string, variantId: string, session: SessionEntity): Promise<RecipeItemModel[]>;
+  saveRecipe(productId: string, variantId: string, params: SaveRecipeParams, session: SessionEntity): Promise<void>;
 }

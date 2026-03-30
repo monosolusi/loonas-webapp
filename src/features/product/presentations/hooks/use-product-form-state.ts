@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ProductStatus } from "@/features/product/domain/enums/product-status";
 import { ProductType } from "@/features/product/domain/enums/product-type";
 import { VariantFormRow } from "@/app/(authenticated)/products/_components/variant-table";
 
@@ -14,7 +13,7 @@ export function useProductFormState() {
   const [sku, setSku] = useState("");
   const [type, setType] = useState<string>(ProductType.TRADING);
   const [productionMode, setProductionMode] = useState<string | null>(null);
-  const [status, setStatus] = useState<string>(ProductStatus.ACTIVE);
+  const [active, setActive] = useState(true);
   const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
   const [photos, setPhotos] = useState<File[]>([]);
   const [hasVariants, setHasVariants] = useState(false);
@@ -34,7 +33,7 @@ export function useProductFormState() {
     setSku("");
     setType(ProductType.TRADING);
     setProductionMode(null);
-    setStatus(ProductStatus.ACTIVE);
+    setActive(true);
     setCategoryId(undefined);
     setPhotos([]);
     setHasVariants(false);
@@ -51,8 +50,8 @@ export function useProductFormState() {
     setType,
     productionMode,
     setProductionMode,
-    status,
-    setStatus,
+    active,
+    setActive,
     categoryId,
     setCategoryId,
     photos,

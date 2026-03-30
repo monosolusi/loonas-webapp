@@ -2,6 +2,7 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { ProductModel } from "@/features/product/data/models/product";
 import { ProductPhotoModel } from "@/features/product/data/models/product-photo";
+import { RecipeItemModel } from "@/features/product/data/models/recipe-item";
 import { ProductService, ListProductsServiceResult } from "@/features/product/domain/sources/product";
 import {
   CreateProductParams,
@@ -9,6 +10,7 @@ import {
   ListProductsParams,
   AddVariantParams,
   UpdateVariantParams,
+  SaveRecipeParams,
 } from "@/features/product/domain/repositories/product";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
@@ -22,7 +24,6 @@ export class ProductServiceImpl implements ProductService {
       if (params.limit) searchParams["limit"] = String(params.limit);
       if (params.categoryIds && params.categoryIds.length > 0) searchParams["category_id"] = params.categoryIds.join(",");
       if (params.type) searchParams["type"] = params.type;
-      if (params.status) searchParams["status"] = params.status;
       if (params.search) searchParams["search"] = params.search;
 
       const result = await this.http.request({
@@ -71,10 +72,17 @@ export class ProductServiceImpl implements ProductService {
         name: params.name,
         sku: params.sku,
         type: params.type,
-        variants: params.variants,
+        variants: params.variants.map((v) => {
+          const variant: Record<string, any> = { name: v.name, price: v.price };
+          if (v.sku) variant["sku"] = v.sku;
+          if (v.recipe && v.recipe.length > 0) {
+            variant["recipe"] = v.recipe.map((r) => ({ raw_material_id: r.rawMaterialId, quantity: r.quantity }));
+          }
+          return variant;
+        }),
       };
       if (params.productionMode) body["production_mode"] = params.productionMode;
-      if (params.status) body["status"] = params.status;
+      if (params.active !== undefined) body["active"] = params.active;
       if (params.categoryId) body["category_id"] = params.categoryId;
 
       const result = await this.http.request({
@@ -97,8 +105,8 @@ export class ProductServiceImpl implements ProductService {
       if (params.name !== undefined) body["name"] = params.name;
       if (params.sku !== undefined) body["sku"] = params.sku;
       if (params.type !== undefined) body["type"] = params.type;
-      if (params.type !== undefined) body["production_mode"] = params.productionMode ?? null;
-      if (params.status !== undefined) body["status"] = params.status;
+      if (params.productionMode !== undefined) body["production_mode"] = params.productionMode ?? null;
+      if (params.active !== undefined) body["active"] = params.active;
       if (params.categoryId !== undefined) body["category_id"] = params.categoryId;
 
       const result = await this.http.request({
@@ -208,6 +216,48 @@ export class ProductServiceImpl implements ProductService {
       await this.http.request({
         path: `/products/${productId}/variants/${variantId}`,
         method: "DELETE",
+        session,
+      });
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async getRecipe(productId: string, variantId: string, session: SessionEntity): Promise<RecipeItemModel[]> {
+    try {
+      const result = await this.http.request({
+        path: `/products/${productId}/variants/${variantId}/recipes`,
+        method: "GET",
+        session,
+      });
+
+      const items = result?.data;
+      if (!Array.isArray(items)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      return items.map(RecipeItemModel.fromJson);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async saveRecipe(
+    productId: string,
+    variantId: string,
+    params: SaveRecipeParams,
+    session: SessionEntity,
+  ): Promise<void> {
+    try {
+      await this.http.request({
+        path: `/products/${productId}/variants/${variantId}/recipes`,
+        method: "PUT",
+        body: {
+          items: params.items.map((item) => ({
+            raw_material_id: item.rawMaterialId,
+            quantity: item.quantity,
+          })),
+        },
         session,
       });
     } catch (err) {

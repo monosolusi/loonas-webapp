@@ -2,15 +2,16 @@ import { DataState } from "@/core/resources/data-state";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { ProductEntity } from "@/features/product/domain/entities/product";
 import { ProductPhotoEntity } from "@/features/product/domain/entities/product-photo";
+import { RecipeItemEntity } from "@/features/product/domain/entities/recipe-item";
 
 export type CreateProductParams = {
   name: string;
   sku: string;
   type: string;
   productionMode?: string | null;
-  status?: string;
+  active?: boolean;
   categoryId?: string;
-  variants: { name: string; sku?: string; price: number }[];
+  variants: { name: string; sku?: string; price: number; recipe?: { rawMaterialId: string; quantity: number }[] }[];
 };
 
 export type UpdateProductParams = {
@@ -18,7 +19,7 @@ export type UpdateProductParams = {
   sku?: string;
   type?: string;
   productionMode?: string | null;
-  status?: string;
+  active?: boolean;
   categoryId?: string | null;
 };
 
@@ -27,7 +28,6 @@ export type ListProductsParams = {
   limit?: number;
   type?: string;
   categoryIds?: string[];
-  status?: string;
   search?: string;
 };
 
@@ -48,6 +48,10 @@ export type UpdateVariantParams = {
   price?: number;
 };
 
+export type SaveRecipeParams = {
+  items: { rawMaterialId: string; quantity: number }[];
+};
+
 export interface ProductRepository {
   list(params: ListProductsParams, session: SessionEntity): Promise<DataState<ListProductsResult>>;
   get(id: string, session: SessionEntity): Promise<DataState<ProductEntity>>;
@@ -59,4 +63,6 @@ export interface ProductRepository {
   addVariant(productId: string, params: AddVariantParams, session: SessionEntity): Promise<DataState<void>>;
   updateVariant(productId: string, variantId: string, params: UpdateVariantParams, session: SessionEntity): Promise<DataState<void>>;
   deleteVariant(productId: string, variantId: string, session: SessionEntity): Promise<DataState<void>>;
+  getRecipe(productId: string, variantId: string, session: SessionEntity): Promise<DataState<RecipeItemEntity[]>>;
+  saveRecipe(productId: string, variantId: string, params: SaveRecipeParams, session: SessionEntity): Promise<DataState<void>>;
 }

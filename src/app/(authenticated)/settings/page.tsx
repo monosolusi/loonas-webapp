@@ -75,10 +75,24 @@ export default function SettingsPage() {
       active: false,
     },
     {
-      href: "/settings/product-categories",
+      href: "/settings/categories",
       iconSrc: "/assets/images/box-icon-primary-300-w16-h16.svg",
       title: "Kategori Produk",
       description: "Kelola kategori untuk mengorganisasi katalog produk Anda.",
+      active: true,
+    },
+    {
+      href: "/settings/raw-materials",
+      iconSrc: "/assets/images/box-icon-primary-300-w16-h16.svg",
+      title: "Bahan Baku",
+      description: "Kelola daftar bahan baku untuk resep produk olahan.",
+      active: true,
+    },
+    {
+      href: "/settings/fixed-costs",
+      iconSrc: "/assets/images/chart-icon-primary-300-w16-h16.svg",
+      title: "Biaya Tetap",
+      description: "Kelola jenis biaya tetap bulanan seperti sewa, gaji, dan listrik.",
       active: true,
     },
   ];

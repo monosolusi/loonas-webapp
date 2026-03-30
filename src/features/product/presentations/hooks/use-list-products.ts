@@ -18,7 +18,6 @@ type UseListProductsParams = {
   limit?: number;
   type?: string;
   categoryIds?: string[];
-  status?: string;
   search?: string;
 };
 

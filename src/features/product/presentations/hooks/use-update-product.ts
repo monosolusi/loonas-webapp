@@ -32,7 +32,7 @@ async function UpdateProductFetcher(_: string, { arg }: { arg: UpdateProductFetc
       sku: arg.sku,
       type: arg.type,
       productionMode: arg.productionMode,
-      status: arg.status,
+      active: arg.active,
       categoryId: arg.categoryId,
     }),
   );

@@ -30,6 +30,10 @@ Clean Architecture with feature-based modules. Three layers per feature:
 src/
 ├── app/                              # Next.js pages & layouts
 │   ├── (authenticated)/              # Protected routes (Clerk)
+│   │   └── {route}/
+│   │       ├── page.tsx              # Composition only — wraps provider + components
+│   │       ├── _providers/           # Page-level context providers
+│   │       └── _components/          # Components that consume context
 │   ├── (authentication)/             # Sign-in, reset-password
 │   ├── (user)/                       # Onboarding
 │   └── (external-app)/              # Public external routes
@@ -60,8 +64,16 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **Type guards**: `domain/guards/` contains `instanceof` checks for discriminating entity types
 - **SectionCard**: Standard card component (`rounded-lg`, `border-neutral-200`, icon header) for detail pages
 - **Skeleton loading**: Loading states use `animate-pulse` placeholder divs inside `SectionCard`
+- **Interactive element height**: All interactive elements (buttons, inputs, selects, custom controls) use `h-11` (44px) for consistent vertical rhythm. Exception: icon-only action buttons (edit, delete) in tables use `size-8` (32px).
 - **Account resolution**: Backend resolves account from Clerk JWT `orgId` (set via `setActive({ organization })`). Frontend never sends account ID in headers or params — only `Authorization: Bearer {token}`
-- **Session parameter order**: In repository and service method signatures, `session: SessionEntity` must always be the **last** parameter. Business params come first: `list(search, session)`, `invite(email, session)`, `update(id, params, session)`.
+- **Session parameter order**: In repository and service method signatures, `session: SessionEntity` must always be the **last** parameter. Methods have **maximum 2 parameters**: `(params, session)`. All business parameters grouped into a single object: `list({ search, page }, session)`, `update({ id, name, status }, session)`.
+- **SWR key management**: SWR keys defined as constants in `presentations/constants/swr-keys.ts`. Use `revalidateSWRKey()` to invalidate cache after mutations. Hooks use these constants, never hardcoded strings.
+- **UseCase params independence**: Use case param types are defined in the use case file itself. Use cases MUST NOT import param types from repositories or sources. The use case defines its own params, then maps to repo params internally.
+- **UseCase workflow**: `execute()` should read like a clean workflow — delegate to private methods. Common pattern: `resolveSession()` as private method that throws on failure, then private action methods that call repository.
+- **Provider pattern (feature-level)**: When a feature needs shared state across components, extract to a provider in `features/{feature}/presentations/providers/`. Provider exports a `use{Name}()` hook via `createContext`/`useContext`.
+- **Provider pattern (page-level)**: Complex pages use `_providers/` folder next to `_components/`. Provider manages state, hooks, and actions. Components in `_components/` consume context individually. Page (`page.tsx`) only composes provider + components — no business logic.
+- **Component context rule**: When a component needs context data, it consumes context itself inside `_components/`. Page does not wrap children in a single content component — each component is self-contained.
+- **Interface Segregation (repositories)**: When a feature has distinct sub-resources (e.g., master + entries), split into separate repository/source interfaces, implementations, and files. Each concern gets its own file: `fixed-cost.ts` (master) + `fixed-cost-entry.ts` (entries).
 
 ### HTTP Requests
 
@@ -86,6 +98,8 @@ Custom `HttpRequest` class injects Clerk session headers:
 | `selectedAccount` on `SessionEntity`/`SessionModel` | Account resolved server-side from JWT; no client-side account on session |
 | `requireAccount` in `HttpRequest` config | Removed — account resolution is implicit via JWT |
 | `SelectedAccountProvider` context value | Deprecated — provider only handles redirects; use `useGetCurrentAccount()` for account data |
+| `*-impl.tsx` monolith pattern (new code) | Provider + split components pattern. Page composes provider + components, each component consumes context. Existing pages will be migrated gradually. |
+| `InvoiceTableShell` (new code) | `TableToolbar`, `TableSearch`, `TableHeader`, `TableContainer` from `core/presentations/components/table/`. Existing pages will be migrated gradually. |
 
 ### Environment
 
@@ -113,6 +127,7 @@ Always use `@/` path alias (maps to `src/`). No relative imports.
 | Repo impls | `data/repositories/{noun}.ts` | `invoice.ts` |
 | Services | `data/sources/{noun}.ts` | `invoice.ts` |
 | Factories | `{noun}-factory.ts` | `pay-in-detail-factory.ts` |
+| Providers (page-level) | `_providers/{noun}-provider.tsx` | `fixed-cost-entries-provider.tsx` |
 
 Directories use kebab-case. Components use kebab-case filenames.
 

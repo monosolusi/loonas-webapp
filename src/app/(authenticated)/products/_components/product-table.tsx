@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import clsx from "clsx";
 import { PaginationMeta } from "@/core/resources/paginated";
-import { ProductStatus } from "@/features/product/domain/enums/product-status";
 import { ProductType, ProductTypeLabel, ProductTypeType } from "@/features/product/domain/enums/product-type";
 import { ProductionModeLabel, ProductionModeType } from "@/features/product/domain/enums/production-mode";
 import { TablePagination } from "@/app/(authenticated)/invoices/_components/table-pagination";
@@ -17,10 +16,13 @@ export interface ProductTableRow {
   type: string;
   productionMode: string | null;
   category: string | null;
-  status: string;
+  active: boolean;
+  userActive: boolean | null;
   displayPrice: string;
   variantCount: number;
   primaryPhotoUrl: string | null;
+  recipeComplete: boolean | null;
+  missingRecipeVariants: string[];
 }
 
 interface ProductTableProps {
@@ -28,7 +30,8 @@ interface ProductTableProps {
   meta: PaginationMeta;
   currentPage: number;
   onPageChange: (page: number) => void;
-  onToggleStatus?: (id: string, newStatus: string) => Promise<void>;
+  onToggleActive?: (id: string, active: boolean) => Promise<void>;
+  onToggleBlocked?: (missingVariants: string[]) => void;
 }
 
 function MiniToggle({ active }: { active: boolean }) {
@@ -51,35 +54,42 @@ function MiniToggle({ active }: { active: boolean }) {
 
 function ProductRow({
   product,
-  onToggleStatus,
+  onToggleActive,
+  onToggleBlocked,
 }: {
   product: ProductTableRow;
-  onToggleStatus?: (id: string, newStatus: string) => Promise<void>;
+  onToggleActive?: (id: string, active: boolean) => Promise<void>;
+  onToggleBlocked?: (missingVariants: string[]) => void;
 }) {
-  const [optimisticStatus, setOptimisticStatus] = useState(product.status);
-  const prevServerStatus = useRef(product.status);
-  const isActive = optimisticStatus === ProductStatus.ACTIVE;
+  const toggleState = product.userActive ?? product.active;
+  const [optimisticActive, setOptimisticActive] = useState(toggleState);
+  const prevServerState = useRef(toggleState);
 
-  // Sync when server data actually changes (after revalidation)
   useEffect(() => {
-    if (product.status !== prevServerStatus.current) {
-      setOptimisticStatus(product.status);
-      prevServerStatus.current = product.status;
+    const current = product.userActive ?? product.active;
+    if (current !== prevServerState.current) {
+      setOptimisticActive(current);
+      prevServerState.current = current;
     }
-  }, [product.status]);
+  }, [product.active, product.userActive]);
 
   const handleToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!onToggleStatus) return;
+    if (!onToggleActive) return;
 
-    const newStatus = isActive ? ProductStatus.INACTIVE : ProductStatus.ACTIVE;
-    setOptimisticStatus(newStatus);
+    const newActive = !optimisticActive;
 
+    if (newActive && product.type === ProductType.MANUFACTURED && product.recipeComplete === false) {
+      onToggleBlocked?.(product.missingRecipeVariants);
+      return;
+    }
+
+    setOptimisticActive(newActive);
     try {
-      await onToggleStatus(product.id, newStatus);
+      await onToggleActive(product.id, newActive);
     } catch {
-      setOptimisticStatus(product.status);
+      setOptimisticActive(toggleState);
     }
   };
 
@@ -88,7 +98,7 @@ function ProductRow({
       href={`/products/${product.id}`}
       className={clsx(
         "hover:border-l-primary-300 hover:bg-primary-50 grid cursor-pointer grid-cols-[2fr_1fr_0.8fr_0.8fr_0.7fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0 transition-opacity",
-        !isActive && "opacity-50",
+        !product.active && "opacity-50",
       )}
     >
       <div className="flex flex-row items-center gap-x-3">
@@ -114,6 +124,9 @@ function ProductRow({
             {ProductionModeLabel[product.productionMode as ProductionModeType]}
           </span>
         )}
+        {product.recipeComplete === false && (
+          <span className="text-xs leading-4 text-warning-300">Resep belum lengkap</span>
+        )}
       </div>
       <span className="text-sm leading-5 text-neutral-400">{product.category ?? "-"}</span>
       <button
@@ -121,9 +134,9 @@ function ProductRow({
         onClick={handleToggle}
         className="flex flex-row items-center gap-x-2"
       >
-        <MiniToggle active={isActive} />
-        <span className={clsx("text-xs font-medium", isActive ? "text-success-300" : "text-neutral-300")}>
-          {isActive ? "Aktif" : "Nonaktif"}
+        <MiniToggle active={optimisticActive} />
+        <span className={clsx("text-xs font-medium", optimisticActive ? "text-success-300" : "text-neutral-300")}>
+          {optimisticActive ? "Aktif" : "Nonaktif"}
         </span>
       </button>
       <span className="text-right text-sm leading-5 font-semibold text-neutral-500">{product.displayPrice}</span>
@@ -131,11 +144,11 @@ function ProductRow({
   );
 }
 
-export function ProductTable({ rows, meta, currentPage, onPageChange, onToggleStatus }: ProductTableProps) {
+export function ProductTable({ rows, meta, currentPage, onPageChange, onToggleActive, onToggleBlocked }: ProductTableProps) {
   return (
     <>
       {rows.map((product) => (
-        <ProductRow key={product.id} product={product} onToggleStatus={onToggleStatus} />
+        <ProductRow key={product.id} product={product} onToggleActive={onToggleActive} onToggleBlocked={onToggleBlocked} />
       ))}
       <TablePagination displayedCount={rows.length} meta={meta} currentPage={currentPage} onPageChange={onPageChange} />
     </>

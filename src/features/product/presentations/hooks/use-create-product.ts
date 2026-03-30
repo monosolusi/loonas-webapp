@@ -30,7 +30,7 @@ async function CreateProductFetcher(_: string, { arg }: { arg: CreateProductFetc
       sku: arg.sku,
       type: arg.type,
       productionMode: arg.productionMode,
-      status: arg.status,
+      active: arg.active,
       categoryId: arg.categoryId,
       variants: arg.variants,
     }),
