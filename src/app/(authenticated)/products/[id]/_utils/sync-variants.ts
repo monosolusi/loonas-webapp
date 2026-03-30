@@ -1,8 +1,8 @@
 import { DEFAULT_VARIANT_NAME } from "@/features/product/domain/constants/default-variant";
-import { ProductVariantEntity } from "@/features/product/domain/entities/product-variant";
+import { VariantEntity } from "@/features/product/domain/entities/variant";
 import { VariantFormRow } from "@/app/(authenticated)/products/_components/variant-table";
 
-function isVariantChanged(local: VariantFormRow, original: ProductVariantEntity): boolean {
+function isVariantChanged(local: VariantFormRow, original: VariantEntity): boolean {
   return local.name !== original.name || local.sku !== (original.sku ?? "") || local.price !== original.price;
 }
 
@@ -11,7 +11,7 @@ type SyncVariantsParams = {
   hasVariants: boolean;
   variants: VariantFormRow[];
   singlePrice: number;
-  originalVariants: ProductVariantEntity[];
+  originalVariants: VariantEntity[];
   addVariant: (params: { productId: string; name: string; sku?: string; price: number }) => Promise<unknown>;
   updateVariant: (params: {
     productId: string;
