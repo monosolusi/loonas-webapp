@@ -67,7 +67,7 @@ export function ProductDetailProvider({ id, children }: ProductDetailProviderPro
     form.setSku(product.sku);
     form.setType(product.type);
     form.setProductionMode(product.productionMode);
-    form.setStatus(product.status);
+    form.setActive(product.metadata?.userActive ?? product.active);
     form.setCategoryId(product.category?.id);
     form.setPhotos([]);
     setDeletedPhotoIds([]);
@@ -91,7 +91,7 @@ export function ProductDetailProvider({ id, children }: ProductDetailProviderPro
     if (form.sku !== product.sku) return true;
     if (form.type !== product.type) return true;
     if (form.productionMode !== product.productionMode) return true;
-    if (form.status !== product.status) return true;
+    if (form.active !== (product.metadata?.userActive ?? product.active)) return true;
     if (form.categoryId !== product.category?.id) return true;
     if (form.photos.length > 0) return true;
     if (deletedPhotoIds.length > 0) return true;
@@ -106,7 +106,7 @@ export function ProductDetailProvider({ id, children }: ProductDetailProviderPro
       }
     }
     return false;
-  }, [product, form.name, form.sku, form.type, form.productionMode, form.status, form.categoryId, form.photos, deletedPhotoIds, form.hasVariants, form.singlePrice, form.variants, hydratedVersion]);
+  }, [product, form.name, form.sku, form.type, form.productionMode, form.active, form.categoryId, form.photos, deletedPhotoIds, form.hasVariants, form.singlePrice, form.variants, hydratedVersion]);
 
   // Save orchestration
   const handleSave = async () => {
@@ -116,7 +116,7 @@ export function ProductDetailProvider({ id, children }: ProductDetailProviderPro
         id,
         name: form.name.trim(),
         sku: form.sku.trim(),
-        status: form.status,
+        active: form.active,
         categoryId: form.categoryId ?? null,
       };
 

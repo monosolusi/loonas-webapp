@@ -12,6 +12,7 @@ import { ProductDetailStatusCard } from "@/app/(authenticated)/products/[id]/_co
 import { ProductDetailCategoryCard } from "@/app/(authenticated)/products/[id]/_components/product-detail-category-card";
 import { ProductDetailSaveButton } from "@/app/(authenticated)/products/[id]/_components/product-detail-save-button";
 import { ProductDetailDeleteButton } from "@/app/(authenticated)/products/[id]/_components/product-detail-delete-button";
+import { ProductDetailRecipeWarning } from "@/app/(authenticated)/products/[id]/_components/product-detail-recipe-warning";
 
 type ProductDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -25,6 +26,7 @@ function ProductDetailContent() {
   return (
     <div className="flex flex-col gap-y-6">
       <ProductDetailHeader />
+      <ProductDetailRecipeWarning />
       <div className="flex flex-row gap-x-6">
         <div className="flex min-w-0 flex-1 flex-col gap-y-6">
           <ProductDetailInfoCard />

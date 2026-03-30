@@ -9,7 +9,7 @@ export type CreateProductParams = {
   sku: string;
   type: string;
   productionMode?: string | null;
-  status?: string;
+  active?: boolean;
   categoryId?: string;
   variants: { name: string; sku?: string; price: number; recipe?: { rawMaterialId: string; quantity: number }[] }[];
 };
@@ -19,7 +19,7 @@ export type UpdateProductParams = {
   sku?: string;
   type?: string;
   productionMode?: string | null;
-  status?: string;
+  active?: boolean;
   categoryId?: string | null;
 };
 
@@ -28,7 +28,6 @@ export type ListProductsParams = {
   limit?: number;
   type?: string;
   categoryIds?: string[];
-  status?: string;
   search?: string;
 };
 

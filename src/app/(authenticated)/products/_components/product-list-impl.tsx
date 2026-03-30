@@ -10,13 +10,13 @@ import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
-import { ProductStatus } from "@/features/product/domain/enums/product-status";
 import { ProductType, ProductTypeLabel, ProductTypeType } from "@/features/product/domain/enums/product-type";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useListProducts } from "@/features/product/presentations/hooks/use-list-products";
 import { useUpdateProduct } from "@/features/product/presentations/hooks/use-update-product";
 import { useListProductCategories } from "@/features/product/presentations/hooks/use-list-product-categories";
 import { ProductTable, ProductTableRow } from "@/app/(authenticated)/products/_components/product-table";
+import { ProductActivateBlockedDialog } from "@/app/(authenticated)/products/_components/product-activate-blocked-dialog";
 import { FilterDropdown, FilterPill } from "@/app/(authenticated)/products/_components/filter-dropdown";
 
 const TYPE_OPTIONS = Object.values(ProductType).map((value) => ({
@@ -24,32 +24,34 @@ const TYPE_OPTIONS = Object.values(ProductType).map((value) => ({
   value,
 }));
 
-const STATUS_OPTIONS = [
-  { label: "Aktif", value: ProductStatus.ACTIVE },
-  { label: "Nonaktif", value: ProductStatus.INACTIVE },
-];
-
 export function ProductListImpl() {
   const [page, setPage] = useState(1);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search.trim(), 500);
   const searchQuery = debouncedSearch.length >= 2 ? debouncedSearch : undefined;
 
+  const [blockedDialogOpen, setBlockedDialogOpen] = useState(false);
+  const [blockedVariants, setBlockedVariants] = useState<string[]>([]);
+
   const { trigger: updateProduct } = useUpdateProduct();
   const { showToast } = useToast();
 
-  const handleToggleStatus = async (productId: string, newStatus: string) => {
+  const handleToggleActive = async (productId: string, active: boolean) => {
     try {
-      await updateProduct({ id: productId, status: newStatus });
+      await updateProduct({ id: productId, active });
       await revalidateSWRKey(PRODUCT_SWR_KEYS.LIST_PRODUCTS);
-      showToast(newStatus === ProductStatus.ACTIVE ? "Produk diaktifkan" : "Produk dinonaktifkan", "success");
+      showToast(active ? "Produk diaktifkan" : "Produk dinonaktifkan", "success");
     } catch (err) {
       showToast("Gagal mengubah status produk", "error");
       throw err;
     }
+  };
+
+  const handleToggleBlocked = (missingVariants: string[]) => {
+    setBlockedVariants(missingVariants);
+    setBlockedDialogOpen(true);
   };
 
   const { products, meta, loading, error } = useListProducts({
@@ -57,14 +59,13 @@ export function ProductListImpl() {
     limit: 10,
     type: selectedTypes.length > 0 ? selectedTypes.join(",") : undefined,
     categoryIds: selectedCategories.length > 0 ? selectedCategories : undefined,
-    status: selectedStatuses.length === 1 ? selectedStatuses[0] : undefined,
     search: searchQuery,
   });
   const { categories } = useListProductCategories();
 
   const categoryOptions = categories.map((cat) => ({ label: cat.name, value: cat.id }));
 
-  const hasActiveFilters = selectedTypes.length > 0 || selectedCategories.length > 0 || selectedStatuses.length > 0;
+  const hasActiveFilters = selectedTypes.length > 0 || selectedCategories.length > 0;
 
   const handleFilterChange = () => setPage(1);
 
@@ -78,11 +79,6 @@ export function ProductListImpl() {
     handleFilterChange();
   };
 
-  const handleStatusesChange = (values: string[]) => {
-    setSelectedStatuses(values);
-    handleFilterChange();
-  };
-
   const removeType = (value: string) => {
     setSelectedTypes((prev) => prev.filter((v) => v !== value));
     handleFilterChange();
@@ -93,15 +89,9 @@ export function ProductListImpl() {
     handleFilterChange();
   };
 
-  const removeStatus = (value: string) => {
-    setSelectedStatuses((prev) => prev.filter((v) => v !== value));
-    handleFilterChange();
-  };
-
   const clearAllFilters = () => {
     setSelectedTypes([]);
     setSelectedCategories([]);
-    setSelectedStatuses([]);
     handleFilterChange();
   };
 
@@ -115,12 +105,6 @@ export function ProductListImpl() {
             selected={selectedTypes}
             onChange={handleTypesChange}
             multiple
-          />
-          <FilterDropdown
-            label="Status"
-            options={STATUS_OPTIONS}
-            selected={selectedStatuses}
-            onChange={handleStatusesChange}
           />
           <FilterDropdown
             label="Kategori"
@@ -172,12 +156,6 @@ export function ProductListImpl() {
               <FilterPill key={value} label={`Tipe: ${opt.label}`} onRemove={() => removeType(value)} />
             ) : null;
           })}
-          {selectedStatuses.map((value) => {
-            const opt = STATUS_OPTIONS.find((o) => o.value === value);
-            return opt ? (
-              <FilterPill key={value} label={`Status: ${opt.label}`} onRemove={() => removeStatus(value)} />
-            ) : null;
-          })}
           {selectedCategories.map((id) => {
             const cat = categories.find((c) => c.id === id);
             return cat ? (
@@ -214,37 +192,49 @@ export function ProductListImpl() {
     type: product.type,
     productionMode: product.productionMode,
     category: product.category?.name ?? null,
-    status: product.status,
+    active: product.active,
+    userActive: product.metadata?.userActive ?? null,
     displayPrice: product.displayPrice,
     variantCount: product.variants.length,
     primaryPhotoUrl: product.primaryPhoto?.publicUrl ?? null,
+    recipeComplete: product.metadata?.recipeComplete ?? null,
+    missingRecipeVariants: product.variants.filter((v) => v.metadata?.hasRecipe === false).map((v) => v.name),
   }));
 
   return (
-    <div className="flex flex-col gap-y-6">
-      <div className="flex flex-col gap-y-2">
-        <h1 className="text-3xl leading-9 font-bold tracking-tight">Produk</h1>
-        <p className="leading-6 text-neutral-300">{meta ? `${meta.total} produk` : "Memuat..."}</p>
+    <>
+      <div className="flex flex-col gap-y-6">
+        <div className="flex flex-col gap-y-2">
+          <h1 className="text-3xl leading-9 font-bold tracking-tight">Produk</h1>
+          <p className="leading-6 text-neutral-300">{meta ? `${meta.total} produk` : "Memuat..."}</p>
+        </div>
+
+        <InvoiceTableShell
+          toolbar={toolbar}
+          header={header}
+          loading={loading}
+          error={!!error}
+          empty={products.length === 0 && !loading}
+          emptyMessage="Belum ada produk. Tambahkan produk pertama Anda."
+        >
+          {meta && (
+            <ProductTable
+              rows={rows}
+              meta={meta}
+              currentPage={page}
+              onPageChange={setPage}
+              onToggleActive={handleToggleActive}
+              onToggleBlocked={handleToggleBlocked}
+            />
+          )}
+        </InvoiceTableShell>
       </div>
 
-      <InvoiceTableShell
-        toolbar={toolbar}
-        header={header}
-        loading={loading}
-        error={!!error}
-        empty={products.length === 0 && !loading}
-        emptyMessage="Belum ada produk. Tambahkan produk pertama Anda."
-      >
-        {meta && (
-          <ProductTable
-            rows={rows}
-            meta={meta}
-            currentPage={page}
-            onPageChange={setPage}
-            onToggleStatus={handleToggleStatus}
-          />
-        )}
-      </InvoiceTableShell>
-    </div>
+      <ProductActivateBlockedDialog
+        open={blockedDialogOpen}
+        missingVariants={blockedVariants}
+        onClose={() => setBlockedDialogOpen(false)}
+      />
+    </>
   );
 }

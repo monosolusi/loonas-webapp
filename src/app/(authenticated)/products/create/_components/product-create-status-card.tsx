@@ -6,5 +6,5 @@ import { useProductCreate } from "@/app/(authenticated)/products/create/_provide
 export function ProductCreateStatusCard() {
   const { form } = useProductCreate();
 
-  return <ProductStatusCard status={form.status} onStatusChange={form.setStatus} />;
+  return <ProductStatusCard active={form.active} onActiveChange={form.setActive} />;
 }

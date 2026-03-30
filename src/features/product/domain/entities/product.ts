@@ -1,9 +1,13 @@
 import { AbstractEntity } from "@/core/resources/entity";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import { ProductStatus } from "@/features/product/domain/enums/product-status";
 import { ProductCategoryEntity } from "@/features/product/domain/entities/product-category";
 import { ProductPhotoEntity } from "@/features/product/domain/entities/product-photo";
-import { ProductVariantEntity } from "@/features/product/domain/entities/product-variant";
+import { VariantEntity } from "@/features/product/domain/entities/variant";
+
+type ProductMetadata = {
+  userActive: boolean;
+  recipeComplete: boolean;
+};
 
 type ProductEntityConstructor = {
   id: string;
@@ -11,10 +15,11 @@ type ProductEntityConstructor = {
   sku: string;
   type: string;
   productionMode: string | null;
-  status: string;
+  active: boolean;
   category: ProductCategoryEntity | null;
   photos: ProductPhotoEntity[];
-  variants: ProductVariantEntity[];
+  variants: VariantEntity[];
+  metadata: ProductMetadata | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -25,10 +30,11 @@ export class ProductEntity implements AbstractEntity {
   public sku: string;
   public type: string;
   public productionMode: string | null;
-  public status: string;
+  public active: boolean;
   public category: ProductCategoryEntity | null;
   public photos: ProductPhotoEntity[];
-  public variants: ProductVariantEntity[];
+  public variants: VariantEntity[];
+  public metadata: ProductMetadata | null;
   public createdAt: string;
   public updatedAt: string;
 
@@ -38,16 +44,13 @@ export class ProductEntity implements AbstractEntity {
     this.sku = args.sku;
     this.type = args.type;
     this.productionMode = args.productionMode;
-    this.status = args.status;
+    this.active = args.active;
     this.category = args.category;
     this.photos = args.photos;
     this.variants = args.variants;
+    this.metadata = args.metadata;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
-  }
-
-  public get isActive(): boolean {
-    return this.status === ProductStatus.ACTIVE;
   }
 
   public get primaryPhoto(): ProductPhotoEntity | null {

@@ -83,7 +83,7 @@ export function ProductCreateProvider({ children }: ProductCreateProviderProps) 
         sku: form.sku.trim(),
         type: form.type,
         productionMode: form.productionMode,
-        status: form.status,
+        active: form.active,
         categoryId: form.categoryId,
         variants: variantParams,
       });
