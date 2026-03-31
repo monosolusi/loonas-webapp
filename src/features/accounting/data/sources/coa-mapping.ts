@@ -3,7 +3,7 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { CoaMappingModel } from "@/features/accounting/data/models/coa-mapping";
 import { CoaMappingService, ListCoaMappingsServiceResult } from "@/features/accounting/domain/sources/coa-mapping";
-import { ListCoaMappingsParams, CreateCoaMappingParams, UpdateCoaMappingParams } from "@/features/accounting/domain/repositories/coa-mapping";
+import { ListCoaMappingsParams } from "@/features/accounting/domain/repositories/coa-mapping";
 
 export class CoaMappingServiceImpl implements CoaMappingService {
   constructor(private readonly http: HttpRequest) {}
@@ -34,60 +34,6 @@ export class CoaMappingServiceImpl implements CoaMappingService {
           totalPages: result.meta?.total_pages ?? 1,
         },
       };
-    } catch (err) {
-      if (err instanceof ServerError) throw err;
-      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
-    }
-  }
-
-  public async create(params: CreateCoaMappingParams, session: SessionEntity): Promise<CoaMappingModel> {
-    try {
-      const body: Record<string, any> = {
-        entity_type: params.entityType,
-        debit_account_id: params.debitAccountId,
-        credit_account_id: params.creditAccountId,
-      };
-      if (params.entityId) body["entity_id"] = params.entityId;
-
-      const result = await this.http.request({
-        path: "/accounting/coa-mappings",
-        method: "POST",
-        body,
-        session,
-      });
-      return CoaMappingModel.fromJson(result);
-    } catch (err) {
-      if (err instanceof ServerError) throw err;
-      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
-    }
-  }
-
-  public async update(params: UpdateCoaMappingParams, session: SessionEntity): Promise<CoaMappingModel> {
-    try {
-      const body: Record<string, any> = {};
-      if (params.debitAccountId) body["debit_account_id"] = params.debitAccountId;
-      if (params.creditAccountId) body["credit_account_id"] = params.creditAccountId;
-
-      const result = await this.http.request({
-        path: `/accounting/coa-mappings/${params.id}`,
-        method: "PUT",
-        body,
-        session,
-      });
-      return CoaMappingModel.fromJson(result);
-    } catch (err) {
-      if (err instanceof ServerError) throw err;
-      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
-    }
-  }
-
-  public async delete(id: string, session: SessionEntity): Promise<void> {
-    try {
-      await this.http.request({
-        path: `/accounting/coa-mappings/${id}`,
-        method: "DELETE",
-        session,
-      });
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
