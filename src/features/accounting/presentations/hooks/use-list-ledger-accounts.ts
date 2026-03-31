@@ -13,10 +13,11 @@ import { LedgerAccountServiceImpl } from "@/features/accounting/data/sources/led
 import { ListLedgerAccountsUseCase, ListLedgerAccountsUseCaseParams } from "@/features/accounting/domain/usecases/list-ledger-accounts.usecases";
 import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledger-account";
 import { ListLedgerAccountsParams } from "@/features/accounting/domain/repositories/ledger-account";
+import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 
 type FetcherParams = { clerk: ReturnType<typeof useClerk>; params: ListLedgerAccountsParams };
 
-async function Fetcher([_, fp]: [string, FetcherParams]) {
+async function ListLedgerAccountFetcher([_, fp]: [string, FetcherParams]) {
   const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: fp.clerk }));
   const repo = new LedgerAccountRepositoryImpl(new LedgerAccountServiceImpl(new HttpRequest()));
   const uc = new ListLedgerAccountsUseCase(repo, sessionRepo);
@@ -30,6 +31,6 @@ type ReturnType_ = { accounts: LedgerAccountEntity[]; meta: PaginationMeta | nul
 
 export function useListLedgerAccounts(params: ListLedgerAccountsParams = {}): ReturnType_ {
   const clerk = useClerk();
-  const { data, isLoading, error } = useSWR(["list-ledger-accounts", { clerk, params }], Fetcher);
+  const { data, isLoading, error } = useSWR([ACCOUNTING_SWR_KEYS.LIST_LEDGER_ACCOUNTS, { clerk, params }], ListLedgerAccountFetcher);
   return { accounts: data?.accounts ?? [], meta: data?.meta ?? null, loading: isLoading, error: error instanceof ServerError ? error : null };
 }

@@ -1,3 +1,5 @@
+import clsx from "clsx";
+
 type TableHeaderColumn = {
   label: string;
   align?: "left" | "right";
@@ -5,16 +7,19 @@ type TableHeaderColumn = {
 
 type TableHeaderProps = {
   columns: TableHeaderColumn[];
-  gridCols: string;
+  className?: string;
 };
 
-export function TableHeader({ columns, gridCols }: TableHeaderProps) {
+export function TableHeader({ columns, className }: TableHeaderProps) {
   return (
-    <div className={`grid ${gridCols} border-b border-neutral-100 bg-neutral-50 px-6 py-3`}>
+    <div className={clsx("grid border-b border-neutral-100 bg-neutral-50 px-6 py-3", className)}>
       {columns.map((col) => (
         <span
           key={col.label}
-          className={`text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase ${col.align === "right" ? "text-right" : ""}`}
+          className={clsx(
+            "text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase",
+            col.align === "right" && "text-right",
+          )}
         >
           {col.label}
         </span>

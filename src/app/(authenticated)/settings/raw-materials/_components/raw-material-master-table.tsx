@@ -19,7 +19,7 @@ export function RawMaterialMasterTable() {
         emptyMessage="Belum ada bahan baku. Tambahkan bahan baku pertama Anda."
       >
         <TableHeader
-          gridCols="grid-cols-[3fr_1fr_120px]"
+          className="grid-cols-[3fr_1fr_120px]"
           columns={[{ label: "Nama" }, { label: "Satuan" }, { label: "Aksi", align: "right" }]}
         />
         {rawMaterials.map((item) => (

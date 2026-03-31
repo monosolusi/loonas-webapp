@@ -95,6 +95,13 @@ export default function SettingsPage() {
       description: "Kelola jenis biaya tetap bulanan seperti sewa, gaji, dan listrik.",
       active: true,
     },
+    {
+      href: "/settings/coa-mappings",
+      iconSrc: "/assets/images/chart-icon-primary-300-w16-h16.svg",
+      title: "Pemetaan Akun",
+      description: "Kelola pemetaan akun debit dan kredit untuk setiap jenis transaksi.",
+      active: true,
+    },
   ];
 
   return (
