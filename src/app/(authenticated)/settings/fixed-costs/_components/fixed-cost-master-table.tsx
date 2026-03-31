@@ -19,7 +19,7 @@ export function FixedCostMasterTable() {
         emptyMessage="Belum ada biaya tetap. Tambahkan jenis biaya pertama Anda."
       >
         <TableHeader
-          gridCols="grid-cols-[1fr_120px]"
+          className="grid-cols-[1fr_120px]"
           columns={[{ label: "Nama Biaya" }, { label: "Aksi", align: "right" }]}
         />
         {fixedCosts.map((item) => (
