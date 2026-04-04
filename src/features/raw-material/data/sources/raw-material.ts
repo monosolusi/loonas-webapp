@@ -47,6 +47,21 @@ export class RawMaterialServiceImpl implements RawMaterialService {
     }
   }
 
+  public async get(id: string, session: SessionEntity): Promise<RawMaterialModel> {
+    try {
+      const result = await this.http.request({
+        path: `/raw-materials/${id}`,
+        method: "GET",
+        session,
+      });
+
+      return RawMaterialModel.fromJson(result);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
   public async create(params: CreateRawMaterialParams, session: SessionEntity): Promise<RawMaterialModel> {
     try {
       const result = await this.http.request({

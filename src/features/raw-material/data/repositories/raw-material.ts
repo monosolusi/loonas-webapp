@@ -27,6 +27,16 @@ export class RawMaterialRepositoryImpl implements RawMaterialRepository {
     }
   }
 
+  public async get(id: string, session: SessionEntity): Promise<DataState<RawMaterialEntity>> {
+    try {
+      const result = await this.service.get(id, session);
+      return new DataSuccess(result.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
   public async create(params: CreateRawMaterialParams, session: SessionEntity): Promise<DataState<RawMaterialEntity>> {
     try {
       const result = await this.service.create(params, session);
