@@ -56,6 +56,8 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 ### Key Patterns
 
 - **Presentation layer naming**: Older features use `presentation/` (singular), newer ones use `presentations/` (plural). Match the existing directory name when adding to a feature.
+- **Entity immutability**: All entity properties must be `public readonly`. Models are also `public readonly`.
+- **Model nested references**: When a model has nested objects from API, use actual Model classes (e.g., `RawMaterialModel`, `VariantModel`) with their `fromJson()`, not plain objects. `toEntity()` maps to domain types.
 - **DataState pattern**: Use cases return `DataSuccess<T>` or `DataFailed` instead of throwing
 - **Hook return types**: Discriminated unions (`InitialState | LoadedState | ErrorState`)
 - **ServerError + ErrorCodes**: Centralized error registry with Indonesian messages
@@ -72,8 +74,12 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **UseCase workflow**: `execute()` should read like a clean workflow — delegate to private methods. Common pattern: `resolveSession()` as private method that throws on failure, then private action methods that call repository.
 - **Provider pattern (feature-level)**: When a feature needs shared state across components, extract to a provider in `features/{feature}/presentations/providers/`. Provider exports a `use{Name}()` hook via `createContext`/`useContext`.
 - **Provider pattern (page-level)**: Complex pages use `_providers/` folder next to `_components/`. Provider manages state, hooks, and actions. Components in `_components/` consume context individually. Page (`page.tsx`) only composes provider + components — no business logic.
+- **Provider guarantee pattern**: Detail page providers accept a `loading: React.ReactNode` prop. Provider renders loading indicator until data is ready, then renders children with guaranteed non-nullable context data. Children never need null checks.
+- **Provider data locality**: Provider only hosts data shared across multiple components. If data is used by only one component, that component fetches it locally.
 - **Component context rule**: When a component needs context data, it consumes context itself inside `_components/`. Page does not wrap children in a single content component — each component is self-contained.
+- **Component architecture**: One component per file. Use `useMemo` for computed/derived data. No conditional rendering of multiple states in return — split into separate components instead (e.g., loading, empty, list components).
 - **Interface Segregation (repositories)**: When a feature has distinct sub-resources (e.g., master + entries), split into separate repository/source interfaces, implementations, and files. Each concern gets its own file: `fixed-cost.ts` (master) + `fixed-cost-entry.ts` (entries).
+- **Display vs Implementation pattern**: When a dialog/form is used across different contexts (e.g., list page vs detail page), extract a display component (props-based, no context) and create separate implementation components that consume their respective providers. Display component naming: `{noun}-form-dialog.tsx`. Implementation naming: `{noun}-edit-dialog.tsx`.
 
 ### HTTP Requests
 
@@ -100,6 +106,8 @@ Custom `HttpRequest` class injects Clerk session headers:
 | `SelectedAccountProvider` context value | Deprecated — provider only handles redirects; use `useGetCurrentAccount()` for account data |
 | `*-impl.tsx` monolith pattern (new code) | Provider + split components pattern. Page composes provider + components, each component consumes context. Existing pages will be migrated gradually. |
 | `InvoiceTableShell` (new code) | `TableToolbar`, `TableSearch`, `TableHeader`, `TableContainer` from `core/presentations/components/table/`. Existing pages will be migrated gradually. |
+| Inline edit/delete icon buttons in tables (new code) | `ActionMenu` from `core/presentations/components/action-menu.tsx` — consistent 3-dot action menu |
+| `ProductPhotoCard` standalone | Split into `ProductPhotoGrid` + `ProductPhotoDropzone` + `ProductPhotoUploadArea` |
 
 ### Environment
 
@@ -128,8 +136,27 @@ Always use `@/` path alias (maps to `src/`). No relative imports.
 | Services | `data/sources/{noun}.ts` | `invoice.ts` |
 | Factories | `{noun}-factory.ts` | `pay-in-detail-factory.ts` |
 | Providers (page-level) | `_providers/{noun}-provider.tsx` | `fixed-cost-entries-provider.tsx` |
+| Display components | `{noun}-form-dialog.tsx` | `raw-material-edit-form-dialog.tsx` |
 
 Directories use kebab-case. Components use kebab-case filenames.
+
+### Core Components
+
+| Component | Location | Usage |
+|-----------|----------|-------|
+| `ActionMenu` | `core/presentations/components/action-menu.tsx` | 3-dot action menus in tables and cards |
+| `NumberDisplay` | `core/presentations/components/number-display.tsx` | Thousand separator formatting with optional suffix |
+| `Dropzone` | `core/presentations/components/dropzone.tsx` | Drag & drop file upload area |
+| `MiniToggle` | `core/presentations/components/mini-toggle.tsx` | Small toggle switch display |
+| `StatusChip` | `core/presentations/components/status-chip.tsx` | Status badges (success/warning/error/primary/neutral) |
+
+### Pagination
+
+Newer features use `PaginatedData<T>` from `core/resources/paginated` in repository interfaces. Source interfaces use custom `ListXxxServiceResult` types (returning Models, not Entities).
+
+### Fetcher Naming
+
+SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockItemsFetcher`).
 
 ### Code Style
 
