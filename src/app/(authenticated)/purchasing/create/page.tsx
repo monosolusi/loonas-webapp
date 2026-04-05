@@ -7,17 +7,8 @@ export default function CreatePurchasePage() {
   return (
     <PurchaseCreateProvider>
       <div className="flex flex-col gap-y-6">
-        <DetailPageHeader backHref="/purchasing" title="Catat Pembelian" />
-        <div className="flex flex-row gap-x-6">
-          <div className="flex min-w-0 flex-1 flex-col gap-y-6">
-            <PurchaseCreateFormCard />
-          </div>
-          <div className="w-[280px] shrink-0">
-            <div className="sticky top-8">
-              <PurchaseCreateSaveButton />
-            </div>
-          </div>
-        </div>
+        <DetailPageHeader backHref="/purchasing" title="Catat Pembelian" action={<PurchaseCreateSaveButton />} />
+        <PurchaseCreateFormCard />
       </div>
     </PurchaseCreateProvider>
   );

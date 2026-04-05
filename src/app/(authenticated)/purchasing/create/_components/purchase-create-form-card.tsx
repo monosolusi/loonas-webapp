@@ -32,7 +32,7 @@ export function PurchaseCreateFormCard() {
 
         <div className="flex flex-col gap-y-2">
           <span className="text-sm font-medium text-neutral-500">Item Pembelian</span>
-          <div className="-mx-6 rounded-lg border border-neutral-100">
+          <div className="-mx-6 -mb-6">
             <div className="grid grid-cols-[2fr_1fr_1fr_1fr_40px] gap-x-3 border-b border-neutral-100 bg-neutral-50 px-4 py-2">
               <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Item</span>
               <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Jumlah</span>
@@ -44,7 +44,9 @@ export function PurchaseCreateFormCard() {
               <PurchaseItemRow key={item.key} item={item} excludeIds={excludeIds} />
             ))}
             <div className="flex flex-row items-center justify-between border-t border-neutral-100 px-4 py-3">
-              <SecondaryButton outlined label="+ Tambah Item" onClick={addItem} />
+              <div className="flex">
+                <SecondaryButton outlined label="+ Tambah Item" onClick={addItem} />
+              </div>
               <div className="flex flex-row items-center gap-x-2">
                 <span className="text-sm text-neutral-300">Total</span>
                 <span className="text-sm font-semibold text-neutral-500">

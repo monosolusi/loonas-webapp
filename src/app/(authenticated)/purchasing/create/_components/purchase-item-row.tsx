@@ -57,9 +57,10 @@ export function PurchaseItemRow({ item, excludeIds }: PurchaseItemRowProps) {
         value={item.unitPrice}
         onChange={(v) => updateItem(item.key, { unitPrice: v })}
         leftAddOn="Rp"
+        rightAddOn={item.unit ? `/${item.unit}` : undefined}
       />
       <span className="text-right text-sm font-medium text-neutral-500">
-        {total > 0 ? <NumberDisplay value={total} /> : "—"}
+        {total > 0 ? <>Rp <NumberDisplay value={total} /></> : "—"}
       </span>
       <button
         type="button"
