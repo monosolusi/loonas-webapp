@@ -3,7 +3,6 @@
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { ProductCreateProvider } from "@/app/(authenticated)/products/create/_providers/product-create-provider";
 import { ProductCreateInfoCard } from "@/app/(authenticated)/products/create/_components/product-create-info-card";
-import { ProductCreatePhotoCard } from "@/app/(authenticated)/products/create/_components/product-create-photo-card";
 import { ProductCreateVariantCard } from "@/app/(authenticated)/products/create/_components/product-create-variant-card";
 import { ProductCreateRecipeCard } from "@/app/(authenticated)/products/create/_components/product-create-recipe-card";
 import { ProductCreateStatusCard } from "@/app/(authenticated)/products/create/_components/product-create-status-card";
@@ -19,7 +18,6 @@ export default function CreateProductPage() {
         <div className="flex flex-row gap-x-6">
           <div className="flex min-w-0 flex-1 flex-col gap-y-6">
             <ProductCreateInfoCard />
-            <ProductCreatePhotoCard />
             <ProductCreateVariantCard />
             <ProductCreateRecipeCard />
           </div>

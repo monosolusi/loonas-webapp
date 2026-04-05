@@ -26,6 +26,7 @@ export type ListRawMaterialsResult = {
 
 export interface RawMaterialRepository {
   list(params: ListRawMaterialsParams, session: SessionEntity): Promise<DataState<ListRawMaterialsResult>>;
+  get(id: string, session: SessionEntity): Promise<DataState<RawMaterialEntity>>;
   create(params: CreateRawMaterialParams, session: SessionEntity): Promise<DataState<RawMaterialEntity>>;
   update(id: string, params: UpdateRawMaterialParams, session: SessionEntity): Promise<DataState<RawMaterialEntity>>;
   delete(id: string, session: SessionEntity): Promise<DataState<void>>;
