@@ -4,9 +4,10 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { DateTime } from "luxon";
 import { ActionMenu, ActionMenuOption } from "@/core/presentations/components/action-menu";
-import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { PurchaseEntity } from "@/features/purchasing/domain/entities/purchase";
 import { usePurchaseList } from "@/app/(authenticated)/purchasing/_providers/purchase-list-provider";
+import { useRouter } from "next/navigation";
+import { CurrencyDisplay } from "@/core/presentations/components/currency-display";
 
 type PurchaseListRowProps = {
   purchase: PurchaseEntity;
@@ -14,13 +15,14 @@ type PurchaseListRowProps = {
 
 export function PurchaseListRow({ purchase }: PurchaseListRowProps) {
   const { setDeletingItem } = usePurchaseList();
+  const router = useRouter();
 
   const menuOptions = useMemo<ActionMenuOption[]>(
     () => [
-      { label: "Lihat Detail", onClick: () => {} },
+      { label: "Lihat Detail", onClick: () => router.push(`/purchasing/${purchase.id}`) },
       { label: "Hapus", onClick: () => setDeletingItem(purchase), variant: "danger" },
     ],
-    [purchase, setDeletingItem],
+    [purchase, setDeletingItem, router],
   );
 
   return (
@@ -34,7 +36,7 @@ export function PurchaseListRow({ purchase }: PurchaseListRowProps) {
       <span className="truncate text-sm leading-5 text-neutral-400">{purchase.note ?? "—"}</span>
       <span className="text-sm leading-5 text-neutral-400">{purchase.items.length} item</span>
       <span className="text-right text-sm leading-5 font-semibold text-neutral-500">
-        <NumberDisplay value={purchase.totalAmount} />
+        <CurrencyDisplay value={purchase.totalAmount} />
       </span>
       <div className="flex justify-end">
         <ActionMenu options={menuOptions} />
