@@ -7,6 +7,7 @@ type VariantEntityConstructor = {
   sku: string | null;
   price: number;
   metadata: { hasRecipe?: boolean } | null;
+  productName: string | null;
 };
 
 export class VariantEntity implements AbstractEntity {
@@ -15,6 +16,7 @@ export class VariantEntity implements AbstractEntity {
   public sku: string | null;
   public price: number;
   public metadata: { hasRecipe?: boolean } | null;
+  public productName: string | null;
 
   constructor(args: VariantEntityConstructor) {
     this.id = args.id;
@@ -22,6 +24,7 @@ export class VariantEntity implements AbstractEntity {
     this.sku = args.sku;
     this.price = args.price;
     this.metadata = args.metadata;
+    this.productName = args.productName;
   }
 
   public get isDefault(): boolean {
