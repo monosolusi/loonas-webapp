@@ -8,16 +8,15 @@ import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item
 import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type";
 import { useListStockItems } from "@/features/inventory/presentations/hooks/use-list-stock-items";
 import { useProductList } from "@/app/(authenticated)/products/_providers/product-list-provider";
-import { ProductListRow, PRODUCT_LIST_GRID_COLS } from "@/app/(authenticated)/products/_components/product-list-row";
+import { ProductListRow } from "@/app/(authenticated)/products/_components/product-list-row";
 
 const COLUMNS = [
   { label: "Produk" },
-  { label: "SKU" },
-  { label: "Tipe" },
-  { label: "Kategori" },
-  { label: "Status" },
-  { label: "Stok" },
   { label: "Harga", align: "right" as const },
+  { label: "Stok", align: "right" as const },
+  { label: "Kategori" },
+  { label: "Tipe" },
+  { label: "Status" },
 ];
 
 export function ProductListTable() {
@@ -43,7 +42,7 @@ export function ProductListTable() {
       empty={products.length === 0 && !loading}
       emptyMessage="Belum ada produk. Tambahkan produk pertama Anda."
     >
-      <TableHeader className={PRODUCT_LIST_GRID_COLS} columns={COLUMNS} />
+      <TableHeader className="grid-cols-[2fr_1fr_0.7fr_0.6fr_0.8fr_0.8fr] gap-x-4" columns={COLUMNS} />
       {products.map((product) => (
         <ProductListRow key={product.id} product={product} stockMap={stockMap} />
       ))}

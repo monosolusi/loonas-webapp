@@ -2,6 +2,7 @@
 
 import { DateTime } from "luxon";
 import { StatusChip } from "@/core/presentations/components/status-chip";
+import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { StockMovementEntity } from "@/features/inventory/domain/entities/stock-movement";
 import { MovementTypeLabel, MovementTypeType } from "@/features/inventory/domain/enums/movement-type";
 
@@ -20,7 +21,7 @@ export function RawMaterialMovementRow({ movement }: RawMaterialMovementRowProps
         variant={movement.isStockIn ? "success" : "error"}
         compact
       />
-      <span className="text-sm leading-5 text-neutral-400">{Math.abs(movement.quantity)}</span>
+      <span className="text-sm leading-5 text-neutral-400"><NumberDisplay value={Math.abs(movement.quantity)} /></span>
       <span className="truncate text-sm leading-5 text-neutral-300">{movement.note ?? "—"}</span>
     </div>
   );

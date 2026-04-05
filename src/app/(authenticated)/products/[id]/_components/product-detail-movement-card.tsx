@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { DateTime } from "luxon";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { StatusChip } from "@/core/presentations/components/status-chip";
+import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { ProductType } from "@/features/product/domain/enums/product-type";
 import { ProductionMode } from "@/features/product/domain/enums/production-mode";
 import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type";
@@ -35,7 +36,7 @@ export function ProductDetailMovementCard() {
   if (stockResult.loading || stockItemIds.length === 0) return null;
 
   return (
-    <SectionCard title="Riwayat Pergerakan Stok">
+    <SectionCard title="Riwayat Pergerakan Stok" iconSrc="/assets/images/chart-icon-primary-300-w16-h16.svg">
       <div className="-mx-6 -mb-6">
         <div className="grid grid-cols-[1fr_1fr_0.6fr_1.5fr] gap-x-4 border-b border-neutral-100 bg-neutral-50 px-4 py-2">
           <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Tanggal</span>
@@ -69,7 +70,7 @@ export function ProductDetailMovementCard() {
               variant={movement.isStockIn ? "success" : "error"}
               compact
             />
-            <span className="text-sm leading-5 text-neutral-400">{Math.abs(movement.quantity)}</span>
+            <span className="text-sm leading-5 text-neutral-400"><NumberDisplay value={Math.abs(movement.quantity)} /></span>
             <span className="truncate text-sm leading-5 text-neutral-300">{movement.note ?? "—"}</span>
           </div>
         ))}
