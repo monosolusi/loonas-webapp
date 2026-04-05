@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { SearchCombobox, SearchComboboxOption } from "@/core/presentations/components/search-combobox";
-import { StockItemTypeLabel, StockItemTypeType } from "@/features/inventory/domain/enums/stock-item-type";
+import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type";
 import { useListStockItems } from "@/features/inventory/presentations/hooks/use-list-stock-items";
 
 export type StockItemOption = SearchComboboxOption & {
@@ -24,14 +24,18 @@ export function StockItemCombobox({ value, onChange, excludeIds = [] }: StockIte
     if (!stockResult.stockItems) return [];
     return stockResult.stockItems
       .filter((item) => !excludeIds.includes(item.id))
-      .map((item) => ({
-        id: item.id,
-        label: item.itemName,
-        description: StockItemTypeLabel[item.type as StockItemTypeType] ?? item.type,
-        rawMaterialId: item.rawMaterial?.id ?? null,
-        variantId: item.variant?.id ?? null,
-        unit: item.rawMaterial?.unit ?? null,
-      }));
+      .map((item) => {
+        const isFinishedGoods = item.type === StockItemType.FINISHED_GOODS;
+
+        return {
+          id: item.id,
+          label: item.itemName,
+          description: isFinishedGoods && item.variantName ? item.variantName : undefined,
+          rawMaterialId: item.rawMaterial?.id ?? null,
+          variantId: item.variant?.id ?? null,
+          unit: item.rawMaterial?.unit ?? null,
+        };
+      });
   }, [stockResult.stockItems, excludeIds]);
 
   return (
