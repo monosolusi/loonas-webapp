@@ -1,7 +1,4 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { NumberDisplay } from "@/core/presentations/components/number-display";
 
 interface CurrencyDisplayProps {
   value: number;
@@ -9,12 +6,9 @@ interface CurrencyDisplayProps {
 }
 
 export function CurrencyDisplay({ value, className }: CurrencyDisplayProps) {
-  const [formatted, setFormatted] = useState<string | null>(null);
-
-  useEffect(() => {
-    setFormatted(IDRFormatter.toCurrency(value));
-  }, [value]);
-
-  if (formatted === null) return null;
-  return <span className={className}>{formatted}</span>;
+  return (
+    <span className={className}>
+      Rp <NumberDisplay value={value} />
+    </span>
+  );
 }
