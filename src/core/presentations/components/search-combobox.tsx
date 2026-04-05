@@ -64,7 +64,7 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
       <div className="relative">
         <ComboboxInput
           className={clsx(
-            "block w-full rounded-lg border border-neutral-100 p-3 text-base outline-none placeholder:text-neutral-200",
+            "block h-11 w-full rounded-lg border border-neutral-100 px-3 text-sm outline-none placeholder:text-neutral-200",
             props.disabled
               ? "cursor-not-allowed bg-neutral-50"
               : "focus:border-primary-300 focus:ring-primary-300/20 focus:ring-2",
