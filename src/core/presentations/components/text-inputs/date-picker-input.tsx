@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { DayPicker } from "react-day-picker";
@@ -28,6 +28,7 @@ export function DatePickerInput({
 }: DatePickerInputProps) {
   const [month, setMonth] = useState(value?.toJSDate() ?? new Date());
   const displayValue = value?.setLocale("id").toFormat("dd MMM yyyy") ?? "";
+  const isDisabled = useMemo(() => !!disabled, [disabled]);
 
   const handleSelect = (date: Date | undefined, close: () => void) => {
     if (date) {
@@ -41,9 +42,9 @@ export function DatePickerInput({
   return (
     <div className="flex flex-col gap-y-2">
       {label && (
-        <span className="text-sm font-medium text-neutral-500">
+        <span className={clsx("text-base", isDisabled && "text-neutral-200")}>
           {label}
-          {required && <span className="text-error-300"> *</span>}
+          {required && <span className="text-red-500"> *</span>}
         </span>
       )}
       <Popover className="relative">
@@ -52,10 +53,10 @@ export function DatePickerInput({
             <PopoverButton
               disabled={disabled}
               className={clsx(
-                "flex h-11 w-full flex-row items-center gap-x-2 rounded-lg border px-3 text-left text-sm outline-none transition-colors",
+                "flex h-11 w-full flex-row items-center gap-x-2 rounded-lg border px-3 text-left text-sm transition-colors outline-none",
                 disabled
                   ? "cursor-not-allowed border-neutral-100 bg-neutral-50 text-neutral-200"
-                  : "border-neutral-100 text-neutral-500 hover:border-neutral-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-300/20",
+                  : "focus:border-primary-300 focus:ring-primary-300/20 border-neutral-100 text-neutral-500 hover:border-neutral-200 focus:ring-2",
                 !displayValue && "text-neutral-200",
               )}
             >

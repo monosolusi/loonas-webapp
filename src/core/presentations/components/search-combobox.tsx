@@ -1,13 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  Combobox,
-  ComboboxButton,
-  ComboboxInput,
-  ComboboxOption,
-  ComboboxOptions,
-} from "@headlessui/react";
+import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 
@@ -83,23 +77,21 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
             <ComboboxOption
               key={opt.id}
               value={opt}
-              className="group relative cursor-pointer py-2 pr-9 pl-3 text-neutral-500 transition-colors select-none data-focus:bg-primary-50 data-focus:text-primary-300"
+              className="group data-focus:bg-primary-50 data-focus:text-primary-300 relative cursor-pointer py-2 pr-9 pl-3 text-neutral-500 transition-colors select-none"
             >
               <div className="flex flex-col">
                 <span className="block truncate group-data-selected:font-semibold">{opt.label}</span>
                 {opt.description && (
-                  <span className="text-xs text-neutral-200 group-data-focus:text-primary-200">{opt.description}</span>
+                  <span className="group-data-focus:text-primary-200 text-sm text-neutral-200">{opt.description}</span>
                 )}
               </div>
-              <span className="absolute inset-y-0 right-0 hidden items-center pr-3 text-primary-300 group-data-selected:flex">
+              <span className="text-primary-300 absolute inset-y-0 right-0 hidden items-center pr-3 group-data-selected:flex">
                 <CheckIcon className="size-5" aria-hidden="true" />
               </span>
             </ComboboxOption>
           ))}
 
-          {filtered.length === 0 && (
-            <div className="px-3 py-2 text-sm text-neutral-200">Tidak ditemukan</div>
-          )}
+          {filtered.length === 0 && <div className="px-3 py-2 text-sm text-neutral-200">Tidak ditemukan</div>}
 
           {props.onCreateNew && (
             <button
@@ -108,7 +100,7 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
                 e.preventDefault();
                 props.onCreateNew?.();
               }}
-              className="w-full border-t border-neutral-100 px-3 py-2 text-left text-sm font-medium text-primary-300 transition-colors hover:bg-primary-50"
+              className="text-primary-300 hover:bg-primary-50 w-full border-t border-neutral-100 px-3 py-2 text-left text-sm font-medium transition-colors"
             >
               {props.createNewLabel ?? "+ Buat baru"}
             </button>
