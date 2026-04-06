@@ -23,14 +23,20 @@ export function ActionMenu({ options }: ActionMenuProps) {
       >
         <EllipsisVerticalIcon className="size-4" />
       </MenuButton>
-      <MenuItems className="absolute right-0 z-10 mt-1 w-44 origin-top-right rounded-lg border border-neutral-100 bg-white py-1 shadow-lg focus:outline-none">
+      <MenuItems
+        anchor="bottom end"
+        className="z-10 w-44 rounded-lg border border-neutral-100 bg-white py-1 shadow-lg focus:outline-none"
+      >
         {options.map((option) => (
           <MenuItem key={option.label}>
             <button
               type="button"
-              onClick={(e) => { e.preventDefault(); option.onClick(); }}
+              onClick={(e) => {
+                e.preventDefault();
+                option.onClick();
+              }}
               className={clsx(
-                "flex w-full px-3 py-2 text-left text-sm data-[focus]:bg-neutral-50",
+                "flex w-full cursor-pointer px-3 py-2 text-left text-sm data-[focus]:bg-neutral-100/20",
                 option.variant === "danger" ? "text-error-300 data-[focus]:bg-red-50" : "text-neutral-500",
               )}
             >

@@ -1,14 +1,15 @@
 "use client";
 
 import { useListStockMovements } from "@/features/inventory/presentations/hooks/use-list-stock-movements";
-import { RawMaterialMovementRow } from "@/app/(authenticated)/settings/raw-materials/[id]/_components/raw-material-movement-row";
+import { StockMovementRow } from "@/features/inventory/presentations/components/stock-movement-row";
 
-type RawMaterialMovementListProps = {
+type StockMovementTableProps = {
   stockItemId: string;
+  limit?: number;
 };
 
-export function RawMaterialMovementList({ stockItemId }: RawMaterialMovementListProps) {
-  const { movements, loading } = useListStockMovements({ stockItemId, limit: 10 });
+export function StockMovementTable({ stockItemId, limit = 10 }: StockMovementTableProps) {
+  const { movements, loading } = useListStockMovements({ stockItemId, limit });
 
   if (loading) {
     return (
@@ -29,7 +30,7 @@ export function RawMaterialMovementList({ stockItemId }: RawMaterialMovementList
   return (
     <>
       {movements.map((movement) => (
-        <RawMaterialMovementRow key={movement.id} movement={movement} />
+        <StockMovementRow key={movement.id} movement={movement} />
       ))}
     </>
   );

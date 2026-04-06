@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import { DialogFooter } from "@/core/presentations/components/dialog-footer";
-import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
+import { NumberInput } from "@/core/presentations/components/text-inputs/number-input";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { useToast } from "@/core/presentations/hooks/use-toast";
@@ -20,20 +20,19 @@ type MinStockDialogProps = {
 export function MinStockDialog({ stockItem, onClose }: MinStockDialogProps) {
   const { showToast } = useToast();
   const { trigger: updateStockItem, isMutating } = useUpdateStockItem();
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState<number>(0);
 
   useEffect(() => {
-    if (stockItem) setValue(String(stockItem.minStock ?? ""));
+    if (stockItem) setValue(stockItem.minStock ?? 0);
   }, [stockItem]);
 
   const handleSave = async () => {
     if (!stockItem || isMutating) return;
 
-    const parsed = value.trim() === "" ? null : Number(value);
-    if (parsed !== null && (isNaN(parsed) || parsed < 0)) return;
+    const minStock = value > 0 ? value : null;
 
     try {
-      await updateStockItem({ id: stockItem.id, minStock: parsed });
+      await updateStockItem({ id: stockItem.id, minStock });
       await revalidateSWRKey(INVENTORY_SWR_KEYS.LIST_STOCK_ITEMS);
       showToast("Stok minimum berhasil diperbarui");
       onClose();
@@ -49,13 +48,12 @@ export function MinStockDialog({ stockItem, onClose }: MinStockDialogProps) {
           Atur batas minimum stok untuk <span className="font-medium text-neutral-500">{stockItem?.itemName}</span>.
           Notifikasi akan muncul saat stok di bawah batas ini.
         </p>
-        <TextInput
+        <NumberInput
           label="Stok Minimum"
-          type="number"
           placeholder="Contoh: 10"
           value={value}
           onChange={setValue}
-          onKeyDown={(e) => { if (e.key === "Enter") handleSave(); }}
+          allowDecimal={false}
         />
         <DialogFooter>
           <SecondaryButton outlined label="Batal" onClick={onClose} />

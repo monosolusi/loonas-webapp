@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
-import { CurrencyInput } from "@/core/presentations/components/text-inputs/currency-input";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import { DialogFooter } from "@/core/presentations/components/dialog-footer";
-import { RawMaterialCombobox, RawMaterialOption } from "@/app/(authenticated)/products/_components/raw-material-combobox";
 import {
-  RawMaterialUnitLabel,
-  RawMaterialUnitType,
-} from "@/features/raw-material/domain/enums/raw-material-unit";
+  RawMaterialCombobox,
+  RawMaterialOption,
+} from "@/app/(authenticated)/products/_components/raw-material-combobox";
+import { RawMaterialUnitLabel, RawMaterialUnitType } from "@/features/raw-material/domain/enums/raw-material-unit";
+import { NumberInput } from "@/core/presentations/components/text-inputs/number-input";
 
 export type RecipeRow = {
   key: string;
@@ -92,7 +92,7 @@ export function RecipeFormDialog({ open, variant, onClose, onSave }: RecipeFormD
                 onChange={(val) => updateItem(item.key, { rawMaterial: val })}
                 excludeIds={selectedIds.filter((id) => id !== item.rawMaterial?.id)}
               />
-              <CurrencyInput
+              <NumberInput
                 label=""
                 leftIcon={null}
                 placeholder="0"
@@ -120,7 +120,7 @@ export function RecipeFormDialog({ open, variant, onClose, onSave }: RecipeFormD
         <button
           type="button"
           onClick={addItem}
-          className="self-start text-sm font-medium text-primary-300 transition-colors hover:text-primary-300/80"
+          className="text-primary-300 hover:text-primary-300/80 self-start text-sm font-medium transition-colors"
         >
           + Tambah Bahan
         </button>
