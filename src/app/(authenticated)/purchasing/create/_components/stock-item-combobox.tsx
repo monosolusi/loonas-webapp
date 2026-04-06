@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { SearchCombobox, SearchComboboxOption } from "@/core/presentations/components/search-combobox";
 import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type";
-import { useListStockItems } from "@/features/inventory/presentations/hooks/use-list-stock-items";
+import { useListPurchasableItems } from "@/features/purchasing/presentations/hooks/use-list-purchasable-items";
 
 export type StockItemOption = SearchComboboxOption & {
   rawMaterialId: string | null;
@@ -18,11 +18,11 @@ type StockItemComboboxProps = {
 };
 
 export function StockItemCombobox({ value, onChange, excludeIds = [] }: StockItemComboboxProps) {
-  const stockResult = useListStockItems({ limit: 100 });
+  const result = useListPurchasableItems({ limit: 100 });
 
   const options = useMemo<StockItemOption[]>(() => {
-    if (!stockResult.stockItems) return [];
-    return stockResult.stockItems
+    if (!result.items) return [];
+    return result.items
       .filter((item) => !excludeIds.includes(item.id))
       .map((item) => {
         const isFinishedGoods = item.type === StockItemType.FINISHED_GOODS;
@@ -36,7 +36,7 @@ export function StockItemCombobox({ value, onChange, excludeIds = [] }: StockIte
           unit: item.rawMaterial?.unit ?? null,
         };
       });
-  }, [stockResult.stockItems, excludeIds]);
+  }, [result.items, excludeIds]);
 
   return (
     <SearchCombobox
