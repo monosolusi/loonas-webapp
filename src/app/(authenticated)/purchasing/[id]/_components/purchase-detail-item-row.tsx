@@ -13,6 +13,9 @@ export function PurchaseDetailItemRow({ item }: PurchaseDetailItemRowProps) {
     <div className="grid grid-cols-[2fr_0.8fr_0.6fr_1fr] items-center gap-x-4 border-b border-neutral-100 px-4 py-3 last:border-b-0">
       <div className="flex flex-col">
         <span className="text-sm leading-5 text-neutral-500">{item.itemName}</span>
+        {item.variantName && (
+          <span className="text-xs leading-4 text-neutral-300">{item.variantName}</span>
+        )}
       </div>
       <span className="text-sm leading-5 text-neutral-400">
         <NumberDisplay value={item.quantity} suffix={item.unit ?? undefined} />

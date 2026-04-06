@@ -32,7 +32,13 @@ export class PurchaseItemEntity implements AbstractEntity {
   }
 
   get itemName(): string {
-    return this.rawMaterial?.name ?? this.variant?.name ?? "";
+    if (this.rawMaterial) return this.rawMaterial.name;
+    if (this.variant) return this.variant.productName ?? this.variant.name;
+    return "";
+  }
+
+  get variantName(): string | null {
+    return this.variant?.name ?? null;
   }
 
   get unit(): string | null {
