@@ -28,7 +28,15 @@ async function ListPurchaseFetcher([_, params]: [string, ListPurchaseFetcherPara
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const purchaseRepository = new PurchaseRepositoryImpl(new PurchaseServiceImpl(new HttpRequest()));
   const useCase = new ListPurchasesUseCase(purchaseRepository, sessionRepository);
-  const result = await useCase.execute(new ListPurchasesUseCaseParams({ page: params.page, limit: params.limit }));
+  const result = await useCase.execute(
+    new ListPurchasesUseCaseParams({
+      search: params.search,
+      dateFrom: params.dateFrom,
+      dateTo: params.dateTo,
+      page: params.page,
+      limit: params.limit,
+    }),
+  );
   if (result instanceof DataFailed) throw result.error;
   if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
   return result.data;

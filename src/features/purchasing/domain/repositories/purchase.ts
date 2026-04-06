@@ -4,6 +4,9 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { PurchaseEntity } from "@/features/purchasing/domain/entities/purchase";
 
 export type ListPurchasesParams = {
+  search?: string;
+  dateFrom?: string;
+  dateTo?: string;
   page?: number;
   limit?: number;
 };

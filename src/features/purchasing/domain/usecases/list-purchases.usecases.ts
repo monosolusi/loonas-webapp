@@ -8,6 +8,9 @@ import { PurchaseEntity } from "@/features/purchasing/domain/entities/purchase";
 import { PurchaseRepository } from "@/features/purchasing/domain/repositories/purchase";
 
 type ListPurchasesInput = {
+  search?: string;
+  dateFrom?: string;
+  dateTo?: string;
   page?: number;
   limit?: number;
 };

@@ -4,6 +4,9 @@ import { PaginationMeta } from "@/core/resources/paginated";
 import { PurchaseEntity } from "@/features/purchasing/domain/entities/purchase";
 
 export type UseListPurchasesParams = {
+  search?: string;
+  dateFrom?: string;
+  dateTo?: string;
   page?: number;
   limit?: number;
 };

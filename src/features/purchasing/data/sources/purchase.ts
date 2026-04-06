@@ -11,6 +11,9 @@ export class PurchaseServiceImpl implements PurchaseService {
   public async list(params: ListPurchasesParams, session: SessionEntity): Promise<ListPurchasesServiceResult> {
     try {
       const searchParams: Record<string, any> = {};
+      if (params.search) searchParams["search"] = params.search;
+      if (params.dateFrom) searchParams["date_from"] = params.dateFrom;
+      if (params.dateTo) searchParams["date_to"] = params.dateTo;
       if (params.page) searchParams["page"] = String(params.page);
       if (params.limit) searchParams["limit"] = String(params.limit);
 
