@@ -55,7 +55,7 @@ export class StockItemModel implements AbstractModel {
       rawMaterial: this.rawMaterial
         ? { id: this.rawMaterial.id, name: this.rawMaterial.name, unit: this.rawMaterial.unit }
         : null,
-      variant: this.variant ? { id: this.variant.id, name: this.variant.name, productName: this.variant.productName } : null,
+      variant: this.variant ? { id: this.variant.id, name: this.variant.name, productName: this.variant.product?.name ?? null } : null,
       currentStock: this.currentStock,
       minStock: this.minStock,
       createdAt: this.createdAt,

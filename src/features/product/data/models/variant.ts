@@ -1,5 +1,6 @@
 import { AbstractModel } from "@/core/resources/model";
 import { VariantEntity } from "@/features/product/domain/entities/variant";
+import { ProductModel } from "@/features/product/data/models/product";
 
 type VariantModelConstructor = {
   id: string;
@@ -7,7 +8,7 @@ type VariantModelConstructor = {
   sku: string | null;
   price: number;
   metadata: { hasRecipe?: boolean } | null;
-  productName: string | null;
+  product: ProductModel | null;
 };
 
 export class VariantModel implements AbstractModel {
@@ -16,7 +17,7 @@ export class VariantModel implements AbstractModel {
   public readonly sku: string | null;
   public readonly price: number;
   public readonly metadata: { hasRecipe?: boolean } | null;
-  public readonly productName: string | null;
+  public readonly product: ProductModel | null;
 
   constructor(args: VariantModelConstructor) {
     this.id = args.id;
@@ -24,7 +25,7 @@ export class VariantModel implements AbstractModel {
     this.sku = args.sku;
     this.price = args.price;
     this.metadata = args.metadata;
-    this.productName = args.productName;
+    this.product = args.product;
   }
 
   public static fromJson(data: Record<string, any>): VariantModel {
@@ -34,7 +35,7 @@ export class VariantModel implements AbstractModel {
       sku: data["sku"] ?? null,
       price: data["price"],
       metadata: data["metadata"] ? { hasRecipe: data["metadata"]["has_recipe"] } : null,
-      productName: data["product"]?.["name"] ?? null,
+      product: data["product"] ? ProductModel.fromJson(data["product"]) : null,
     });
   }
 
@@ -45,7 +46,7 @@ export class VariantModel implements AbstractModel {
       sku: this.sku,
       price: this.price,
       metadata: this.metadata,
-      productName: this.productName,
+      product: this.product?.toEntity() ?? null,
     });
   }
 }
