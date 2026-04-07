@@ -30,12 +30,15 @@ export function NavigationBar() {
           iconPath="/assets/images/invoice-out-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/invoice-out-icon-primary-300-w16-h16.svg"
         />
-        <NavigationItem
-          href="/products"
+        <NavigationGroup
           label="Produk"
           iconPath="/assets/images/box-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/box-icon-primary-300-w16-h16.svg"
-        />
+          matchPrefixes={["/products", "/productions"]}
+        >
+          <NavigationChildItem href="/products" label="Semua Produk" />
+          <NavigationChildItem href="/productions" label="Produksi" />
+        </NavigationGroup>
         <NavigationGroup
           label="Keuangan"
           iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
