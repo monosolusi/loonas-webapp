@@ -19,6 +19,7 @@ type SearchComboboxBaseProps<T extends SearchComboboxOption> = {
   disabled?: boolean;
   onCreateNew?: () => void;
   createNewLabel?: string;
+  required?: boolean;
 };
 
 type SearchComboboxWithLabel<T extends SearchComboboxOption> = SearchComboboxBaseProps<T> & {
@@ -54,7 +55,12 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
       disabled={props.disabled}
       className={clsx("flex flex-col gap-2", props.disabled && "opacity-50")}
     >
-      {!props.noLabel && <span className="text-base">{props.label}</span>}
+      {!props.noLabel && (
+        <span className="text-base">
+          {props.label}
+          {props.required && <span className="text-red-500"> *</span>}
+        </span>
+      )}
       <div className="relative">
         <ComboboxInput
           className={clsx(

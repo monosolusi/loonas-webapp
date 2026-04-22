@@ -14,6 +14,7 @@ import { ProductDetailDeleteButton } from "@/app/(authenticated)/products/[id]/_
 import { ProductDetailRecipeWarning } from "@/app/(authenticated)/products/[id]/_components/product-detail-recipe-warning";
 import { ProductDetailStockCard } from "@/app/(authenticated)/products/[id]/_components/product-detail-stock-card";
 import { ProductDetailMovementCard } from "@/app/(authenticated)/products/[id]/_components/product-detail-movement-card";
+import { ProductDetailProductionCard } from "@/app/(authenticated)/products/[id]/_components/product-detail-production-card";
 
 type ProductDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -35,6 +36,7 @@ function ProductDetailContent() {
           <ProductDetailRecipeCard />
           <ProductDetailStockCard />
           <ProductDetailMovementCard />
+          <ProductDetailProductionCard />
         </div>
         <div className="w-[280px] shrink-0">
           <div className="sticky top-8 flex flex-col gap-y-6">
