@@ -27,6 +27,29 @@ Your sole purpose is to review recently written or modified code and produce a s
 
 ---
 
+## Authoritative scaffolding skills
+
+The rules below are the enforcement contract. The **authoritative "how to build this correctly" documentation** lives in the project's skill directory and is where an author should be directed when they violate a rule. Each skill contains rationale, template, canonical references, and pitfalls for one layer.
+
+| Concern / violation pattern | Skill file |
+| --- | --- |
+| Domain entity shape, readonly fields, nested entity refs, Luxon dates | `.claude/skills/create-entity/SKILL.md` |
+| Data model with `fromJson` / `toEntity`, nested model parsing, array guards | `.claude/skills/create-model/SKILL.md` |
+| Domain repository interface + data impl, session-last 2-param signatures, `DataState` wrapping, Model → Entity mapping | `.claude/skills/create-repository/SKILL.md` |
+| Service interface (`domain/sources/`) + HTTP impl (`data/sources/`), `HttpRequest` usage, snake_case API keys, `Model.fromJson`, `ListXxxServiceResult` shape | `.claude/skills/create-service/SKILL.md` |
+| Use case structure (`resolveSession`, own params, never-throw, `DataState<T>`) | `.claude/skills/create-usecase/SKILL.md` |
+| Paginated SWR list hook + types + SWR key constants | `.claude/skills/create-hook-list/SKILL.md` |
+| Single-entity SWR get hook with id-nullable key | `.claude/skills/create-hook-get/SKILL.md` |
+| Mutation hook via `useSWRMutationClerk` (create / update / delete) | `.claude/skills/create-hook-mutation/SKILL.md` |
+| Component rules: one-per-file, `useMemo`, `clsx`, `h-11`, `SectionCard`, `ActionMenu`, no deprecated primitives | `.claude/skills/create-component/SKILL.md` |
+| Provider patterns: page-detail guarantee, list filter state, create/form submit + revalidation | `.claude/skills/create-provider/SKILL.md` |
+
+**When you flag a violation, cite the matching skill file in the `Skill` column of the output table.** That is where the author must look to learn the correct shape. Do not paste skill contents into the report — just reference the path.
+
+If a rule below and a skill disagree, the **skill is the source of truth** (skills were updated more recently). Note the discrepancy in the Summary so this file can be reconciled.
+
+---
+
 ## Section 1: Clean Architecture Rules
 
 ### Layer Structure
@@ -230,22 +253,25 @@ Produce a clean markdown report with this exact structure:
 
 ### Clean Architecture Violations
 
-| # | File | Principle | Issue | Fix |
-|---|------|-----------|-------|-----|
-| 1 | `path/to/file.ts` | SRP | [issue] | [fix] |
+| # | File | Principle | Issue | Fix | Skill |
+|---|------|-----------|-------|-----|-------|
+| 1 | `path/to/file.ts` | SRP | [issue] | [fix] | `.claude/skills/{name}/SKILL.md` |
 
 ### Codebase Convention Violations
 
-| # | File | Rule | Issue | Fix |
-|---|------|------|-------|-----|
-| 1 | `path/to/file.ts` | Rule N: [rule name] | [issue] | [fix] |
+| # | File | Rule | Issue | Fix | Skill |
+|---|------|------|-------|-----|-------|
+| 1 | `path/to/file.ts` | Rule N: [rule name] | [issue] | [fix] | `.claude/skills/{name}/SKILL.md` |
 
 ### Summary
 - Total files reviewed: X
 - Clean Architecture issues: X
 - Convention issues: X
 - Overall: ✅ Clean / ⚠️ Minor Issues / ❌ Major Issues
+- Skill/rule discrepancies: [list any cases where this agent's rules and a skill file disagree, or "None"]
 ```
+
+The `Skill` column must reference the skill file from the "Authoritative scaffolding skills" table. If a violation does not map to any of the 9 skills (e.g. an SVG color token issue under Rule 12), use `—` in the Skill column.
 
 Rules for the report:
 
