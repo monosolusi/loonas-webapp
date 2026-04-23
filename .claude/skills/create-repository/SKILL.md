@@ -1,23 +1,24 @@
 ---
 name: create-repository
-description: Create the repository layer for a feature — domain interface, data implementation, service interface, and service implementation that talks to the backend HTTP API. Use when the feature needs to fetch, create, update, or delete a resource from the backend. Triggers include "create repository", "add API endpoints", "wire up service", "data source", "buat repository".
+description: Create the repository layer for a feature — the domain interface (`domain/repositories/`) and its data implementation (`data/repositories/`). The repository exposes business-shaped operations (returning Entities wrapped in `DataState`) and delegates HTTP work to a Service. Use when adding a new resource that needs to be fetched, created, updated, or deleted from the backend. Triggers include "create repository", "repository interface", "repository impl", "add business operations", "buat repository". DO NOT use this skill for the HTTP service layer under `sources/` — use create-service for that.
+paths: src/features/**/domain/repositories/**, src/features/**/data/repositories/**
 ---
 
 # Create Repository
 
-The repository layer is four files working together to expose backend operations to the rest of the app. Split responsibilities:
+The repository layer is **two files** working together:
 
 | File | Role |
 | --- | --- |
-| `domain/repositories/{noun}.ts` | **Interface** the rest of the app depends on. Accepts/returns Entities, wraps results in `DataState`. |
-| `data/repositories/{noun}.ts` | **Implementation** of the domain interface. Calls the service, converts Models → Entities, wraps errors in `DataState`. |
-| `domain/sources/{noun}.ts` | Service **interface**. Returns raw Models. Also defines service result types (e.g. `ListXxxServiceResult`). |
-| `data/sources/{noun}.ts` | Service **implementation**. Uses `HttpRequest`, handles HTTP paths and search params, parses response JSON via `Model.fromJson`. |
+| `domain/repositories/{noun}.ts` | Interface the rest of the app depends on. Accepts/returns Entities. Wraps results in `DataState`. Also defines `*Params` types. |
+| `data/repositories/{noun}.ts` | Implementation of the interface. Calls the Service, converts Models → Entities, wraps errors in `DataState`. |
+
+Repositories speak the **business language** (Entities, `DataState`). They are the seam between the domain and the transport layer. The Service (see `create-service` skill) handles actual HTTP calls.
 
 ## When to use
 
-- A new feature needs any of: list, get, create, update, or delete operations against the backend.
-- Adding a new sub-resource to an existing feature (e.g. a feature master + separate entries). Each sub-resource gets its own pair of files — see Interface Segregation below.
+- Adding a new resource that needs list / get / create / update / delete.
+- Adding a sub-resource to a feature (e.g. master + entries). Each sub-resource gets its own repository pair.
 
 ## File locations & naming
 
@@ -25,10 +26,8 @@ The repository layer is four files working together to expose backend operations
 | --- | --- |
 | `src/features/{feature}/domain/repositories/{noun}.ts` | `{Noun}Repository` (interface) + `*Params` types |
 | `src/features/{feature}/data/repositories/{noun}.ts` | `{Noun}RepositoryImpl` |
-| `src/features/{feature}/domain/sources/{noun}.ts` | `{Noun}Service` (interface) + service-result types |
-| `src/features/{feature}/data/sources/{noun}.ts` | `{Noun}ServiceImpl` |
 
-All files use kebab-case, singular noun, matching the entity filename.
+Kebab-case filenames, singular noun, matching the entity filename.
 
 ## Rules
 
@@ -40,36 +39,32 @@ All files use kebab-case, singular noun, matching the entity filename.
    update({ id, name }: UpdateFooParams, session: SessionEntity)
    ```
 2. Repository methods return `Promise<DataState<T>>`. For void operations use `DataState<void>`.
-3. Service methods return `Promise<T>` (Model or result-shape). They throw `ServerError` on failure.
 
 ### Types
 
-4. **Param types live in the domain repository file** (e.g. `ListFooParams`, `CreateFooParams`). Re-export them from sources if needed. Use cases define their own param shape separately (do NOT import repo params from use cases).
-5. **Paginated lists**: repository returns `DataState<PaginatedData<Entity>>`. Service returns a custom `List{Noun}ServiceResult = { data: Model[]; meta: PaginationMeta }`.
-6. **Pagination meta**: build from API response with safe defaults: `{ page: result.meta?.page ?? 1, limit: result.meta?.limit ?? 10, total: result.meta?.total ?? 0, totalPages: result.meta?.total_pages ?? 1 }`.
+3. **Param types live in this file** (e.g. `ListFooParams`, `CreateFooParams`). Re-export from the service file if the service needs them. Use cases define their own param shape separately (they don't import repo params).
+4. **Paginated lists**: repository returns `DataState<PaginatedData<Entity>>`. The matching service-result type is defined in the Service interface (see `create-service`).
 
 ### Error handling
 
-7. **Data repository**: wrap every try/catch like this — rethrow `ServerError` as `new DataFailed(err)`; other errors become `new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }))`.
-8. **Data service**: same shape but uses `throw` instead of returning `DataFailed`.
-
-### HTTP
-
-9. Use `HttpRequest` from `@/core/helpers/http-request`. Authentication is automatic — do not add `Authorization` or `X-Account-Id` headers.
-10. Pass `session` to every `this.http.request(...)` call.
-11. Search params go under `searchParams`, request body under `body`. Convert camelCase to snake_case for API keys here.
-12. Array response guard: `if (!Array.isArray(result?.data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);`
+5. **Impl**: wrap every try/catch this way:
+   - Rethrow a `ServerError` as `new DataFailed(err)`.
+   - Any other error becomes `new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }))`.
+6. **Impl's job is pure translation**: Model → Entity, thrown error → `DataFailed`. No HTTP, no JSON handling — that's the Service's job.
 
 ### Interface Segregation
 
-13. When a feature has distinct sub-resources (master + entries, parent + children), **split into separate repository/source interfaces, impls, and files**. One file per concern — do not bundle.
+7. When a feature has distinct sub-resources (master + entries, parent + children), **split into separate repository interfaces, impls, and files**. One file per concern.
 
-## Template summary
-
-See reference files for full shape. Minimum surface for a list + get + create + delete resource:
+## Template
 
 ```ts
-// domain/repositories/{noun}.ts
+// src/features/{feature}/domain/repositories/{noun}.ts
+import { DataState } from "@/core/resources/data-state";
+import { PaginatedData } from "@/core/resources/paginated";
+import { SessionEntity } from "@/features/authentication/domain/entities/session";
+import { {Noun}Entity } from "@/features/{feature}/domain/entities/{noun}";
+
 export type List{Nouns}Params = { search?: string; page?: number; limit?: number };
 export type Create{Noun}Params = { /* ... */ };
 export type Delete{Noun}Params = { id: string };
@@ -82,25 +77,53 @@ export interface {Noun}Repository {
 }
 ```
 
+```ts
+// src/features/{feature}/data/repositories/{noun}.ts
+import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { PaginatedData } from "@/core/resources/paginated";
+import { SessionEntity } from "@/features/authentication/domain/entities/session";
+import { {Noun}Entity } from "@/features/{feature}/domain/entities/{noun}";
+import {
+  {Noun}Repository,
+  List{Nouns}Params,
+  Create{Noun}Params,
+  Delete{Noun}Params,
+} from "@/features/{feature}/domain/repositories/{noun}";
+import { {Noun}Service } from "@/features/{feature}/domain/sources/{noun}";
+
+export class {Noun}RepositoryImpl implements {Noun}Repository {
+  constructor(private readonly service: {Noun}Service) {}
+
+  public async list(params: List{Nouns}Params, session: SessionEntity): Promise<DataState<PaginatedData<{Noun}Entity>>> {
+    try {
+      const result = await this.service.list(params, session);
+      return new DataSuccess({ data: result.data.map((m) => m.toEntity()), meta: result.meta });
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+  // ... get, create, delete follow the same pattern
+}
+```
+
 ## References
 
-Study all four files as a set — they are a contract:
-
 - [`references/domain-repository.ts`](references/domain-repository.ts) — interface + param types.
-- [`references/data-repository.ts`](references/data-repository.ts) — impl (Model → Entity mapping, `DataState` wrapping).
-- [`references/domain-source.ts`](references/domain-source.ts) — service interface + result types.
-- [`references/data-service.ts`](references/data-service.ts) — service impl (`HttpRequest`, URL building, `fromJson`).
+- [`references/data-repository.ts`](references/data-repository.ts) — impl mapping Model → Entity and wrapping errors.
 
 ## Common pitfalls
 
+- **Mixing in HTTP concerns** — if you see `HttpRequest`, `fetch`, or URL paths in a repository impl, that belongs in the Service. Move it.
 - **Session in the middle of the params list** — it must be last.
 - **More than 2 params** — bundle business args into one object.
-- **Repo impl forgetting `.map((m) => m.toEntity())`** — outside `data/`, callers only see entities.
-- **Service impl leaking `DataState`** — service throws, repo wraps. Keep concerns separated.
-- **Importing repo params into the use case file** — use cases define their own input type and pass it through (see `create-usecase`).
-- **Adding `X-Account-Id` header** — removed. Account is resolved server-side from the Clerk JWT `orgId`.
-- **Relative imports** — always use `@/` path alias.
+- **Forgetting `.map((m) => m.toEntity())`** — outside `data/`, callers only see entities. The impl is the only place this conversion happens.
+- **Importing repo params into the use case file** — use cases define their own input type (see `create-usecase`).
+- **Not splitting sub-resources** — a master + entries feature needs two repositories, not one bloated one.
 
 ## After creating
 
-Next step is usually a use case (invoke `create-usecase`) that composes this repository with `SessionRepository`. The presentation layer (hooks) consumes the use case, not the repository directly.
+Next step is to create the matching **Service** — invoke the `create-service` skill. Service handles the HTTP side (URL paths, search params, JSON parsing). A Repository without its Service cannot be instantiated.
+
+After that, the feature is ready to expose to the presentation layer via a use case (`create-usecase`).

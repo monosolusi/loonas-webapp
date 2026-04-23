@@ -1,6 +1,7 @@
 ---
 name: create-hook-list
 description: Create a paginated SWR list hook that wraps a List use case and returns a discriminated-union state (initial/loaded/error). Use when a page or component needs to fetch a paginated collection of entities with filters like search, date range, or page number. Triggers include "list hook", "paginated hook", "SWR list", "fetch list", "useList...". DO NOT use this for fetching a single entity (use create-hook-get) or for mutations (use create-hook-mutation).
+paths: src/features/**/presentations/hooks/**
 ---
 
 # Create List Hook (SWR, paginated)

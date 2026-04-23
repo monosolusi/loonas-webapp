@@ -1,6 +1,7 @@
 ---
 name: create-entity
 description: Create a new domain entity class in the Clean Architecture domain layer. Use when adding a new business object, value object, or domain model under `src/features/{feature}/domain/entities/`. Triggers include "new entity", "create entity", "add a domain entity", "buat entity baru".
+paths: src/features/**/domain/entities/**
 ---
 
 # Create Entity

@@ -1,6 +1,7 @@
 ---
 name: create-usecase
 description: Create a domain use case that orchestrates a single business operation — resolves the Clerk session and delegates to a repository. Use when adding an action like list, get, create, update, or delete that the presentation layer will invoke via a hook. Triggers include "create use case", "add use case", "new business operation", "buat usecase".
+paths: src/features/**/domain/usecases/**
 ---
 
 # Create Use Case

@@ -1,6 +1,7 @@
 ---
 name: create-model
 description: Create a data-layer Model class with fromJson and toEntity under `src/features/{feature}/data/models/`. Use when wrapping an API JSON response so it can be parsed and then converted to a domain Entity. Triggers include "create model", "data model", "fromJson", "parse API response", "buat model".
+paths: src/features/**/data/models/**
 ---
 
 # Create Model

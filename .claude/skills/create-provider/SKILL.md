@@ -1,6 +1,7 @@
 ---
 name: create-provider
 description: Create a React context provider — either a page-level provider (`app/**/_providers/`) for state, mutations, and shared data on a single page, or a feature-level provider (`features/{feature}/presentations/providers/`) reused across pages. Covers the detail "guarantee" pattern, list filter-state pattern, and create/form pattern. Use when a page has state or data that multiple child components consume. Triggers include "create provider", "page provider", "feature provider", "context provider", "buat provider".
+paths: src/app/**/_providers/**, src/features/**/presentations/providers/**
 ---
 
 # Create Provider

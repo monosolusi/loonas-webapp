@@ -1,6 +1,7 @@
 ---
 name: create-hook-mutation
 description: Create an SWR-mutation hook (use-create / use-update / use-delete) that wraps a write use case and exposes a trigger + isMutating state. Use when a form or action needs to create, update, or delete an entity. Triggers include "mutation hook", "create hook", "update hook", "delete hook", "form submit hook", "useCreate...", "useDelete...". DO NOT use this for reads (use create-hook-list for paginated reads or create-hook-get for single-entity reads).
+paths: src/features/**/presentations/hooks/**
 ---
 
 # Create Mutation Hook (SWR-mutation)

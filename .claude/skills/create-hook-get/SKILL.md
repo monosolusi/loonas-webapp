@@ -1,6 +1,7 @@
 ---
 name: create-hook-get
 description: Create an SWR single-entity read hook (use-get-xxx) that wraps a Get use case and returns a discriminated-union state. Use when a page or component needs to fetch one entity by id. Triggers include "get hook", "detail hook", "fetch single", "useGet...", "fetch by id". DO NOT use this for paginated lists (use create-hook-list) or for mutations (use create-hook-mutation).
+paths: src/features/**/presentations/hooks/**
 ---
 
 # Create Get Hook (SWR, single entity)

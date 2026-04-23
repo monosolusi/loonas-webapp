@@ -1,6 +1,7 @@
 ---
 name: create-component
 description: Create a React component in either a page route (`app/**/_components/`) or a feature presentation layer (`features/*/presentations/components/`). Use when adding any UI element — a row, card, dialog, form section, table, etc. Covers general rules for file layout, naming, styling, state, and context consumption. Triggers include "create component", "add a component", "new React component", "buat component".
+paths: src/app/**/_components/**, src/features/**/presentations/components/**
 ---
 
 # Create Component
