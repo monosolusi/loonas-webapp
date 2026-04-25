@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { CoaMappingEntity } from "@/features/accounting/domain/entities/coa-mapping";
 import { CoaMappingEntityTypeEntity } from "@/features/accounting/domain/entities/coa-mapping-entity-type";
@@ -12,6 +12,12 @@ type CoaMappingsContextValue = {
   mappings: CoaMappingEntity[] | null;
   meta: PaginationMeta | null;
   loading: boolean;
+  creatingOpen: boolean;
+  editingItem: CoaMappingEntity | null;
+  deletingItem: CoaMappingEntity | null;
+  setCreatingOpen: (open: boolean) => void;
+  setEditingItem: (item: CoaMappingEntity | null) => void;
+  setDeletingItem: (item: CoaMappingEntity | null) => void;
 };
 
 const CoaMappingsContext = createContext<CoaMappingsContextValue | null>(null);
@@ -30,6 +36,10 @@ export function CoaMappingsProvider({ children }: CoaMappingsProviderProps) {
   const { entityTypes, loading: loadingEntityTypes } = useListCoaMappingEntityType();
   const { mappings, meta, loading: loadingMappings } = useListCoaMapping({ limit: 100 });
 
+  const [creatingOpen, setCreatingOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<CoaMappingEntity | null>(null);
+  const [deletingItem, setDeletingItem] = useState<CoaMappingEntity | null>(null);
+
   const loading = loadingEntityTypes || loadingMappings;
 
   return (
@@ -39,6 +49,12 @@ export function CoaMappingsProvider({ children }: CoaMappingsProviderProps) {
         mappings,
         meta,
         loading,
+        creatingOpen,
+        editingItem,
+        deletingItem,
+        setCreatingOpen,
+        setEditingItem,
+        setDeletingItem,
       }}
     >
       {children}
