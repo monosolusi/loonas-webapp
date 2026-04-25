@@ -96,7 +96,6 @@ export function LedgerListImpl() {
             <span className="text-sm font-mono text-neutral-400">{account.code}</span>
             <div className="flex flex-row items-center gap-x-2">
               <span className="text-sm font-medium text-neutral-500">{account.name}</span>
-              {account.isSystem && <Image src="/assets/images/lock-icon-w20-h20.svg" alt="Sistem" width={14} height={14} />}
             </div>
             <div className="flex flex-row items-center">
               <AccountTypeBadge type={account.type} />
