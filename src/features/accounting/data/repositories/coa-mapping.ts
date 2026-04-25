@@ -3,7 +3,13 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PaginatedData } from "@/core/resources/paginated";
 import { CoaMappingEntity } from "@/features/accounting/domain/entities/coa-mapping";
-import { CoaMappingRepository, ListCoaMappingsParams } from "@/features/accounting/domain/repositories/coa-mapping";
+import {
+  CoaMappingRepository,
+  ListCoaMappingsParams,
+  CreateCoaMappingParams,
+  UpdateCoaMappingParams,
+  DeleteCoaMappingParams,
+} from "@/features/accounting/domain/repositories/coa-mapping";
 import { CoaMappingService } from "@/features/accounting/domain/sources/coa-mapping";
 
 export class CoaMappingRepositoryImpl implements CoaMappingRepository {
@@ -19,6 +25,42 @@ export class CoaMappingRepositoryImpl implements CoaMappingRepository {
         data: result.data.map((m) => m.toEntity()),
         meta: result.meta,
       });
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async create(
+    params: CreateCoaMappingParams,
+    session: SessionEntity,
+  ): Promise<DataState<CoaMappingEntity>> {
+    try {
+      const result = await this.service.create(params, session);
+      return new DataSuccess(result.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async update(
+    params: UpdateCoaMappingParams,
+    session: SessionEntity,
+  ): Promise<DataState<CoaMappingEntity>> {
+    try {
+      const result = await this.service.update(params, session);
+      return new DataSuccess(result.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async delete(params: DeleteCoaMappingParams, session: SessionEntity): Promise<DataState<void>> {
+    try {
+      await this.service.delete(params, session);
+      return new DataSuccess(undefined);
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
