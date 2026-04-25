@@ -1,14 +1,12 @@
 import { AbstractModel } from "@/core/resources/model";
-import { LedgerAccountModel } from "@/features/accounting/data/models/ledger-account";
+import { CoaMappingLineModel } from "@/features/accounting/data/models/coa-mapping-line";
 import { CoaMappingEntity } from "@/features/accounting/domain/entities/coa-mapping";
 
 type CoaMappingModelConstructor = {
   id: string;
   entityType: string;
   entityId: string | null;
-  debitAccount: LedgerAccountModel;
-  creditAccount: LedgerAccountModel;
-  isSystem: boolean;
+  lines: CoaMappingLineModel[];
   createdAt: string;
   updatedAt: string;
 };
@@ -17,9 +15,7 @@ export class CoaMappingModel implements AbstractModel {
   public readonly id: string;
   public readonly entityType: string;
   public readonly entityId: string | null;
-  public readonly debitAccount: LedgerAccountModel;
-  public readonly creditAccount: LedgerAccountModel;
-  public readonly isSystem: boolean;
+  public readonly lines: CoaMappingLineModel[];
   public readonly createdAt: string;
   public readonly updatedAt: string;
 
@@ -27,21 +23,20 @@ export class CoaMappingModel implements AbstractModel {
     this.id = args.id;
     this.entityType = args.entityType;
     this.entityId = args.entityId;
-    this.debitAccount = args.debitAccount;
-    this.creditAccount = args.creditAccount;
-    this.isSystem = args.isSystem;
+    this.lines = args.lines;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
   }
 
   public static fromJson(data: Record<string, any>): CoaMappingModel {
+    const rawLines = Array.isArray(data["lines"]) ? data["lines"].map(CoaMappingLineModel.fromJson) : [];
+    const lines = rawLines.sort((a, b) => a.sortOrder - b.sortOrder);
+
     return new CoaMappingModel({
       id: data["id"],
       entityType: data["entity_type"],
       entityId: data["entity_id"] ?? null,
-      debitAccount: LedgerAccountModel.fromJson(data["debit_account"]),
-      creditAccount: LedgerAccountModel.fromJson(data["credit_account"]),
-      isSystem: data["is_system"] ?? false,
+      lines,
       createdAt: data["created_at"] ?? "",
       updatedAt: data["updated_at"] ?? "",
     });
@@ -52,9 +47,7 @@ export class CoaMappingModel implements AbstractModel {
       id: this.id,
       entityType: this.entityType,
       entityId: this.entityId,
-      debitAccount: this.debitAccount.toEntity(),
-      creditAccount: this.creditAccount.toEntity(),
-      isSystem: this.isSystem,
+      lines: this.lines.map((l) => l.toEntity()),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     });

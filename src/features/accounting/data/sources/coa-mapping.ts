@@ -3,7 +3,25 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { CoaMappingModel } from "@/features/accounting/data/models/coa-mapping";
 import { CoaMappingService, ListCoaMappingsServiceResult } from "@/features/accounting/domain/sources/coa-mapping";
-import { ListCoaMappingsParams } from "@/features/accounting/domain/repositories/coa-mapping";
+import {
+  ListCoaMappingsParams,
+  CreateCoaMappingParams,
+  UpdateCoaMappingParams,
+  DeleteCoaMappingParams,
+  CoaMappingLineInput,
+} from "@/features/accounting/domain/repositories/coa-mapping";
+
+function serializeLine(line: CoaMappingLineInput, index: number): Record<string, any> {
+  const body: Record<string, any> = {
+    account_id: line.accountId,
+    position: line.position,
+    sort_order: line.sortOrder ?? index,
+  };
+  if (line.label !== undefined && line.label !== null && line.label.trim().length > 0) {
+    body["label"] = line.label.trim();
+  }
+  return body;
+}
 
 export class CoaMappingServiceImpl implements CoaMappingService {
   constructor(private readonly http: HttpRequest) {}
@@ -34,6 +52,63 @@ export class CoaMappingServiceImpl implements CoaMappingService {
           totalPages: result.meta?.total_pages ?? 1,
         },
       };
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async create(params: CreateCoaMappingParams, session: SessionEntity): Promise<CoaMappingModel> {
+    try {
+      const body: Record<string, any> = {
+        entity_type: params.entityType,
+        lines: params.lines.map(serializeLine),
+      };
+      if (params.entityId !== undefined && params.entityId !== null && params.entityId.trim().length > 0) {
+        body["entity_id"] = params.entityId.trim();
+      }
+
+      const result = await this.http.request({
+        path: "/accounting/coa-mappings",
+        method: "POST",
+        body,
+        session,
+      });
+
+      return CoaMappingModel.fromJson(result);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async update(params: UpdateCoaMappingParams, session: SessionEntity): Promise<CoaMappingModel> {
+    try {
+      const body: Record<string, any> = {
+        lines: params.lines.map(serializeLine),
+      };
+
+      const result = await this.http.request({
+        path: `/accounting/coa-mappings/${params.id}`,
+        method: "PUT",
+        body,
+        session,
+      });
+
+      return CoaMappingModel.fromJson(result);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async delete(params: DeleteCoaMappingParams, session: SessionEntity): Promise<void> {
+    try {
+      await this.http.request({
+        path: `/accounting/coa-mappings/${params.id}`,
+        method: "DELETE",
+        session,
+      });
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

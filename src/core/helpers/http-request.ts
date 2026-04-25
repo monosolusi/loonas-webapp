@@ -65,7 +65,7 @@ export class HttpRequest {
       if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
 
       const ErrorCode = ErrorCodes.find(data.code);
-      if (ErrorCode) throw new ServerError(ErrorCode);
+      if (ErrorCode) throw new ServerError(ErrorCode, data.message ? { message: data.message } : undefined);
 
       throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
     }
