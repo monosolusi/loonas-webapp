@@ -1,13 +1,19 @@
 import { HttpRequest } from "@/core/helpers/http-request";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { ProductModel } from "@/features/product/data/models/product";
+import { ProductForSaleModel } from "@/features/product/data/models/product-for-sale";
 import { ProductPhotoModel } from "@/features/product/data/models/product-photo";
 import { RecipeItemModel } from "@/features/product/data/models/recipe-item";
-import { ProductService, ListProductsServiceResult } from "@/features/product/domain/sources/product";
+import {
+  ProductService,
+  ListProductsServiceResult,
+  ListProductsForSaleServiceResult,
+} from "@/features/product/domain/sources/product";
 import {
   CreateProductParams,
   UpdateProductParams,
   ListProductsParams,
+  ListProductsForSaleParams,
   AddVariantParams,
   UpdateVariantParams,
   SaveRecipeParams,
@@ -38,6 +44,42 @@ export class ProductServiceImpl implements ProductService {
 
       return {
         data: items.map(ProductModel.fromJson),
+        meta: {
+          page: result.meta?.page ?? 1,
+          limit: result.meta?.limit ?? 10,
+          total: result.meta?.total ?? 0,
+          totalPages: result.meta?.total_pages ?? 1,
+        },
+      };
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async listForSale(
+    params: ListProductsForSaleParams,
+    session: SessionEntity,
+  ): Promise<ListProductsForSaleServiceResult> {
+    try {
+      const searchParams: Record<string, any> = {};
+      if (params.page) searchParams["page"] = String(params.page);
+      if (params.limit) searchParams["limit"] = String(params.limit);
+      if (params.categoryIds && params.categoryIds.length > 0) searchParams["category_id"] = params.categoryIds.join(",");
+      if (params.search) searchParams["search"] = params.search;
+
+      const result = await this.http.request({
+        path: "/products/for-sale",
+        method: "GET",
+        searchParams,
+        session,
+      });
+
+      const items = result?.data;
+      if (!Array.isArray(items)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      return {
+        data: items.map(ProductForSaleModel.fromJson),
         meta: {
           page: result.meta?.page ?? 1,
           limit: result.meta?.limit ?? 10,

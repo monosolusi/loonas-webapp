@@ -1,11 +1,13 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { ProductModel } from "@/features/product/data/models/product";
+import { ProductForSaleModel } from "@/features/product/data/models/product-for-sale";
 import { ProductPhotoModel } from "@/features/product/data/models/product-photo";
 import { RecipeItemModel } from "@/features/product/data/models/recipe-item";
 import {
   CreateProductParams,
   UpdateProductParams,
   ListProductsParams,
+  ListProductsForSaleParams,
   AddVariantParams,
   UpdateVariantParams,
   SaveRecipeParams,
@@ -16,8 +18,14 @@ export type ListProductsServiceResult = {
   meta: { page: number; limit: number; total: number; totalPages: number };
 };
 
+export type ListProductsForSaleServiceResult = {
+  data: ProductForSaleModel[];
+  meta: { page: number; limit: number; total: number; totalPages: number };
+};
+
 export interface ProductService {
   list(params: ListProductsParams, session: SessionEntity): Promise<ListProductsServiceResult>;
+  listForSale(params: ListProductsForSaleParams, session: SessionEntity): Promise<ListProductsForSaleServiceResult>;
   get(id: string, session: SessionEntity): Promise<ProductModel>;
   create(params: CreateProductParams, session: SessionEntity): Promise<ProductModel>;
   update(id: string, params: UpdateProductParams, session: SessionEntity): Promise<ProductModel>;

@@ -10,6 +10,8 @@ import {
   UpdateProductParams,
   ListProductsParams,
   ListProductsResult,
+  ListProductsForSaleParams,
+  ListProductsForSaleResult,
   AddVariantParams,
   UpdateVariantParams,
   SaveRecipeParams,
@@ -22,6 +24,22 @@ export class ProductRepositoryImpl implements ProductRepository {
   public async list(params: ListProductsParams, session: SessionEntity): Promise<DataState<ListProductsResult>> {
     try {
       const result = await this.service.list(params, session);
+      return new DataSuccess({
+        products: result.data.map((p) => p.toEntity()),
+        meta: result.meta,
+      });
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async listForSale(
+    params: ListProductsForSaleParams,
+    session: SessionEntity,
+  ): Promise<DataState<ListProductsForSaleResult>> {
+    try {
+      const result = await this.service.listForSale(params, session);
       return new DataSuccess({
         products: result.data.map((p) => p.toEntity()),
         meta: result.meta,

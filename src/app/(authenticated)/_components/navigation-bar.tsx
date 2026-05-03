@@ -24,12 +24,15 @@ export function NavigationBar() {
           <NavigationChildItem href="/purchasing" label="Pembelian" />
           <NavigationChildItem href="/invoices/incoming" label="Faktur Masukan" />
         </NavigationGroup>
-        <NavigationItem
-          href="/invoices/outgoing"
-          label="Faktur Keluaran"
+        <NavigationGroup
+          label="Penjualan"
           iconPath="/assets/images/invoice-out-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/invoice-out-icon-primary-300-w16-h16.svg"
-        />
+          matchPrefixes={["/pos", "/invoices/outgoing"]}
+        >
+          <NavigationChildItem href="/pos" label="POS" />
+          <NavigationChildItem href="/invoices/outgoing" label="Faktur Keluaran" />
+        </NavigationGroup>
         <NavigationGroup
           label="Produk"
           iconPath="/assets/images/box-icon-neutral-300-w16-h16.svg"
