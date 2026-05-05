@@ -2,7 +2,7 @@ import { InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoi
 import { PaginationMeta } from "@/core/resources/paginated";
 import Link from "next/link";
 import { InvoiceStatusChip } from "@/app/(authenticated)/invoices/_components/invoice-status-chip";
-import { TablePagination } from "@/app/(authenticated)/invoices/_components/table-pagination";
+import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 
 export interface IncomingInvoiceRow {
   id: string;

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { DateTime } from "luxon";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
-import { TablePagination } from "@/app/(authenticated)/invoices/_components/table-pagination";
+import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { SummaryCard } from "@/app/(authenticated)/finance/_components/summary-card";
 import { DateRangePicker } from "@/app/(authenticated)/finance/_components/date-range-picker";
 import { useGetAccountBalance } from "@/features/accounting/presentations/hooks/use-get-account-balance";

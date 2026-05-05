@@ -62,9 +62,15 @@ export type PosContextValue = {
   startCheckout: () => void;
   cancelCheckout: () => void;
   selectPaymentMethod: (method: PaymentMethodEntity) => void;
+  /** Re-open the picker from a later step. Resets the current selection. */
+  changePaymentMethod: () => void;
   goToConfirm: () => void;
   /** Generic back navigation; delegates to handler's step list. */
   goBack: () => void;
+  /** True when the picker step was bypassed because exactly one method is selectable. */
+  pickerAutoSkipped: boolean;
+  /** Count of methods that have a registered handler AND don't require scheme selection. */
+  selectableMethodCount: number;
 
   // Submit
   isCheckingOut: boolean;

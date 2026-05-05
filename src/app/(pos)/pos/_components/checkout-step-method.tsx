@@ -11,11 +11,13 @@ export function CheckoutStepMethod() {
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto">
-      <div className="flex flex-row items-baseline justify-between border-b border-b-neutral-100 px-4 py-4 text-sm">
-        <span className="text-neutral-400">Total yang dibayar</span>
-        <span className="font-semibold tabular-nums text-neutral-500">
-          <NumberDisplay value={total} suffix="IDR" />
-        </span>
+      <div className="flex flex-col items-center px-6 pt-8 pb-2">
+        <div className="border-y border-neutral-100 px-10 py-4 text-center">
+          <div className="text-xs font-medium tracking-wider text-neutral-400 uppercase">Total yang dibayar</div>
+          <div className="mt-1 text-2xl font-bold tabular-nums text-neutral-500">
+            <NumberDisplay value={total} suffix="IDR" />
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-1 flex-col">

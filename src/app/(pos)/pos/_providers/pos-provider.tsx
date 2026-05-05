@@ -13,6 +13,7 @@ import { useListPaymentMethods } from "@/features/pos/presentations/hooks/use-li
 import { useCreatePosSale } from "@/features/pos/presentations/hooks/use-create-pos-sale";
 import { POS_SWR_KEYS } from "@/features/pos/presentations/constants/swr-keys";
 import { getPaymentMethodHandler } from "@/app/(pos)/pos/_payment-methods/registry";
+import { MOCK_PAYMENT_METHODS, USE_MOCK_PAYMENT_METHODS } from "@/app/(pos)/pos/_dev/mock-payment-methods";
 import {
   CartItem,
   CheckoutStep,
@@ -38,7 +39,14 @@ function resolveAvailableQty(variant: VariantForSaleEntity): number | null {
 
 export function PosProvider({ children }: { children: React.ReactNode }) {
   const { showToast } = useToast();
-  const paymentMethodsState = useListPaymentMethods({ isEnabled: true });
+  const realPaymentMethodsState = useListPaymentMethods({ isEnabled: true });
+  const paymentMethodsState = useMemo(
+    () =>
+      USE_MOCK_PAYMENT_METHODS
+        ? ({ status: "loaded" as const, paymentMethods: MOCK_PAYMENT_METHODS, error: null })
+        : realPaymentMethodsState,
+    [realPaymentMethodsState],
+  );
   const { trigger: createPosSale } = useCreatePosSale();
 
   // Picker
@@ -54,6 +62,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
 
   // Wizard
   const [checkoutStep, setCheckoutStep] = useState<CheckoutStep | null>(null);
+  const [pickerAutoSkipped, setPickerAutoSkipped] = useState(false);
 
   // Idempotency
   const [idempotencyKey, setIdempotencyKey] = useState<string>(() => crypto.randomUUID());
@@ -85,6 +94,14 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     if (!currentMethod) return null;
     return getPaymentMethodHandler(currentMethod.paymentGateway.type);
   }, [currentMethod]);
+
+  const selectableMethods = useMemo<PaymentMethodEntity[]>(() => {
+    if (paymentMethodsState.status !== "loaded") return [];
+    return paymentMethodsState.paymentMethods.filter((m) => {
+      const handlerExists = getPaymentMethodHandler(m.paymentGateway.type) !== null;
+      return handlerExists && !m.paymentGateway.requiresSchemeSelection;
+    });
+  }, [paymentMethodsState]);
 
   const enterDrilldown = useCallback((product: ProductForSaleEntity) => {
     setDrilldownProduct(product);
@@ -162,6 +179,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     setCheckoutStep(null);
     setStockErrors(new Map());
     setCheckoutError(null);
+    setPickerAutoSkipped(false);
   }, []);
 
   // Wizard transitions
@@ -169,6 +187,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     if (items.length === 0) return;
     setCheckoutError(null);
     setStockErrors(new Map());
+    setPickerAutoSkipped(false);
     setCheckoutStep("method");
   }, [items.length]);
 
@@ -176,6 +195,12 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     setCheckoutStep(null);
     setSelectedPaymentGatewayId(null);
     setCheckoutError(null);
+    setPickerAutoSkipped(false);
+  }, []);
+
+  const changePaymentMethod = useCallback(() => {
+    setPickerAutoSkipped(false);
+    setCheckoutStep("method");
   }, []);
 
   const selectPaymentMethod = useCallback((method: PaymentMethodEntity) => {
@@ -209,12 +234,24 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     if (checkoutStep === "method") setSelectedPaymentGatewayId(null);
   }, [checkoutStep]);
 
+  // Auto-skip the picker when only one method is selectable (handler exists,
+  // doesn't require scheme selection). Saves an unnecessary tap when Cash is
+  // the sole option.
+  useEffect(() => {
+    if (checkoutStep !== "method") return;
+    if (paymentMethodsState.status !== "loaded") return;
+    if (selectableMethods.length !== 1) return;
+    setPickerAutoSkipped(true);
+    selectPaymentMethod(selectableMethods[0]);
+  }, [checkoutStep, paymentMethodsState.status, selectableMethods, selectPaymentMethod]);
+
   // If cart becomes empty mid-wizard, abort the wizard.
   useEffect(() => {
     if (checkoutStep === null) return;
     if (items.length === 0) {
       setCheckoutStep(null);
       setSelectedPaymentGatewayId(null);
+      setPickerAutoSkipped(false);
     }
   }, [checkoutStep, items.length]);
 
@@ -290,6 +327,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
         setSelectedPaymentGatewayId(null);
         setCheckoutStep(null);
         setStockErrors(new Map());
+        setPickerAutoSkipped(false);
         setIsCheckingOut(false);
         return sale.id;
       } catch (err) {
@@ -300,6 +338,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
           showToast({ title: error.message, type: "error" }, "error");
           await revalidateSWRKey(POS_SWR_KEYS.LIST_PAYMENT_METHODS);
           setSelectedPaymentGatewayId(null);
+          setPickerAutoSkipped(false);
           setCheckoutStep("method");
           setCheckoutError(error);
           setIsCheckingOut(false);
@@ -371,8 +410,11 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       startCheckout,
       cancelCheckout,
       selectPaymentMethod,
+      changePaymentMethod,
       goToConfirm,
       goBack,
+      pickerAutoSkipped,
+      selectableMethodCount: selectableMethods.length,
       isCheckingOut,
       checkoutError,
       completeTransaction,
@@ -399,8 +441,11 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       startCheckout,
       cancelCheckout,
       selectPaymentMethod,
+      changePaymentMethod,
       goToConfirm,
       goBack,
+      pickerAutoSkipped,
+      selectableMethods,
       isCheckingOut,
       checkoutError,
       completeTransaction,

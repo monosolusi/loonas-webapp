@@ -1,12 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
-import { ChevronRightIcon } from "@heroicons/react/16/solid";
-import { StatusChip } from "@/core/presentations/components/status-chip";
+import clsx from "clsx";
 import { PaymentMethodEntity } from "@/features/pos/domain/entities/payment-method";
 import { getPaymentMethodHandler } from "@/app/(pos)/pos/_payment-methods/registry";
-import { ProductListRow } from "@/app/(pos)/pos/_components/product-list-row";
-import { paymentFeeLabel, paymentTypeLabel } from "@/app/(pos)/pos/_components/payment-method-helpers";
+import { PaymentMethodTile } from "@/app/(pos)/pos/_components/payment-method-tile";
+import { getPaymentMethodIconSrc } from "@/app/(pos)/pos/_components/payment-method-icon";
 
 type CheckoutStepMethodBodyListProps = {
   methods: PaymentMethodEntity[];
@@ -18,37 +17,29 @@ export function CheckoutStepMethodBodyList({ methods, onSelect }: CheckoutStepMe
 
   if (sorted.length === 0) {
     return (
-      <span className="text-sm text-neutral-300">
+      <div className="px-6 py-8 text-center text-sm text-neutral-300">
         Tidak ada metode pembayaran aktif. Aktifkan setidaknya satu metode di Pengaturan.
-      </span>
+      </div>
     );
   }
 
+  const isSingle = sorted.length === 1;
+
   return (
-    <div className="flex flex-col">
+    <div className={clsx("grid gap-4 px-6 pt-6 pb-8", isSingle ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2")}>
       {sorted.map((method) => {
         const gateway = method.paymentGateway;
         const hasHandler = getPaymentMethodHandler(gateway.type) !== null;
         const unsupported = gateway.requiresSchemeSelection || !hasHandler;
-        const feeLabel = paymentFeeLabel(gateway.pricing);
-        const typeLabel = paymentTypeLabel(gateway.type);
+        const description = unsupported ? "Belum didukung" : gateway.description || "—";
 
         return (
-          <ProductListRow
+          <PaymentMethodTile
             key={gateway.id}
-            primaryLabel={gateway.title}
+            iconSrc={getPaymentMethodIconSrc(gateway.type)}
+            title={gateway.title}
+            description={description}
             disabled={unsupported}
-            right={
-              <>
-                {feeLabel && <span className="text-xs text-neutral-400">{feeLabel}</span>}
-                {typeLabel && <span className="text-xs text-neutral-300">{typeLabel}</span>}
-                {unsupported ? (
-                  <StatusChip label="Belum didukung" variant="neutral" compact />
-                ) : (
-                  <ChevronRightIcon className="size-4 text-neutral-200" />
-                )}
-              </>
-            }
             onClick={() => onSelect(method)}
           />
         );

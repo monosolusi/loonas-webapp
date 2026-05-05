@@ -3,11 +3,13 @@
 import { DateTime } from "luxon";
 import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { StatusChip } from "@/core/presentations/components/status-chip";
-import { useReceipt } from "@/app/(pos)/pos/receipt/[id]/_providers/receipt-provider";
+import { PosSaleEntity } from "@/features/pos/domain/entities/pos-sale";
 
-export function ReceiptCard() {
-  const { sale } = useReceipt();
+type ReceiptCardProps = {
+  sale: PosSaleEntity;
+};
 
+export function ReceiptCard({ sale }: ReceiptCardProps) {
   const invoiceDate = DateTime.fromISO(sale.invoiceDate);
   const formattedDate = invoiceDate.isValid
     ? invoiceDate.setLocale("id-ID").toFormat("dd LLL yyyy, HH:mm")
@@ -25,14 +27,17 @@ export function ReceiptCard() {
       <div className="flex flex-col gap-y-2">
         {sale.items.map((item) => (
           <div key={item.id} className="flex flex-col gap-y-0.5">
-            <div className="flex flex-row items-baseline justify-between gap-x-3">
-              <span className="flex-1 text-sm text-neutral-500">
-                {item.qty}× {item.name}
-              </span>
-              <span className="text-sm text-neutral-300">
+            <div className="flex flex-row items-center justify-between gap-x-3">
+              <div className="flex min-w-0 flex-1 flex-row items-center gap-x-2.5">
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-neutral-100 text-xs font-semibold tabular-nums text-neutral-400">
+                  {item.qty}
+                </span>
+                <span className="truncate text-sm text-neutral-500">{item.name}</span>
+              </div>
+              <span className="shrink-0 text-sm text-neutral-300">
                 <NumberDisplay value={item.price} />
               </span>
-              <span className="w-24 text-right text-sm font-medium text-neutral-500">
+              <span className="w-24 shrink-0 text-right text-sm font-medium text-neutral-500">
                 <NumberDisplay value={item.total} />
               </span>
             </div>

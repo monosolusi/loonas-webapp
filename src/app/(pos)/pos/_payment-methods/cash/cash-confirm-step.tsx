@@ -27,7 +27,7 @@ export function CashConfirmStep() {
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto">
-      <div className="flex flex-col gap-y-2 border-b border-b-neutral-100 px-4 py-4 text-sm">
+      <div className="flex flex-col gap-y-2 border-b border-b-neutral-100 px-6 py-4 text-sm">
         <div className="flex flex-row items-baseline justify-between">
           <span className="text-neutral-400">Total</span>
           <span className="tabular-nums text-neutral-500">
@@ -42,14 +42,14 @@ export function CashConfirmStep() {
         </div>
       </div>
 
-      <div className="flex flex-row items-baseline justify-between px-4 py-6">
+      <div className="flex flex-row items-baseline justify-between px-6 py-6">
         <span className="text-base font-semibold tracking-wide uppercase text-neutral-500">Kembalian</span>
         <span className="text-2xl font-semibold tabular-nums text-success-500">
           <NumberDisplay value={change} suffix="IDR" />
         </span>
       </div>
 
-      <div className="mt-auto px-4 py-4">
+      <div className="mt-auto px-6 py-4">
         <PrimaryButton label="Selesaikan Transaksi" loading={isCheckingOut} onClick={onSubmit} />
       </div>
     </div>

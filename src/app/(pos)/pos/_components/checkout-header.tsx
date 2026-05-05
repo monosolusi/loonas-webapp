@@ -13,11 +13,14 @@ const STEP_LABELS: Record<CheckoutStep, string> = {
 };
 
 export function CheckoutHeader() {
-  const { checkoutStep, currentMethod, currentHandler, cancelCheckout, goBack } = usePos();
+  const { checkoutStep, currentMethod, currentHandler, cancelCheckout, goBack, pickerAutoSkipped } = usePos();
   const [confirmingCancel, setConfirmingCancel] = useState(false);
 
   const stepIndex = currentHandler && checkoutStep ? currentHandler.steps.indexOf(checkoutStep) : -1;
-  const showBack = stepIndex > 0;
+  // When the picker was auto-skipped, treat the first non-method step as the
+  // wizard's effective first step — hide back to avoid stranding the cashier
+  // on a single-option picker.
+  const showBack = stepIndex > (pickerAutoSkipped ? 1 : 0);
 
   const stepLabel = checkoutStep ? STEP_LABELS[checkoutStep] : STEP_LABELS.method;
   const methodTitle = currentMethod?.paymentGateway.title ?? null;

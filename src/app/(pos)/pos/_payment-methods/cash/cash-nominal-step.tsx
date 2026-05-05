@@ -19,14 +19,14 @@ export function CashNominalStep() {
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto">
-      <div className="flex flex-row items-baseline justify-between border-b border-b-neutral-100 px-4 py-4 text-sm">
+      <div className="flex flex-row items-baseline justify-between border-b border-b-neutral-100 px-6 py-4 text-sm">
         <span className="text-neutral-400">Total</span>
         <span className="font-semibold tabular-nums text-neutral-500">
           <NumberDisplay value={total} suffix="IDR" />
         </span>
       </div>
 
-      <div className="flex flex-col gap-y-3 px-4 py-4">
+      <div className="flex flex-col gap-y-3 px-6 py-4">
         <CurrencyInput
           label="Diterima"
           value={tenderedAmount ?? undefined}
@@ -35,7 +35,7 @@ export function CashNominalStep() {
         <CashQuickAmountChips total={total} selectedAmount={tenderedAmount} onSelect={setTenderedAmount} />
       </div>
 
-      <div className="flex flex-row items-baseline justify-between border-t border-t-neutral-100 px-4 py-4 text-sm">
+      <div className="flex flex-row items-baseline justify-between border-t border-t-neutral-100 px-6 py-4 text-sm">
         <span className="text-neutral-400">Kembalian</span>
         <span
           className={clsx(
@@ -55,7 +55,7 @@ export function CashNominalStep() {
         </span>
       </div>
 
-      <div className="mt-auto px-4 py-4">
+      <div className="mt-auto px-6 py-4">
         <PrimaryButton label="Lanjutkan" disabled={!canContinue} onClick={goToConfirm} />
       </div>
     </div>

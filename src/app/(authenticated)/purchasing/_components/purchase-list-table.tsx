@@ -2,7 +2,7 @@
 
 import { TableContainer } from "@/core/presentations/components/table/table-container";
 import { TableHeader } from "@/core/presentations/components/table/table-header";
-import { TablePagination } from "@/app/(authenticated)/invoices/_components/table-pagination";
+import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { usePurchaseList } from "@/app/(authenticated)/purchasing/_providers/purchase-list-provider";
 import { PurchaseListRow } from "@/app/(authenticated)/purchasing/_components/purchase-list-row";
 

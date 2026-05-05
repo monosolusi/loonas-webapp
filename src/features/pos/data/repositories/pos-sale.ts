@@ -5,6 +5,8 @@ import { PosSaleEntity } from "@/features/pos/domain/entities/pos-sale";
 import {
   CreatePosSaleParams,
   GetPosSaleParams,
+  ListPosSalesParams,
+  ListPosSalesResult,
   PosSaleRepository,
 } from "@/features/pos/domain/repositories/pos-sale";
 import { PosSaleService } from "@/features/pos/domain/sources/pos-sale";
@@ -26,6 +28,19 @@ export class PosSaleRepositoryImpl implements PosSaleRepository {
     try {
       const result = await this.service.get(params, session);
       return new DataSuccess(result.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async list(params: ListPosSalesParams, session: SessionEntity): Promise<DataState<ListPosSalesResult>> {
+    try {
+      const result = await this.service.list(params, session);
+      return new DataSuccess({
+        sales: result.sales.map((m) => m.toEntity()),
+        meta: result.meta,
+      });
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

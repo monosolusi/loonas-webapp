@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { TableContainer } from "@/core/presentations/components/table/table-container";
 import { TableHeader } from "@/core/presentations/components/table/table-header";
-import { TablePagination } from "@/app/(authenticated)/invoices/_components/table-pagination";
+import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item";
 import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type";
 import { useListStockItems } from "@/features/inventory/presentations/hooks/use-list-stock-items";

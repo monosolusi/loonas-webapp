@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
-import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 
 export function ReceiptActions() {
   const router = useRouter();
@@ -10,7 +9,6 @@ export function ReceiptActions() {
   return (
     <div className="flex w-full max-w-md flex-row gap-x-3">
       <PrimaryButton label="Transaksi Baru" onClick={() => router.push("/pos")} />
-      <SecondaryButton outlined label="Cetak" onClick={() => window.print()} />
     </div>
   );
 }

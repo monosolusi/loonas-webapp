@@ -1,9 +1,9 @@
 "use client";
 
 import { createContext, useContext } from "react";
+import { ServerError } from "@/core/resources/server-error";
 import { PosSaleEntity } from "@/features/pos/domain/entities/pos-sale";
 import { useGetPosSale } from "@/features/pos/presentations/hooks/use-get-pos-sale";
-import { ReceiptError } from "@/app/(pos)/pos/receipt/[id]/_components/receipt-error";
 
 type ReceiptContextValue = {
   sale: PosSaleEntity;
@@ -20,14 +20,15 @@ export function useReceipt(): ReceiptContextValue {
 type ReceiptProviderProps = {
   id: string;
   loading: React.ReactNode;
+  error: (error: ServerError) => React.ReactNode;
   children: React.ReactNode;
 };
 
-export function ReceiptProvider({ id, loading, children }: ReceiptProviderProps) {
+export function ReceiptProvider({ id, loading, error, children }: ReceiptProviderProps) {
   const state = useGetPosSale(id);
 
   if (state.status === "loading") return <>{loading}</>;
-  if (state.status === "error") return <ReceiptError error={state.error} />;
+  if (state.status === "error") return <>{error(state.error)}</>;
 
   return <ReceiptContext.Provider value={{ sale: state.sale }}>{children}</ReceiptContext.Provider>;
 }

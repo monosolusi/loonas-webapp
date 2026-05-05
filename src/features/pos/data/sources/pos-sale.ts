@@ -2,8 +2,12 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PosSaleModel } from "@/features/pos/data/models/pos-sale";
-import { PosSaleService } from "@/features/pos/domain/sources/pos-sale";
-import { CreatePosSaleParams, GetPosSaleParams } from "@/features/pos/domain/repositories/pos-sale";
+import { ListPosSalesServiceResult, PosSaleService } from "@/features/pos/domain/sources/pos-sale";
+import {
+  CreatePosSaleParams,
+  GetPosSaleParams,
+  ListPosSalesParams,
+} from "@/features/pos/domain/repositories/pos-sale";
 
 export class PosSaleServiceImpl implements PosSaleService {
   constructor(private readonly http: HttpRequest) {}
@@ -49,6 +53,36 @@ export class PosSaleServiceImpl implements PosSaleService {
       });
 
       return PosSaleModel.fromJson(result);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async list(params: ListPosSalesParams, session: SessionEntity): Promise<ListPosSalesServiceResult> {
+    try {
+      const query = new URLSearchParams();
+      if (params.page !== undefined) query.set("page", String(params.page));
+      if (params.limit !== undefined) query.set("limit", String(params.limit));
+      const queryString = query.toString();
+
+      const result = await this.http.request({
+        path: queryString ? `/pos/sales?${queryString}` : "/pos/sales",
+        method: "GET",
+        session,
+      });
+
+      const rawData = Array.isArray(result?.data) ? result.data : [];
+      const rawMeta = result?.meta ?? {};
+      return {
+        sales: rawData.map((row: Record<string, any>) => PosSaleModel.fromJson(row)),
+        meta: {
+          page: rawMeta.page ?? params.page ?? 1,
+          limit: rawMeta.limit ?? params.limit ?? rawData.length,
+          total: rawMeta.total ?? rawData.length,
+          totalPages: rawMeta.total_pages ?? rawMeta.totalPages ?? 1,
+        },
+      };
     } catch (err) {
       if (err instanceof ServerError) throw err;
       throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
