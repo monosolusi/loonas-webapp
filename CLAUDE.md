@@ -8,9 +8,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm run dev          # Start dev server (Next.js + Turbopack)
 npm run build        # Production build
 npm run lint         # ESLint
+npx tsc --noEmit     # Type-check (use to verify after edits — no test framework)
 ```
 
-No test framework is configured.
+No test framework is configured. Verify changes with `npx tsc --noEmit` and `npm run lint`.
 
 ## Tech Stack
 
@@ -107,6 +108,9 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **POS payment methods**: plugin pattern — see `src/app/(pos)/pos/_payment-methods/PLUGIN_PATTERN.md` before adding or
   modifying a payment method. The wizard chrome (header, step layout, transitions) is method-agnostic; each method is a
   self-contained handler in `_payment-methods/{type}/`.
+- **Chrome page title**: when adding a new route under `(authenticated)/`, also add an entry to `ROUTE_MAP` in
+  `src/app/(authenticated)/_components/header-title.tsx` — otherwise the chrome header silently falls back to
+  "Dashboard".
 
 ### HTTP Requests
 
@@ -178,6 +182,7 @@ Directories use kebab-case. Components use kebab-case filenames.
 | `Dropzone`      | `core/presentations/components/dropzone.tsx`       | Drag & drop file upload area                          |
 | `MiniToggle`    | `core/presentations/components/mini-toggle.tsx`    | Small toggle switch display                           |
 | `StatusChip`    | `core/presentations/components/status-chip.tsx`    | Status badges (success/warning/error/primary/neutral) |
+| `TablePagination` | `core/presentations/components/table/table-pagination.tsx` | Pagination controls; pairs with `TableContainer` + `TableHeader` |
 
 ### Pagination
 
@@ -194,6 +199,9 @@ SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockI
 - `@typescript-eslint/no-explicit-any` is disabled
 - Domain layer must not import from presentation layers. Domain source interfaces (`domain/sources/`) may import data
   models since they define the service contract that data layer implements.
+- **Neutral palette diverges from Tailwind defaults**: `neutral-50` is `#FFFFFF` (pure white), not off-white. For
+  visible-on-white chips/badges/borders, use `neutral-100` (`#D9DADA`) or darker. Check `src/app/globals.css` `@theme`
+  for the canonical palette.
 
 ### Git
 
