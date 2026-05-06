@@ -8,7 +8,7 @@ import { TextInput } from "@/core/presentations/components/text-inputs/text-inpu
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
-import { TablePagination } from "@/app/(authenticated)/invoices/_components/table-pagination";
+import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { FilterDropdown, FilterPill } from "@/app/(authenticated)/products/_components/filter-dropdown";
 import { AccountTypeBadge } from "@/app/(authenticated)/finance/ledger/_components/account-type-badge";
 import { useListLedgerAccounts } from "@/features/accounting/presentations/hooks/use-list-ledger-accounts";

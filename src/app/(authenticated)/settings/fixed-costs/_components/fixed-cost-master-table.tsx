@@ -2,7 +2,7 @@
 
 import { TableContainer } from "@/core/presentations/components/table/table-container";
 import { TableHeader } from "@/core/presentations/components/table/table-header";
-import { TablePagination } from "@/app/(authenticated)/invoices/_components/table-pagination";
+import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { useFixedCostMaster } from "@/app/(authenticated)/settings/fixed-costs/_providers/fixed-cost-master-provider";
 import { FixedCostMasterRow } from "@/app/(authenticated)/settings/fixed-costs/_components/fixed-cost-master-row";
 import { FixedCostEditDialog } from "@/app/(authenticated)/settings/fixed-costs/_components/fixed-cost-edit-dialog";

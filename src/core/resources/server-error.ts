@@ -340,6 +340,36 @@ export class ErrorCodes {
     message: "No associated accounts for user",
   };
 
+  public static readonly PAYMENT_METHOD_DISABLED: ErrorStructureType = {
+    code: "PAYMENT_METHOD_DISABLED",
+    httpCode: 400,
+    message: "Metode pembayaran tidak tersedia. Pilih metode lain.",
+  };
+
+  public static readonly INSUFFICIENT_STOCK: ErrorStructureType = {
+    code: "INSUFFICIENT_STOCK",
+    httpCode: 400,
+    message: "Stok tidak mencukupi untuk beberapa item.",
+  };
+
+  public static readonly RECIPE_NOT_DEFINED: ErrorStructureType = {
+    code: "RECIPE_NOT_DEFINED",
+    httpCode: 400,
+    message: "Resep produk belum lengkap. Lengkapi resep sebelum dijual.",
+  };
+
+  public static readonly IDEMPOTENCY_KEY_CONFLICT: ErrorStructureType = {
+    code: "IDEMPOTENCY_KEY_CONFLICT",
+    httpCode: 409,
+    message: "Permintaan duplikat dengan isi berbeda. Coba lagi.",
+  };
+
+  public static readonly IDEMPOTENCY_KEY_IN_PROGRESS: ErrorStructureType = {
+    code: "IDEMPOTENCY_KEY_IN_PROGRESS",
+    httpCode: 409,
+    message: "Transaksi sebelumnya masih diproses. Mohon tunggu sebentar.",
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }

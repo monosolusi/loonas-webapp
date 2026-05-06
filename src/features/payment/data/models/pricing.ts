@@ -15,10 +15,10 @@ export class PricingModel implements AbstractModel {
     this.percentageFee = args.percentageFee;
   }
 
-  public static fromJson(json: Record<string, any>): PricingModel {
+  public static fromJson(json: Record<string, any> | null | undefined): PricingModel {
     return new PricingModel({
-      baseFee: json["base_fee"],
-      percentageFee: json["percentage_fee"]
+      baseFee: json?.["base_fee"] ?? 0,
+      percentageFee: json?.["percentage_fee"] ?? 0
     });
   }
 

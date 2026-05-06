@@ -31,9 +31,9 @@ export class VariantModel implements AbstractModel {
   public static fromJson(data: Record<string, any>): VariantModel {
     return new VariantModel({
       id: data["id"],
-      name: data["name"],
+      name: data["name"] ?? "",
       sku: data["sku"] ?? null,
-      price: data["price"],
+      price: data["price"] ?? 0,
       metadata: data["metadata"] ? { hasRecipe: data["metadata"]["has_recipe"] } : null,
       product: data["product"] ? ProductModel.fromJson(data["product"]) : null,
     });

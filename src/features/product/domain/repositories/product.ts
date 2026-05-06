@@ -1,6 +1,7 @@
 import { DataState } from "@/core/resources/data-state";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { ProductEntity } from "@/features/product/domain/entities/product";
+import { ProductForSaleEntity } from "@/features/product/domain/entities/product-for-sale";
 import { ProductPhotoEntity } from "@/features/product/domain/entities/product-photo";
 import { RecipeItemEntity } from "@/features/product/domain/entities/recipe-item";
 
@@ -36,6 +37,18 @@ export type ListProductsResult = {
   meta: { page: number; limit: number; total: number; totalPages: number };
 };
 
+export type ListProductsForSaleParams = {
+  page?: number;
+  limit?: number;
+  categoryIds?: string[];
+  search?: string;
+};
+
+export type ListProductsForSaleResult = {
+  products: ProductForSaleEntity[];
+  meta: { page: number; limit: number; total: number; totalPages: number };
+};
+
 export type AddVariantParams = {
   name: string;
   sku?: string;
@@ -54,6 +67,7 @@ export type SaveRecipeParams = {
 
 export interface ProductRepository {
   list(params: ListProductsParams, session: SessionEntity): Promise<DataState<ListProductsResult>>;
+  listForSale(params: ListProductsForSaleParams, session: SessionEntity): Promise<DataState<ListProductsForSaleResult>>;
   get(id: string, session: SessionEntity): Promise<DataState<ProductEntity>>;
   create(params: CreateProductParams, session: SessionEntity): Promise<DataState<ProductEntity>>;
   update(id: string, params: UpdateProductParams, session: SessionEntity): Promise<DataState<ProductEntity>>;

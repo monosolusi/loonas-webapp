@@ -27,7 +27,7 @@ export class HttpRequest {
   ): Promise<Record<string, any>> {
     const mergedConfig = {
       requireAuth: config.requireAuth ?? true,
-      contentType: config.contentType,
+      contentType: config.contentType ?? "application/json",
       headers: Object.assign({}, config.headers),
     };
 
@@ -46,7 +46,10 @@ export class HttpRequest {
 
     const headers: Record<string, string> = {};
     if (mergedConfig.requireAuth && params.session) headers["Authorization"] = `Bearer ${params.session.accessToken}`;
-    if (mergedConfig.contentType) headers["Content-Type"] = mergedConfig.contentType;
+
+    // Skip Content-Type for FormData so the browser sets the multipart boundary itself.
+    const isFormDataBody = params.body instanceof FormData;
+    if (mergedConfig.contentType && !isFormDataBody) headers["Content-Type"] = mergedConfig.contentType;
 
     const generateBody = (body?: Record<string, any> | FormData) => {
       if (!body) return undefined;

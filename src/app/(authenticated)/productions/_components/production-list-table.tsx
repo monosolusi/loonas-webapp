@@ -2,7 +2,7 @@
 
 import { TableContainer } from "@/core/presentations/components/table/table-container";
 import { TableHeader } from "@/core/presentations/components/table/table-header";
-import { TablePagination } from "@/app/(authenticated)/invoices/_components/table-pagination";
+import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { useProductionList } from "@/app/(authenticated)/productions/_providers/production-list-provider";
 import { ProductionListRow } from "@/app/(authenticated)/productions/_components/production-list-row";
 

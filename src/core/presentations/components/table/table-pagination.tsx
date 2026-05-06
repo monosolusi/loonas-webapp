@@ -1,5 +1,5 @@
-import { PaginationMeta } from "@/core/resources/paginated";
 import clsx from "clsx";
+import { PaginationMeta } from "@/core/resources/paginated";
 
 interface TablePaginationProps {
   displayedCount: number;
