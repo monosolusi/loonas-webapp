@@ -1,23 +1,6 @@
 ---
 name: architecture-reviewer
-description: "Use this agent when code has just been written or modified in the codebase and needs to be reviewed for Clean Architecture compliance and project-specific conventions. This agent should be triggered after any feature implementation, refactoring, or code changes.
-
-Examples:
-
-- User: \"Implement a new product listing feature\"
-  Assistant: *implements the feature*
-  Since a significant piece of code was written, use the Agent tool to launch the architecture-reviewer agent.
-  Assistant: \"Now let me review the code for architecture compliance.\"
-
-- User: \"Add a new use case for saving recipes\"
-  Assistant: *creates the use case, repository, source, hooks, etc.*
-  Since new domain and data layer code was written, use the Agent tool to launch the architecture-reviewer agent.
-  Assistant: \"Let me run the architecture reviewer to check the recipe feature.\"
-
-- User: \"Refactor the invoice feature to use providers\"
-  Assistant: *refactors the code*
-  Since existing code was significantly modified, use the Agent tool to launch the architecture-reviewer agent.
-  Assistant: \"I'll use the architecture reviewer to verify the refactored invoice feature.\""
+description: "Use this agent when code has just been written or modified in the codebase and needs to be reviewed for Clean Architecture compliance and project-specific conventions. This agent should be triggered after any feature implementation, refactoring, or code changes.\n\nExamples:\n\n- User: \"Implement a new product listing feature\"\n  Assistant: *implements the feature*\n  Since a significant piece of code was written, use the Agent tool to launch the architecture-reviewer agent.\n  Assistant: \"Now let me review the code for architecture compliance.\"\n\n- User: \"Add a new use case for saving recipes\"\n  Assistant: *creates the use case, repository, source, hooks, etc.*\n  Since new domain and data layer code was written, use the Agent tool to launch the architecture-reviewer agent.\n  Assistant: \"Let me run the architecture reviewer to check the recipe feature.\"\n\n- User: \"Refactor the invoice feature to use providers\"\n  Assistant: *refactors the code*\n  Since existing code was significantly modified, use the Agent tool to launch the architecture-reviewer agent.\n  Assistant: \"I'll use the architecture reviewer to verify the refactored invoice feature.\""
 model: opus
 ---
 
