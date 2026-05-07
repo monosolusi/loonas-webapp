@@ -49,6 +49,7 @@ export function ProductPicker() {
     if (row.kind === "variant" && drilldownProduct) {
       if (!row.variant.isAvailable) return;
       addItem(drilldownProduct, row.variant);
+      setSearch("");
       return;
     }
     if (row.kind === "product") {
@@ -56,8 +57,10 @@ export function ProductPicker() {
       if (!product.hasAvailableVariant) return;
       if (product.variants.length === 1) {
         addItem(product, product.variants[0]);
+        setSearch("");
       } else if (product.variants.length > 1) {
         enterDrilldown(product);
+        setSearch("");
       }
     }
   };

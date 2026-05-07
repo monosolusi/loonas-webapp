@@ -2,8 +2,10 @@
 
 import { DateTime } from "luxon";
 import { NumberDisplay } from "@/core/presentations/components/number-display";
-import { StatusChip } from "@/core/presentations/components/status-chip";
 import { PosSaleEntity } from "@/features/pos/domain/entities/pos-sale";
+import { PosSaleSettlementChip } from "@/features/pos/presentations/components/pos-sale-settlement-chip";
+import { PosSaleStatusChip } from "@/features/pos/presentations/components/pos-sale-status-chip";
+import { formatPayInMethodLabel } from "@/features/pos/presentations/components/pos-sale-status-helpers";
 
 type ReceiptCardProps = {
   sale: PosSaleEntity;
@@ -16,7 +18,7 @@ export function ReceiptCard({ sale }: ReceiptCardProps) {
     : sale.invoiceDate;
 
   return (
-    <div className="flex w-full max-w-md flex-col gap-y-4 rounded-lg border border-neutral-200 bg-white p-6 shadow-sm">
+    <div className="flex w-full flex-col gap-y-4 rounded-lg border border-neutral-200 bg-white p-6 shadow-sm">
       <div className="flex flex-col gap-y-1 text-center">
         <span className="text-base font-semibold text-neutral-500">{sale.receiptNumber}</span>
         <span className="text-xs text-neutral-300">{formattedDate}</span>
@@ -80,9 +82,19 @@ export function ReceiptCard({ sale }: ReceiptCardProps) {
 
       <div className="border-t border-t-neutral-100" />
 
-      <div className="flex flex-row items-center justify-between text-sm">
-        <span className="text-neutral-400">Pembayaran</span>
-        <StatusChip label={sale.paymentGateway.title || "—"} variant="success" />
+      <div className="flex flex-col gap-y-2 text-sm">
+        <div className="flex flex-row items-center justify-between">
+          <span className="text-neutral-400">Metode</span>
+          <span className="text-neutral-500">{formatPayInMethodLabel(sale.payInDetail?.method)}</span>
+        </div>
+        <div className="flex flex-row items-center justify-between">
+          <span className="text-neutral-400">Pembayaran</span>
+          <PosSaleStatusChip sale={sale} />
+        </div>
+        <div className="flex flex-row items-center justify-between">
+          <span className="text-neutral-400">Settlement</span>
+          <PosSaleSettlementChip sale={sale} />
+        </div>
       </div>
 
       {sale.note && (

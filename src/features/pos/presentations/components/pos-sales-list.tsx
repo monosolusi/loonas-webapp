@@ -14,12 +14,14 @@ const COLUMNS = [
   { label: "No. Struk" },
   { label: "Tanggal" },
   { label: "Metode" },
+  { label: "Pembayaran" },
+  { label: "Settlement" },
   { label: "Item" },
   { label: "Total", align: "right" as const },
   { label: "" },
 ];
 
-const GRID_COLUMNS_CLASS = "grid-cols-[2fr_1.5fr_1fr_0.5fr_1fr_24px] gap-x-4";
+const GRID_COLUMNS_CLASS = "grid-cols-[2fr_1.5fr_1fr_1fr_1fr_0.5fr_1fr_24px] gap-x-4";
 
 type PosSalesListProps = {
   onSelectSale: (saleId: string) => void;
