@@ -5,6 +5,7 @@ import { DateTime } from "luxon";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useToast } from "@/core/presentations/hooks/use-toast";
+import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 import { DEFAULT_VARIANT_NAME } from "@/features/product/domain/constants/default-variant";
 import { ProductForSaleEntity } from "@/features/product/domain/entities/product-for-sale";
 import { VariantForSaleEntity } from "@/features/product/domain/entities/variant-for-sale";
@@ -302,7 +303,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     setCheckoutError(null);
     setIsCheckingOut(true);
 
-    let currentKey = idempotencyKey;
+    const currentKey = idempotencyKey;
     let attempt = 0;
     const maxAttempts = 2;
 
@@ -323,11 +324,17 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
           idempotencyKey: currentKey,
         });
 
-        setItems([]);
-        setSelectedPaymentGatewayId(null);
-        setCheckoutStep(null);
-        setStockErrors(new Map());
-        setPickerAutoSkipped(false);
+        // Cash returns status === PAID immediately → auto-clear cart and close wizard.
+        // QRIS returns status === READY_TO_SEND (PENDING_PAYMENT on qris.status); the
+        // cashier still needs to wait for the customer to scan, so keep cart and step
+        // intact. The QRIS handler drives the post-create lifecycle (poll → PAID → clear).
+        if (sale.status === OutgoingInvoiceStatus.PAID) {
+          setItems([]);
+          setSelectedPaymentGatewayId(null);
+          setCheckoutStep(null);
+          setStockErrors(new Map());
+          setPickerAutoSkipped(false);
+        }
         setIsCheckingOut(false);
         return sale.id;
       } catch (err) {
@@ -354,12 +361,9 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
           return null;
         }
 
-        if (code === ErrorCodes.IDEMPOTENCY_KEY_CONFLICT.code && attempt < maxAttempts) {
-          currentKey = crypto.randomUUID();
-          setIdempotencyKey(currentKey);
-          continue;
-        }
-
+        // BE caches all responses (incl. 4xx/5xx) under the Idempotency-Key. A retry
+        // with the same key returns the cached failure, so don't auto-retry CONFLICT —
+        // the cart-mutation effect regenerates the key for any genuine retry.
         if (code === ErrorCodes.IDEMPOTENCY_KEY_IN_PROGRESS.code && attempt < maxAttempts) {
           await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
           continue;

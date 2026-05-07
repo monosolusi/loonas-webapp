@@ -17,6 +17,7 @@ import {
 import { POS_SWR_KEYS } from "@/features/pos/presentations/constants/swr-keys";
 import {
   GetPosSaleFetcherParams,
+  UseGetPosSaleOptions,
   UseGetPosSaleState,
 } from "@/features/pos/presentations/hooks/use-get-pos-sale.types";
 
@@ -31,10 +32,14 @@ async function GetPosSaleFetcher([_, fetcherParams]: [string, GetPosSaleFetcherP
   return result.data;
 }
 
-export function useGetPosSale(id: string | null): UseGetPosSaleState {
+export function useGetPosSale(id: string | null, options?: UseGetPosSaleOptions): UseGetPosSaleState {
   const clerk = useClerk();
 
-  const { data, error } = useSWR(id ? [POS_SWR_KEYS.GET_POS_SALE, { clerk, id }] : null, GetPosSaleFetcher);
+  const { data, error } = useSWR(
+    id ? [POS_SWR_KEYS.GET_POS_SALE, { clerk, id }] : null,
+    GetPosSaleFetcher,
+    { refreshInterval: options?.refreshInterval ?? 0 },
+  );
 
   if (error) {
     const serverError = error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN, { error });

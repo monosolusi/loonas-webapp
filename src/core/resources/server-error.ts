@@ -370,6 +370,18 @@ export class ErrorCodes {
     message: "Transaksi sebelumnya masih diproses. Mohon tunggu sebentar.",
   };
 
+  public static readonly FUND_RECIPIENT_NOT_CONFIGURED: ErrorStructureType = {
+    code: "FUND_RECIPIENT_NOT_CONFIGURED",
+    httpCode: 400,
+    message: "Operator belum mengatur rekening penerima. Hubungi pemilik akun untuk melengkapi pengaturan.",
+  };
+
+  public static readonly PAY_IN_NOT_SUPPORTED: ErrorStructureType = {
+    code: "PAY_IN_NOT_SUPPORTED",
+    httpCode: 400,
+    message: "Metode pembayaran ini belum didukung di POS.",
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }

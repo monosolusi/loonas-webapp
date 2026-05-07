@@ -26,3 +26,7 @@ type ErrorState = {
 };
 
 export type UseGetPosSaleState = InitialState | LoadedState | ErrorState;
+
+export type UseGetPosSaleOptions = {
+  refreshInterval?: number | ((latestData: PosSaleEntity | undefined) => number);
+};

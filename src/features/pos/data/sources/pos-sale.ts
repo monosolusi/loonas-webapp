@@ -47,7 +47,7 @@ export class PosSaleServiceImpl implements PosSaleService {
   public async get(params: GetPosSaleParams, session: SessionEntity): Promise<PosSaleModel> {
     try {
       const result = await this.http.request({
-        path: `/pos/sales/${params.id}`,
+        path: `/invoices/${params.id}`,
         method: "GET",
         session,
       });
@@ -61,13 +61,12 @@ export class PosSaleServiceImpl implements PosSaleService {
 
   public async list(params: ListPosSalesParams, session: SessionEntity): Promise<ListPosSalesServiceResult> {
     try {
-      const query = new URLSearchParams();
+      const query = new URLSearchParams({ channel: "pos" });
       if (params.page !== undefined) query.set("page", String(params.page));
       if (params.limit !== undefined) query.set("limit", String(params.limit));
-      const queryString = query.toString();
 
       const result = await this.http.request({
-        path: queryString ? `/pos/sales?${queryString}` : "/pos/sales",
+        path: `/invoices?${query.toString()}`,
         method: "GET",
         session,
       });

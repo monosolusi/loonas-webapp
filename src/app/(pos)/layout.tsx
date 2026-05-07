@@ -6,7 +6,7 @@ export default function PosLayout({ children }: { children: React.ReactNode }) {
     <ProtectedPage>
       <div className="flex h-screen flex-col overflow-hidden bg-neutral-50">
         <PosTopBar />
-        <div className="flex-1 overflow-hidden">{children}</div>
+        <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
       </div>
     </ProtectedPage>
   );
