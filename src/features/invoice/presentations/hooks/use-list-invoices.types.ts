@@ -2,10 +2,12 @@ import { useClerk } from "@clerk/nextjs";
 import { ServerError } from "@/core/resources/server-error";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
+import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
 import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-list-item";
 
 export type UseListInvoicesParams = {
   type?: InvoiceType;
+  channel?: InvoiceChannel;
   page?: number;
   limit?: number;
   includes?: string;

@@ -6,8 +6,10 @@ import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
 import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
-import { PayInDetailStatus } from "@/features/pos/domain/enums/pay-in-detail-status";
-import { useGetPosSale } from "@/features/pos/presentations/hooks/use-get-pos-sale";
+import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
+import { QrisPayInDetailEntity } from "@/features/invoice/domain/entities/pay-in-detail/qris-pay-in-detail";
+import { PayInStatus } from "@/features/invoice/domain/enums/pay-in-status";
+import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { usePos } from "@/app/(pos)/pos/_providers/pos-provider";
 import { QrisCreatingState } from "@/app/(pos)/pos/_payment-methods/qris/qris-creating-state";
 import { QrisCreationFailed } from "@/app/(pos)/pos/_payment-methods/qris/qris-creation-failed";
@@ -36,9 +38,16 @@ export function QrisConfirmStep() {
   const createTriggeredRef = useRef(false);
   const wasPaidRef = useRef(false);
 
-  const saleState = useGetPosSale(pendingSaleId, { refreshInterval: POLL_INTERVAL_MS });
-  const sale = saleState.status === "loaded" ? saleState.sale : null;
-  const payInDetail = sale?.payInDetail ?? null;
+  const invoiceState = useGetInvoice(
+    { id: pendingSaleId ?? "" },
+    { refreshInterval: POLL_INTERVAL_MS },
+  );
+  const invoice =
+    !invoiceState.loading && !invoiceState.error && invoiceState.invoice instanceof OutgoingInvoiceEntity
+      ? invoiceState.invoice
+      : null;
+  const detail = invoice?.payInDetail?.detail ?? null;
+  const qrisDetail = detail instanceof QrisPayInDetailEntity ? detail : null;
 
   const triggerCreate = useCallback(async () => {
     if (createTriggeredRef.current) return;
@@ -62,11 +71,11 @@ export function QrisConfirmStep() {
   // Detect PAID via polling — clear cart, route to receipt.
   useEffect(() => {
     if (!pendingSaleId) return;
-    if (payInDetail?.status !== PayInDetailStatus.PAID) return;
+    if (detail?.status !== PayInStatus.PAID) return;
     wasPaidRef.current = true;
     clearCart();
     router.push(`/pos/receipt/${pendingSaleId}`);
-  }, [clearCart, pendingSaleId, payInDetail?.status, router]);
+  }, [clearCart, detail?.status, pendingSaleId, router]);
 
   // Abandonment toast on unmount when sale was still pending (cashier hit ✕).
   useEffect(() => {
@@ -102,9 +111,9 @@ export function QrisConfirmStep() {
 
       {renderPhase({
         createFailed,
-        status: payInDetail?.status ?? null,
-        qrString: payInDetail?.qrString ?? null,
-        payInDetailId: payInDetail?.id ?? null,
+        status: detail?.status ?? null,
+        qrString: qrisDetail?.qrString ?? null,
+        payInDetailId: invoice?.payInDetail?.id ?? null,
         merchantName,
         total,
         onRetry: handleRetry,
@@ -116,7 +125,7 @@ export function QrisConfirmStep() {
 
 type RenderPhaseArgs = {
   createFailed: boolean;
-  status: PayInDetailStatus | null;
+  status: PayInStatus | null;
   qrString: string | null;
   payInDetailId: string | null;
   merchantName: string;
@@ -127,8 +136,8 @@ type RenderPhaseArgs = {
 
 function renderPhase(args: RenderPhaseArgs): ReactNode {
   if (args.createFailed) return <QrisCreationFailed onRetry={args.onRetry} onChangeMethod={args.onChangeMethod} />;
-  if (args.status === PayInDetailStatus.PAID) return <QrisPaidSplash total={args.total} />;
-  if (args.status === PayInDetailStatus.PENDING_PAYMENT && args.qrString && args.payInDetailId) {
+  if (args.status === PayInStatus.PAID) return <QrisPaidSplash total={args.total} />;
+  if (args.status === PayInStatus.PENDING_PAYMENT && args.qrString && args.payInDetailId) {
     return (
       <div className="flex flex-col gap-y-6 px-6 py-6">
         <QrisPaymentBox

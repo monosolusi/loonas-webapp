@@ -1,4 +1,4 @@
-import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
+import { PayInStatus } from "@/features/invoice/domain/enums/pay-in-status";
 import { DateTime } from "luxon";
 import { CreditCardFullRedirectPayInDetailEntity } from "@/features/payment/domain/entities/cc-full-redirect-pay-in-detail";
 

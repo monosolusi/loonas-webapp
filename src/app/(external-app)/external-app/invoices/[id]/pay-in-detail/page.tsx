@@ -7,7 +7,7 @@ import { VirtualAccountPayInDetail } from "@/app/(external-app)/external-app/inv
 import { useGetPublicPayInDetailForOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
+import { PayInStatus } from "@/features/invoice/domain/enums/pay-in-status";
 import { CreditCardFullRedirectPayInDetail } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/cc-full-redirect-pay-in-detail";
 import { QrisPayInDetail } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/qris-pay-in-detail";
 

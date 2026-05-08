@@ -8,8 +8,10 @@ import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { IncomingInvoiceEntity, InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
+import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { deriveInvoicePaymentStatusKind } from "@/features/invoice/presentations/components/invoice-payment-helpers";
 
 type InvoiceStatusType = "paid" | "unpaid" | "sent" | "draft" | "cancelled" | "expired" | "failed";
 
@@ -101,6 +103,46 @@ function SkeletonRow() {
   );
 }
 
+type RowView = {
+  direction: "in" | "out";
+  partyName: string;
+  total: number;
+  status: InvoiceStatusType;
+  href: string;
+  createdAt: import("luxon").DateTime;
+};
+
+function toRowView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): RowView {
+  if (inv instanceof IncomingInvoiceEntity) {
+    return {
+      direction: "in",
+      partyName: inv.receiver.name,
+      total: inv.total,
+      status: mapStatus(inv.status),
+      href: `/invoices/incoming/${inv.id}`,
+      createdAt: inv.createdAt,
+    };
+  }
+  if (inv.channel === InvoiceChannel.POS) {
+    return {
+      direction: "out",
+      partyName: inv.invoiceNumber,
+      total: inv.summary.total,
+      status: deriveInvoicePaymentStatusKind(inv) === "paid" ? "paid" : "unpaid",
+      href: `/sales/pos/${inv.id}`,
+      createdAt: inv.createdAt,
+    };
+  }
+  return {
+    direction: "out",
+    partyName: inv.recipient.fullName,
+    total: inv.summary.total,
+    status: mapStatus(inv.status),
+    href: `/invoices/outgoing/${inv.id}`,
+    createdAt: inv.createdAt,
+  };
+}
+
 export function DashboardRecentInvoices() {
   const router = useRouter();
   const [activeFilter, setActiveFilter] = useState<InvoiceType | undefined>(undefined);
@@ -161,45 +203,41 @@ export function DashboardRecentInvoices() {
       {!loading &&
         !error &&
         invoices?.map((inv) => {
-          const isIncoming = inv instanceof IncomingInvoiceEntity;
-          const direction = isIncoming ? "in" : "out";
-          const partyName = isIncoming ? (inv as IncomingInvoiceEntity).receiver.name : (inv as OutgoingInvoiceEntity).recipient.fullName;
-          const total = isIncoming ? inv.total : (inv as OutgoingInvoiceEntity).summary.total;
-
+          const view = toRowView(inv);
 
           return (
             <div
               key={inv.id}
-              onClick={() => router.push(`/invoices/${isIncoming ? "incoming" : "outgoing"}/${inv.id}`)}
+              onClick={() => router.push(view.href)}
               className="hover:border-l-primary-300 hover:bg-primary-50 grid cursor-pointer grid-cols-[2fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0"
             >
               {/* Pihak — icon + client name + relative time */}
               <div className="flex items-center gap-2">
                 <div
-                  className={`flex size-7 shrink-0 items-center justify-center rounded-lg ${direction === "in" ? "bg-emerald-50" : "bg-orange-50"}`}
+                  className={`flex size-7 shrink-0 items-center justify-center rounded-lg ${view.direction === "in" ? "bg-emerald-50" : "bg-orange-50"}`}
                 >
                   <ArrowIcon
-                    direction={direction}
-                    className={direction === "in" ? "text-emerald-500" : "text-orange-500"}
+                    direction={view.direction}
+                    className={view.direction === "in" ? "text-emerald-500" : "text-orange-500"}
                   />
                 </div>
                 <div className="flex min-w-0 flex-col gap-1">
                   <div className="flex items-center gap-2">
-                    <span className="truncate text-sm leading-5 font-semibold text-neutral-500">{partyName}</span>
+                    <span className="truncate text-sm leading-5 font-semibold text-neutral-500">{view.partyName}</span>
                   </div>
                   <span className="text-xs leading-4 text-neutral-300">
-                    {inv.createdAt.setLocale("id").toRelative()}
+                    {view.createdAt.setLocale("id").toRelative()}
                   </span>
                 </div>
               </div>
 
               {/* Nominal — left-aligned amount */}
               <span className="text-sm leading-5 font-semibold text-neutral-500">
-                {IDRFormatter.toCurrency(total)}
+                {IDRFormatter.toCurrency(view.total)}
               </span>
 
               {/* Status — colored text */}
-              <StatusText status={mapStatus(inv.status)} />
+              <StatusText status={view.status} />
             </div>
           );
         })}

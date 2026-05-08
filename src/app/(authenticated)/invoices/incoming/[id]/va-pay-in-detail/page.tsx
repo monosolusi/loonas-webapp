@@ -12,7 +12,7 @@ import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-in
 import { useGetIncomingInvoicePayInDetail } from "@/features/payment/presentations/hooks/use-get-incoming-invoice-pay-in-detail";
 import { usePayInRouteGuard } from "@/features/payment/presentations/hooks/use-pay-in-route-guard";
 import { VirtualAccountPayInDetailEntity } from "@/features/payment/domain/entities/va-pay-in-detail";
-import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
+import { PayInStatus } from "@/features/invoice/domain/enums/pay-in-status";
 import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
 const POLL_INTERVAL_MS = 5000;

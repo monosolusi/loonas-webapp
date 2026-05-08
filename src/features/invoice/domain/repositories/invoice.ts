@@ -17,6 +17,7 @@ import { PaymentMethodPayInDetailEntity } from "@/features/payment/domain/entiti
 import { InvoiceTimelineEntity } from "@/features/invoice/domain/entities/invoice-timeline";
 import { PaginatedData } from "@/core/resources/paginated";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
+import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
 import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-list-item";
 import { InvoiceSummaryEntity } from "@/features/invoice/domain/entities/invoice-summary";
 import { CashFlowEntity } from "@/features/invoice/domain/entities/cash-flow";
@@ -78,10 +79,28 @@ export interface CashFlowRepoFilter {
 
 export interface ListInvoicesFilter {
   type?: InvoiceType;
+  channel?: InvoiceChannel;
   page?: number;
   limit?: number;
   includes?: string;
   filter?: string;
+}
+
+export interface CreatePosSaleItemRepoParams {
+  variantId: string;
+  quantity: number;
+  unitPrice: number;
+  discount: number;
+}
+
+export interface CreatePosSaleRepoParams {
+  date: string;
+  paymentGatewayId: string;
+  discount: number;
+  note?: string;
+  tenderedAmount?: number;
+  items: CreatePosSaleItemRepoParams[];
+  idempotencyKey: string;
 }
 
 export interface InvoiceRepository {
@@ -94,6 +113,8 @@ export interface InvoiceRepository {
   ): Promise<DataState<InvoiceDetailEntity>>;
 
   createOutgoing(params: CreateOutgoingParams, session: SessionEntity): Promise<DataState<OutgoingInvoiceEntity>>;
+
+  createPosSale(params: CreatePosSaleRepoParams, session: SessionEntity): Promise<DataState<OutgoingInvoiceEntity>>;
 
   getOutgoing(filter: OutgoingInvoiceFilter, session: SessionEntity): Promise<DataState<OutgoingInvoiceEntity>>;
 

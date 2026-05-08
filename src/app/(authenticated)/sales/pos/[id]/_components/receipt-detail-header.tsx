@@ -1,9 +1,9 @@
 "use client";
 
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
-import { useReceipt } from "@/features/pos/presentations/providers/receipt-provider";
+import { usePosReceipt } from "@/features/invoice/presentations/providers/pos-receipt-provider";
 
 export function ReceiptDetailHeader() {
-  const { sale } = useReceipt();
-  return <DetailPageHeader title={sale.receiptNumber} backHref="/sales/pos" />;
+  const { invoice } = usePosReceipt();
+  return <DetailPageHeader title={invoice.invoiceNumber} backHref="/sales/pos" />;
 }

@@ -1,8 +1,8 @@
 import { DateTime } from "luxon";
 import { AbstractModel } from "@/core/resources/model";
-import { PayInType } from "@/features/payment/domain/enums/pay-in-type";
+import { PayInType } from "@/features/invoice/domain/enums/pay-in-type";
 import { PublicPayInDetailEntity } from "@/features/payment/domain/entities/public-pay-in-detail";
-import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
+import { PayInStatus } from "@/features/invoice/domain/enums/pay-in-status";
 
 interface CreditCardFullRedirectPayInDetail {
   type:

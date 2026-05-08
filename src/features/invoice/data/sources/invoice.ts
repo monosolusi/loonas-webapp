@@ -5,6 +5,7 @@ import { InvoiceDetailModel } from "@/features/invoice/data/types/invoice-detail
 import {
   CashFlowFilter,
   CreateOutgoingParams,
+  CreatePosSaleServiceParams,
   InvoiceService,
   InvoiceServiceFilter,
   InvoiceServiceFilterParams,
@@ -43,6 +44,7 @@ export class InvoiceServiceImpl implements InvoiceService {
       const method = "GET";
       const searchParams: Record<string, string> = {};
       if (filter.type) searchParams.type = filter.type;
+      if (filter.channel) searchParams.channel = filter.channel;
       if (filter.page) searchParams.page = String(filter.page);
       if (filter.limit) searchParams.limit = String(filter.limit);
       if (filter.includes) searchParams.include = filter.includes;
@@ -87,6 +89,34 @@ export class InvoiceServiceImpl implements InvoiceService {
       sender: doc.sender,
       pdf: doc.pdf,
     });
+  }
+
+  public async createPosSale(params: CreatePosSaleServiceParams, session: SessionEntity): Promise<OutgoingInvoiceModel> {
+    try {
+      const body: Record<string, any> = {
+        date: params.date,
+        payment_gateway: { id: params.paymentGatewayId },
+        discount: params.discount,
+        items: params.items.map((item) => ({
+          variant: { id: item.variantId },
+          quantity: item.quantity,
+          unit_price: item.unitPrice,
+          discount: item.discount,
+        })),
+      };
+      if (params.note) body["note"] = params.note;
+      if (params.tenderedAmount !== undefined) body["tendered_amount"] = params.tenderedAmount;
+
+      const result = await this.http.request(
+        { path: "/pos/sales", method: "POST", body, session },
+        { headers: { "Idempotency-Key": params.idempotencyKey } },
+      );
+      if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      return this.parseOutgoingInvoiceFromListItem(result);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
   }
 
   public async send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void> {

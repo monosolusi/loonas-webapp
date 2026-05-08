@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { PosSalesList } from "@/features/pos/presentations/components/pos-sales-list";
+import { PosSalesList } from "@/features/invoice/presentations/components/pos-sales-list";
 
 export default function ChromePosSalesHistoryPage() {
   const router = useRouter();

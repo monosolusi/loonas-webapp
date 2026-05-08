@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { PaymentSummaryImpl } from "./_components/payment-summary-impl";
 import { useGetPublicPayInDetailForOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";
 import { useParams, useRouter } from "next/navigation";
-import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
+import { PayInStatus } from "@/features/invoice/domain/enums/pay-in-status";
 
 interface SelectedPaymentMethod {
   id: string;

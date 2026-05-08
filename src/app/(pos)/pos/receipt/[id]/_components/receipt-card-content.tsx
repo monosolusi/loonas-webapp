@@ -1,9 +1,9 @@
 "use client";
 
-import { ReceiptDetailPanel } from "@/features/pos/presentations/components/receipt-detail-panel";
-import { useReceipt } from "@/features/pos/presentations/providers/receipt-provider";
+import { PosReceiptDetailPanel } from "@/features/invoice/presentations/components/pos-receipt-detail-panel";
+import { usePosReceipt } from "@/features/invoice/presentations/providers/pos-receipt-provider";
 
 export function ReceiptCardContent() {
-  const { sale } = useReceipt();
-  return <ReceiptDetailPanel sale={sale} />;
+  const { invoice } = usePosReceipt();
+  return <PosReceiptDetailPanel invoice={invoice} />;
 }

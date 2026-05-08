@@ -11,7 +11,7 @@ import { ProductForSaleEntity } from "@/features/product/domain/entities/product
 import { VariantForSaleEntity } from "@/features/product/domain/entities/variant-for-sale";
 import { PaymentMethodEntity } from "@/features/pos/domain/entities/payment-method";
 import { useListPaymentMethods } from "@/features/pos/presentations/hooks/use-list-payment-methods";
-import { useCreatePosSale } from "@/features/pos/presentations/hooks/use-create-pos-sale";
+import { useCreatePosSale } from "@/features/invoice/presentations/hooks/use-create-pos-sale";
 import { POS_SWR_KEYS } from "@/features/pos/presentations/constants/swr-keys";
 import { getPaymentMethodHandler } from "@/app/(pos)/pos/_payment-methods/registry";
 import { MOCK_PAYMENT_METHODS, USE_MOCK_PAYMENT_METHODS } from "@/app/(pos)/pos/_dev/mock-payment-methods";

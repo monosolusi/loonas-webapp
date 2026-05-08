@@ -11,11 +11,16 @@ import useSWR from "swr";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { useClerk } from "@clerk/nextjs";
+import { InvoiceDetailEntity } from "@/features/invoice/domain/types/invoice-detail";
 import {
   GetInvoiceFetcherParams,
   UseGetInvoiceParams,
   UseGetInvoiceReturnType,
 } from "@/features/invoice/presentations/hooks/use-get-invoice.types";
+
+export type UseGetInvoiceOptions = {
+  refreshInterval?: number | ((latestData: InvoiceDetailEntity | undefined) => number);
+};
 
 const INITIAL_STATE: UseGetInvoiceReturnType = {
   invoice: null,
@@ -43,9 +48,16 @@ async function GetInvoiceFetcher([_, params]: [string, GetInvoiceFetcherParams])
   return result.data;
 }
 
-export function useGetInvoice(params: UseGetInvoiceParams): UseGetInvoiceReturnType {
+export function useGetInvoice(
+  params: UseGetInvoiceParams,
+  options: UseGetInvoiceOptions = {},
+): UseGetInvoiceReturnType {
   const clerk = useClerk();
-  const { data, isLoading, error } = useSWR(["get-invoice", { ...params, clerk }], GetInvoiceFetcher);
+  const { data, isLoading, error } = useSWR(
+    ["get-invoice", { ...params, clerk }],
+    GetInvoiceFetcher,
+    { refreshInterval: options.refreshInterval },
+  );
 
   if (isLoading) return INITIAL_STATE;
   if (error) {

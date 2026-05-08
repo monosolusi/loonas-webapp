@@ -4,7 +4,7 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
-import { PayInType } from "@/features/payment/domain/enums/pay-in-type";
+import { PayInType } from "@/features/invoice/domain/enums/pay-in-type";
 
 export class IncomingInvoicePayInDetailService implements IPayInDetailService {
   constructor(

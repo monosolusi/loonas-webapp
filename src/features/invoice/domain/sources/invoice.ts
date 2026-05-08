@@ -15,6 +15,7 @@ import { PayInModel } from "../../data/models/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import { PaginationMetaModel } from "@/core/resources/pagination-meta-model";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
+import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
 import { InvoiceListItemModel } from "@/features/invoice/data/types/invoice-list-item-model";
 import { InvoiceSummaryModel } from "@/features/invoice/data/models/invoice-summary";
 import { CashFlowModel } from "@/features/invoice/data/models/cash-flow";
@@ -76,10 +77,28 @@ export interface CashFlowFilter {
 
 export interface ListInvoicesServiceFilter {
   type?: InvoiceType;
+  channel?: InvoiceChannel;
   page?: number;
   limit?: number;
   includes?: string;
   filter?: string;
+}
+
+export interface CreatePosSaleItemServiceParams {
+  variantId: string;
+  quantity: number;
+  unitPrice: number;
+  discount: number;
+}
+
+export interface CreatePosSaleServiceParams {
+  date: string;
+  paymentGatewayId: string;
+  discount: number;
+  note?: string;
+  tenderedAmount?: number;
+  items: CreatePosSaleItemServiceParams[];
+  idempotencyKey: string;
 }
 
 export interface InvoiceService {
@@ -95,6 +114,8 @@ export interface InvoiceService {
   ): Promise<InvoiceDetailModel>;
 
   createOutgoing(params: CreateOutgoingParams, session: SessionEntity): Promise<OutgoingInvoiceModel>;
+
+  createPosSale(params: CreatePosSaleServiceParams, session: SessionEntity): Promise<OutgoingInvoiceModel>;
 
   getOutgoing(filter: OutgoingInvoiceFilter, session: SessionEntity): Promise<OutgoingInvoiceModel>;
 

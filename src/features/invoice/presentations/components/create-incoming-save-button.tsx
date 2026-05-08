@@ -5,7 +5,7 @@ import { Step } from "@/features/invoice/presentations/providers/create-incoming
 import { useCreateIncomingInvoiceSteps } from "@/features/invoice/presentations/providers/create-incoming-invoice-steps";
 import { useMemo } from "react";
 import { useCreateIncomingInvoiceProvider } from "@/features/invoice/presentations/providers/create-incoming-invoice";
-import { PayInType } from "@/features/payment/domain/enums/pay-in-type";
+import { PayInType } from "@/features/invoice/domain/enums/pay-in-type";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 const VISIBLE_STATE: Step[] = ["select-payment-method"];

@@ -11,8 +11,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { useGetIncomingInvoicePayInDetail } from "@/features/payment/presentations/hooks/use-get-incoming-invoice-pay-in-detail";
 import { usePayInRouteGuard } from "@/features/payment/presentations/hooks/use-pay-in-route-guard";
-import { QrisPayInDetailEntity } from "@/features/payment/domain/entities/qris-pay-in-detail-entity";
-import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
+import { QrisPayInDetailEntity } from "@/features/invoice/domain/entities/pay-in-detail/qris-pay-in-detail";
+import { PayInStatus } from "@/features/invoice/domain/enums/pay-in-status";
 import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
 
 const POLL_INTERVAL_MS = 5000;

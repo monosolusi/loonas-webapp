@@ -11,7 +11,7 @@ import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-fo
 import { InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
 import { InvoiceTimelineStepEntity } from "@/features/invoice/domain/entities/invoice-timeline";
 import { isIncomingInvoice } from "@/features/invoice/domain/guards/invoice-guards";
-import { PayInType } from "@/features/payment/domain/enums/pay-in-type";
+import { PayInType } from "@/features/invoice/domain/enums/pay-in-type";
 
 interface PaymentSummaryImplProps {
   id: string;

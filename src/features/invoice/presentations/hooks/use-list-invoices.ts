@@ -34,6 +34,7 @@ async function ListInvoicesFetcher([_, params]: [string, ListInvoicesFetcherPara
   const list = new ListInvoicesUseCase(invoiceRepository, sessionRepository);
   const listParams = new ListInvoicesUseCaseParams({
     type: params.type,
+    channel: params.channel,
     page: params.page,
     limit: params.limit,
     includes: params.includes,

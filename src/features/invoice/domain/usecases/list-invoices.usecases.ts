@@ -5,17 +5,27 @@ import { InvoiceRepository } from "@/features/invoice/domain/repositories/invoic
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { PaginatedData } from "@/core/resources/paginated";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
+import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
 import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-list-item";
 
 export class ListInvoicesUseCaseParams {
   public type?: InvoiceType;
+  public channel?: InvoiceChannel;
   public page: number;
   public limit: number;
   public includes?: string;
   public filter?: string;
 
-  constructor(args: { type?: InvoiceType; page?: number; limit?: number; includes?: string; filter?: string }) {
+  constructor(args: {
+    type?: InvoiceType;
+    channel?: InvoiceChannel;
+    page?: number;
+    limit?: number;
+    includes?: string;
+    filter?: string;
+  }) {
     this.type = args.type;
+    this.channel = args.channel;
     this.page = args.page ?? 1;
     this.limit = args.limit ?? 10;
     this.includes = args.includes;
@@ -37,6 +47,7 @@ export class ListInvoicesUseCase
       return this.invoiceRepository.list(
         {
           type: params.type,
+          channel: params.channel,
           page: params.page,
           limit: params.limit,
           includes: params.includes,

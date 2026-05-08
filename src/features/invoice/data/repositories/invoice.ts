@@ -3,6 +3,7 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import {
   CashFlowRepoFilter,
   CreateOutgoingParams,
+  CreatePosSaleRepoParams,
   InvoiceRepository,
   InvoiceRepositoryFilter,
   InvoiceRepositoryFilterParams,
@@ -41,6 +42,7 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
       const result = await this.invoiceService.list(
         {
           type: filter.type,
+          channel: filter.channel,
           page: filter.page,
           limit: filter.limit,
           includes: filter.includes,
@@ -67,6 +69,19 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
       const service = this.payInDetailFactory.getService({ type: invoice.type });
       const payInDetail = await service.get({ invoice: { id: invoice.id } }, session);
       return new DataSuccess(payInDetail.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async createPosSale(
+    params: CreatePosSaleRepoParams,
+    session: SessionEntity,
+  ): Promise<DataState<OutgoingInvoiceEntity>> {
+    try {
+      const result = await this.invoiceService.createPosSale(params, session);
+      return new DataSuccess(result.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

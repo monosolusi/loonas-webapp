@@ -3,7 +3,7 @@ import { RemainingPaymentTime } from "@/core/presentations/components/remaining-
 import { VirtualAccountDetailBox } from "@/core/presentations/components/va-detail";
 import { useParams } from "next/navigation";
 import { useGetPublicPayInDetailForOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";
-import { PayInType } from "@/features/payment/domain/enums/pay-in-type";
+import { PayInType } from "@/features/invoice/domain/enums/pay-in-type";
 
 export function VirtualAccountPayInDetail() {
   const { id } = useParams<{ id: string }>();
