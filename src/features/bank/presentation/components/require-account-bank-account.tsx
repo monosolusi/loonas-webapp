@@ -1,10 +1,36 @@
-import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
+"use client";
+
 import { DialogTitle } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useRouter } from "next/navigation";
+import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { useListAccountBankAccout } from "@/features/bank/presentation/hooks/use-list-account-bank-account";
 
-export function HasNoAccountErrorDialog() {
+type RequireAccountBankAccountProps = {
+  children: React.ReactNode;
+};
+
+export function RequireAccountBankAccount({ children }: RequireAccountBankAccountProps) {
+  const { error, loading } = useListAccountBankAccout();
+  const hasNoBankAccount =
+    error instanceof ServerError && error.code === ErrorCodes.ACCOUNT_HAS_NO_BANK_ACCOUNT.code;
+
+  if (loading) return <BankAccountCheckLoading />;
+  if (hasNoBankAccount) return <NoBankAccountDialog />;
+  return <>{children}</>;
+}
+
+function BankAccountCheckLoading() {
+  return (
+    <div className="flex h-full min-h-[60vh] items-center justify-center">
+      <div className="size-8 animate-pulse rounded-full bg-neutral-100" />
+    </div>
+  );
+}
+
+function NoBankAccountDialog() {
   const router = useRouter();
 
   const handleCreateBankAccountClick = () => {
@@ -12,11 +38,7 @@ export function HasNoAccountErrorDialog() {
   };
 
   return (
-    <LoonasDialog
-      width="md"
-      open={true}
-      onClose={() => {}}
-    >
+    <LoonasDialog width="md" open={true} onClose={() => {}}>
       <div>
         <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-error-50">
           <ExclamationTriangleIcon aria-hidden="true" className="size-6 text-error-500" />
