@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
 import { useListAccountBankAccout } from "@/features/bank/presentation/hooks/use-list-account-bank-account";
 
 type RequireAccountBankAccountProps = {
@@ -32,9 +33,11 @@ function BankAccountCheckLoading() {
 
 function NoBankAccountDialog() {
   const router = useRouter();
+  const { account } = useGetCurrentAccount();
 
   const handleCreateBankAccountClick = () => {
-    router.push("/settings/bank-accounts");
+    const href = account ? `/accounts/${account.id}` : "/accounts";
+    router.push(href);
   };
 
   return (
