@@ -63,7 +63,10 @@ export function DatePickerInput({
               <Image src="/assets/images/calendar-icon-neutral-400-w16-h16.svg" alt="" width={16} height={16} />
               <span>{displayValue || placeholder}</span>
             </PopoverButton>
-            <PopoverPanel className="absolute left-0 z-30 mt-1 rounded-lg border border-neutral-200 bg-white p-3 shadow-lg">
+            <PopoverPanel
+              anchor={{ to: "bottom start", gap: 4 }}
+              className="z-50 rounded-lg border border-neutral-200 bg-white p-3 shadow-lg"
+            >
               <DayPicker
                 mode="single"
                 locale={idLocale}

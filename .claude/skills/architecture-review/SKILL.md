@@ -274,6 +274,19 @@ Two levels of providers exist:
 - `primary-300` = `#007BFF`, `primary-400` = `#005ABB`, etc. (as defined in `globals.css` `@theme`)
 - Anti-pattern: a file named `*-primary-300-*.svg` containing `#005ABB` (that's primary-400)
 
+### Rule 13: No inline styles — Tailwind classes only
+
+- The `style` prop on JSX elements is **forbidden**. All styling must come through Tailwind utility classes (or composed via `clsx`).
+- The `<style>` tag (including `<style jsx>` / `styled-jsx`) is **forbidden** anywhere in `src/`.
+- For dynamic / runtime-derived values, use Tailwind's arbitrary value syntax with CSS custom properties consumed via class — never an inline `style` workaround:
+  - Anti-pattern: `<div style={{ width: 'var(--anchor-width)' }} />`
+  - Correct: `<div className="w-[var(--anchor-width)]" />` (or Tailwind 4 shorthand `w-(--anchor-width)`)
+  - Anti-pattern: `<div style={{ width: `${progress}%` }} />` to drive a progress bar
+  - Correct: set the CSS variable via a class composed from state (e.g., `clsx("w-[--progress] [--progress:50%]")`) or via a `data-` attribute styled in a Tailwind variant — keep the JSX free of `style`.
+- One narrow allowance: third-party libraries that **require** a `style` prop on their own components (e.g., a chart lib that takes `style` as part of its API). Flag and verify the prop is on a third-party component, not a DOM element.
+- Library-managed positioning is allowed: third-party positioning libraries (Headless UI `anchor`, `@floating-ui/react`, Popper, etc.) compute element position dynamically and set the resulting `transform` / `top` / `left` via the floating element's `style` attribute. That is library-managed inline style, not author-written. Rule 13 targets manually-authored `style` and `<style>` blocks; it does NOT cover positioning attributes computed by a positioning library that literally requires DOM-level style mutation to function. When flagging, distinguish: did the author write the `style` literal, or did the library produce it via `floatingStyles` / `useFloating()` / similar?
+- When in doubt, prefer adding a CSS variable to `globals.css` and consuming it via Tailwind class — keeps theming uniform across the app.
+
 ---
 
 ## Review Process
@@ -301,7 +314,7 @@ For each file, identify which layer it belongs to (`domain` / `data` /
 For every potential issue, check it against:
 
 1. **Section 1** — Clean Architecture (layer separation, SOLID)
-2. **Section 2** — Codebase conventions (Rules 1–12)
+2. **Section 2** — Codebase conventions (Rules 1–13)
 
 Each flagged finding must cite a specific rule number or principle and
 the matching scaffolding skill in the `Skill` column.

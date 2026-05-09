@@ -2,35 +2,62 @@
 
 import { useState } from "react";
 import { InformationCircleIcon } from "@heroicons/react/16/solid";
-import clsx from "clsx";
+import {
+  FloatingPortal,
+  flip,
+  offset,
+  shift,
+  useClick,
+  useDismiss,
+  useFloating,
+  useHover,
+  useInteractions,
+  useRole,
+} from "@floating-ui/react";
 
 type InfoTooltipProps = {
   text: React.ReactNode;
 };
 
 export function InfoTooltip({ text }: InfoTooltipProps) {
-  const [visible, setVisible] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const { refs, floatingStyles, context } = useFloating({
+    open,
+    onOpenChange: setOpen,
+    placement: "top",
+    middleware: [offset(8), flip(), shift({ padding: 8 })],
+  });
+
+  const hover = useHover(context, { delay: { open: 100, close: 0 } });
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+  const role = useRole(context, { role: "tooltip" });
+
+  const { getReferenceProps, getFloatingProps } = useInteractions([hover, click, dismiss, role]);
 
   return (
-    <span className="relative inline-flex">
+    <>
       <button
+        ref={refs.setReference}
         type="button"
         className="text-neutral-200 transition-colors hover:text-neutral-400"
-        onMouseEnter={() => setVisible(true)}
-        onMouseLeave={() => setVisible(false)}
-        onClick={() => setVisible((v) => !v)}
+        {...getReferenceProps()}
       >
         <InformationCircleIcon className="size-4" />
       </button>
-      <div
-        className={clsx(
-          "absolute bottom-full left-1/2 z-10 mb-2 w-56 -translate-x-1/2 rounded-lg border border-neutral-100 bg-white px-3 py-2 text-xs leading-4 text-neutral-400 shadow-lg transition-all",
-          visible ? "visible opacity-100" : "invisible opacity-0",
-        )}
-      >
-        {text}
-        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-white" />
-      </div>
-    </span>
+      {open && (
+        <FloatingPortal>
+          <div
+            ref={refs.setFloating}
+            style={floatingStyles}
+            {...getFloatingProps()}
+            className="z-50 w-56 rounded-lg border border-neutral-100 bg-white px-3 py-2 text-xs leading-4 text-neutral-400 shadow-lg"
+          >
+            {text}
+          </div>
+        </FloatingPortal>
+      )}
+    </>
   );
 }

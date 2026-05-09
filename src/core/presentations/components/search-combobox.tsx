@@ -78,7 +78,10 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
           <ChevronUpDownIcon className="size-5 text-neutral-200" aria-hidden="true" />
         </ComboboxButton>
 
-        <ComboboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-neutral-100 bg-white py-1 text-base shadow-lg focus:outline-hidden">
+        <ComboboxOptions
+          anchor={{ to: "bottom start", gap: 4 }}
+          className="z-50 max-h-60 w-[var(--input-width)] overflow-auto rounded-lg border border-neutral-100 bg-white py-1 text-base shadow-lg focus:outline-hidden"
+        >
           {filtered.map((opt) => (
             <ComboboxOption
               key={opt.id}
