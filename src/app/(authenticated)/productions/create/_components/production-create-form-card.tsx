@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { NumberInput } from "@/core/presentations/components/text-inputs/number-input";
@@ -18,19 +19,29 @@ export function ProductionCreateFormCard() {
 
   const handleProductChange = (value: ManufacturedProductOption | null) => {
     setProduct(value);
-    if (value && value.variants.length === 1) {
-      setVariantId(value.variants[0].id);
+    if (!value) {
+      setVariantId(null);
+      return;
+    }
+    const producibleVariants = value.variants.filter((v) => v.hasRecipe);
+    if (producibleVariants.length === 1) {
+      setVariantId(producibleVariants[0].id);
     } else {
       setVariantId(null);
     }
   };
 
-  const variantOptions = useMemo(() => {
+  const producibleVariants = useMemo(() => {
     if (!product) return [];
-    return product.variants.map((v) => ({ label: v.name, value: v.id }));
+    return product.variants.filter((v) => v.hasRecipe);
   }, [product]);
 
-  const showVariantSelect = product && product.variants.length > 1;
+  const variantOptions = useMemo(() => {
+    return producibleVariants.map((v) => ({ label: v.name, value: v.id }));
+  }, [producibleVariants]);
+
+  const hiddenVariantCount = product ? product.variants.length - producibleVariants.length : 0;
+  const showVariantSelect = product && producibleVariants.length > 1;
 
   return (
     <SectionCard title="Detail Produksi" iconSrc="/assets/images/box-icon-primary-300-w16-h16.svg">
@@ -41,14 +52,27 @@ export function ProductionCreateFormCard() {
         </div>
         <div className="grid grid-cols-2 gap-x-4">
           {showVariantSelect && (
-            <SelectInput
-              label="Varian"
-              value={variantId ?? ""}
-              options={variantOptions}
-              onChange={setVariantId}
-              placeholder="Pilih varian"
-              required
-            />
+            <div className="flex flex-col gap-y-1">
+              <SelectInput
+                label="Varian"
+                value={variantId ?? ""}
+                options={variantOptions}
+                onChange={setVariantId}
+                placeholder="Pilih varian"
+                required
+              />
+              {hiddenVariantCount > 0 && product && (
+                <span className="text-xs text-warning-400">
+                  {hiddenVariantCount} varian disembunyikan karena belum punya resep.{" "}
+                  <Link
+                    href={`/products/${product.productId}`}
+                    className="text-primary-300 underline hover:no-underline"
+                  >
+                    Tambah resep ↗
+                  </Link>
+                </span>
+              )}
+            </div>
           )}
           <NumberInput
             label="Jumlah Produksi"
