@@ -4,15 +4,16 @@ import clsx from "clsx";
 interface InvoiceTabFilterProps {
   selectedIndex: number;
   onChange: (index: number) => void;
+  tabs?: readonly string[];
 }
 
-const TABS = ["Semua", "Belum Lunas", "Lunas"];
+const DEFAULT_TABS = ["Semua", "Belum Lunas", "Menunggu Settlement", "Lunas"];
 
-export function InvoiceTabFilter({ selectedIndex, onChange }: InvoiceTabFilterProps) {
+export function InvoiceTabFilter({ selectedIndex, onChange, tabs = DEFAULT_TABS }: InvoiceTabFilterProps) {
   return (
     <TabGroup selectedIndex={selectedIndex} onChange={onChange}>
       <TabList className="flex flex-row rounded-lg bg-neutral-100 p-1">
-        {TABS.map((label) => (
+        {tabs.map((label) => (
           <Tab
             key={label}
             className={({ selected }) =>

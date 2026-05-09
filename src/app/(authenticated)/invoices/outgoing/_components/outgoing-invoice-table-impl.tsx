@@ -20,7 +20,7 @@ export function OutgoingInvoiceTableImpl({ filter }: OutgoingInvoiceTableImplPro
   const [activeTab, setActiveTab] = useState(0);
   const [search, setSearch] = useState("");
 
-  const filterMap = [undefined, "unpaid", "paid"] as const;
+  const filterMap = [undefined, "unpaid", "waiting_settlement", "paid"] as const;
   const resolvedFilter = filter ?? filterMap[activeTab];
 
   useEffect(() => {

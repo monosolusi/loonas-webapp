@@ -30,13 +30,14 @@ export function OutgoingInvoiceStatisticsImpl() {
         count={summary.unpaidCount}
       />
       <StatisticCard
-        label="Jatuh Tempo"
-        value={IDRFormatter.toCurrency(summary.overdueAmount)}
-        subtitle={`${summary.overdueCount} faktur terlambat`}
-        iconSrc="/assets/images/circle-dollar-sign-icon-warning-300-w20-h20.svg"
-        theme="error"
-        href="/invoices/outgoing/overdue"
-        count={summary.overdueCount}
+        label="Menunggu Settlement"
+        value={IDRFormatter.toCurrency(summary.waitingSettlementAmount)}
+        subtitle={`${summary.waitingSettlementCount} faktur diproses`}
+        iconSrc="/assets/images/clock-icon-primary-300-w16-h16.svg"
+        iconSize={16}
+        theme="primary"
+        href="/invoices/outgoing/waiting-settlement"
+        count={summary.waitingSettlementCount}
       />
       <StatisticCard
         label="Telah Dibayar"

@@ -14,6 +14,7 @@ export function IncomingInvoiceStatisticsImpl() {
         <StatisticCardSkeleton />
         <StatisticCardSkeleton />
         <StatisticCardSkeleton />
+        <StatisticCardSkeleton />
       </div>
     );
   }
@@ -28,6 +29,16 @@ export function IncomingInvoiceStatisticsImpl() {
         theme="warning"
         href="/invoices/incoming/unpaid"
         count={summary.unpaidCount}
+      />
+      <StatisticCard
+        label="Menunggu Settlement"
+        value={IDRFormatter.toCurrency(summary.waitingSettlementAmount)}
+        subtitle={`${summary.waitingSettlementCount} faktur diproses`}
+        iconSrc="/assets/images/clock-icon-primary-300-w16-h16.svg"
+        iconSize={16}
+        theme="primary"
+        href="/invoices/incoming/waiting-settlement"
+        count={summary.waitingSettlementCount}
       />
       <StatisticCard
         label="Total Faktur"
