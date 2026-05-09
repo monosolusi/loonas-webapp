@@ -3,6 +3,7 @@ import { NavigationItem } from "@/app/(authenticated)/_components/navigation-ite
 import { NavigationGroup } from "@/app/(authenticated)/_components/navigation-group";
 import { NavigationChildItem } from "@/app/(authenticated)/_components/navigation-child-item";
 import { KycReviewNavItem } from "@/app/(authenticated)/_components/kyc-review-nav-item";
+import { FinanceNavGroup } from "@/app/(authenticated)/_components/finance-nav-group";
 
 export function NavigationBar() {
   return (
@@ -43,16 +44,7 @@ export function NavigationBar() {
           <NavigationChildItem href="/products" label="Semua Produk" />
           <NavigationChildItem href="/productions" label="Produksi" />
         </NavigationGroup>
-        <NavigationGroup
-          label="Keuangan"
-          iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
-          selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
-          matchPrefixes={["/finance/ledger", "/finance/journals", "/finance/fixed-costs"]}
-        >
-          <NavigationChildItem href="/finance/ledger" label="Buku Besar" />
-          <NavigationChildItem href="/finance/journals" label="Jurnal Umum" />
-          <NavigationChildItem href="/finance/fixed-costs" label="Biaya Tetap" />
-        </NavigationGroup>
+        <FinanceNavGroup />
         <NavigationItem
           href="/accounts"
           label="Manajemen Akun"

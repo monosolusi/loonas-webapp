@@ -12,6 +12,10 @@ interface SettingsCategoryCardProps {
   active: boolean;
 }
 
+interface SettingsCategoryItem extends SettingsCategoryCardProps {
+  feature?: string;
+}
+
 function SettingsCategoryCard(props: SettingsCategoryCardProps) {
   if (!props.active) {
     return (
@@ -52,7 +56,7 @@ export default function SettingsPage() {
 
   const accountHref = account ? `/accounts/${account.id}` : "/accounts";
 
-  const categories: SettingsCategoryCardProps[] = [
+  const categories: SettingsCategoryItem[] = [
     {
       href: accountHref,
       iconSrc: "/assets/images/people-icon-primary-300-w16-h16.svg",
@@ -94,6 +98,7 @@ export default function SettingsPage() {
       title: "Biaya Tetap",
       description: "Kelola jenis biaya tetap bulanan seperti sewa, gaji, dan listrik.",
       active: true,
+      feature: "accounting",
     },
     {
       href: "/settings/coa-mappings",
@@ -101,8 +106,11 @@ export default function SettingsPage() {
       title: "Pemetaan Akun",
       description: "Kelola pemetaan akun debit dan kredit untuk setiap jenis transaksi.",
       active: true,
+      feature: "accounting",
     },
   ];
+
+  const visibleCategories = categories.filter((c) => !c.feature || account?.hasFeature(c.feature));
 
   return (
     <div className="flex flex-col gap-y-6">
@@ -111,7 +119,7 @@ export default function SettingsPage() {
         <p className="text-sm text-neutral-300">Kelola preferensi dan konfigurasi bisnis kamu.</p>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {categories.map((category) => (
+        {visibleCategories.map((category) => (
           <SettingsCategoryCard key={category.href} {...category} />
         ))}
       </div>
