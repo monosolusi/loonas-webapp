@@ -125,7 +125,7 @@ export class ProductServiceImpl implements ProductService {
       };
       if (params.productionMode) body["production_mode"] = params.productionMode;
       if (params.active !== undefined) body["active"] = params.active;
-      if (params.categoryId) body["category_id"] = params.categoryId;
+      if (params.categoryId) body["category"] = { id: params.categoryId };
 
       const result = await this.http.request({
         path: "/products",
@@ -149,7 +149,9 @@ export class ProductServiceImpl implements ProductService {
       if (params.type !== undefined) body["type"] = params.type;
       if (params.productionMode !== undefined) body["production_mode"] = params.productionMode ?? null;
       if (params.active !== undefined) body["active"] = params.active;
-      if (params.categoryId !== undefined) body["category_id"] = params.categoryId;
+      if (params.categoryId !== undefined) {
+        body["category"] = params.categoryId === null ? null : { id: params.categoryId };
+      }
 
       const result = await this.http.request({
         path: `/products/${id}`,
