@@ -1,0 +1,8 @@
+- [Feature flag mechanism](project_feature_flag_mechanism.md) — client gating via `account.hasFeature(key)` from `useGetCurrentAccount`; no other flag service exists
+- [Accounting module audit 2026-05](project_accounting_module_audit_2026_05.md) — accounting feature was pre-scaffolded against an earlier BE contract; check existing files before planning new accounting work
+- [CoA mapping account 2-shape](project_coa_account_two_shape.md) — BE v1 line.account is full|null (stub dropped per B2 lock 2026-05-12); narrow to nullable, strip dynamic lines from update payload
+- [PRD lock 2026-05-12 deltas](project_accounting_prd_lock_2026_05_12.md) — Idempotency-Key v1 (BE-ignored), regime radio FE-only, locked-menu chip, CoA viewer reuses /finance/ledger, is_pkp via useGetAccountingSettings
+- [CoA read-only as of 2026-05-12](project_accounting_coa_readonly.md) — no create-ledger-account stack exists; "Tambah Manual" needs full create stack as one delivery
+- [Tax periods no BE resource v1](project_tax_periods_no_be_resource.md) — period selector derives 12-month rolling window client-side via Luxon; swap to real endpoint in v2
+- [Accounting BE reply 2026-05-12](project_accounting_be_reply_2026_05_12.md) — codes flip (1410/2210=PPN, 1420/2220=PPh Final), no create-ledger v1, PPN auto-seed Branch A/B fork
+- [Accounting B11–B15 lock 2026-05-12](project_accounting_b11_b15_lock_2026_05_12.md) — Branch B locked (no auto-seed v1), B15 tax_accounts resolver `{id,code,name}|null`, 4-phase plan

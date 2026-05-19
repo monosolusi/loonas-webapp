@@ -1,0 +1,12 @@
+- [Accounting domain map](project_accounting_domain.md) — Loonas accounting module: CoA, mappings, journals, ledger, manual journals (PPh Final, expenses), settings
+- [CoA mapping shape evolution](project_coa_mapping_shape.md) — Plan B+ release: new amount_role + account_role (dynamic) + 3-shape account field; entity-type catalogue with category/pattern/requires_account_role
+- [Indonesian fintech vocab](reference_indonesian_fintech_vocab.md) — terms: Buku Besar, Jurnal, NPWP, NPPKP, PKP, PPh Final UMKM, sektor KLBI, Pemilik/Prive, HPP
+- [Manual journal idempotency standard](feedback_manual_journal_idempotency.md) — money-movement endpoints (PPh Final settle, expense payment) must guard double-submit via UI disable + client idempotency key
+- [Pay-in-feature is separate](reference_payment_features_disambig.md) — `src/features/payment/` is for pay-in/incoming-invoice, NOT for POS or accounting expense payments; the accounting expense_payment endpoint is a different flow
+- [PKP/PPN account codes](project_pkp_ppn_codes.md) — RENUMBERED 2026-05-12: PPN=1410/2210 (canonical), PPh Final relocates to 1420/2220; manual-create dropped; v1 ships A (auto-seed) or B (CTA-only)
+- [Account 1230 badge surfaces](project_account_1230_badge_surfaces.md) — chip on list/mapping/combobox/journal-line; BANNER on `/finance/ledger/1230`; verbatim Bahasa copy locked
+- [Tax accounts v1 lock](project_tax_accounts_v1_lock.md) — 2026-05-12 Branch B confirmed: PKP regime is honest WhatsApp toggle (no PATCH); FE reads tax_accounts resolver; null = suppress, not fallback
+- [Linear: Accounting Bootstrap v1 issues](reference_linear_accounting_bootstrap_v1.md) — LNS-76 tracker + P1/P3/P4/P6 (LNS-77/78/79/80) + 6 v1.1 tech-debts (LNS-81–86)
+- [UNOFEST project](project_unofest.md) — Loonas Ubaya UNOFEST: POS-led GTM pilot at Ubaya Festival June 2026, 5-step F&B happy path
+- [fe-requested-be label](reference_fe_requested_be_label.md) — Linear workspace label `fe-requested-be` (pair with Backend) for FE-originated BE dependencies
+- [Linear quota blocked 2026-05-19](project_linear_quota_blocked.md) — `loonas` workspace hit free-tier issue cap; `save_issue` creates fail until upgrade; reads still work

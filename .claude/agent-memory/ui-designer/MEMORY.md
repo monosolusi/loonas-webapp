@@ -1,0 +1,6 @@
+- [Design language conventions](design_language.md) — SectionCard, PrimaryButton, h-11, size-8, neutral palette, ActionMenu, skeletons
+- [CoA mappings current structure](project_coa_mappings.md) — current table grid, line shape, dialog form, provider pattern
+- [Finance nav group](project_finance_nav.md) — FinanceNavGroup gated on hasFeature("accounting"), NavigationGroup/NavigationChildItem pattern
+- [Settings page tile pattern](project_settings_page.md) — SettingsCategoryCard grid, feature-gating via hasFeature(), active/inactive states
+- [Journals page current layout](project_journals_page.md) — JournalListImpl uses InvoiceTableShell (deprecated for new code), SummaryCard grid, no CTA today
+- [Accounting bootstrap v1 locked plan](project_accounting_bootstrap_plan.md) — Branch B only, B15 resolver tooltips, tax tile copy, ManagedByLoonasBadge call, v1.1 extension rules
