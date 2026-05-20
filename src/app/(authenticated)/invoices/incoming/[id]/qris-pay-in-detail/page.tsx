@@ -69,7 +69,9 @@ export default function QrisPayInDetailPage() {
                 </div>
 
                 {/* Countdown Timer */}
-                <RemainingPaymentTime deadline={payInDetail.expirationTime} />
+                {payInDetail.expirationTime !== null && (
+                  <RemainingPaymentTime deadline={payInDetail.expirationTime} />
+                )}
 
                 {/* QRIS Detail */}
                 <QrisPayInDetailBox

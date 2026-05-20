@@ -10,7 +10,7 @@ type QrisPayInDetailEntityConstructor = {
   id: string;
   status: PayInStatus;
   qrString: string;
-  expirationTime: DateTime;
+  expirationTime: DateTime | null;
   amount: number;
   providerName: string;
   providerId: string;
@@ -22,7 +22,7 @@ type QrisPayInDetailEntityConstructor = {
 
 export class QrisPayInDetailEntity extends PaymentMethodPayInDetailEntity {
   public readonly qrString: string;
-  public readonly expirationTime: DateTime;
+  public readonly expirationTime: DateTime | null;
   public readonly amount: number;
   public readonly providerName: string;
   public readonly providerId: string;

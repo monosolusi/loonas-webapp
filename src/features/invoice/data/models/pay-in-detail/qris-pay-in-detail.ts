@@ -8,7 +8,7 @@ type QrisPayInDetailModelConstructor = {
   id: string;
   status: PayInStatus;
   qrString: string;
-  expirationTime: DateTime;
+  expirationTime: DateTime | null;
   amount: number;
   providerName: string;
   providerId: string;
@@ -37,7 +37,7 @@ export class QrisPayInDetailModel implements AbstractModel {
   public readonly id: string;
   public readonly status: PayInStatus;
   public readonly qrString: string;
-  public readonly expirationTime: DateTime;
+  public readonly expirationTime: DateTime | null;
   public readonly amount: number;
   public readonly providerName: string;
   public readonly providerId: string;
@@ -65,7 +65,10 @@ export class QrisPayInDetailModel implements AbstractModel {
       id: doc["id"] ?? "",
       status: parseStatus(doc["status"]),
       qrString: doc["qr_string"] ?? "",
-      expirationTime: DateTime.fromISO(doc["expiration_time"] ?? ""),
+      expirationTime:
+        typeof doc["expiration_time"] === "string" && doc["expiration_time"].length > 0
+          ? DateTime.fromISO(doc["expiration_time"])
+          : null,
       amount: typeof doc["amount"] === "number" ? doc["amount"] : 0,
       providerName: doc["provider_name"] ?? "",
       providerId: doc["provider_id"] ?? "",
