@@ -1,0 +1,1 @@
+- [QA Patterns](qa-patterns.md) — Recurring build warnings, CI ticket scope rules, build perf baseline, JSON validity gate
