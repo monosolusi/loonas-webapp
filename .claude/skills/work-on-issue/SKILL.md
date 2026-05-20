@@ -97,9 +97,9 @@ If SWE hits a blocker, route it back to EL (technical) or PM (scope) — never t
 
 After SWE reports completion, the orchestrator launches **two parallel** verification agents (single message, two Agent calls):
 
-### 5a. QA (general-purpose subagent)
+### 5a. QA (`qa` agent)
 
-Spawn a `general-purpose` agent with a self-contained QA brief:
+Spawn the `qa` agent (NOT `general-purpose`) with a self-contained QA brief:
 
 - Run `npx tsc --noEmit` and `npm run lint`; report any failure.
 - Use the `/restart-server` skill (or a free port) to boot the dev server.
@@ -122,21 +122,41 @@ EL receives the QA + architecture reports and decides:
 
 The orchestrator enforces the loop and never lets a failing report skip to PM.
 
-## Phase 7 — PM verification & Linear move
+## Phase 7 — EL re-validates BE contract
 
-Once EL signs off, dispatch `product-manager` with EL's summary. PM:
+After EL signs off in Phase 6 but **before** PM is dispatched, the orchestrator re-engages `engineer-lead` for a final contract check. EL must:
+
+- Fetch the live BE OpenAPI spec at `https://dev-api.loonas.id/openapi.json`.
+- Verify every BE-touched surface in the implementation against the spec: field names, nesting, enum values, request/response shapes, nullability.
+- If aligned → emit a one-paragraph "contract validated" confirmation citing the spec sections checked.
+- If misaligned → produce a targeted SWE micro-fix brief; loop returns to Phase 4/5 until aligned.
+
+This step is mandatory, not optional. The BE may have shipped contract changes since EL's initial planning, and silent drift is the #1 cause of post-merge regressions. Skip this step and PM will move a broken implementation to "In Review".
+
+## Phase 8 — PM verification & Linear move
+
+Once EL confirms contract alignment, dispatch `product-manager` with EL's summary. PM:
 
 - Cross-checks EL's summary against the original Linear acceptance criteria.
 - If acceptance criteria are met, moves the Linear issue to the **"In Review"** state via Linear MCP (`save_issue` with the appropriate `stateId`). PM must look up the team's "In Review" status — do NOT hardcode an ID.
 - Posts a Linear comment summarising what shipped + branch name (for the human reviewer).
 - If anything is missing, PM kicks back to EL with a gap list and the loop returns to Phase 4/5.
 
+## Phase 9 — Commit + PR
+
+After PM moves the issue to "In Review", the orchestrator runs the commit + PR phase:
+
+1. **Dispatch `software-engineer`** with a "commit your work in logical chunks" brief. Multiple commits are expected — one per logical unit (e.g., model narrowing, hook extraction, plugin component, fix-loop revisions). Conventional Commits per `CLAUDE.md` (`feat(scope):`, `fix(scope):`, `refactor(scope):`, `chore(scope):`). SWE commits locally; does NOT push.
+2. **Dispatch `engineer-lead`** with an "open PR" brief. EL invokes the `/github-pr` skill, which pushes the branch and creates the PR against `dev`.
+
+The orchestrator NEVER runs `git commit` or `gh pr create` directly — those belong to SWE and EL respectively.
+
 ## Rules
 
-- **Never bypass an agent's lane.** Orchestrator does not write the PRD, the plan, or the code. Orchestrator does not call Linear directly — that is PM only.
+- **Never bypass an agent's lane.** Orchestrator does not write the PRD, the plan, or the code. Orchestrator does not call Linear directly — that is PM only. Orchestrator does not run `git commit` or `gh pr create` — SWE and EL respectively own those in Phase 9.
 - **Parallelise where independent.** Phase 2 consults and Phase 5 verifications must be dispatched in a single message with multiple Agent calls.
-- **Never auto-commit.** Per project memory, do not run `git commit` until the user explicitly says "commit". Surface the diff and wait. PR creation is also user-triggered.
-- **BE questions go through the user.** FE agents (PM/EL/UI/CPO/SWE/architecture-reviewer) have no BE access. If any agent flags a BE-side dependency, relay it through the user verbatim — do not editorialise.
+- **SWE commits, EL opens PR.** In Phase 9, SWE commits its work in logical chunks (multiple commits expected — one per logical unit, Conventional Commits style). EL then opens the PR via the `/github-pr` skill. The orchestrator dispatches, but never runs git/gh tooling itself.
+- **BE-shape questions: EL reads OpenAPI spec; BE-behavior questions go through the user.** EL has `WebFetch` read access to `https://dev-api.loonas.id/openapi.json` and uses it for contract validation (field names, enums, request/response shapes). Questions about BE *behavior* not visible in the schema (auth nuances, business rules, race conditions, undocumented constraints) still get relayed to the user. PM / UI / CPO / SWE / architecture-reviewer have no BE access at all — they always flag.
 - **Stop on genuine forks.** Pause for user input only on (a) blocking business clarification PM cannot resolve, (b) destructive actions, (c) BE-relay questions. Otherwise execute autonomously.
 - **Match the existing presentation-layer directory** (singular `presentation/` vs plural `presentations/`) per feature — SWE follows the feature's local convention.
 - **Use Linear skills for any new sub-issue creation.** If PM needs to file a sub-bug or tech-debt spinout during the workflow, use `/linear-bug` or `/linear-techdebt`.
@@ -153,8 +173,11 @@ Implementation: {1-line summary of what SWE built}
 QA: pass | fail({n} items)
 Architecture: pass | fail({n} items)
 EL verdict: accepted | iterated x{n}
+BE contract: re-validated against live OpenAPI spec | mismatch found
 Linear state: moved to "In Review" at {timestamp}
-Next: awaiting human reviewer; user to commit + open PR when ready.
+Commits: {n} commits by SWE
+PR: #{n} → dev
+Next: awaiting human reviewer.
 ```
 
 Keep the body short. Detail lives in agent transcripts and the Linear comment PM posted.
