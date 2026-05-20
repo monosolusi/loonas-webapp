@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20.18"
   },
   "dependencies": {
     "@clerk/clerk-js": "^5.118.0",
