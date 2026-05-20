@@ -10,10 +10,9 @@
     "typecheck": "tsc --noEmit"
   },
   "engines": {
-    "node": ">=20.19.4"
+    "node": ">=20.18"
   },
   "dependencies": {
-    "@clerk/clerk-js": "^5.118.0",
     "@clerk/nextjs": "^6.36.5",
     "@floating-ui/react": "^0.27.19",
     "@headlessui/react": "^2.2.6",
