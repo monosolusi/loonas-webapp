@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { InvoiceRepositoryImpl } from "../../data/repositories/invoice";
 import { InvoiceServiceImpl } from "../../data/sources/invoice";
@@ -22,11 +23,9 @@ export type UseGetInvoiceOptions = {
   refreshInterval?: number | ((latestData: InvoiceDetailEntity | undefined) => number);
 };
 
-const INITIAL_STATE: UseGetInvoiceReturnType = {
-  invoice: null,
-  loading: true,
-  error: null,
-};
+function buildInitialState(refresh: () => Promise<void>): UseGetInvoiceReturnType {
+  return { invoice: null, loading: true, error: null, refresh };
+}
 
 async function GetInvoiceFetcher([_, params]: [string, GetInvoiceFetcherParams]) {
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
@@ -53,26 +52,32 @@ export function useGetInvoice(
   options: UseGetInvoiceOptions = {},
 ): UseGetInvoiceReturnType {
   const clerk = useClerk();
-  const { data, isLoading, error } = useSWR(
+  const { data, isLoading, error, mutate } = useSWR(
     ["get-invoice", { ...params, clerk }],
     GetInvoiceFetcher,
     { refreshInterval: options.refreshInterval },
   );
 
-  if (isLoading) return INITIAL_STATE;
+  const refresh = useCallback(async (): Promise<void> => {
+    await mutate();
+  }, [mutate]);
+
+  if (isLoading) return buildInitialState(refresh);
   if (error) {
     return {
       invoice: null,
       loading: false,
       error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
+      refresh,
     };
   }
 
-  if (!data) return INITIAL_STATE;
+  if (!data) return buildInitialState(refresh);
 
   return {
     invoice: data,
     loading: false,
     error: null,
+    refresh,
   };
 }
