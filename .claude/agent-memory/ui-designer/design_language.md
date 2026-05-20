@@ -38,3 +38,29 @@ metadata:
 - `FilledButton` / `OutlinedButton` → `PrimaryButton` / `SecondaryButton`
 - Inline edit/delete icon buttons → `ActionMenu`
 - Template literal classNames → `clsx()`
+
+## POS terminal screens — established pattern (from qris-paid-splash, qris-creation-failed)
+- Container: `flex flex-1 flex-col items-center justify-center gap-y-4 px-6 py-10 text-center`
+- `aria-live="polite"` on the container root
+- Icon circle: `size-16 rounded-full flex items-center justify-center bg-{color}-100 text-{color}-500`
+- Icon inside: `size-8` Heroicon with `aria-hidden`
+- Heading: `text-lg font-semibold text-neutral-500`
+- Body: `text-sm text-neutral-300`
+- Button group: `flex w-full max-w-xs flex-col gap-y-2 pt-2`
+
+## POS terminal icon families (must differentiate on new screens)
+- Creation-failed: `ExclamationTriangleIcon` (24/outline) — bg-error-100 / text-error-500
+- Paid: `CheckIcon` (24/solid) — bg-success-100 / text-success-500
+- Creating: no icon — animate-pulse skeleton block
+
+## Button base API (core/presentations/components/buttons/button.tsx)
+- Props: `label`, `loading?`, `leftIcon?`, `rightIcon?`, disabled, className, all native button attrs
+- `loading` prop: renders Spinner inline and sets button to disabled automatically — no need to manually disable
+- `leftIcon` / `rightIcon` accept ReactNode (16x16 icon recommended)
+
+## Color tokens (globals.css — canonical)
+- neutral-50=#FFFFFF, neutral-100=#D9DADA, neutral-200=#BDBDBD, neutral-300=#323636, neutral-400=#1B1B1B, neutral-500=#0D0E0E
+- warning-200=#FDB022, warning-300=#F79009, warning-400=#DC6803, warning-500=#B54708
+- error-100=#FEE4E2, error-500=#B42318
+- success-100=#DCFAE6, success-500=#067647
+- primary-300=#007BFF
