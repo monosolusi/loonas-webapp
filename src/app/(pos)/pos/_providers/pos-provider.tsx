@@ -71,6 +71,10 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     setIdempotencyKey(crypto.randomUUID());
   }, [items, selectedPaymentGatewayId]);
 
+  const regenerateIdempotencyKey = useCallback(() => {
+    setIdempotencyKey(crypto.randomUUID());
+  }, []);
+
   // Errors
   const [stockErrors, setStockErrors] = useState<Map<string, StockErrorEntry>>(new Map());
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -422,6 +426,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       isCheckingOut,
       checkoutError,
       completeTransaction,
+      regenerateIdempotencyKey,
     }),
     [
       search,
@@ -453,6 +458,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       isCheckingOut,
       checkoutError,
       completeTransaction,
+      regenerateIdempotencyKey,
     ],
   );
 
