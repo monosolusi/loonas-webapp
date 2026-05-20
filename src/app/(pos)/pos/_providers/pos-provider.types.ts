@@ -76,4 +76,8 @@ export type PosContextValue = {
   isCheckingOut: boolean;
   checkoutError: ServerError | null;
   completeTransaction: () => Promise<string | null>;
+
+  // Idempotency
+  /** Mint a fresh idempotency key. Call before retrying a failed/expired pay-in. */
+  regenerateIdempotencyKey: () => void;
 };
