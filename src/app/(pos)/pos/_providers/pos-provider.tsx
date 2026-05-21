@@ -82,6 +82,10 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [drilldownProduct, setDrilldownProduct] = useState<ProductForSaleEntity | null>(null);
 
+  // Drawer (mobile)
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const toggleDrawer = useCallback(() => setDrawerOpen((prev) => !prev), []);
+
   // Cart
   const [items, setItems] = useState<CartItem[]>([]);
 
@@ -472,6 +476,8 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       selectedPaymentGatewayId,
       currentMethod,
       currentHandler,
+      drawerOpen,
+      toggleDrawer,
       checkoutStep,
       startCheckout,
       cancelCheckout,
@@ -492,6 +498,8 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       selectedPaymentGatewayId,
       currentMethod,
       currentHandler,
+      drawerOpen,
+      toggleDrawer,
       checkoutStep,
       startCheckout,
       cancelCheckout,

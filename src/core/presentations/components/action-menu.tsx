@@ -19,7 +19,7 @@ export function ActionMenu({ options }: ActionMenuProps) {
     <Menu as="div" className="relative">
       <MenuButton
         onClick={(e: React.MouseEvent) => e.preventDefault()}
-        className="flex size-11 items-center justify-center rounded-lg text-neutral-200 transition-colors hover:bg-neutral-50 hover:text-neutral-400 focus:outline-none"
+        className="flex size-8 items-center justify-center rounded-lg text-neutral-200 transition-colors hover:bg-neutral-50 hover:text-neutral-400 focus:outline-none"
       >
         <EllipsisVerticalIcon className="size-4" />
       </MenuButton>

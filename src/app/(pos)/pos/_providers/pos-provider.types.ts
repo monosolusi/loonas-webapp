@@ -70,6 +70,10 @@ export type PosUIValue = {
   /** Resolved handler for the current method. */
   currentHandler: PaymentMethodHandler | null;
 
+  // Drawer (mobile)
+  drawerOpen: boolean;
+  toggleDrawer: () => void;
+
   // Checkout wizard (method-agnostic)
   checkoutStep: CheckoutStep | null;
   startCheckout: () => void;

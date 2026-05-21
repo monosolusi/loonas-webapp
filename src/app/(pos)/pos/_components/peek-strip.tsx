@@ -4,19 +4,13 @@ import clsx from "clsx";
 import { ChevronUpIcon } from "@heroicons/react/16/solid";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { NumberDisplay } from "@/core/presentations/components/number-display";
-import { StatusChip } from "@/core/presentations/components/status-chip";
-import { usePosCart } from "@/app/(pos)/pos/_providers/pos-provider";
-import { usePosUI } from "@/app/(pos)/pos/_providers/pos-provider";
-import { CART_SOFTCAP_THRESHOLD, CART_SOFTCAP_WARNING } from "@/app/(pos)/pos/_components/cart-softcap";
+import { usePosCart, usePosUI } from "@/app/(pos)/pos/_providers/pos-provider";
+import { CartSoftcapChip } from "@/app/(pos)/pos/_components/cart-softcap-chip";
+import { CART_SOFTCAP_THRESHOLD } from "@/app/(pos)/pos/_components/cart-softcap";
 
-type PeekStripProps = {
-  drawerOpen: boolean;
-  onToggleDrawer: () => void;
-};
-
-export function PeekStrip({ drawerOpen, onToggleDrawer }: PeekStripProps) {
+export function PeekStrip() {
   const { items, total, hasCartWarnings, isCheckingOut } = usePosCart();
-  const { paymentMethodsState, checkoutStep, startCheckout } = usePosUI();
+  const { paymentMethodsState, checkoutStep, startCheckout, drawerOpen, toggleDrawer } = usePosUI();
 
   const itemCount = items.length;
   const methodsLoading = paymentMethodsState.status === "loading";
@@ -29,7 +23,7 @@ export function PeekStrip({ drawerOpen, onToggleDrawer }: PeekStripProps) {
       {/* Grabber + item count */}
       <button
         type="button"
-        onClick={onToggleDrawer}
+        onClick={toggleDrawer}
         aria-label={drawerOpen ? "Tutup keranjang" : "Buka keranjang"}
         className="flex h-11 flex-1 flex-row items-center gap-x-2"
       >
@@ -49,13 +43,15 @@ export function PeekStrip({ drawerOpen, onToggleDrawer }: PeekStripProps) {
         )}
         {showSoftcap && (
           <span className="ml-1">
-            <StatusChip label={CART_SOFTCAP_WARNING} variant="warning" compact />
+            <CartSoftcapChip />
           </span>
         )}
       </button>
 
-      {/* Bayar — lives here on mobile; never inside the drawer */}
-      {!inWizard && (
+      {/* Right slot — Bayar when idle; status label when wizard is active */}
+      {inWizard ? (
+        <span className="flex h-11 shrink-0 items-center text-sm text-neutral-600">Sedang membayar</span>
+      ) : (
         <PrimaryButton label="Bayar" disabled={disabled} onClick={startCheckout} />
       )}
     </div>
