@@ -5,13 +5,36 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth, useSignIn } from "@clerk/nextjs";
 
+export type SignInError =
+  | "wrong_credentials"
+  | "too_many_requests"
+  | "network"
+  | "fallback"
+  | null;
+
+function classifyClerkError(err: unknown): SignInError {
+  if (err instanceof TypeError) return "network";
+  const clerkErr = (err as any)?.errors?.[0];
+  if (!clerkErr) return "network";
+  switch (clerkErr.code) {
+    case "form_password_incorrect":
+    case "form_identifier_not_found":
+      return "wrong_credentials";
+    case "too_many_requests":
+    case "user_locked":
+      return "too_many_requests";
+    default:
+      return "fallback";
+  }
+}
+
 type SignInContextProps = {
   email: string;
   password: string;
   loading: boolean;
-  showInvalidCred: boolean;
-  setEmail?: React.Dispatch<React.SetStateAction<string>>;
-  setPassword?: React.Dispatch<React.SetStateAction<string>>;
+  signInError: SignInError;
+  setEmail: (value: string) => void;
+  setPassword: (value: string) => void;
   login?: () => Promise<void>;
 };
 
@@ -19,15 +42,16 @@ const SignInContext = createContext<SignInContextProps>({
   email: "",
   password: "",
   loading: true,
-  showInvalidCred: false,
+  signInError: null,
+  setEmail: () => {},
+  setPassword: () => {},
 });
 
 export function SignInProvider({ children }: { children: any }) {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [email, setEmailRaw] = useState<string>("");
+  const [password, setPasswordRaw] = useState<string>("");
   const [isLogginIn, setIsLoggingIn] = useState<boolean>(false);
-  const [showInvalidCred, setShowInvalidCred] = useState<boolean>(false);
-  const [error, setError] = useState<Error>();
+  const [signInError, setSignInError] = useState<SignInError>(null);
   const { isLoaded, isSignedIn } = useAuth();
   const { signIn, setActive } = useSignIn();
   const router = useRouter();
@@ -35,18 +59,19 @@ export function SignInProvider({ children }: { children: any }) {
   const redirectUrl = searchParams.get("redirect_url") ?? "/home";
 
   useEffect(() => {
-    if (error) {
-      if (error instanceof ServerError) {
-        if (error.code === ErrorCodes.FORBIDDEN.code) setShowInvalidCred(true);
-        else if (error.code === ErrorCodes.NO_VALID_SESSION.code) console.log("No valid session");
-      } else throw error;
-    }
-  }, [error]);
-
-  useEffect(() => {
     if (!isLoaded) return;
     if (isSignedIn) router.replace(redirectUrl);
   }, [isLoaded, isSignedIn]);
+
+  function setEmail(value: string) {
+    setSignInError(null);
+    setEmailRaw(value);
+  }
+
+  function setPassword(value: string) {
+    setSignInError(null);
+    setPasswordRaw(value);
+  }
 
   function checkCleanInput() {
     if (email === "") return false;
@@ -61,9 +86,15 @@ export function SignInProvider({ children }: { children: any }) {
   async function login() {
     try {
       setIsLoggingIn(true);
+      setSignInError(null);
       const isClean = checkCleanInput();
       if (!isClean) throw new ServerError(ErrorCodes.VALIDATION_FAILED);
-      if (!isLoaded || !signIn || !setActive) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+      if (!isLoaded || !signIn || !setActive) {
+        console.warn("[sign-in]", { signInError: "network", clerkCode: "clerk_not_loaded" });
+        setSignInError("network");
+        setIsLoggingIn(false);
+        return;
+      }
 
       const { createdSessionId } = await signIn.create({
         strategy: "password",
@@ -71,11 +102,26 @@ export function SignInProvider({ children }: { children: any }) {
         password: password,
       });
 
-      if (!createdSessionId) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+      if (!createdSessionId) {
+        console.warn("[sign-in]", { signInError: "network", clerkCode: "no_session_id" });
+        setSignInError("network");
+        setIsLoggingIn(false);
+        return;
+      }
+
       await setActive({ session: createdSessionId, redirectUrl });
-    } catch (err: any) {
-      setError(err);
+    } catch (err: unknown) {
       setIsLoggingIn(false);
+
+      if (err instanceof ServerError && err.code === ErrorCodes.VALIDATION_FAILED.code) {
+        setSignInError("wrong_credentials");
+        return;
+      }
+
+      const classified = classifyClerkError(err);
+      const clerkCode = (err as any)?.errors?.[0]?.code ?? null;
+      console.warn("[sign-in]", { signInError: classified, clerkCode });
+      setSignInError(classified);
     }
   }
 
@@ -85,7 +131,7 @@ export function SignInProvider({ children }: { children: any }) {
 
   return (
     <SignInContext.Provider
-      value={{ email, password, loading: isLoading, setEmail, setPassword, login, showInvalidCred }}
+      value={{ email, password, loading: isLoading, setEmail, setPassword, login, signInError }}
     >
       {children}
     </SignInContext.Provider>
