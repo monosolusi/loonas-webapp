@@ -3,15 +3,15 @@
 import { CartEmptyState } from "@/app/(pos)/pos/_components/cart-empty-state";
 import { CartItemRow } from "@/app/(pos)/pos/_components/cart-item-row";
 import { CartSummary } from "@/app/(pos)/pos/_components/cart-summary";
-import { usePos } from "@/app/(pos)/pos/_providers/pos-provider";
+import { usePosCart } from "@/app/(pos)/pos/_providers/pos-provider";
 
 export function CartPanel() {
-  const { items } = usePos();
+  const { items } = usePosCart();
 
   const itemCount = items.length;
 
   return (
-    <div className="flex h-full flex-col rounded-lg border border-neutral-200 bg-white">
+    <div className="hidden h-full flex-col rounded-lg border border-neutral-200 bg-white lg:flex">
       <div className="flex flex-row items-baseline gap-x-2 border-b border-b-neutral-100 px-4 py-3">
         <span className="text-base font-semibold text-neutral-500">Keranjang</span>
         {itemCount > 0 && (

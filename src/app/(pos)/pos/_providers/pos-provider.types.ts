@@ -25,7 +25,33 @@ export type StockErrorEntry = {
 /** Re-exported for convenience; the canonical union lives in `_payment-methods/types.ts`. */
 export type CheckoutStep = PaymentHandlerStep;
 
-export type PosContextValue = {
+/** Cart state and actions — consumed by cart-leaf components. */
+export type PosCartValue = {
+  // Cart
+  items: CartItem[];
+  total: number;
+  addItem: (product: ProductForSaleEntity, variant: VariantForSaleEntity) => void;
+  updateQty: (productId: string, variantId: string, qty: number) => void;
+  removeItem: (productId: string, variantId: string) => void;
+  clearCart: () => void;
+  /** True when any cart row's qty exceeds its availableQtySnapshot. Disables Bayar. */
+  hasCartWarnings: boolean;
+
+  // Stock errors (from BE INSUFFICIENT_STOCK response)
+  stockErrors: Map<string, StockErrorEntry>;
+
+  // Submit
+  isCheckingOut: boolean;
+  checkoutError: ServerError | null;
+  completeTransaction: () => Promise<string | null>;
+
+  // Idempotency
+  /** Mint a fresh idempotency key. Call before retrying a failed/expired pay-in. */
+  regenerateIdempotencyKey: () => void;
+};
+
+/** UI/wizard state — consumed by non-cart components. */
+export type PosUIValue = {
   // Picker
   search: string;
   setSearch: (value: string) => void;
@@ -44,19 +70,6 @@ export type PosContextValue = {
   /** Resolved handler for the current method. */
   currentHandler: PaymentMethodHandler | null;
 
-  // Cart
-  items: CartItem[];
-  total: number;
-  addItem: (product: ProductForSaleEntity, variant: VariantForSaleEntity) => void;
-  updateQty: (productId: string, variantId: string, qty: number) => void;
-  removeItem: (productId: string, variantId: string) => void;
-  clearCart: () => void;
-  /** True when any cart row's qty exceeds its availableQtySnapshot. Disables Bayar. */
-  hasCartWarnings: boolean;
-
-  // Stock errors (from BE INSUFFICIENT_STOCK response)
-  stockErrors: Map<string, StockErrorEntry>;
-
   // Checkout wizard (method-agnostic)
   checkoutStep: CheckoutStep | null;
   startCheckout: () => void;
@@ -71,13 +84,10 @@ export type PosContextValue = {
   pickerAutoSkipped: boolean;
   /** Count of methods that have a registered handler AND don't require scheme selection. */
   selectableMethodCount: number;
-
-  // Submit
-  isCheckingOut: boolean;
-  checkoutError: ServerError | null;
-  completeTransaction: () => Promise<string | null>;
-
-  // Idempotency
-  /** Mint a fresh idempotency key. Call before retrying a failed/expired pay-in. */
-  regenerateIdempotencyKey: () => void;
 };
+
+/**
+ * Merged context value — kept for backward compatibility.
+ * @deprecated Prefer `usePosCart()` or `usePosUI()` in new components.
+ */
+export type PosContextValue = PosCartValue & PosUIValue;
