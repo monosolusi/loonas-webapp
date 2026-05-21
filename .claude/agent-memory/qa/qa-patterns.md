@@ -84,6 +84,13 @@ metadata:
 - `isCheckingOut` added to disabled gate in both `CartSummary` and `PeekStrip` — double-tap protection confirmed.
 - `CartDrawer` soft-cap coverage gap: brief says "soft-cap chip on peek strip + drawer header" but CartDrawer has NO softcap chip in its header. CartPanel (desktop) does. This is a minor AC-5 gap on tablet. Severity P2 (non-blocking, warning still appears in PeekStrip).
 
+## Clerk Secret Key + Sign-in 500 (LNS-221, 2026-05-21)
+
+- Clerk middleware runs on ALL routes including `/sign-in` (unauthenticated). Without `CLERK_SECRET_KEY` in `.env.local`, the edge middleware throws on every request — including `/sign-in` — returning HTTP 500.
+- This is distinct from prior tickets where only authenticated routes 500'd. The sign-in page itself is now also 500'd.
+- Browser smoke testing of sign-in UX changes is **fully blocked** without `.env.local` + `CLERK_SECRET_KEY`. Source-code static analysis is the only viable path.
+- When verifying sign-in changes: use static analysis to confirm (1) COPY map strings, (2) `role="alert"` + `aria-live="polite"` attributes, (3) `setSignInError(null)` in wrapped setters, (4) `setIsLoggingIn(false)` in all catch/early-return paths, (5) no `throw` in catch (only the `VALIDATION_FAILED` pre-validation throw).
+
 ## LNS-219 Refactor Structure (2026-05-21)
 
 - `cart-summary.tsx` and `peek-strip.tsx` are now thin parent routers. All logic (disabled gate, context reads for Bayar) lives in sibling files.
