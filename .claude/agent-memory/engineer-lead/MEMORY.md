@@ -15,3 +15,4 @@
 - [No next/dynamic callers yet](project_no_next_dynamic_callers.md) — LNS-193 introduces the pattern; keep leaf imports, no generic helper until 2nd consumer
 - [OpenAPI WebFetch truncates and hallucinates fields](feedback_openapi_webfetch_truncation.md) — curl + python parse the raw spec; never trust the WebFetch summary for FE/BE contract verification
 - [Clerk error classification stays in auth provider](project_clerk_error_classification.md) — discriminated union in provider state; never add Clerk codes to ErrorCodes registry; classify in catch, never throw from useEffect
+- [No API routes in src/app](project_no_api_routes.md) — zero route handlers as of 2026-05-21; healthcheck/observability plans must default to `/` (Clerk 307 = healthy), never silently add `/api/health`
