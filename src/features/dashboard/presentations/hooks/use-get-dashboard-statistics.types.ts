@@ -4,6 +4,8 @@ import { ServerError } from "@/core/resources/server-error";
 
 export type GetDashboardStatisticsFetcherParams = {
   clerk: ReturnType<typeof useClerk>;
+  from?: string;
+  to?: string;
 };
 
 type InitialState = {
