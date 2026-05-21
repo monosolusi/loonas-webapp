@@ -61,3 +61,33 @@ metadata:
 - `npm run build` — typical production build ~2-3 min on this machine.
 - `npx tsc --noEmit` — ~20-30s.
 - `npm run lint` — ~15s.
+
+## Clerk Environment Gotcha (LNS-197, 2026-05-21)
+
+- `.env.local` does NOT exist on this machine. Only `.env` exists, which is missing `CLERK_SECRET_KEY`.
+- Server boots and reports "Ready" but all pages throw `Runtime Error: @clerk/nextjs: Missing secretKey` in the browser overlay.
+- Playwright browser smoke tests are BLOCKED by this — the POS page (and all authenticated routes) cannot render at all in headless browser without valid Clerk keys.
+- **Mitigation**: Switch to source-code static analysis (read files, grep) for structural AC verification when Clerk env is missing. Note the environment gap in the report to EL.
+- **Playwright note**: `playwright` package is NOT in the project's `node_modules`. It is only available globally via `npx` cache at `~/.npm/_npx/`. Run smoke scripts from a directory that contains the `playwright` package, e.g., `cd ~/.npm/_npx/<hash> && node script.mjs`.
+
+## POS Source Code Structure (LNS-197)
+
+- `peek-strip.tsx` — `fixed inset-x-0 bottom-0 z-30 h-16 lg:hidden`. Bayar hidden when `inWizard === true` (matches CartSummary desktop pattern).
+- `cart-drawer.tsx` — `Transition` from `@headlessui/react`. `fixed inset-x-0 bottom-16 z-20 h-[60vh] lg:hidden`. Slides up with `translate-y` transition.
+- `cart-softcap.ts` — `CART_SOFTCAP_THRESHOLD = 30`, warning shown on PeekStrip AND CartPanel header. CartDrawer does NOT have its own softcap header — it delegates to CartSummary via `showCta={false}`, which only shows hasCartWarnings warning (not softcap). The softcap chip appears in PeekStrip (mobile) and CartPanel header (desktop).
+- `CartPanel` — `hidden ... lg:flex` — hidden at `< lg`, visible at `lg+`. 
+- `ActionMenu` — `MenuButton` is `size-11` (44px) hit area with `size-4` icon visually. This is the project-wide change.
+- `Chip size="compact"` — outer `div h-11` (44px tap-target) wrapping a `button h-9` (visual). AC-2 compliant.
+- `ProductListRow` — `line-clamp-2` on product name span. Row uses `min-h-11` (adaptive height). AC-1 compliant.
+- `CartItemRow` — `line-clamp-2` on `displayName` span. Wrapped in `React.memo`.
+- `PosProvider` split: `PosCartContext` + `PosUIContext`. `usePos()` preserved as deprecated alias returning `useMemo(() => ({ ...cart, ...ui }), [cart, ui])`.
+- `isCheckingOut` added to disabled gate in both `CartSummary` and `PeekStrip` — double-tap protection confirmed.
+- `CartDrawer` soft-cap coverage gap: brief says "soft-cap chip on peek strip + drawer header" but CartDrawer has NO softcap chip in its header. CartPanel (desktop) does. This is a minor AC-5 gap on tablet. Severity P2 (non-blocking, warning still appears in PeekStrip).
+
+## LNS-219 Refactor Structure (2026-05-21)
+
+- `cart-summary.tsx` and `peek-strip.tsx` are now thin parent routers. All logic (disabled gate, context reads for Bayar) lives in sibling files.
+- `cart-summary-bayar-button.tsx` and `peek-strip-bayar-button.tsx` are structurally identical: both derive `disabled` from `items.length === 0 || methodsLoading || hasCartWarnings || isCheckingOut`.
+- `cart-summary-in-wizard-banner.tsx` and `peek-strip-in-wizard-label.tsx` are pure presentational components (no context reads, no "use client" directive).
+- Parent `cart-summary.tsx` still has one `inWizard ? <CartSummaryInWizardBanner /> : <CartSummaryBayarButton />` ternary, gated under `{showCta && (…)}` — single-expression routing, not a multi-block conditional. Deliberate design.
+- Browser smoke blocked on this machine: same Clerk env gap as LNS-197 — no `.env.local`, `CLERK_SECRET_KEY` absent.

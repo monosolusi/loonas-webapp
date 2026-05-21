@@ -1,0 +1,1 @@
+- [Terminology lock — Struk + POS Bahasa lexicon](terminology_lock_struk.md) — Project-wide: "Struk" not "Resi"; Total/Bayar Tunai/Bayar QRIS/Kembalian/WIB-WITA-WIT. Ratified LNS-199.
