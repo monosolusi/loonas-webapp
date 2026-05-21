@@ -10,3 +10,7 @@
 - [Invoice vs payment feature stacks](project_invoice_vs_payment_features.md) — two parallel QrisPayInDetail models exist; features/invoice = POS+authd, features/payment = external customer
 - [POS idempotency lifecycle](project_pos_idempotency_lifecycle.md) — key owned by PosProvider, auto-regen on cart/method change; explicit regenerate action exists for recovery flows
 - [QRIS pay-in BE contract 2026-05-20](project_qris_pay_in_contract_2026_05_20.md) — QrisPayIn schema, webhook-vs-clock authority for EXPIRED, POS=15min/B2B=24h expiry windows; FE countdown is advisory only
+- [Dashboard feature shape](project_dashboard_feature_shape.md) — thin single-repo feature; no swr-keys file pre-LNS-193; entity readonly drift; home page is composition-only
+- [DateRangePicker shared & only ledger uses it](project_date_range_picker_shared.md) — single picker at finance/_components, ledger sole caller; check before mutating API
+- [No next/dynamic callers yet](project_no_next_dynamic_callers.md) — LNS-193 introduces the pattern; keep leaf imports, no generic helper until 2nd consumer
+- [OpenAPI WebFetch truncates and hallucinates fields](feedback_openapi_webfetch_truncation.md) — curl + python parse the raw spec; never trust the WebFetch summary for FE/BE contract verification

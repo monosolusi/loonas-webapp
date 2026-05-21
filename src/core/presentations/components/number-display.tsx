@@ -1,12 +1,17 @@
 type NumberDisplayProps = {
   value: number;
+  prefix?: string;
   suffix?: string;
 };
 
-export function NumberDisplay({ value, suffix }: NumberDisplayProps) {
+export function NumberDisplay({ value, prefix, suffix }: NumberDisplayProps) {
   const formatted = value.toLocaleString("id-ID");
 
-  if (suffix) return <>{formatted} {suffix}</>;
-
-  return <>{formatted}</>;
+  return (
+    <>
+      {prefix && <span>{prefix} </span>}
+      {formatted}
+      {suffix && <> {suffix}</>}
+    </>
+  );
 }
