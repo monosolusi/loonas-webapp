@@ -7,15 +7,6 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Yarn Berry: kirim hanya yang diperlukan (releases/plugins/versions/patches)
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-# Jika Anda menyimpan plugin custom lain, whitelist di sini:
-# !.yarn/sdks
-
 # Next.js build artifacts
 .next
 out
@@ -23,6 +14,9 @@ build
 
 # Tests/coverage
 coverage
+playwright-report
+test-results
+e2e/results
 
 # Environment files (jangan kirim ke Docker build context)
 .env
@@ -47,3 +41,11 @@ next-env.d.ts
 
 # Docker local files (opsional, biasanya tidak perlu di context)
 docker-compose*.yml
+
+# CI / project-ops (not needed in image)
+.github
+.claude
+tools
+docs
+screenshots
+*.md
