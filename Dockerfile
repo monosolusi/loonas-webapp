@@ -6,7 +6,9 @@ ENV NODE_ENV=production
 # 2) Layer dependencies (semua, termasuk devDependencies untuk build)
 FROM base AS deps
 COPY package.json package-lock.json ./
-# Install semua dependencies (dev + prod) untuk build
+# Install semua dependencies (dev + prod) untuk build.
+# --include=dev overrides the inherited NODE_ENV=production so devDependencies
+# (next, typescript, tailwind) are installed for the build stage.
 RUN npm ci --ignore-scripts --include=dev
 
 # 3) Build aplikasi
@@ -26,17 +28,11 @@ RUN npm run build
 FROM base AS runner
 # Non-root user
 RUN addgroup -S nextjs && adduser -S nextjs -G nextjs
-# Install curl untuk healthcheck
-RUN apk add --no-cache curl
 
-# Salin artefak build
-COPY --chown=nextjs:nextjs --from=build /app/package.json ./package.json
-COPY --chown=nextjs:nextjs --from=build /app/public ./public
-COPY --chown=nextjs:nextjs --from=build /app/.next ./.next
-
-# Install hanya production dependencies untuk runtime
-COPY --chown=nextjs:nextjs --from=build /app/package.json /app/package-lock.json ./
-RUN npm ci --omit=dev && chown -R nextjs:nextjs node_modules
+# Salin artefak standalone build
+COPY --from=build --chown=nextjs:nextjs /app/.next/standalone ./
+COPY --from=build --chown=nextjs:nextjs /app/.next/static ./.next/static
+COPY --from=build --chown=nextjs:nextjs /app/public ./public
 
 # Beralih ke user non-root
 USER nextjs
@@ -44,13 +40,12 @@ USER nextjs
 # Runtime env (server membaca dari sini; client memakai nilai saat build)
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
-ENV NEXT_PUBLIC_BASE_API_URL=""
 
 EXPOSE 3000
 
-# Healthcheck untuk memonitor status aplikasi
-HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-  CMD curl -f http://localhost:3000/ || exit 1
+# Healthcheck menggunakan Node built-in fetch (tanpa curl)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
-# Jalankan Next.js production server
-CMD ["npm", "start"]
+# Jalankan Next.js standalone server
+CMD ["node", "server.js"]
