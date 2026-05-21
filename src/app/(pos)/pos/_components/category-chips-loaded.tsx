@@ -13,10 +13,16 @@ export function CategoryChipsLoaded({ categories }: CategoryChipsLoadedProps) {
 
   return (
     <div className="flex flex-row gap-x-2 overflow-x-auto py-1">
-      <Chip label="Semua" active={selectedCategoryId === null} onClick={() => setSelectedCategoryId(null)} />
+      <Chip
+        size="compact"
+        label="Semua"
+        active={selectedCategoryId === null}
+        onClick={() => setSelectedCategoryId(null)}
+      />
       {categories.map((cat) => (
         <Chip
           key={cat.id}
+          size="compact"
           label={cat.name}
           active={selectedCategoryId === cat.id}
           onClick={() => setSelectedCategoryId(cat.id)}

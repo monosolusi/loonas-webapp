@@ -1,17 +1,18 @@
 "use client";
 
+import { memo } from "react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/16/solid";
 import { ActionMenu } from "@/core/presentations/components/action-menu";
 import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { CartItem } from "@/app/(pos)/pos/_providers/pos-provider.types";
-import { usePos } from "@/app/(pos)/pos/_providers/pos-provider";
+import { usePosCart } from "@/app/(pos)/pos/_providers/pos-provider";
 
 type CartItemRowProps = {
   item: CartItem;
 };
 
-export function CartItemRow({ item }: CartItemRowProps) {
-  const { updateQty, removeItem, stockErrors } = usePos();
+function CartItemRowInner({ item }: CartItemRowProps) {
+  const { updateQty, removeItem, stockErrors } = usePosCart();
   const beStockError = stockErrors.get(item.variantId) ?? null;
 
   // Cart-side real-time warning: qty exceeds the snapshot taken at add-time.
@@ -24,7 +25,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
   return (
     <div className="flex flex-col gap-y-1 border-b border-b-neutral-100 px-4 py-3 last:border-b-0">
       <div className="flex flex-row items-baseline gap-x-3">
-        <span className="flex-1 truncate text-sm leading-5 text-neutral-500">{displayName}</span>
+        <span className="line-clamp-2 flex-1 text-sm leading-5 text-neutral-500">{displayName}</span>
         <span className="shrink-0 text-sm leading-5 font-semibold tabular-nums text-neutral-500">
           Rp <NumberDisplay value={lineTotal} />
         </span>
@@ -77,3 +78,5 @@ export function CartItemRow({ item }: CartItemRowProps) {
     </div>
   );
 }
+
+export const CartItemRow = memo(CartItemRowInner);

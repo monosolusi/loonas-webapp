@@ -18,17 +18,44 @@ import { MOCK_PAYMENT_METHODS, USE_MOCK_PAYMENT_METHODS } from "@/app/(pos)/pos/
 import {
   CartItem,
   CheckoutStep,
+  PosCartValue,
   PosContextValue,
+  PosUIValue,
   StockErrorEntry,
 } from "@/app/(pos)/pos/_providers/pos-provider.types";
 
-const PosContext = createContext<PosContextValue | null>(null);
+// ---------------------------------------------------------------------------
+// Contexts — value carriers only; all state lives in PosProvider.
+// ---------------------------------------------------------------------------
 
-export function usePos(): PosContextValue {
-  const ctx = useContext(PosContext);
-  if (!ctx) throw new Error("usePos must be used within a PosProvider");
+const PosCartContext = createContext<PosCartValue | null>(null);
+const PosUIContext = createContext<PosUIValue | null>(null);
+
+/** Narrow hook — cart state and actions. Prefer this in cart-leaf components. */
+export function usePosCart(): PosCartValue {
+  const ctx = useContext(PosCartContext);
+  if (!ctx) throw new Error("usePosCart must be used within a PosProvider");
   return ctx;
 }
+
+/** Narrow hook — UI/wizard state. Prefer this in non-cart components. */
+export function usePosUI(): PosUIValue {
+  const ctx = useContext(PosUIContext);
+  if (!ctx) throw new Error("usePosUI must be used within a PosProvider");
+  return ctx;
+}
+
+/**
+ * Merged hook for backward compatibility.
+ * @deprecated Prefer `usePosCart()` or `usePosUI()` in new components.
+ */
+export function usePos(): PosContextValue {
+  const cart = usePosCart();
+  const ui = usePosUI();
+  return useMemo(() => ({ ...cart, ...ui }), [cart, ui]);
+}
+
+// ---------------------------------------------------------------------------
 
 const RETRY_DELAY_MS = 1000;
 
@@ -54,6 +81,10 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
   const [search, setSearch] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [drilldownProduct, setDrilldownProduct] = useState<ProductForSaleEntity | null>(null);
+
+  // Drawer (mobile)
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const toggleDrawer = useCallback(() => setDrawerOpen((prev) => !prev), []);
 
   // Cart
   const [items, setItems] = useState<CartItem[]>([]);
@@ -100,7 +131,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     return getPaymentMethodHandler(currentMethod.paymentGateway.type);
   }, [currentMethod]);
 
-  const selectableMethods = useMemo<PaymentMethodEntity[]>(() => {
+  const selectableMethods = useMemo(() => {
     if (paymentMethodsState.status !== "loaded") return [];
     return paymentMethodsState.paymentMethods.filter((m) => {
       const handlerExists = getPaymentMethodHandler(m.paymentGateway.type) !== null;
@@ -393,7 +424,46 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     showToast,
   ]);
 
-  const value = useMemo<PosContextValue>(
+  // ---------------------------------------------------------------------------
+  // Cart context value — stable reference unless cart state changes.
+  // ---------------------------------------------------------------------------
+  const cartValue = useMemo<PosCartValue>(
+    () => ({
+      items,
+      total,
+      addItem,
+      updateQty,
+      removeItem,
+      clearCart,
+      hasCartWarnings,
+      stockErrors,
+      isCheckingOut,
+      checkoutError,
+      completeTransaction,
+      regenerateIdempotencyKey,
+    }),
+    [
+      items,
+      total,
+      addItem,
+      updateQty,
+      removeItem,
+      clearCart,
+      hasCartWarnings,
+      stockErrors,
+      isCheckingOut,
+      checkoutError,
+      completeTransaction,
+      regenerateIdempotencyKey,
+    ],
+  );
+
+  // ---------------------------------------------------------------------------
+  // UI context value — stable reference unless UI/wizard state changes.
+  // Notably does NOT include `items` directly, so typing in the search field
+  // does NOT invalidate the cart context.
+  // ---------------------------------------------------------------------------
+  const uiValue = useMemo<PosUIValue>(
     () => ({
       search,
       setSearch,
@@ -406,14 +476,8 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       selectedPaymentGatewayId,
       currentMethod,
       currentHandler,
-      items,
-      total,
-      addItem,
-      updateQty,
-      removeItem,
-      clearCart,
-      hasCartWarnings,
-      stockErrors,
+      drawerOpen,
+      toggleDrawer,
       checkoutStep,
       startCheckout,
       cancelCheckout,
@@ -423,10 +487,6 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       goBack,
       pickerAutoSkipped,
       selectableMethodCount: selectableMethods.length,
-      isCheckingOut,
-      checkoutError,
-      completeTransaction,
-      regenerateIdempotencyKey,
     }),
     [
       search,
@@ -438,14 +498,8 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       selectedPaymentGatewayId,
       currentMethod,
       currentHandler,
-      items,
-      total,
-      addItem,
-      updateQty,
-      removeItem,
-      clearCart,
-      hasCartWarnings,
-      stockErrors,
+      drawerOpen,
+      toggleDrawer,
       checkoutStep,
       startCheckout,
       cancelCheckout,
@@ -455,12 +509,12 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       goBack,
       pickerAutoSkipped,
       selectableMethods,
-      isCheckingOut,
-      checkoutError,
-      completeTransaction,
-      regenerateIdempotencyKey,
     ],
   );
 
-  return <PosContext.Provider value={value}>{children}</PosContext.Provider>;
+  return (
+    <PosCartContext.Provider value={cartValue}>
+      <PosUIContext.Provider value={uiValue}>{children}</PosUIContext.Provider>
+    </PosCartContext.Provider>
+  );
 }
