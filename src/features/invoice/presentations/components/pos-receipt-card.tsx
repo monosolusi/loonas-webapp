@@ -80,7 +80,7 @@ export function PosReceiptCard({ invoice }: PosReceiptCardProps) {
           </span>
         </div>
         <div className="flex flex-row items-baseline justify-between">
-          <span className="text-sm font-semibold text-neutral-500">{POS_RECEIPT_COPY.TOTAL_LABEL}</span>
+          <span className="text-sm font-semibold text-neutral-400">{POS_RECEIPT_COPY.TOTAL_LABEL}</span>
           <span className="text-xl font-bold tabular-nums text-neutral-500">
             <span aria-hidden="true">
               <NumberDisplay value={invoice.summary.total} suffix="IDR" />
