@@ -147,7 +147,7 @@ function toRowView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): RowView 
 export function DashboardRecentInvoices() {
   const router = useRouter();
   const [activeFilter, setActiveFilter] = useState<InvoiceType | undefined>(undefined);
-  const { invoices, loading, error } = useListInvoices({ type: activeFilter, limit: 5, includes: "documents" });
+  const { invoices, loading, error } = useListInvoices({ type: activeFilter, limit: 7, includes: "documents" });
 
   return (
     <SectionCard
@@ -189,6 +189,8 @@ export function DashboardRecentInvoices() {
           <SkeletonRow />
           <SkeletonRow />
           <SkeletonRow />
+          <SkeletonRow />
+          <SkeletonRow />
         </>
       )}
 
@@ -222,12 +224,12 @@ export function DashboardRecentInvoices() {
                 <div
                   className={clsx(
                     "flex size-7 shrink-0 items-center justify-center rounded-lg",
-                    view.direction === "in" ? "bg-emerald-50" : "bg-orange-50",
+                    view.direction === "in" ? "bg-success-50" : "bg-warning-50",
                   )}
                 >
                   <ArrowIcon
                     direction={view.direction}
-                    className={clsx(view.direction === "in" ? "text-emerald-500" : "text-orange-500")}
+                    className={clsx(view.direction === "in" ? "text-success-400" : "text-warning-400")}
                   />
                 </div>
                 <div className="flex min-w-0 flex-col gap-1">
