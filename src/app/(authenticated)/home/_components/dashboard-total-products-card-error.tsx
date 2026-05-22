@@ -1,9 +1,11 @@
 "use client";
 
+import { SectionCard } from "@/core/presentations/components/section-card";
+
 export function DashboardTotalProductsCardError() {
   return (
-    <div className="flex flex-col gap-y-3 rounded-xl border border-t border-r border-b-4 border-l border-neutral-100 bg-neutral-50 p-5">
+    <SectionCard title="Total Produk">
       <span className="text-sm text-neutral-300">Gagal memuat produk.</span>
-    </div>
+    </SectionCard>
   );
 }
