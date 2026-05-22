@@ -1,10 +1,8 @@
 import { Suspense } from "react";
 import { DashboardRecentInvoices } from "@/app/(authenticated)/home/_components/dashboard-recent-invoices";
-import { DashboardCashflowSummary } from "@/app/(authenticated)/home/_components/dashboard-cashflow-summary";
 import { DashboardWelcomeHeader } from "@/app/(authenticated)/home/_components/dashboard-welcome-header";
 import { DashboardRangeProvider } from "@/app/(authenticated)/home/_providers/dashboard-range-provider";
 import { DashboardRangeSection } from "@/app/(authenticated)/home/_components/dashboard-range-section";
-import { DashboardRangeRevenueTile } from "@/app/(authenticated)/home/_components/dashboard-range-revenue-tile";
 import { DashboardRangeDailyRevenueChart } from "@/app/(authenticated)/home/_components/dashboard-range-daily-revenue-chart";
 import { DashboardRangePaymentBreakdown } from "@/app/(authenticated)/home/_components/dashboard-range-payment-breakdown";
 import { DashboardRangePosSalesTile } from "@/app/(authenticated)/home/_components/dashboard-range-pos-sales-tile";
@@ -19,21 +17,17 @@ export default function InvoiceHomePage() {
           <DashboardWelcomeHeader />
 
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-            {/* Main column — col-span-2 */}
+            {/* Main column — period-controlled widgets */}
             <div className="flex flex-col gap-6 xl:col-span-2">
               <DashboardRangeSection />
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                <DashboardRangeRevenueTile />
-                <DashboardRangePosSalesTile />
-                <DashboardRangeDailyRevenueChart />
-                <DashboardRangePaymentBreakdown />
-                <DashboardCashflowSummary />
-              </div>
-              <DashboardRecentInvoices />
+              <DashboardRangePosSalesTile />
+              <DashboardRangeDailyRevenueChart />
+              <DashboardRangePaymentBreakdown />
             </div>
 
-            {/* Shoulder column — col-span-1 */}
+            {/* Shoulder column — always-on context */}
             <div className="flex flex-col gap-4 xl:col-span-1">
+              <DashboardRecentInvoices />
               <DashboardTotalProductsCard />
               <DashboardLowStockCard />
             </div>
