@@ -29,13 +29,8 @@ export function useDashboardRange(): DashboardRangeContextValue {
 }
 
 function resolveDefaultRange(today: DateTime): DateRange {
-  const rangeStart = DateTime.fromISO("2026-06-02", { zone: TZ });
-  const rangeEnd = DateTime.fromISO("2026-06-04", { zone: TZ });
-  if (today >= rangeStart && today <= rangeEnd) {
-    return { from: "2026-06-02", to: "2026-06-04" };
-  }
   return {
-    from: today.minus({ days: 6 }).toFormat("yyyy-MM-dd"),
+    from: today.startOf("month").toFormat("yyyy-MM-dd"),
     to: today.toFormat("yyyy-MM-dd"),
   };
 }

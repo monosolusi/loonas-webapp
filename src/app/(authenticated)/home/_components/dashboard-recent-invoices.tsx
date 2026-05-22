@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -84,7 +85,7 @@ function ArrowIcon({ direction, className }: { direction: "in" | "out"; classNam
 
 function StatusText({ status }: { status: InvoiceStatusType }) {
   const config = statusConfig[status];
-  return <span className={`text-sm leading-5 font-medium ${config.className}`}>{config.label}</span>;
+  return <span className={clsx("text-sm leading-5 font-medium", config.className)}>{config.label}</span>;
 }
 
 function SkeletonRow() {
@@ -153,21 +154,23 @@ export function DashboardRecentInvoices() {
       title="Faktur Terbaru"
       bodyClassName="p-0"
       headerAction={
-        <div className="flex items-center gap-1">
-          {filters.map((f) => (
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-neutral-300">Aktivitas terkini</span>
+          <div className="flex items-center gap-1">
+            {filters.map((f) => (
             <button
               key={f.label}
               onClick={() => setActiveFilter(f.value)}
-              className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                activeFilter === f.value
-                  ? "bg-neutral-800 text-white"
-                  : "bg-neutral-50 text-neutral-400 hover:bg-neutral-100"
-              }`}
+              className={clsx(
+                "flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
+                activeFilter === f.value ? "bg-neutral-800 text-white" : "bg-neutral-50 text-neutral-400 hover:bg-neutral-100",
+              )}
             >
               {f.icon && <ArrowIcon direction={f.icon} />}
               {f.label}
             </button>
           ))}
+          </div>
         </div>
       }
     >
@@ -209,16 +212,22 @@ export function DashboardRecentInvoices() {
             <div
               key={inv.id}
               onClick={() => router.push(view.href)}
-              className="hover:border-l-primary-300 hover:bg-primary-50 grid cursor-pointer grid-cols-[2fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0"
+              className={clsx(
+              "grid cursor-pointer grid-cols-[2fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0",
+              "hover:border-l-primary-300 hover:bg-primary-50",
+            )}
             >
               {/* Pihak — icon + client name + relative time */}
               <div className="flex items-center gap-2">
                 <div
-                  className={`flex size-7 shrink-0 items-center justify-center rounded-lg ${view.direction === "in" ? "bg-emerald-50" : "bg-orange-50"}`}
+                  className={clsx(
+                    "flex size-7 shrink-0 items-center justify-center rounded-lg",
+                    view.direction === "in" ? "bg-emerald-50" : "bg-orange-50",
+                  )}
                 >
                   <ArrowIcon
                     direction={view.direction}
-                    className={view.direction === "in" ? "text-emerald-500" : "text-orange-500"}
+                    className={clsx(view.direction === "in" ? "text-emerald-500" : "text-orange-500")}
                   />
                 </div>
                 <div className="flex min-w-0 flex-col gap-1">

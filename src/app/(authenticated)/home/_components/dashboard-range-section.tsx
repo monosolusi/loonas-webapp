@@ -5,9 +5,6 @@ import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import { DateTime } from "luxon";
 import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
 import { useDashboardRange } from "@/app/(authenticated)/home/_providers/dashboard-range-provider";
-import { DashboardRangeRevenueTile } from "@/app/(authenticated)/home/_components/dashboard-range-revenue-tile";
-import { DashboardRangeDailyRevenueChart } from "@/app/(authenticated)/home/_components/dashboard-range-daily-revenue-chart";
-import { DashboardRangePaymentBreakdown } from "@/app/(authenticated)/home/_components/dashboard-range-payment-breakdown";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState<T>(value);
@@ -66,26 +63,17 @@ export function DashboardRangeSection() {
   }, []);
 
   return (
-    <section aria-labelledby="dashboard-range-section-title">
-      <div className="mb-4 flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-x-2">
-          <CalendarDaysIcon className="size-5 text-neutral-300" aria-hidden="true" />
-          <h2 id="dashboard-range-section-title" className="text-base font-semibold text-neutral-400">
-            Periode terpilih
-          </h2>
-        </div>
-        <DateRangePicker
-          value={pickerValue}
-          onChange={handlePickerChange}
-          maxSpanDays={31}
-          disableFutureDates={false}
-        />
+    <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center gap-x-2">
+        <CalendarDaysIcon className="size-5 text-neutral-300" aria-hidden="true" />
+        <h2 className="text-base font-semibold text-neutral-400">Ringkasan Periode</h2>
       </div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <DashboardRangeRevenueTile />
-        <DashboardRangeDailyRevenueChart />
-        <DashboardRangePaymentBreakdown />
-      </div>
-    </section>
+      <DateRangePicker
+        value={pickerValue}
+        onChange={handlePickerChange}
+        maxSpanDays={31}
+        disableFutureDates={false}
+      />
+    </div>
   );
 }
