@@ -4,3 +4,4 @@
 - [Settings page tile pattern](project_settings_page.md) — SettingsCategoryCard grid, feature-gating via hasFeature(), active/inactive states
 - [Journals page current layout](project_journals_page.md) — JournalListImpl uses InvoiceTableShell (deprecated for new code), SummaryCard grid, no CTA today
 - [Accounting bootstrap v1 locked plan](project_accounting_bootstrap_plan.md) — Branch B only, B15 resolver tooltips, tax tile copy, ManagedByLoonasBadge call, v1.1 extension rules
+- [Dashboard revamp LNS-227](project_dashboard_revamp.md) — bg-primary-50 period zone, accent semantics, chart x-axis rules, empty-state pattern, loading coordination

@@ -16,3 +16,6 @@
 - [OpenAPI WebFetch truncates and hallucinates fields](feedback_openapi_webfetch_truncation.md) — curl + python parse the raw spec; never trust the WebFetch summary for FE/BE contract verification
 - [Clerk error classification stays in auth provider](project_clerk_error_classification.md) — discriminated union in provider state; never add Clerk codes to ErrorCodes registry; classify in catch, never throw from useEffect
 - [No API routes in src/app](project_no_api_routes.md) — zero route handlers as of 2026-05-21; healthcheck/observability plans must default to `/` (Clerk 307 = healthy), never silently add `/api/health`
+- [Dashboard range provider scope](project_dashboard_range_provider_scope.md) — provider in /home wraps only DashboardRangeSection; LNS-227 Bug B hoist makes the picker reachable from sibling widgets
+- [Authenticated chrome widths](project_authenticated_chrome_widths.md) — fixed 256px sidebar + p-8, no max-w; design to 1280px viewport / 960px content / ~310px chart cell as worst case
+- [OpenAPI spec outage pattern](project_openapi_spec_outage_pattern.md) — dev-api.loonas.id/openapi.json hard-down across 2 LNS-227 windows (Ph2 504, Ph7 502); pivot to FE-code review after 3 retries
