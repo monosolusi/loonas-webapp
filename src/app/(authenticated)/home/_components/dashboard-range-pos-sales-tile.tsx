@@ -37,15 +37,13 @@ export function DashboardRangePosSalesTile() {
   if (!totals || totals.transactionCount === 0) return <DashboardRangePosSalesTileEmpty />;
 
   return (
-    <SectionCard title="Penjualan POS lunas">
+    <SectionCard title="Penjualan POS">
       <dl className="flex flex-col gap-y-1">
-        <dt className="sr-only">Total transaksi POS lunas</dt>
-        <dd className="text-3xl leading-tight font-bold tracking-tight text-neutral-500">
-          {totals.transactionCount}
+        <dt className="sr-only">Total penjualan POS lunas pada periode ini</dt>
+        <dd className="text-2xl leading-tight font-bold tracking-tight text-neutral-500">
+          <NumberDisplay value={totals.revenue} prefix="Rp" />
         </dd>
-        <dd className="text-sm text-neutral-300">
-          transaksi &middot; <NumberDisplay value={totals.revenue} prefix="Rp" />
-        </dd>
+        <dd className="text-sm text-neutral-300">dari {totals.transactionCount} transaksi · periode ini</dd>
       </dl>
     </SectionCard>
   );
