@@ -11,33 +11,7 @@ type ChartDataPoint = {
   revenue: number;
   transactionCount: number;
   label: string;
-  dayName: string;
-  dateShort: string;
 };
-
-type CustomTickProps = {
-  x?: number;
-  y?: number;
-  payload?: { value: string };
-};
-
-function CustomXAxisTick({ x = 0, y = 0, payload }: CustomTickProps) {
-  if (!payload?.value) return null;
-  const parts = payload.value.split("|");
-  const dayName = parts[0] ?? "";
-  const dateShort = parts[1] ?? "";
-
-  return (
-    <g transform={`translate(${x},${y})`}>
-      <text x={0} y={0} dy={14} textAnchor="middle" fill="#BDBDBD" fontSize={10}>
-        {dayName}
-      </text>
-      <text x={0} y={0} dy={26} textAnchor="middle" fill="#BDBDBD" fontSize={10}>
-        {dateShort}
-      </text>
-    </g>
-  );
-}
 
 type CustomTooltipProps = {
   active?: boolean;
@@ -66,6 +40,12 @@ type DashboardRangeDailyRevenueChartImplProps = {
 };
 
 export function DashboardRangeDailyRevenueChartImpl({ series, from, to }: DashboardRangeDailyRevenueChartImplProps) {
+  const spanDays = useMemo(() => {
+    const fromDt = DateTime.fromISO(from, { zone: "Asia/Jakarta" });
+    const toDt = DateTime.fromISO(to, { zone: "Asia/Jakarta" });
+    return toDt.diff(fromDt, "days").days + 1;
+  }, [from, to]);
+
   const chartData = useMemo<ChartDataPoint[]>(() => {
     // Build a map from the series for O(1) lookup
     const seriesMap = new Map<string, DailyRevenuePoint>();
@@ -86,26 +66,26 @@ export function DashboardRangeDailyRevenueChartImpl({ series, from, to }: Dashbo
         date: dateStr,
         revenue: point?.revenue ?? 0,
         transactionCount: point?.transactionCount ?? 0,
-        label: `${localized.toFormat("ccc")}|${localized.toFormat("d MMM")}`,
-        dayName: localized.toFormat("ccc"),
-        dateShort: localized.toFormat("d MMM"),
+        label: spanDays <= 13 ? localized.toFormat("ccc d MMM") : localized.toFormat("d MMM"),
       });
       current = current.plus({ days: 1 });
     }
     return days;
-  }, [series, from, to]);
+  }, [series, from, to, spanDays]);
 
   return (
     <SectionCard title="Pendapatan harian">
       <div className="h-44" aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 4, right: 4, left: 4, bottom: 28 }}>
+          <BarChart data={chartData} margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
             <XAxis
               dataKey="label"
-              tick={<CustomXAxisTick />}
+              interval="preserveStartEnd"
+              minTickGap={24}
+              tick={{ fill: "#BDBDBD", fontSize: 10 }}
               axisLine={false}
               tickLine={false}
-              interval={0}
+              height={28}
             />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(0,123,255,0.05)" }} />
             <Bar dataKey="revenue" minPointSize={4} radius={[3, 3, 0, 0]}>
