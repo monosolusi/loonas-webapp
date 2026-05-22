@@ -62,6 +62,7 @@ Produce a spec with these sections (omit sections that don't apply, but be delib
 - Data inputs / outputs (conceptual, not schemas)
 - Integration touchpoints (payment providers, internal services, webhooks)
 - State transitions if applicable
+- **Enumerate every in-scope deletion, modification, and addition EXPLICITLY** — when consolidating multiple consult inputs (CPO + UID + EL) into a final PRD, FRs must list every component/widget/file touched. Acceptance criteria reflect scope; they do not define it. A scope item that lives only in the AC table risks being lost in implementation. This rule was hardened after the LNS-230 revision pass where W1 + DashboardStatistics deletion appeared only in ACs and was silently dropped from the FR section — the orchestrator had to brief EL directly from the user's verbatim feedback to close the gap.
 
 **Non-Functional Requirements**
 - Performance, security, compliance, observability, idempotency, audit trail
