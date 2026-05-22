@@ -33,11 +33,6 @@ const themeClasses = {
     borderSide: "border-warning-50 border-warning-200/60",
     subtext: "text-warning-400",
   },
-  error: {
-    borderBottom: "border-b-red-200/50",
-    borderSide: "border-red-50 border-red-200/60",
-    subtext: "text-red-400",
-  },
 };
 
 interface StatCard {
@@ -64,22 +59,12 @@ export function DashboardStatistics() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatCardSkeleton />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <StatCardSkeleton />
         <StatCardSkeleton />
       </div>
     );
   }
-
-  const revenueSubtitle = (() => {
-    if (!statistics) return "-";
-    if (statistics.revenue.changes !== null) {
-      const sign = statistics.revenue.changes >= 0 ? "+" : "";
-      return `${sign}${statistics.revenue.changes}% dari bulan lalu`;
-    }
-    return `Bulan lalu: ${toCompactIDR(statistics.revenue.lastMonthAmount)}`;
-  })();
 
   const stats: StatCard[] = [
     {
@@ -94,16 +79,10 @@ export function DashboardStatistics() {
       subtitle: `dari ${statistics?.hutang.count ?? 0} faktur`,
       theme: "warning",
     },
-    {
-      label: "Revenue",
-      value: toCompactIDR(statistics?.revenue.amount ?? 0),
-      subtitle: revenueSubtitle,
-      theme: "error",
-    },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {stats.map((stat) => {
         const theme = themeClasses[stat.theme];
         return (
@@ -115,7 +94,10 @@ export function DashboardStatistics() {
               theme.borderSide,
             )}
           >
-            <span className="text-sm leading-5 text-neutral-300">{stat.label}</span>
+            <div className="flex flex-col gap-y-0.5">
+              <span className="text-sm leading-5 text-neutral-300">{stat.label}</span>
+              <span className="text-xs leading-4 text-neutral-300">Saldo saat ini</span>
+            </div>
             <div className="flex flex-col gap-y-1.5">
               <span className="text-2xl leading-8 font-bold tracking-tight text-neutral-500">{stat.value}</span>
               <span className={clsx("text-xs leading-4", theme.subtext)}>{stat.subtitle}</span>
