@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import { DateTime } from "luxon";
 import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
 import { useDashboardRange } from "@/app/(authenticated)/home/_providers/dashboard-range-provider";
@@ -63,11 +62,8 @@ export function DashboardRangeSection() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-x-2">
-        <CalendarDaysIcon className="size-5 text-neutral-300" aria-hidden="true" />
-        <h2 className="text-base font-semibold text-neutral-400">Ringkasan Periode</h2>
-      </div>
+    <div className="flex items-center justify-between border-b border-neutral-100 py-3">
+      <span className="text-sm text-neutral-300">Periode ditampilkan</span>
       <DateRangePicker
         value={pickerValue}
         onChange={handlePickerChange}
