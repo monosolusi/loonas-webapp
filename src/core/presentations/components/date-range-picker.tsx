@@ -292,7 +292,10 @@ export function DateRangePicker({ value, onChange, maxSpanDays = 365, disableFut
         leaveFrom="opacity-100 translate-y-0"
         leaveTo="opacity-0 translate-y-1"
       >
-        <PopoverPanel className="absolute right-0 z-30 mt-2 w-max rounded-lg border border-neutral-200 bg-white shadow-lg">
+        <PopoverPanel
+          anchor={{ to: "bottom end", gap: 8 }}
+          className="z-30 w-max rounded-lg border border-neutral-200 bg-white shadow-lg"
+        >
           {({ close }) => (
             <PickerInner
               draft={draft}
