@@ -105,6 +105,17 @@ metadata:
 - Soft CTAs only on empty states: `dashboard-range-daily-revenue-chart-empty.tsx` ("Buat transaksi di POS" → `/pos`) and `dashboard-range-pos-sales-tile-empty.tsx` ("Buka POS" → `/pos`). No other empty states have CTAs.
 - `bg-primary-50` token = `#F0F7FF` — a very light blue. On white `bg-white` card backgrounds inside, the tint contrast is minimal. EL flagged this as Risk #1 for visual wash-out.
 
+## LNS-230 Dashboard Widget Set Structure (2026-05-22)
+
+- W1 (Anggota Aktif) and W2 (Total Produk) reuse the `dashboard-statistics.tsx` card shell pattern — NOT `SectionCard`. Rounded-xl, border-b-4, border-neutral-100, bg-neutral-50.
+- W3 (Stok Menipis) and W4 (Transaksi POS Terbaru) use `SectionCard title="..." bodyClassName="p-0"`.
+- W4 `dashboard-recent-pos-invoices-row.tsx` uses `deriveInvoicePaymentStatusKind()` from `@/features/invoice/presentations/components/invoice-payment-helpers` — NOT from `dashboard-recent-invoices.tsx`. Status display is a plain `<span>` with `text-success-500`/`text-warning-500` — no chip/bg wrapper.
+- W3 sort uses `a.minStock ?? 0` fallback (minStock is `number | null` on entity) — correctly defensive.
+- W4 Luxon DateTime comparison uses `>=` / `<=` operators directly on Luxon DateTime objects — valid because Luxon DateTime supports JS comparison operators.
+- Page layout: `grid grid-cols-1 xl:grid-cols-3`; main `xl:col-span-2`, shoulder `xl:col-span-1`. W4 is inside the `bg-primary-50` tinted section.
+- All 18 new components use `"use client"`. No deprecated components. No `text-gray-*`. No className template literals.
+- Build time: 5.8s compile + static generation (44 pages). Build output: `/home` page is 19.9 kB.
+
 ## LNS-219 Refactor Structure (2026-05-21)
 
 - `cart-summary.tsx` and `peek-strip.tsx` are now thin parent routers. All logic (disabled gate, context reads for Bayar) lives in sibling files.

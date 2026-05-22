@@ -19,3 +19,4 @@
 - [Dashboard range provider scope](project_dashboard_range_provider_scope.md) — provider in /home wraps only DashboardRangeSection; LNS-227 Bug B hoist makes the picker reachable from sibling widgets
 - [Authenticated chrome widths](project_authenticated_chrome_widths.md) — fixed 256px sidebar + p-8, no max-w; design to 1280px viewport / 960px content / ~310px chart cell as worst case
 - [OpenAPI spec outage pattern](project_openapi_spec_outage_pattern.md) — dev-api.loonas.id/openapi.json hard-down across 2 LNS-227 windows (Ph2 504, Ph7 502); pivot to FE-code review after 3 retries
+- [Dashboard widget card pattern](project_dashboard_widget_card_pattern.md) — SectionCard.iconSrc is string-only; list-style widgets use SectionCard no-icon, compact metric widgets mirror DashboardStatistics custom div
