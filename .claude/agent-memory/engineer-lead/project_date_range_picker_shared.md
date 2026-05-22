@@ -1,14 +1,18 @@
 ---
 name: date-range-picker-shared
-description: Single DateRangePicker at /finance/_components/date-range-picker.tsx — used only by ledger today; check call sites before mutating its API
+description: Two DateRangePicker files exist (core + finance), each with one caller — do not assume they share an API
 metadata:
   type: project
 ---
 
-`src/app/(authenticated)/finance/_components/date-range-picker.tsx` is currently consumed by exactly one caller: `/finance/ledger/[accountId]/_components/ledger-detail-impl.tsx`. Built on Popover + react-day-picker (`mode="range"`, `numberOfMonths={2}`, `max={maxSpanDays}`), with `disabled={{ after: today }}` hardcoded and Indonesian-language presets.
+As of 2026-05-22 there are **two parallel DateRangePicker components**, not one:
 
-**Why:** It's positioned in `finance/_components/` not `core/presentations/components/` — naming implies finance-only, but it's the project's only date-range UI. New callers (e.g. LNS-193 dashboard widget) reuse it rather than fork.
+1. `src/core/presentations/components/date-range-picker.tsx` — consumed by `home/_components/dashboard-range-section.tsx` (LNS-230 dashboard). Supports `disableFutureDates` prop, has mobile `<Dialog>` branch, uses `anchor={{ to: "bottom end", gap: 8 }}` for portaled positioning.
+2. `src/app/(authenticated)/finance/_components/date-range-picker.tsx` — consumed by `finance/ledger/[accountId]/_components/ledger-detail-impl.tsx`. Inline-positioned panel (no portal), hardcoded `disabled={{ after: today }}`, no mobile branch.
 
-**How to apply:** Before changing its API (props, hardcoded behaviours like `disabled={{ after: today }}`), run `grep -rn 'DateRangePicker' src --include='*.tsx'` to enumerate callers. Removing the `disabled` hardcode affects ledger too — flag to PM/UI before doing it. Consider promoting it to `core/presentations/components/` if a third caller lands.
+**Why:** The dashboard picker was forked rather than reused because the home use case needs (a) future-date selection allowed, (b) mobile bottom-sheet, (c) different preset list ("Bulan ini" / 7/14/30 days). Promoting one to a single source of truth was out of scope for LNS-230.
 
-The picker validates span via `react-day-picker`'s `max` prop (inclusive day count). Use `to.diff(from, "days").days + 1` to mirror that for FE pre-checks.
+**How to apply:**
+- Before mutating either picker's API, `grep -rn 'DateRangePicker' src --include='*.tsx'` to enumerate callers per file.
+- If a third caller lands, that's the trigger to unify — consolidate into `core/` with feature props (`disableFutureDates`, `presets`, `mobile`).
+- The core picker is the canonical pattern for new work — it correctly portals via Headless UI `anchor`, escaping the [[authenticated-chrome-clipping]] overflow chain.

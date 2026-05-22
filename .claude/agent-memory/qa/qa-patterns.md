@@ -116,6 +116,17 @@ metadata:
 - All 18 new components use `"use client"`. No deprecated components. No `text-gray-*`. No className template literals.
 - Build time: 5.8s compile + static generation (44 pages). Build output: `/home` page is 19.9 kB.
 
+## LNS-230 3rd Pass Layout Iteration (2026-05-22)
+
+- `DashboardRangeRevenueTile` + 3 siblings deleted; `DashboardCashflowSummary` deleted. No import survivors in `src/`.
+- `DashboardRangePosSalesTile` now accumulates `revenue + transactionCount` from the series via `useMemo`. Title = "Penjualan POS". Subtext = "dari N transaksi · periode ini".
+- `DashboardRangeDailyRevenueChart` has a `SPARSE_THRESHOLD = 7` density switch: `activeDays < 7` → `DashboardRangeDailyRevenueStat`, `activeDays === 0` → existing empty component, `≥ 7` → chart impl.
+- `DashboardRangeDailyRevenueStat` is a new component displaying active day count + peak day callout. Uses `useMemo`.
+- B1 layout in `page.tsx`: main `xl:col-span-2` = period-controlled only (RangeSection → PosSalesTile → DailyRevenueChart → PaymentBreakdown). Shoulder `xl:col-span-1` = always-on (RecentInvoices → TotalProductsCard → LowStockCard).
+- `hover:bg-primary-50` in `dashboard-recent-invoices.tsx` row hover is a PRE-EXISTING interactive hover effect (not a tinted background zone). CC1 (no tinted zone re-introduced) PASSES — verify via `git diff` before flagging.
+- `dashboard-recent-invoices.tsx` color tokens updated: `bg-emerald-50` → `bg-success-50`, `text-emerald-500` → `text-success-400`, `bg-orange-50` → `bg-warning-50`, `text-orange-500` → `text-warning-400`. Limit: 5 → 7. Skeleton rows: 5 → 7.
+- Build output: `/home` = 17.3 kB (down from 19.9 kB in round 2 — 2 deleted tiles reduced bundle). Build time: 4.4s compile. Total 44 pages.
+
 ## LNS-219 Refactor Structure (2026-05-21)
 
 - `cart-summary.tsx` and `peek-strip.tsx` are now thin parent routers. All logic (disabled gate, context reads for Bayar) lives in sibling files.

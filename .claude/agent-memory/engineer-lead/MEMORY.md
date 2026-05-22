@@ -11,7 +11,8 @@
 - [POS idempotency lifecycle](project_pos_idempotency_lifecycle.md) — key owned by PosProvider, auto-regen on cart/method change; explicit regenerate action exists for recovery flows
 - [QRIS pay-in BE contract 2026-05-20](project_qris_pay_in_contract_2026_05_20.md) — QrisPayIn schema, webhook-vs-clock authority for EXPIRED, POS=15min/B2B=24h expiry windows; FE countdown is advisory only
 - [Dashboard feature shape](project_dashboard_feature_shape.md) — thin single-repo feature; no swr-keys file pre-LNS-193; entity readonly drift; home page is composition-only
-- [DateRangePicker shared & only ledger uses it](project_date_range_picker_shared.md) — single picker at finance/_components, ledger sole caller; check before mutating API
+- [DateRangePicker — two parallel files](project_date_range_picker_shared.md) — core (home/LNS-230) + finance (ledger) pickers, each with 1 caller; unify when 3rd caller lands
+- [Authenticated chrome clipping](project_authenticated_chrome_clipping.md) — 3-level overflow stack crops inline popovers; use Headless UI v2 `anchor` to portal+flip
 - [No next/dynamic callers yet](project_no_next_dynamic_callers.md) — LNS-193 introduces the pattern; keep leaf imports, no generic helper until 2nd consumer
 - [OpenAPI WebFetch truncates and hallucinates fields](feedback_openapi_webfetch_truncation.md) — curl + python parse the raw spec; never trust the WebFetch summary for FE/BE contract verification
 - [Clerk error classification stays in auth provider](project_clerk_error_classification.md) — discriminated union in provider state; never add Clerk codes to ErrorCodes registry; classify in catch, never throw from useEffect
