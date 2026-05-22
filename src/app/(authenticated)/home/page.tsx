@@ -25,13 +25,15 @@ export default function InvoiceHomePage() {
               <DashboardRangePaymentBreakdown />
             </div>
 
-            {/* Shoulder column — always-on context */}
+            {/* Shoulder column — always-on point-in-time */}
             <div className="flex flex-col gap-4 xl:col-span-1">
-              <DashboardRecentInvoices />
               <DashboardTotalProductsCard />
               <DashboardLowStockCard />
             </div>
           </div>
+
+          {/* Full-width activity band — below the 2-col grid */}
+          <DashboardRecentInvoices />
         </DashboardRangeProvider>
       </Suspense>
     </div>

@@ -154,23 +154,22 @@ export function DashboardRecentInvoices() {
       title="Faktur Terbaru"
       bodyClassName="p-0"
       headerAction={
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-neutral-300">Aktivitas terkini</span>
-          <div className="flex items-center gap-1">
-            {filters.map((f) => (
+        <div className="flex items-center gap-1">
+          {filters.map((f) => (
             <button
               key={f.label}
               onClick={() => setActiveFilter(f.value)}
               className={clsx(
                 "flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
-                activeFilter === f.value ? "bg-neutral-800 text-white" : "bg-neutral-50 text-neutral-400 hover:bg-neutral-100",
+                activeFilter === f.value
+                  ? "bg-neutral-800 text-white"
+                  : "bg-neutral-100 text-neutral-400 hover:bg-neutral-200",
               )}
             >
               {f.icon && <ArrowIcon direction={f.icon} />}
               {f.label}
             </button>
           ))}
-          </div>
         </div>
       }
     >
