@@ -91,6 +91,20 @@ metadata:
 - Browser smoke testing of sign-in UX changes is **fully blocked** without `.env.local` + `CLERK_SECRET_KEY`. Source-code static analysis is the only viable path.
 - When verifying sign-in changes: use static analysis to confirm (1) COPY map strings, (2) `role="alert"` + `aria-live="polite"` attributes, (3) `setSignInError(null)` in wrapped setters, (4) `setIsLoggingIn(false)` in all catch/early-return paths, (5) no `throw` in catch (only the `VALIDATION_FAILED` pre-validation throw).
 
+## LNS-227 Dashboard Revamp Structure (2026-05-22)
+
+- `DashboardRangeProvider` wraps entire page including point-in-time widgets — they render as children of the provider but do NOT consume `useDashboardRange()`. Provider context is read-only by the 5 range-scoped widgets + `DashboardRangeSection` picker.
+- `DashboardStatistics` and `DashboardRecentInvoices` sit OUTSIDE the `bg-primary-50 section` tag but INSIDE `<DashboardRangeProvider>` — AC4 is structurally correct (not a DOM mistake).
+- `DashboardCashflowSummary` is a re-export barrel: delegates to `DashboardCashflowSummaryPending` — no useGetCashFlow call anywhere. BE-pending placeholder is structurally clean.
+- `DateRangePicker` presets are: "7 hari terakhir", "14 hari terakhir", "30 hari terakhir" — NO "Bulan ini" preset. The default range IS current month-to-date (AC3) but the picker trigger displays a date string (e.g., "1 Mei 2025 — 22 Mei 2025") NOT a "Bulan ini" label. AC3 spec says labelled "Bulan ini" — this is NOT implemented. Flag to EL.
+- `DashboardRangePosSalesTile` and `DashboardRangeRevenueTile` share the same `useGetRevenueSeries` SWR key `[DASHBOARD_REVENUE_SERIES, from, to, {clerk, from, to}]`. Picker change drives a single cache miss → single refetch for both.
+- `SWR dedupingInterval: 30_000` on `useGetRevenueSeries` — rapid picker changes within 30s of the same from/to pair will not re-fetch (expected). For different from/to pairs, each change creates a new key and will fetch independently.
+- `DashboardRangeSection` debounces picker commit by 250ms. Rapid changes cancel prior timer — only the last value within 250ms commits. AC2 rapid-picker test passes structurally.
+- `Saldo saat ini` sublabel rendered inline under stat label inside `DashboardStatistics` — NOT in `headerAction`. Both Piutang and Hutang render it identically.
+- `Aktivitas terkini` rendered in `headerAction` of `DashboardRecentInvoices` `SectionCard`, positioned left of the filter pill row.
+- Soft CTAs only on empty states: `dashboard-range-daily-revenue-chart-empty.tsx` ("Buat transaksi di POS" → `/pos`) and `dashboard-range-pos-sales-tile-empty.tsx` ("Buka POS" → `/pos`). No other empty states have CTAs.
+- `bg-primary-50` token = `#F0F7FF` — a very light blue. On white `bg-white` card backgrounds inside, the tint contrast is minimal. EL flagged this as Risk #1 for visual wash-out.
+
 ## LNS-219 Refactor Structure (2026-05-21)
 
 - `cart-summary.tsx` and `peek-strip.tsx` are now thin parent routers. All logic (disabled gate, context reads for Bayar) lives in sibling files.
