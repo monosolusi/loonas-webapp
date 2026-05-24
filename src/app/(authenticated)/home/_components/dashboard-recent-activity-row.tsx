@@ -9,11 +9,11 @@ import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel"
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { deriveInvoicePaymentStatusKind } from "@/features/invoice/presentations/components/invoice-payment-helpers";
-import { ActivityIcon } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-icon";
+import { DashboardRecentActivityIcon } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-icon";
 import {
-  DashboardRecentInvoicesStatusText,
+  DashboardRecentActivityStatusText,
   InvoiceStatusType,
-} from "@/app/(authenticated)/home/_components/dashboard-recent-invoices-status-text";
+} from "@/app/(authenticated)/home/_components/dashboard-recent-activity-status-text";
 import { DateTime } from "luxon";
 
 type ActivityKind = "pos" | "incoming" | "outgoing";
@@ -103,7 +103,7 @@ export function DashboardRecentActivityRow({ invoice }: DashboardRecentActivityR
       )}
     >
       <div className="flex items-center gap-2">
-        <ActivityIcon kind={view.kind} />
+        <DashboardRecentActivityIcon kind={view.kind} />
         <div className="flex min-w-0 flex-col gap-1">
           <span className="truncate text-sm leading-5 font-semibold text-neutral-500">{view.partyName}</span>
           <span className="text-xs leading-4 text-neutral-300">{view.createdAt.setLocale("id").toRelative()}</span>
@@ -112,7 +112,7 @@ export function DashboardRecentActivityRow({ invoice }: DashboardRecentActivityR
 
       <span className="text-sm leading-5 font-semibold text-neutral-500">{IDRFormatter.toCurrency(view.total)}</span>
 
-      <DashboardRecentInvoicesStatusText status={view.status} />
+      <DashboardRecentActivityStatusText status={view.status} />
     </div>
   );
 }

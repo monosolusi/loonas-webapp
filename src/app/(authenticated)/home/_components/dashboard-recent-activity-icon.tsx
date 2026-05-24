@@ -1,15 +1,15 @@
 "use client";
 
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
-import { DashboardRecentInvoicesArrowIcon } from "@/app/(authenticated)/home/_components/dashboard-recent-invoices-arrow-icon";
+import { DashboardRecentActivityArrowIcon } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-arrow-icon";
 
 type ActivityKind = "pos" | "incoming" | "outgoing";
 
-export interface ActivityIconProps {
+export interface DashboardRecentActivityIconProps {
   kind: ActivityKind;
 }
 
-export function ActivityIcon({ kind }: ActivityIconProps) {
+export function DashboardRecentActivityIcon({ kind }: DashboardRecentActivityIconProps) {
   if (kind === "pos") {
     return (
       <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary-50">
@@ -20,13 +20,13 @@ export function ActivityIcon({ kind }: ActivityIconProps) {
   if (kind === "incoming") {
     return (
       <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-success-50">
-        <DashboardRecentInvoicesArrowIcon direction="in" className="text-success-400" />
+        <DashboardRecentActivityArrowIcon direction="in" className="text-success-400" />
       </div>
     );
   }
   return (
     <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-warning-50">
-      <DashboardRecentInvoicesArrowIcon direction="out" className="text-warning-400" />
+      <DashboardRecentActivityArrowIcon direction="out" className="text-warning-400" />
     </div>
   );
 }
