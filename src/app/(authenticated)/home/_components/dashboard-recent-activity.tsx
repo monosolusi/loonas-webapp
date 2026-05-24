@@ -27,7 +27,7 @@ export function DashboardRecentActivity() {
   const { from, to } = useDashboardRange();
 
   const posMergeResult = useListInvoices({ channel: InvoiceChannel.POS, limit: 10 });
-  const posPeriodResult = useListInvoices({ channel: InvoiceChannel.POS, limit: 30 });
+  const posPeriodResult = useListInvoices({ channel: InvoiceChannel.POS, limit: 10, from, to });
   const incomingResult = useListInvoices({ type: InvoiceType.INCOMING, limit: 10 });
   const outgoingResult = useListInvoices({ type: InvoiceType.OUTGOING, channel: InvoiceChannel.INVOICE, limit: 10 });
 
@@ -61,11 +61,6 @@ export function DashboardRecentActivity() {
       if (posPeriodResult.error) return { loading: false, error: posPeriodResult.error, rows: null } as const;
 
       const rows = (posPeriodResult.invoices ?? [])
-        .filter((inv) => {
-          const dateStr = inv.createdAt.setZone("Asia/Jakarta").toISODate();
-          if (!dateStr) return false;
-          return dateStr >= from && dateStr <= to;
-        })
         .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis())
         .slice(0, 10);
       return { loading: false, error: null, rows } as const;
@@ -81,7 +76,7 @@ export function DashboardRecentActivity() {
     if (outgoingResult.loading) return { loading: true, error: null, rows: null } as const;
     if (outgoingResult.error) return { loading: false, error: outgoingResult.error, rows: null } as const;
     return { loading: false, error: null, rows: outgoingResult.invoices ?? [] } as const;
-  }, [activeTab, posMergeResult, posPeriodResult, incomingResult, outgoingResult, from, to]);
+  }, [activeTab, posMergeResult, posPeriodResult, incomingResult, outgoingResult]);
 
   if (derivedState.loading) {
     return <DashboardRecentActivityLoading tabs={tabs} periodCaptionVisible={periodCaptionVisible} />;
