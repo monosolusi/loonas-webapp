@@ -19,6 +19,7 @@ import {
   UseGetCashFlowParams,
   UseGetCashFlowReturnType,
 } from "@/features/invoice/presentations/hooks/use-get-cash-flow.types";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 const INITIAL_STATE: UseGetCashFlowReturnType = {
   cashFlow: null,
@@ -46,7 +47,7 @@ async function GetCashFlowFetcher([_, params]: [string, GetCashFlowFetcherParams
 export function useGetCashFlow(params: UseGetCashFlowParams): UseGetCashFlowReturnType {
   const clerk = useClerk();
   const { data, isLoading, error } = useSWR(
-    ["get-cash-flow", { ...params, clerk }],
+    [INVOICE_SWR_KEYS.GET_CASH_FLOW, { ...params, clerk }],
     GetCashFlowFetcher,
   );
 

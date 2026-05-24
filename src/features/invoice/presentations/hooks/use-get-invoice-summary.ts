@@ -19,6 +19,7 @@ import {
   UseGetInvoiceSummaryParams,
   UseGetInvoiceSummaryReturnType,
 } from "@/features/invoice/presentations/hooks/use-get-invoice-summary.types";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 const INITIAL_STATE: UseGetInvoiceSummaryReturnType = {
   summary: null,
@@ -46,7 +47,7 @@ async function GetInvoiceSummaryFetcher([_, params]: [string, GetInvoiceSummaryF
 export function useGetInvoiceSummary(params: UseGetInvoiceSummaryParams): UseGetInvoiceSummaryReturnType {
   const clerk = useClerk();
   const { data, isLoading, error } = useSWR(
-    ["get-invoice-summary", { ...params, clerk }],
+    [INVOICE_SWR_KEYS.GET_INVOICE_SUMMARY, { ...params, clerk }],
     GetInvoiceSummaryFetcher,
   );
 

@@ -16,6 +16,7 @@ import {
   UseListInvoicesParams,
   UseListInvoicesReturnType,
 } from "@/features/invoice/presentations/hooks/use-list-invoices.types";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 const INITIAL_STATE: UseListInvoicesReturnType = {
   invoices: null,
@@ -52,7 +53,7 @@ async function ListInvoicesFetcher([_, params]: [string, ListInvoicesFetcherPara
 
 export function useListInvoices(params: UseListInvoicesParams): UseListInvoicesReturnType {
   const clerk = useClerk();
-  const { data, isLoading, error } = useSWR(["list-invoices", { ...params, clerk }], ListInvoicesFetcher);
+  const { data, isLoading, error } = useSWR([INVOICE_SWR_KEYS.LIST_INVOICES, { ...params, clerk }], ListInvoicesFetcher);
 
   if (isLoading) return INITIAL_STATE;
   if (error) {

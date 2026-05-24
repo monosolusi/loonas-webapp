@@ -10,6 +10,7 @@ import { NotificationChannel } from "@/features/notification/domain/enums/notifi
 import useSWRMutation from "swr/mutation";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 import { useClerk } from "@clerk/nextjs";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 interface SendInvoiceFetcherParams {
   invoice: { id: string };
@@ -37,7 +38,7 @@ async function SendInvoiceFetcher(_: string, { arg }: { arg: SendInvoiceFetcherP
 
 export function useSendInvoice() {
   const clerk = useClerk();
-  const { trigger: baseTrigger, ...rest } = useSWRMutation("send-invoice", SendInvoiceFetcher);
+  const { trigger: baseTrigger, ...rest } = useSWRMutation(INVOICE_SWR_KEYS.SEND_INVOICE, SendInvoiceFetcher);
 
   const trigger = (params: { invoice: { id: string }; sendChannel: NotificationChannel[] }) =>
     baseTrigger({ ...params, clerk });

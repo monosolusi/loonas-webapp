@@ -8,6 +8,7 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { DataFailed } from "@/core/resources/data-state";
 import useSWR from "swr";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 interface GetIncomingInvoiceFetcherParams {
   id: string;
@@ -38,7 +39,7 @@ async function GetIncomingInvoiceFetcher([_, params]: [string, GetIncomingInvoic
  * @deprecated Use `useGetInvoice` from `@/features/invoice/presentations/hooks/use-get-invoice` instead.
  */
 export function useGetIncomingInvoice(params: GetIncomingInvoiceFetcherParams) {
-  const { data, isLoading, error } = useSWR(["get-incoming-invoice", params], GetIncomingInvoiceFetcher);
+  const { data, isLoading, error } = useSWR([INVOICE_SWR_KEYS.GET_INCOMING_INVOICE, params], GetIncomingInvoiceFetcher);
 
   return {
     invoice: data,

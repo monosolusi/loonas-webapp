@@ -18,6 +18,7 @@ import {
   UseGetInvoiceParams,
   UseGetInvoiceReturnType,
 } from "@/features/invoice/presentations/hooks/use-get-invoice.types";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 export type UseGetInvoiceOptions = {
   refreshInterval?: number | ((latestData: InvoiceDetailEntity | undefined) => number);
@@ -53,7 +54,7 @@ export function useGetInvoice(
 ): UseGetInvoiceReturnType {
   const clerk = useClerk();
   const { data, isLoading, error, mutate } = useSWR(
-    ["get-invoice", { ...params, clerk }],
+    [INVOICE_SWR_KEYS.GET_INVOICE, { ...params, clerk }],
     GetInvoiceFetcher,
     { refreshInterval: options.refreshInterval },
   );

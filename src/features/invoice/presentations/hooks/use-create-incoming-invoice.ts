@@ -19,6 +19,7 @@ import {
   UploadPaymentRequestInvoicesUseCaseParams,
 } from "@/features/payment/domain/usecases/upload-payment-request-invoices";
 import { useSWRMutationClerk } from "@/core/helpers/use-swr-mutation-clerk";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 async function CreateIncomingInvoiceFetcher(
   _: string,
@@ -60,5 +61,5 @@ async function CreateIncomingInvoiceFetcher(
 }
 
 export function useCreateIncomingInvoice() {
-  return useSWRMutationClerk("create-incoming-invoice", CreateIncomingInvoiceFetcher);
+  return useSWRMutationClerk(INVOICE_SWR_KEYS.CREATE_INCOMING_INVOICE, CreateIncomingInvoiceFetcher);
 }

@@ -10,6 +10,7 @@ import {
 } from "../../domain/usecases/get-public-outgoing-invoice";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 interface GetPublicOutgoingInvoiceFetcherParams {
   id: string;
@@ -32,7 +33,7 @@ async function GetPublicOutgoingInvoiceFetcher([_, params]: [
 }
 
 export function useGetPublicOutgoingInvoice(Params: GetPublicOutgoingInvoiceFetcherParams) {
-  const { data, isLoading, error } = useSWR(["get-public-outgoing-invoice", Params], GetPublicOutgoingInvoiceFetcher);
+  const { data, isLoading, error } = useSWR([INVOICE_SWR_KEYS.GET_PUBLIC_OUTGOING_INVOICE, Params], GetPublicOutgoingInvoiceFetcher);
 
   return {
     invoice: data,

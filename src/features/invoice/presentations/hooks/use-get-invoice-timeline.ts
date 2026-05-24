@@ -19,6 +19,7 @@ import {
   UseGetInvoiceTimelineParams,
   UseGetInvoiceTimelineReturnType,
 } from "@/features/invoice/presentations/hooks/use-get-invoice-timeline.types";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 const INITIAL_STATE: UseGetInvoiceTimelineReturnType = {
   timeline: null,
@@ -46,7 +47,7 @@ async function GetInvoiceTimelineFetcher([_, params]: [string, GetInvoiceTimelin
 export function useGetInvoiceTimeline(params: UseGetInvoiceTimelineParams): UseGetInvoiceTimelineReturnType {
   const clerk = useClerk();
   const { data, isLoading, error } = useSWR(
-    ["get-invoice-timeline", { ...params, clerk }],
+    [INVOICE_SWR_KEYS.GET_INVOICE_TIMELINE, { ...params, clerk }],
     GetInvoiceTimelineFetcher,
   );
 

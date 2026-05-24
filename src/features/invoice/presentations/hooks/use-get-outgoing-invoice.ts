@@ -14,6 +14,7 @@ import {
 } from "@/features/invoice/domain/usecases/get-outgoing-invoice";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
 import { useClerk } from "@clerk/nextjs";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 interface GetOutgoingInvoiceFetcherParams {
   id: string;
@@ -38,7 +39,7 @@ async function GetOutgoingInvoiceFetcher([_, param]: [string, GetOutgoingInvoice
 export function useGetOutgoingInvoice(props: { id: string }) {
   const clerk = useClerk();
   const { data, isLoading, error, mutate } = useSWR(
-    ["get-outgoing-invoice", { ...props, clerk }],
+    [INVOICE_SWR_KEYS.GET_OUTGOING_INVOICE, { ...props, clerk }],
     GetOutgoingInvoiceFetcher,
   );
 
