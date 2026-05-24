@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { SectionCard } from "@/core/presentations/components/section-card";
-import { DashboardRecentInvoicesColumnHeader } from "@/app/(authenticated)/home/_components/dashboard-recent-invoices-column-header";
+import { DashboardRecentActivityColumnHeader } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-column-header";
 
 interface DashboardRecentActivityEmptyProps {
   tabs: React.ReactNode;
@@ -16,7 +16,7 @@ export function DashboardRecentActivityEmpty({ tabs, periodCaptionVisible, messa
       <div className={clsx("px-6 py-2 text-xs text-neutral-300", !periodCaptionVisible && "hidden")}>
         Sesuai periode dipilih
       </div>
-      <DashboardRecentInvoicesColumnHeader />
+      <DashboardRecentActivityColumnHeader />
       <div className="px-6 py-10 text-center text-sm text-neutral-300">{message}</div>
     </SectionCard>
   );

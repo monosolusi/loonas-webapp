@@ -1,6 +1,6 @@
 "use client";
 
-export function DashboardRecentInvoicesSkeletonRow() {
+export function DashboardRecentActivitySkeletonRow() {
   return (
     <div className="grid grid-cols-[2fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0">
       <div className="flex items-center gap-2">

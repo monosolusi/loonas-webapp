@@ -8,7 +8,7 @@ import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-l
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { useDashboardRange } from "@/app/(authenticated)/home/_providers/dashboard-range-provider";
 import { SectionCard } from "@/core/presentations/components/section-card";
-import { DashboardRecentInvoicesColumnHeader } from "@/app/(authenticated)/home/_components/dashboard-recent-invoices-column-header";
+import { DashboardRecentActivityColumnHeader } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-column-header";
 import { DashboardRecentActivityTabs, ActivityTab } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-tabs";
 import { DashboardRecentActivityRow } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-row";
 import { DashboardRecentActivityLoading } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-loading";
@@ -112,7 +112,7 @@ export function DashboardRecentActivity() {
       <div className={clsx("px-6 py-2 text-xs text-neutral-300", !periodCaptionVisible && "hidden")}>
         Sesuai periode dipilih
       </div>
-      <DashboardRecentInvoicesColumnHeader />
+      <DashboardRecentActivityColumnHeader />
       <div role="tabpanel" aria-labelledby={`activity-tab-${activeTab}`}>
         {derivedState.rows.map((inv) => (
           <DashboardRecentActivityRow key={inv.id} invoice={inv} />
