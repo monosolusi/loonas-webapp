@@ -2,20 +2,24 @@
 
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
-import { InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
-import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
+import { IncomingInvoiceEntity, InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { deriveInvoicePaymentStatusKind } from "@/features/invoice/presentations/components/invoice-payment-helpers";
-import { DashboardRecentInvoicesArrowIcon } from "@/app/(authenticated)/home/_components/dashboard-recent-invoices-arrow-icon";
-import { DashboardRecentInvoicesStatusText, InvoiceStatusType } from "@/app/(authenticated)/home/_components/dashboard-recent-invoices-status-text";
+import { ActivityIcon } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-icon";
+import {
+  DashboardRecentInvoicesStatusText,
+  InvoiceStatusType,
+} from "@/app/(authenticated)/home/_components/dashboard-recent-invoices-status-text";
 import { DateTime } from "luxon";
 
-type RowView = {
-  direction: "in" | "out";
+type ActivityKind = "pos" | "incoming" | "outgoing";
+
+type ActivityRowView = {
+  kind: ActivityKind;
   partyName: string;
   total: number;
   status: InvoiceStatusType;
@@ -50,10 +54,10 @@ function mapStatus(status: InvoiceStatus): InvoiceStatusType {
   }
 }
 
-function toRowView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): RowView {
+function toActivityView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): ActivityRowView {
   if (inv instanceof IncomingInvoiceEntity) {
     return {
-      direction: "in",
+      kind: "incoming",
       partyName: inv.receiver.name,
       total: inv.total,
       status: mapStatus(inv.status),
@@ -63,7 +67,7 @@ function toRowView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): RowView 
   }
   if (inv.channel === InvoiceChannel.POS) {
     return {
-      direction: "out",
+      kind: "pos",
       partyName: inv.invoiceNumber,
       total: inv.summary.total,
       status: deriveInvoicePaymentStatusKind(inv) === "paid" ? "paid" : "unpaid",
@@ -72,7 +76,7 @@ function toRowView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): RowView 
     };
   }
   return {
-    direction: "out",
+    kind: "outgoing",
     partyName: inv.recipient.fullName,
     total: inv.summary.total,
     status: mapStatus(inv.status),
@@ -81,13 +85,14 @@ function toRowView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): RowView 
   };
 }
 
-interface DashboardRecentInvoicesRowProps {
+
+interface DashboardRecentActivityRowProps {
   invoice: IncomingInvoiceEntity | OutgoingInvoiceEntity;
 }
 
-export function DashboardRecentInvoicesRow({ invoice }: DashboardRecentInvoicesRowProps) {
+export function DashboardRecentActivityRow({ invoice }: DashboardRecentActivityRowProps) {
   const router = useRouter();
-  const view = toRowView(invoice);
+  const view = toActivityView(invoice);
 
   return (
     <div
@@ -98,30 +103,14 @@ export function DashboardRecentInvoicesRow({ invoice }: DashboardRecentInvoicesR
       )}
     >
       <div className="flex items-center gap-2">
-        <div
-          className={clsx(
-            "flex size-7 shrink-0 items-center justify-center rounded-lg",
-            view.direction === "in" ? "bg-success-50" : "bg-warning-50",
-          )}
-        >
-          <DashboardRecentInvoicesArrowIcon
-            direction={view.direction}
-            className={clsx(view.direction === "in" ? "text-success-400" : "text-warning-400")}
-          />
-        </div>
+        <ActivityIcon kind={view.kind} />
         <div className="flex min-w-0 flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <span className="truncate text-sm leading-5 font-semibold text-neutral-500">{view.partyName}</span>
-          </div>
-          <span className="text-xs leading-4 text-neutral-300">
-            {view.createdAt.setLocale("id").toRelative()}
-          </span>
+          <span className="truncate text-sm leading-5 font-semibold text-neutral-500">{view.partyName}</span>
+          <span className="text-xs leading-4 text-neutral-300">{view.createdAt.setLocale("id").toRelative()}</span>
         </div>
       </div>
 
-      <span className="text-sm leading-5 font-semibold text-neutral-500">
-        {IDRFormatter.toCurrency(view.total)}
-      </span>
+      <span className="text-sm leading-5 font-semibold text-neutral-500">{IDRFormatter.toCurrency(view.total)}</span>
 
       <DashboardRecentInvoicesStatusText status={view.status} />
     </div>
