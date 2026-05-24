@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { DashboardRecentInvoices } from "@/app/(authenticated)/home/_components/dashboard-recent-invoices";
+import { DashboardRecentActivity } from "@/app/(authenticated)/home/_components/dashboard-recent-activity";
 import { DashboardWelcomeHeader } from "@/app/(authenticated)/home/_components/dashboard-welcome-header";
 import { DashboardRangeProvider } from "@/app/(authenticated)/home/_providers/dashboard-range-provider";
 import { DashboardRangeSection } from "@/app/(authenticated)/home/_components/dashboard-range-section";
@@ -33,7 +33,7 @@ export default function InvoiceHomePage() {
           </div>
 
           {/* Full-width activity band — below the 2-col grid */}
-          <DashboardRecentInvoices />
+          <DashboardRecentActivity />
         </DashboardRangeProvider>
       </Suspense>
     </div>
