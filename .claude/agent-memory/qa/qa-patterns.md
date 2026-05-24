@@ -138,6 +138,24 @@ metadata:
 - `page.tsx` `/home` route already registered in `ROUTE_MAP` (`header-title.tsx` line 13) — no regression risk.
 - Build output: `/home` = 18 kB (up ~0.7 kB from LNS-230 round 3 baseline of 17.3 kB — expected from new widget). Build time: 5.2s compile. 44 pages total.
 
+## LNS-246 Import-Path Refactor (2026-05-25)
+
+- Pure `../...` → `@/` alias rewrite across 87 files, 154 specifiers. Zero behavioral change.
+- Verification path: `npx tsc --noEmit` (exit 0) + `npm run lint` (exit 0, pre-existing `no-page-custom-font` warning only) + `grep -rln "from ['\"]\.\./" src/` (exit 1, zero matches) — all PASS.
+- Dev server boots cleanly. `/sign-in` HTTP 200, `/` HTTP 200. No module-resolution errors in Next.js Turbopack compile log.
+- `DEP0205 module.register() deprecated` warning appears in server log on page compile — upstream Node/Next internals, NOT caused by this refactor. Pre-existing.
+- Browser smoke UNBLOCKED for this refactor: Clerk env gap did NOT cause 500s. Sign-in page returned HTTP 200 (Clerk middleware compiled cleanly — refactor preserved all import paths correctly). This is the first LNS ticket where `/sign-in` returned 200 without `.env.local`.
+- Spot-checks passed: `create-incoming-invoice.tsx`, `use-get-incoming-invoice-pay-in-detail.ts`, `http-request.ts`, `transaction-timeline-impl.tsx` — all `@/` specifiers resolve to extant files on disk.
+
+## LNS-245 Hook Deletion Verification (2026-05-25)
+
+- Pure deletion: `use-get-incoming-invoice.ts` hook file + `GET_INCOMING_INVOICE` SWR key constant removed.
+- No `/incoming-invoices` route exists in Next.js app router — the feature has no dedicated list page at that path. HTTP 404 on that URL is expected.
+- `/invoices` HTTP 404 under Clerk env gap (no `.env.local`) — consistent with prior tickets. Not a regression.
+- Dev server compile log showed zero `module not found` or HMR errors referencing deleted files — clean deletion confirmed.
+- All three grep patterns returned exit 1 (zero hits): `useGetIncomingInvoice`, `GET_INCOMING_INVOICE`, `GetIncomingInvoiceFetcher`.
+- Verification path: tsc exit 0 + lint exit 0 + 3x grep exit 1 + clean compile log = PASS.
+
 ## LNS-219 Refactor Structure (2026-05-21)
 
 - `cart-summary.tsx` and `peek-strip.tsx` are now thin parent routers. All logic (disabled gate, context reads for Bayar) lives in sibling files.
