@@ -15,6 +15,8 @@ export class ListInvoicesUseCaseParams {
   public limit: number;
   public includes?: string;
   public filter?: string;
+  public from?: string;
+  public to?: string;
 
   constructor(args: {
     type?: InvoiceType;
@@ -23,6 +25,8 @@ export class ListInvoicesUseCaseParams {
     limit?: number;
     includes?: string;
     filter?: string;
+    from?: string;
+    to?: string;
   }) {
     this.type = args.type;
     this.channel = args.channel;
@@ -30,6 +34,8 @@ export class ListInvoicesUseCaseParams {
     this.limit = args.limit ?? 10;
     this.includes = args.includes;
     this.filter = args.filter;
+    this.from = args.from;
+    this.to = args.to;
   }
 }
 
@@ -52,6 +58,8 @@ export class ListInvoicesUseCase
           limit: params.limit,
           includes: params.includes,
           filter: params.filter,
+          from: params.from,
+          to: params.to,
         },
         session,
       );
