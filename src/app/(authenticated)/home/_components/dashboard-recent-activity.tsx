@@ -1,6 +1,5 @@
 "use client";
 
-import clsx from "clsx";
 import { useMemo, useState } from "react";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
@@ -16,37 +15,34 @@ import { DashboardRecentActivityError } from "@/app/(authenticated)/home/_compon
 import { DashboardRecentActivityEmpty } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-empty";
 
 const EMPTY_COPY: Record<ActivityTab, string> = {
-  all: "Belum ada aktivitas",
+  all: "Belum ada aktivitas pada periode ini",
   pos: "Tidak ada transaksi POS pada periode ini",
-  incoming: "Belum ada faktur masuk",
-  outgoing: "Belum ada faktur keluar",
+  incoming: "Belum ada faktur masuk pada periode ini",
+  outgoing: "Belum ada faktur keluar pada periode ini",
 };
 
 export function DashboardRecentActivity() {
   const [activeTab, setActiveTab] = useState<ActivityTab>("all");
   const { from, to } = useDashboardRange();
 
-  const posMergeResult = useListInvoices({ channel: InvoiceChannel.POS, limit: 10 });
-  const posPeriodResult = useListInvoices({ channel: InvoiceChannel.POS, limit: 10, from, to });
-  const incomingResult = useListInvoices({ type: InvoiceType.INCOMING, limit: 10 });
-  const outgoingResult = useListInvoices({ type: InvoiceType.OUTGOING, channel: InvoiceChannel.INVOICE, limit: 10 });
+  const posResult = useListInvoices({ channel: InvoiceChannel.POS, limit: 10, from, to });
+  const incomingResult = useListInvoices({ type: InvoiceType.INCOMING, limit: 10, from, to });
+  const outgoingResult = useListInvoices({ type: InvoiceType.OUTGOING, channel: InvoiceChannel.INVOICE, limit: 10, from, to });
 
   const tabs = useMemo(
     () => <DashboardRecentActivityTabs active={activeTab} onChange={setActiveTab} />,
     [activeTab],
   );
 
-  const periodCaptionVisible = useMemo(() => activeTab === "pos", [activeTab]);
-
   const derivedState = useMemo(() => {
     if (activeTab === "all") {
-      const loading = posMergeResult.loading || incomingResult.loading || outgoingResult.loading;
-      const error = posMergeResult.error ?? incomingResult.error ?? outgoingResult.error;
+      const loading = posResult.loading || incomingResult.loading || outgoingResult.loading;
+      const error = posResult.error ?? incomingResult.error ?? outgoingResult.error;
       if (loading) return { loading: true, error: null, rows: null } as const;
       if (error) return { loading: false, error, rows: null } as const;
 
       const merged: InvoiceListItemEntity[] = [
-        ...(posMergeResult.invoices ?? []),
+        ...(posResult.invoices ?? []),
         ...(incomingResult.invoices ?? []),
         ...(outgoingResult.invoices ?? []),
       ];
@@ -57,10 +53,10 @@ export function DashboardRecentActivity() {
     }
 
     if (activeTab === "pos") {
-      if (posPeriodResult.loading) return { loading: true, error: null, rows: null } as const;
-      if (posPeriodResult.error) return { loading: false, error: posPeriodResult.error, rows: null } as const;
+      if (posResult.loading) return { loading: true, error: null, rows: null } as const;
+      if (posResult.error) return { loading: false, error: posResult.error, rows: null } as const;
 
-      const rows = (posPeriodResult.invoices ?? [])
+      const rows = (posResult.invoices ?? [])
         .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis())
         .slice(0, 10);
       return { loading: false, error: null, rows } as const;
@@ -76,17 +72,17 @@ export function DashboardRecentActivity() {
     if (outgoingResult.loading) return { loading: true, error: null, rows: null } as const;
     if (outgoingResult.error) return { loading: false, error: outgoingResult.error, rows: null } as const;
     return { loading: false, error: null, rows: outgoingResult.invoices ?? [] } as const;
-  }, [activeTab, posMergeResult, posPeriodResult, incomingResult, outgoingResult]);
+  }, [activeTab, posResult, incomingResult, outgoingResult]);
 
   if (derivedState.loading) {
-    return <DashboardRecentActivityLoading tabs={tabs} periodCaptionVisible={periodCaptionVisible} />;
+    return <DashboardRecentActivityLoading tabs={tabs} periodCaptionVisible={false} />;
   }
 
   if (derivedState.error) {
     return (
       <DashboardRecentActivityError
         tabs={tabs}
-        periodCaptionVisible={periodCaptionVisible}
+        periodCaptionVisible={false}
         message="Gagal memuat data aktivitas."
       />
     );
@@ -96,7 +92,7 @@ export function DashboardRecentActivity() {
     return (
       <DashboardRecentActivityEmpty
         tabs={tabs}
-        periodCaptionVisible={periodCaptionVisible}
+        periodCaptionVisible={false}
         message={EMPTY_COPY[activeTab]}
       />
     );
@@ -104,9 +100,6 @@ export function DashboardRecentActivity() {
 
   return (
     <SectionCard title="Aktivitas Terbaru" bodyClassName="p-0" headerAction={tabs}>
-      <div className={clsx("px-6 py-2 text-xs text-neutral-300", !periodCaptionVisible && "hidden")}>
-        Sesuai periode dipilih
-      </div>
       <DashboardRecentActivityColumnHeader />
       <div role="tabpanel" aria-labelledby={`activity-tab-${activeTab}`}>
         {derivedState.rows.map((inv) => (
