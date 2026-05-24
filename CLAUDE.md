@@ -8,10 +8,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm run dev          # Start dev server (Next.js + Turbopack)
 npm run build        # Production build
 npm run lint         # ESLint
-npx tsc --noEmit     # Type-check (use to verify after edits — no test framework)
+npm run typecheck    # Type-check (tsc --noEmit) — use to verify after edits
 ```
 
-No test framework is configured. Verify changes with `npx tsc --noEmit` and `npm run lint`.
+No test framework is configured. Verify changes with `npm run typecheck` and `npm run lint`.
+
+**CI gate** (`.github/workflows/ci.yml`): runs `lint → typecheck → build` on PRs to `dev`/`main`. Node version pinned via `.nvmrc` (currently 20.20.2, engines `>=20.19.4`).
 
 ## Tech Stack
 
@@ -37,6 +39,7 @@ src/
 │   │       └── _components/          # Components that consume context
 │   ├── (authentication)/             # Sign-in, reset-password
 │   ├── (user)/                       # Onboarding
+│   ├── (pos)/                        # Cashier POS shell + payment-method plugins (see _payment-methods/PLUGIN_PATTERN.md)
 │   └── (external-app)/              # Public external routes
 ├── features/{feature}/               # Feature modules
 │   ├── domain/                       # Entities, guards, types, enums, repository interfaces, use cases, factories
