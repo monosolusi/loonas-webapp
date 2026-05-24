@@ -4,13 +4,13 @@ import { DistrictEntity } from "@/core/utilities/address/domain/entities/distric
 import { DateTime } from "luxon";
 import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
-import { PersonalAccountModel } from "../models/personal-account";
+import { PersonalAccountModel } from "@/features/account/data/models/personal-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { AccountVerificationWorkModel } from "../models/account-verification-work";
-import { AccountBankAccountModel } from "../models/account-bank-account";
+import { AccountVerificationWorkModel } from "@/features/account/data/models/account-verification-work";
+import { AccountBankAccountModel } from "@/features/account/data/models/account-bank-account";
 import { AccountService, CreateBusinessParams } from "@/features/account/domain/sources/account";
-import { BusinessAccountModel } from "../models/business-account";
+import { BusinessAccountModel } from "@/features/account/data/models/business-account";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { AccountTypeModel } from "@/features/account/domain/types/account-type";
 import { AccountType } from "@/features/account/domain/enums/account-type";

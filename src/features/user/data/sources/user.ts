@@ -2,7 +2,7 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { UserModel } from "@/features/user/data/models/user";
 import { UserService } from "@/features/user/domain/sources/user";
 import { HttpRequest } from "@/core/helpers/http-request";
-import { UserStatusModel } from "../models/user-status.model";
+import { UserStatusModel } from "@/features/user/data/models/user-status.model";
 
 export class UserServiceImpl implements UserService {
   constructor(private readonly http: HttpRequest) {}

@@ -1,7 +1,7 @@
 import { UseCase } from "@/core/resources/use-case";
-import { SessionEntity } from "../entities/session";
+import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { DataState } from "@/core/resources/data-state";
-import { SessionRepository } from "../repositories/session";
+import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 
 export class SaveSessionUseCaseParams {
   constructor(public accessToken: string) {

@@ -1,7 +1,7 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { GetDetailReturnType, PayInDetailService } from "@/features/payment/domain/sources/pay-in-detail";
-import { PublicPayInDetailModel } from "../models/public-pay-in-detail";
+import { PublicPayInDetailModel } from "@/features/payment/data/models/public-pay-in-detail";
 import { HttpRequest } from "@/core/helpers/http-request";
 
 export class PayInDetailServiceImpl implements PayInDetailService {

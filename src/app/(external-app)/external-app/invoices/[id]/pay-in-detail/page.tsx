@@ -1,7 +1,7 @@
 "use client";
 
 import { LogoImage } from "@/core/presentations/components/logo-image";
-import { InvoiceMetadataImpl } from "../pay/_components/invoice-metadata-impl";
+import { InvoiceMetadataImpl } from "@/app/(external-app)/external-app/invoices/[id]/pay/_components/invoice-metadata-impl";
 import { PaymentSummaryImpl } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/payment-summary-impl";
 import { VirtualAccountPayInDetail } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/va-pay-in-detail";
 import { useGetPublicPayInDetailForOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";

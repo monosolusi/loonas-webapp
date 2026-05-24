@@ -1,9 +1,9 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { NotificationRepository } from "@/features/notification/domain/repositories/notification";
-import { NotificationConfigEntity } from "../../domain/entities/notification-config";
+import { NotificationConfigEntity } from "@/features/notification/domain/entities/notification-config";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { NotificationService } from "../../domain/sources/notification";
+import { NotificationService } from "@/features/notification/domain/sources/notification";
 
 export class NotificationRepositoryImpl implements NotificationRepository {
   constructor(private readonly notificationService: NotificationService) {}

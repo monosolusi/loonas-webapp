@@ -1,8 +1,8 @@
 import { AuthRepository } from "@/features/authentication/domain/repositories/auth";
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
-import { SessionEntity } from "../../domain/entities/session";
+import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { AuthService } from "../sources/auth";
+import { AuthService } from "@/features/authentication/data/sources/auth";
 
 export class AuthRepositoryImpl implements AuthRepository {
   constructor(private authService: AuthService) {

@@ -1,9 +1,9 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { PaymentGatewayEntity } from "../../domain/entities/payment-gateway";
-import { PaymentGatewayRepository } from "../../domain/repositories/payment-gateway";
-import { PaymentGatewayService } from "../sources/payment-gateway";
+import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
+import { PaymentGatewayRepository } from "@/features/payment/domain/repositories/payment-gateway";
+import { PaymentGatewayService } from "@/features/payment/data/sources/payment-gateway";
 
 export class PaymentGatewayRepositoryImpl implements PaymentGatewayRepository {
   constructor(private paymentGatewayService: PaymentGatewayService) {}

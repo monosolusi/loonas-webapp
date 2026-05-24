@@ -2,8 +2,8 @@ import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { BankRepository } from "../repositories/bank";
-import { BankEntity } from "../entities/bank";
+import { BankRepository } from "@/features/bank/domain/repositories/bank";
+import { BankEntity } from "@/features/bank/domain/entities/bank";
 
 export class ListBanksUseCase implements UseCase<DataState<BankEntity[]>, void> {
   constructor(

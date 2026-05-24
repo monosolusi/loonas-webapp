@@ -2,7 +2,7 @@ import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { BankRepository } from "../repositories/bank";
+import { BankRepository } from "@/features/bank/domain/repositories/bank";
 import { AccountInquiryResultEntity } from "@/features/bank/domain/entities/account-inquiry-result";
 
 export class VerifyAccountHolderUseCaseParams {

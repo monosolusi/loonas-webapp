@@ -1,7 +1,7 @@
 import { AbstractEntity } from "@/core/resources/entity";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { DateTime } from "luxon";
-import { DiscountType } from "../enums/discount-type";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 
 interface PublicOutgoingInvoiceEntityConstructor {

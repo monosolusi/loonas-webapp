@@ -1,7 +1,7 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { SessionEntity } from "../../domain/entities/session";
-import { SessionRepository } from "../../domain/repositories/session";
+import { SessionEntity } from "@/features/authentication/domain/entities/session";
+import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { SessionService } from "@/features/authentication/domain/sources/session";
 
 export class SessionRepositoryImpl implements SessionRepository {

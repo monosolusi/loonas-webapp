@@ -1,5 +1,5 @@
 import { AbstractModel } from "@/core/resources/model";
-import { PartnerEntity } from "../../domain/entities/partner";
+import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { DateTime } from "luxon";
 
 interface PartnerModelConstructor {

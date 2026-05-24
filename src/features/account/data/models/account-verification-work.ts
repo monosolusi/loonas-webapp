@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import { AbstractModel } from "@/core/resources/model";
 import { PersonalAccountModel } from "./personal-account";
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
-import { AccountVerificationWorkEntity } from "../../domain/entities/account-verification-work";
+import { AccountVerificationWorkEntity } from "@/features/account/domain/entities/account-verification-work";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 import { AccountTypeModel } from "@/features/account/domain/types/account-type";
 import { AccountType } from "@/features/account/domain/enums/account-type";

@@ -4,10 +4,10 @@ import {
   PartnerRepositoryFilter,
   PartnerRepositorySearchParams,
   PartnerRepositoryUpdateFields,
-} from "../../domain/repositories/partner";
+} from "@/features/partner/domain/repositories/partner";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { PartnerEntity } from "../../domain/entities/partner";
+import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
 import { PartnerService } from "@/features/partner/domain/sources/partner";
 

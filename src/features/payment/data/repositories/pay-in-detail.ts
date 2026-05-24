@@ -1,8 +1,8 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { PayInDetailRepository, PayInReturnType } from "@/features/payment/domain/repositories/pay-in-detail";
-import { PublicPayInDetailEntity } from "../../domain/entities/public-pay-in-detail";
+import { PublicPayInDetailEntity } from "@/features/payment/domain/entities/public-pay-in-detail";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { PayInDetailService } from "../../domain/sources/pay-in-detail";
+import { PayInDetailService } from "@/features/payment/domain/sources/pay-in-detail";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 
 export class PayInDetailRepositoryImpl implements PayInDetailRepository {

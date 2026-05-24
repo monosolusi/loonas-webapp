@@ -12,21 +12,21 @@ import {
   OutgoingInvoiceFilter,
 } from "@/features/invoice/domain/repositories/invoice";
 import { PaginatedData } from "@/core/resources/paginated";
-import { InvoiceDetailEntity } from "../../domain/types/invoice-detail";
+import { InvoiceDetailEntity } from "@/features/invoice/domain/types/invoice-detail";
 import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-list-item";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { InvoiceService } from "@/features/invoice/domain/sources/invoice";
-import { OutgoingInvoiceEntity } from "../../domain/entities/outgoing-invoice";
+import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 
-import { PublicOutgoingInvoiceEntity } from "../../domain/entities/public-outgoing-invoice";
-import { PublicIncomingInvoiceEntity } from "../../domain/entities/public-incoming-invoice";
-import { PayInEntity } from "../../domain/entities/pay-in";
+import { PublicOutgoingInvoiceEntity } from "@/features/invoice/domain/entities/public-outgoing-invoice";
+import { PublicIncomingInvoiceEntity } from "@/features/invoice/domain/entities/public-incoming-invoice";
+import { PayInEntity } from "@/features/invoice/domain/entities/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import { PaymentMethodPayInDetailEntity } from "@/features/payment/domain/entities/payment-method-pay-in-detail-entity";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
-import { InvoiceTimelineEntity } from "../../domain/entities/invoice-timeline";
-import { InvoiceSummaryEntity } from "../../domain/entities/invoice-summary";
-import { CashFlowEntity } from "../../domain/entities/cash-flow";
+import { InvoiceTimelineEntity } from "@/features/invoice/domain/entities/invoice-timeline";
+import { InvoiceSummaryEntity } from "@/features/invoice/domain/entities/invoice-summary";
+import { CashFlowEntity } from "@/features/invoice/domain/entities/cash-flow";
 
 export class InvoiceRepositoryImpl implements InvoiceRepository {
   constructor(

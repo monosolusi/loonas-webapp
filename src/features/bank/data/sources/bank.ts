@@ -1,5 +1,5 @@
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { BankModel } from "../models/bank";
+import { BankModel } from "@/features/bank/data/models/bank";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { AccountInquiryResultModel } from "@/features/bank/data/models/account-inquiry-result";
 import { BankAccountModel } from "@/features/bank/data/models/bank-account";

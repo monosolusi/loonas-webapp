@@ -1,6 +1,6 @@
 import { AbstractEntity } from "@/core/resources/entity";
 import { DateTime } from "luxon";
-import { PayInReferenceType } from "../enums/pay-in-reference-type";
+import { PayInReferenceType } from "@/features/invoice/domain/enums/pay-in-reference-type";
 
 interface PayInEntityConstructor {
   id: string;

@@ -9,14 +9,14 @@ import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
 import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { AccountServiceImpl } from "../../data/sources/account";
+import { AccountServiceImpl } from "@/features/account/data/sources/account";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { AccountRepositoryImpl } from "../../data/repositories/account";
+import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
 import {
   CreatePersonalAccountUseCase,
   CreatePersonalAccountUseCaseParams,
-} from "../../domain/usecases/create-personal-account";
+} from "@/features/account/domain/usecases/create-personal-account";
 import { DataFailed } from "@/core/resources/data-state";
 import { HttpRequest } from "@/core/helpers/http-request";
 

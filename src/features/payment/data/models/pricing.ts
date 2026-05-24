@@ -1,5 +1,5 @@
 import { AbstractModel } from "@/core/resources/model";
-import { PricingEntity } from "../../domain/entities/pricing";
+import { PricingEntity } from "@/features/payment/domain/entities/pricing";
 
 interface PricingModelConstructor {
   baseFee: number;

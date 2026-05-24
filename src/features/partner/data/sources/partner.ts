@@ -1,5 +1,5 @@
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { PartnerModel } from "../models/partner";
+import { PartnerModel } from "@/features/partner/data/models/partner";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { IncomingInvoiceModel } from "@/features/invoice/data/models/incoming-invoice";
 import {

@@ -1,7 +1,7 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { UserRepository } from "@/features/user/domain/repositories/user";
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
-import { UserEntity } from "../../domain/entities/user";
+import { UserEntity } from "@/features/user/domain/entities/user";
 import { UserService } from "@/features/user/domain/sources/user";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { UserStatusEntity } from "@/features/user/domain/entities/user-status.entity";

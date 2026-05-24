@@ -1,13 +1,13 @@
 import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { DateTime } from "luxon";
-import { PersonalAccountEntity } from "../entities/personal-account";
+import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
 import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
 import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
-import { AccountRepository } from "../repositories/account";
+import { AccountRepository } from "@/features/account/domain/repositories/account";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 

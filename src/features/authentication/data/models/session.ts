@@ -1,5 +1,5 @@
 import { AbstractModel } from "@/core/resources/model";
-import { SessionEntity } from "../../domain/entities/session";
+import { SessionEntity } from "@/features/authentication/domain/entities/session";
 
 interface SessionModelConstructor {
   accessToken: string;
