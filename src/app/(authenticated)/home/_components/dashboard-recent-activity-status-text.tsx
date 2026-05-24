@@ -14,11 +14,11 @@ const statusConfig: Record<InvoiceStatusType, { label: string; className: string
   failed: { label: "Gagal", className: "text-danger-500" },
 };
 
-interface DashboardRecentInvoicesStatusTextProps {
+interface DashboardRecentActivityStatusTextProps {
   status: InvoiceStatusType;
 }
 
-export function DashboardRecentInvoicesStatusText({ status }: DashboardRecentInvoicesStatusTextProps) {
+export function DashboardRecentActivityStatusText({ status }: DashboardRecentActivityStatusTextProps) {
   const config = statusConfig[status];
   return <span className={clsx("text-sm leading-5 font-medium", config.className)}>{config.label}</span>;
 }
