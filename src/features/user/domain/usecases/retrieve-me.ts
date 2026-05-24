@@ -1,7 +1,7 @@
 import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { UserEntity } from "../entities/user";
+import { UserEntity } from "@/features/user/domain/entities/user";
 import { UserRepository } from "@/features/user/domain/repositories/user";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 

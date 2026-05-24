@@ -1,5 +1,5 @@
 import { SessionService } from "@/features/authentication/domain/sources/session";
-import { SessionModel } from "../models/session";
+import { SessionModel } from "@/features/authentication/data/models/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useClerk } from "@clerk/nextjs";
 

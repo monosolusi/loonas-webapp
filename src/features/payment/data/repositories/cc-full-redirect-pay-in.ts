@@ -6,7 +6,7 @@ import { CreditCardFullRedirectPayInService } from "@/features/payment/data/sour
 import { CreditCardFullRedirectPayInDetailEntity } from "@/features/payment/domain/entities/cc-full-redirect-pay-in-detail";
 import { PayInDetailService } from "@/features/payment/domain/sources/pay-in-detail";
 import { PayInDetailRepository } from "@/features/payment/domain/repositories/pay-in-detail";
-import { PublicPayInDetailEntity } from "../../domain/entities/public-pay-in-detail";
+import { PublicPayInDetailEntity } from "@/features/payment/domain/entities/public-pay-in-detail";
 
 export class CreditCardFullRedirectPayInRepository implements PayInDetailRepository {
   constructor(private readonly payInService: PayInDetailService) {}

@@ -2,7 +2,7 @@ import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { UseCase } from "@/core/resources/use-case";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { PaymentMethodLimitEntity } from "../entities/payment-method-limit";
+import { PaymentMethodLimitEntity } from "@/features/payment/domain/entities/payment-method-limit";
 import { LimitRepository } from "@/features/transaction-monitoring/domain/repositories/limit";
 
 export class GetPaymentMethodLimitUseCaseParams {

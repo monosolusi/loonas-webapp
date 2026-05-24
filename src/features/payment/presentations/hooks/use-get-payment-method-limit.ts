@@ -5,7 +5,7 @@ import useSWR from "swr";
 import {
   GetPaymentMethodLimitUseCase,
   GetPaymentMethodLimitUseCaseParams,
-} from "../../domain/usecases/get-payment-method-limit";
+} from "@/features/payment/domain/usecases/get-payment-method-limit";
 import { LimitRepositoryImpl } from "@/features/transaction-monitoring/data/repositories/limit";
 import { LimitServiceImpl } from "@/features/transaction-monitoring/data/sources/limit";
 import { HttpRequest } from "@/core/helpers/http-request";

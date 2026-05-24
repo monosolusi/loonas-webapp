@@ -1,7 +1,7 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { OccupationRepository } from "@/core/utilities/occupation/domain/repositories/occupation";
-import { OccupationEntity } from "../../domain/entities/occupation";
-import { OccupationService } from "../sources/occupation";
+import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
+import { OccupationService } from "@/core/utilities/occupation/data/sources/occupation";
 
 export class OccupationRepositoryImpl implements OccupationRepository {
 

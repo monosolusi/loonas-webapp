@@ -1,9 +1,9 @@
 import { AbstractModel } from "@/core/resources/model";
 import { DateTime } from "luxon";
-import { PublicOutgoingInvoiceEntity } from "../../domain/entities/public-outgoing-invoice";
+import { PublicOutgoingInvoiceEntity } from "@/features/invoice/domain/entities/public-outgoing-invoice";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
-import { DiscountType } from "../../domain/enums/discount-type";
-import { ChargeFeeOn } from "../../domain/enums/charge-fee-on";
+import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
+import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 
 interface PublicOutgoingInvoiceModelConstructor {

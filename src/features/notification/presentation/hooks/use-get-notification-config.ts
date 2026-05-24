@@ -8,7 +8,7 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { GetNotificationConfigUseCase } from "@/features/notification/domain/usecases/get-notification-config";
-import { NotificationRepositoryImpl } from "../../data/repositories/notification";
+import { NotificationRepositoryImpl } from "@/features/notification/data/repositories/notification";
 import { NotificationServiceImpl } from "@/features/notification/data/sources/notification";
 
 async function GetNotificationConfigFetcher([_, params]: [string, { clerk: ReturnType<typeof useClerk> }]) {

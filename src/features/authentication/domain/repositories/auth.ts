@@ -1,5 +1,5 @@
 import { DataState } from "@/core/resources/data-state";
-import { SessionEntity } from "../entities/session";
+import { SessionEntity } from "@/features/authentication/domain/entities/session";
 
 export abstract class AuthRepository {
   public abstract signIn(email: string, password: string): Promise<DataState<SessionEntity>>;

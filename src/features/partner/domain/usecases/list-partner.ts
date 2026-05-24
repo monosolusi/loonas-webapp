@@ -2,8 +2,8 @@ import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { PartnerRepository } from "../repositories/partner";
-import { PartnerEntity } from "../entities/partner";
+import { PartnerRepository } from "@/features/partner/domain/repositories/partner";
+import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 
 export class ListPartnerUseCase implements UseCase<DataState<PartnerEntity[]>, void> {
   constructor(

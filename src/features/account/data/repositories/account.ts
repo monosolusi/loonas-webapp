@@ -9,9 +9,9 @@ import { PersonalAccountEntity } from "@/features/account/domain/entities/person
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { AccountVerificationWorkEntity } from "@/features/account/domain/entities/account-verification-work";
 import { AccountRepository, CreateBusinessParams } from "@/features/account/domain/repositories/account";
-import { AccountBankAccountEntity } from "../../domain/entities/account-bank-account";
+import { AccountBankAccountEntity } from "@/features/account/domain/entities/account-bank-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { BusinessAccountEntity } from "../../domain/entities/business-account";
+import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
 import { AccountService } from "@/features/account/domain/sources/account";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 

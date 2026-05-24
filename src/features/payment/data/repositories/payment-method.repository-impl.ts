@@ -1,7 +1,7 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PaymentMethodRepository } from "@/features/payment/domain/repositories/payment-method.repository";
-import { PaymentMethodCategoryEntity } from "../../domain/entities/payment-method-category.entity";
+import { PaymentMethodCategoryEntity } from "@/features/payment/domain/entities/payment-method-category.entity";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { PaymentMethodService } from "@/features/payment/domain/sources/payment-method.service";
 

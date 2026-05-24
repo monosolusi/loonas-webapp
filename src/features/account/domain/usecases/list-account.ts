@@ -1,6 +1,6 @@
 import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
-import { AccountRepository } from "../repositories/account";
+import { AccountRepository } from "@/features/account/domain/repositories/account";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";

@@ -1,6 +1,6 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { DataState } from "@/core/resources/data-state";
-import { PartnerEntity } from "../entities/partner";
+import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
 
 export interface PartnerRepositorySearchParams {

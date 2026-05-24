@@ -1,5 +1,5 @@
 import { IPayInDetailService } from "@/features/payment/domain/sources/i-pay-in-detail-service";
-import { PaymentMethodPayInDetailModel } from "../../domain/types/payment-method-pay-in-detail-model";
+import { PaymentMethodPayInDetailModel } from "@/features/payment/domain/types/payment-method-pay-in-detail-model";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 

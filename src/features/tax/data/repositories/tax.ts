@@ -1,6 +1,6 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { TaxRepository, TaxRepositoryCalculateTaxParams } from "@/features/tax/domain/repositories/tax";
-import { CalculateTaxResultEntity } from "../../domain/entities/calculate-tax-result";
+import { CalculateTaxResultEntity } from "@/features/tax/domain/entities/calculate-tax-result";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { TaxService } from "@/features/tax/domain/sources/tax";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";

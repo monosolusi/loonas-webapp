@@ -6,7 +6,7 @@ import { VirtualAccountPayInDetailEntity } from "@/features/payment/domain/entit
 import { VirtualAccountPayInService } from "@/features/payment/data/sources/va-pay-in";
 import { PayInDetailRepository } from "@/features/payment/domain/repositories/pay-in-detail";
 import { PayInDetailService } from "@/features/payment/domain/sources/pay-in-detail";
-import { PublicPayInDetailEntity } from "../../domain/entities/public-pay-in-detail";
+import { PublicPayInDetailEntity } from "@/features/payment/domain/entities/public-pay-in-detail";
 
 export class VirtualAccountPayInRepository implements PayInDetailRepository {
   constructor(private readonly payInService: PayInDetailService) {}

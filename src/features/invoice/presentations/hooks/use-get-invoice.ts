@@ -2,10 +2,10 @@
 
 import { useCallback } from "react";
 import { HttpRequest } from "@/core/helpers/http-request";
-import { InvoiceRepositoryImpl } from "../../data/repositories/invoice";
-import { InvoiceServiceImpl } from "../../data/sources/invoice";
+import { InvoiceRepositoryImpl } from "@/features/invoice/data/repositories/invoice";
+import { InvoiceServiceImpl } from "@/features/invoice/data/sources/invoice";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { GetInvoiceUseCase, GetInvoiceUseCaseParams } from "../../domain/usecases/get-invoice.usecases";
+import { GetInvoiceUseCase, GetInvoiceUseCaseParams } from "@/features/invoice/domain/usecases/get-invoice.usecases";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { DataFailed } from "@/core/resources/data-state";
 import useSWR from "swr";

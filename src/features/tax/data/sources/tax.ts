@@ -1,6 +1,6 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { CalculateTaxParams, TaxService } from "@/features/tax/domain/sources/tax";
-import { CalculateTaxResultModel } from "../models/calculate-tax-result";
+import { CalculateTaxResultModel } from "@/features/tax/data/models/calculate-tax-result";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { HttpRequest } from "@/core/helpers/http-request";
 

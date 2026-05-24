@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PaymentGatewayService } from "@/features/payment/data/sources/payment-gateway";
-import { PaymentRequestModel } from "../models/payment-request";
+import { PaymentRequestModel } from "@/features/payment/data/models/payment-request";
 import { PartnerModel } from "@/features/partner/data/models/partner";
 import { BankAccountModel } from "@/features/bank/data/models/bank-account";
 import { PaymentGatewayModel } from "@/features/payment/data/models/payment-gateway";

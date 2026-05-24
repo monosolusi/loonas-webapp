@@ -1,5 +1,5 @@
 import { AbstractEntity } from "@/core/resources/entity";
-import { NotificationChannel } from "../enums/notification-channel";
+import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 
 type Channel = { channel: NotificationChannel; enabled: boolean };
 

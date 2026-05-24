@@ -1,15 +1,15 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { AccountVerificationWorkEntity } from "../../domain/entities/account-verification-work";
+import { AccountVerificationWorkEntity } from "@/features/account/domain/entities/account-verification-work";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { AccountServiceImpl } from "../../data/sources/account";
-import { AccountRepositoryImpl } from "../../data/repositories/account";
+import { AccountServiceImpl } from "@/features/account/data/sources/account";
+import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
 import {
   RetrieveAccountVerificationWorkUseCase,
   RetrieveAccountVerificationWorkUseCaseParams,
-} from "../../domain/usecases/retrieve-account-verification-work";
+} from "@/features/account/domain/usecases/retrieve-account-verification-work";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { HttpRequest } from "@/core/helpers/http-request";

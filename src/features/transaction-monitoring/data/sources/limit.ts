@@ -1,6 +1,6 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PaymentMethodLimitModel } from "@/features/payment/data/models/payment-method-limit";
-import { LimitService } from "../../domain/sources/limit";
+import { LimitService } from "@/features/transaction-monitoring/domain/sources/limit";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 

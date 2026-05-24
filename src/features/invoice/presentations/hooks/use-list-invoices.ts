@@ -1,10 +1,10 @@
 "use client";
 
 import { HttpRequest } from "@/core/helpers/http-request";
-import { InvoiceRepositoryImpl } from "../../data/repositories/invoice";
-import { InvoiceServiceImpl } from "../../data/sources/invoice";
+import { InvoiceRepositoryImpl } from "@/features/invoice/data/repositories/invoice";
+import { InvoiceServiceImpl } from "@/features/invoice/data/sources/invoice";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { ListInvoicesUseCase, ListInvoicesUseCaseParams } from "../../domain/usecases/list-invoices.usecases";
+import { ListInvoicesUseCase, ListInvoicesUseCaseParams } from "@/features/invoice/domain/usecases/list-invoices.usecases";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { DataFailed } from "@/core/resources/data-state";
 import useSWR from "swr";

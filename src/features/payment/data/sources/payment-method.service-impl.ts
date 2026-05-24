@@ -1,6 +1,6 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PaymentMethodService } from "@/features/payment/domain/sources/payment-method.service";
-import { PaymentMethodCategoryModel } from "../models/payment-method-category.model";
+import { PaymentMethodCategoryModel } from "@/features/payment/data/models/payment-method-category.model";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 

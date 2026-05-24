@@ -6,8 +6,8 @@ import { DistrictEntity } from "@/core/utilities/address/domain/entities/distric
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
 import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { PersonalAccountEntity } from "../entities/personal-account";
-import { AccountVerificationWorkEntity } from "../entities/account-verification-work";
+import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
+import { AccountVerificationWorkEntity } from "@/features/account/domain/entities/account-verification-work";
 import { AccountBankAccountEntity } from "@/features/account/domain/entities/account-bank-account";
 import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";

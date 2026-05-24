@@ -9,9 +9,9 @@ import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
-import { PublicOutgoingInvoiceModel } from "../../data/models/public-outgoing-invoice";
-import { PublicIncomingInvoiceModel } from "../../data/models/public-incoming-invoice";
-import { PayInModel } from "../../data/models/pay-in";
+import { PublicOutgoingInvoiceModel } from "@/features/invoice/data/models/public-outgoing-invoice";
+import { PublicIncomingInvoiceModel } from "@/features/invoice/data/models/public-incoming-invoice";
+import { PayInModel } from "@/features/invoice/data/models/pay-in";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import { PaginationMetaModel } from "@/core/resources/pagination-meta-model";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";

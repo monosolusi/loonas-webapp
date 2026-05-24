@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
-import { AccountTypeEntity } from "../types/account-type";
+import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
 interface AccountVerificationWorkEntityConstructor {
   account: AccountTypeEntity;

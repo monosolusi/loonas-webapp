@@ -3,11 +3,11 @@ import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { AddressRepositoryImpl } from "@/core/utilities/address/data/repositories/address";
 import { ProvinceServiceImpl } from "@/core/utilities/address/data/sources/province";
-import { CityEntity } from "../../domain/entities/city";
-import { ListCityUseCase, ListCityUseCaseParams } from "../../domain/usecases/list-city";
+import { CityEntity } from "@/core/utilities/address/domain/entities/city";
+import { ListCityUseCase, ListCityUseCaseParams } from "@/core/utilities/address/domain/usecases/list-city";
 import { CityServiceImpl } from "@/core/utilities/address/data/sources/city";
 import { SubdistrictServiceImpl } from "@/core/utilities/address/data/sources/subdistrict";
-import { DistrictServiceImpl } from "../../data/sources/district";
+import { DistrictServiceImpl } from "@/core/utilities/address/data/sources/district";
 
 // data, loading
 type CityContextProps = [CityEntity[], boolean]

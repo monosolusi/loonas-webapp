@@ -1,5 +1,5 @@
 import { AbstractModel } from "@/core/resources/model";
-import { PaymentGatewayEntity } from "../../domain/entities/payment-gateway";
+import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { PaymentSchemeModel } from "./payment-scheme";
 import { PricingModel } from "./pricing";
 

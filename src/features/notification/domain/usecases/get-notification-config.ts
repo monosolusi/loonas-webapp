@@ -3,7 +3,7 @@ import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { NotificationConfigEntity } from "@/features/notification/domain/entities/notification-config";
-import { NotificationRepository } from "../repositories/notification";
+import { NotificationRepository } from "@/features/notification/domain/repositories/notification";
 
 export class GetNotificationConfigUseCase implements UseCase<DataState<NotificationConfigEntity>, void> {
   constructor(
