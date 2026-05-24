@@ -12,6 +12,8 @@ export type UseListInvoicesParams = {
   limit?: number;
   includes?: string;
   filter?: string;
+  from?: string;
+  to?: string;
 };
 
 export type ListInvoicesFetcherParams = UseListInvoicesParams & {

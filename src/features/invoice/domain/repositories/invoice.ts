@@ -84,6 +84,8 @@ export interface ListInvoicesFilter {
   limit?: number;
   includes?: string;
   filter?: string;
+  from?: string; // YYYY-MM-DD, Asia/Jakarta
+  to?: string;   // YYYY-MM-DD, Asia/Jakarta; must pair with `from`
 }
 
 export interface CreatePosSaleItemRepoParams {
