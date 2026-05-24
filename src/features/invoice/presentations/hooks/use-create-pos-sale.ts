@@ -19,6 +19,7 @@ import {
   CreatePosSaleFetcherParams,
   CreatePosSaleHookParams,
 } from "@/features/invoice/presentations/hooks/use-create-pos-sale.types";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 async function CreatePosSaleFetcher(
   _: string,
@@ -51,7 +52,7 @@ async function CreatePosSaleFetcher(
   await globalMutate(
     (key: unknown) =>
       Array.isArray(key) &&
-      key[0] === "get-invoice" &&
+      key[0] === INVOICE_SWR_KEYS.GET_INVOICE &&
       (key[1] as { id?: string } | undefined)?.id === invoice.id,
     invoice,
     { revalidate: false },
@@ -62,7 +63,7 @@ async function CreatePosSaleFetcher(
 
 export function useCreatePosSale() {
   return useSWRMutationClerk<OutgoingInvoiceEntity, CreatePosSaleHookParams>(
-    "create-pos-sale",
+    INVOICE_SWR_KEYS.CREATE_POS_SALE,
     CreatePosSaleFetcher,
   );
 }

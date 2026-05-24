@@ -10,6 +10,7 @@ import {
 } from "../../domain/usecases/create-outgoing-invoice-pay-in";
 import useSWRMutation from "swr/mutation";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 interface CreateOutgoingInvoicePayInParams {
   invoiceId: string;
@@ -39,5 +40,5 @@ async function CreateOutgoingInvoicePayInFetcher(
 }
 
 export function useCreateOutgoingInvoicePayIn() {
-  return useSWRMutation("create-outgoing-invoice-pay-in", CreateOutgoingInvoicePayInFetcher);
+  return useSWRMutation(INVOICE_SWR_KEYS.CREATE_OUTGOING_INVOICE_PAY_IN, CreateOutgoingInvoicePayInFetcher);
 }

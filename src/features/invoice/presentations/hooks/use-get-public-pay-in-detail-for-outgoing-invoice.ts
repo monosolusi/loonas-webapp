@@ -9,6 +9,7 @@ import { PayInDetailRepositoryImpl } from "@/features/payment/data/repositories/
 import { PayInDetailServiceImpl } from "@/features/payment/data/sources/pay-in-detail";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { PublicPayInDetailEntity } from "@/features/payment/domain/entities/public-pay-in-detail";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 interface GetPublicPayInDetailForOutgoingInvoiceFetcherParams {
   invoiceId: string;
@@ -35,7 +36,7 @@ async function GetPublicPayInDetailForOutgoingInvoiceFetcher([_, params]: [
 
 export function useGetPublicPayInDetailForOutgoingInvoice(params: GetPublicPayInDetailForOutgoingInvoiceFetcherParams) {
   const { data, isLoading, error, mutate } = useSWR(
-    ["get-public-pay-in-detail-for-outgoing-invoice", params],
+    [INVOICE_SWR_KEYS.GET_PUBLIC_PAY_IN_DETAIL_FOR_OUTGOING_INVOICE, params],
     GetPublicPayInDetailForOutgoingInvoiceFetcher,
   );
 

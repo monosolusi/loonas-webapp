@@ -19,6 +19,7 @@ import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 interface InvoiceItem {
   name: string;
@@ -107,5 +108,5 @@ async function createOutgoingInvoiceFetcher(
 
 export function useCreateOutgoingInvoice() {
   const clerk = useClerk();
-  return useSWRMutation(["create-outgoing-invoice", { clerk }], createOutgoingInvoiceFetcher);
+  return useSWRMutation([INVOICE_SWR_KEYS.CREATE_OUTGOING_INVOICE, { clerk }], createOutgoingInvoiceFetcher);
 }
