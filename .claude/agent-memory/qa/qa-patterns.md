@@ -1,6 +1,6 @@
 ---
 name: qa-patterns
-description: Recurring build warnings, CI ticket scope rules, build perf baseline, JSON validity gate, and Playwright session patterns
+description: Recurring build warnings, CI ticket scope rules, build perf baseline, JSON validity gate, Playwright session/backend patterns, SWR key isolation, LNS-232 widget migration
 metadata:
   type: project
 ---
@@ -126,6 +126,17 @@ metadata:
 - `hover:bg-primary-50` in `dashboard-recent-invoices.tsx` row hover is a PRE-EXISTING interactive hover effect (not a tinted background zone). CC1 (no tinted zone re-introduced) PASSES — verify via `git diff` before flagging.
 - `dashboard-recent-invoices.tsx` color tokens updated: `bg-emerald-50` → `bg-success-50`, `text-emerald-500` → `text-success-400`, `bg-orange-50` → `bg-warning-50`, `text-orange-500` → `text-warning-400`. Limit: 5 → 7. Skeleton rows: 5 → 7.
 - Build output: `/home` = 17.3 kB (down from 19.9 kB in round 2 — 2 deleted tiles reduced bundle). Build time: 4.4s compile. Total 44 pages.
+
+## LNS-232 DashboardRecentActivity Structure (2026-05-24)
+
+- Widget name change: `DashboardRecentInvoices` (shoulder column, 7 rows) → `DashboardRecentActivity` (full-width band below the 2-col grid, 10 rows). Old `DashboardRecentInvoices` top-level widget removed from `page.tsx`; 4 sub-components (`-arrow-icon`, `-column-header`, `-skeleton-row`, `-status-text`) retained and reused by new widget.
+- 4 concurrent `useListInvoices()` calls inside a single component (posMergeResult / posPeriodResult / incomingResult / outgoingResult). Each has a distinct params shape, so SWR generates distinct keys — no collision risk.
+- `InvoiceListItemEntity = IncomingInvoiceEntity | OutgoingInvoiceEntity` — `instanceof IncomingInvoiceEntity` guard in row is safe because both concrete classes exist.
+- POS "Sesuai periode dipilih" caption uses `hidden` class (not conditional render) — DOM node always present, no layout shift. This is the intended pattern.
+- `bg-primary-50` for POS icon badge, `bg-success-50` for incoming, `bg-warning-50` for outgoing — all tokens confirmed in `globals.css`.
+- Period scoping: POS tab over-fetches 30 rows (limit:30), then client-filters by `createdAt >= from && <= to` using `.toISODate()` in Asia/Jakarta zone. Other tabs are NOT period-scoped.
+- `page.tsx` `/home` route already registered in `ROUTE_MAP` (`header-title.tsx` line 13) — no regression risk.
+- Build output: `/home` = 18 kB (up ~0.7 kB from LNS-230 round 3 baseline of 17.3 kB — expected from new widget). Build time: 5.2s compile. 44 pages total.
 
 ## LNS-219 Refactor Structure (2026-05-21)
 
