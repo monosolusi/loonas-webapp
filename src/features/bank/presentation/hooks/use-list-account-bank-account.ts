@@ -9,6 +9,7 @@ import { ListAccountBankAccountUseCase } from "@/features/account/domain/usecase
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import useSWR from "swr";
+import { useMemo } from "react";
 import { HttpRequest } from "@/core/helpers/http-request";
 
 async function listAccountBankAccountFetcher([_, params]: [string, { clerk: ReturnType<typeof useClerk> }]) {
@@ -26,7 +27,8 @@ async function listAccountBankAccountFetcher([_, params]: [string, { clerk: Retu
 
 export function useListAccountBankAccout() {
   const clerk = useClerk();
-  const { data, error, isLoading } = useSWR(["list-account-bank-account", { clerk }], listAccountBankAccountFetcher);
+  const swrParams = useMemo(() => ({ clerk }), [clerk]);
+  const { data, error, isLoading } = useSWR(["list-account-bank-account", swrParams], listAccountBankAccountFetcher);
   return {
     bankAccounts: data ?? [],
     loading: isLoading,

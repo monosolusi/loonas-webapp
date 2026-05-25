@@ -8,6 +8,7 @@ import { ListAccountUseCase } from "@/features/account/domain/usecases/list-acco
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import useSWR from "swr";
+import { useMemo } from "react";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import {
   ListAccountFetcherParams,
@@ -41,7 +42,8 @@ async function ListAccountFetcher([_, params]: [string, ListAccountFetcherParams
 
 export function useListAccount(): UseListAccountReturnType {
   const clerk = useClerk();
-  const { data, isLoading, error, mutate } = useSWR(["list-account", { clerk }], ListAccountFetcher);
+  const swrParams = useMemo(() => ({ clerk }), [clerk]);
+  const { data, isLoading, error, mutate } = useSWR(["list-account", swrParams], ListAccountFetcher);
 
   if (isLoading) return INITIAL_STATE;
   if (error) {
