@@ -10,13 +10,14 @@ const SKELETON_ROW_COUNT = 10;
 interface DashboardRecentActivityLoadingProps {
   tabs: React.ReactNode;
   periodCaptionVisible: boolean;
+  periodLabel: string;
 }
 
-export function DashboardRecentActivityLoading({ tabs, periodCaptionVisible }: DashboardRecentActivityLoadingProps) {
+export function DashboardRecentActivityLoading({ tabs, periodCaptionVisible, periodLabel }: DashboardRecentActivityLoadingProps) {
   return (
     <SectionCard title="Aktivitas Terbaru" bodyClassName="p-0" headerAction={tabs}>
-      <div className={clsx("px-6 py-2 text-xs text-neutral-300", !periodCaptionVisible && "hidden")}>
-        Sesuai periode dipilih
+      <div className={clsx("px-6 py-2 text-xs text-neutral-300", !periodCaptionVisible && "invisible")}>
+        {`Periode: ${periodLabel}`}
       </div>
       <DashboardRecentActivityColumnHeader />
       {Array.from({ length: SKELETON_ROW_COUNT }).map((_, i) => (

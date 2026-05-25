@@ -1,6 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { DateTime } from "luxon";
+import clsx from "clsx";
+import { resolveLabel, TZ } from "@/core/presentations/components/date-range-picker-presets";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
 import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-list-item";
@@ -25,6 +28,32 @@ const EMPTY_COPY: Record<ActivityTab, string> = {
 export function DashboardRecentActivity() {
   const [activeTab, setActiveTab] = useState<ActivityTab>("all");
   const { from, to } = useDashboardRange();
+
+  const [hasPeriodChanged, setHasPeriodChanged] = useState(false);
+  const prevRangeForCaptionRef = useRef<{ from: string; to: string } | null>(null);
+
+  useEffect(() => {
+    if (prevRangeForCaptionRef.current === null) {
+      prevRangeForCaptionRef.current = { from, to };
+      return;
+    }
+    if (prevRangeForCaptionRef.current.from === from && prevRangeForCaptionRef.current.to === to) return;
+    prevRangeForCaptionRef.current = { from, to };
+    setHasPeriodChanged(true);
+  }, [from, to]);
+
+  const periodLabel = useMemo(() => {
+    const fromDate = DateTime.fromISO(from, { zone: TZ }).toJSDate();
+    const toDate = DateTime.fromISO(to, { zone: TZ }).toJSDate();
+    return resolveLabel(fromDate, toDate);
+  }, [from, to]);
+
+  const [liveMessage, setLiveMessage] = useState<string>("");
+
+  useEffect(() => {
+    if (!hasPeriodChanged) return;
+    setLiveMessage(`Aktivitas diperbarui untuk periode: ${periodLabel}`);
+  }, [hasPeriodChanged, periodLabel]);
 
   const posResult = useListInvoices({ channel: InvoiceChannel.POS, limit: 10, from, to });
   const incomingResult = useListInvoices({ type: InvoiceType.INCOMING, limit: 10, from, to });
@@ -107,38 +136,40 @@ export function DashboardRecentActivity() {
     track("recent_activity_empty_state_shown", { tab: activeTab, from_date: from, to_date: to });
   }, [derivedState, activeTab, from, to]);
 
-  if (derivedState.loading) {
-    return <DashboardRecentActivityLoading tabs={tabs} periodCaptionVisible={false} />;
-  }
-
-  if (derivedState.error) {
-    return (
-      <DashboardRecentActivityError
-        tabs={tabs}
-        periodCaptionVisible={false}
-        message="Gagal memuat data aktivitas."
-      />
-    );
-  }
-
-  if (derivedState.rows.length === 0) {
-    return (
-      <DashboardRecentActivityEmpty
-        tabs={tabs}
-        periodCaptionVisible={false}
-        message={EMPTY_COPY[activeTab]}
-      />
-    );
-  }
-
   return (
-    <SectionCard title="Aktivitas Terbaru" bodyClassName="p-0" headerAction={tabs}>
-      <DashboardRecentActivityColumnHeader />
-      <div role="tabpanel" aria-labelledby={`activity-tab-${activeTab}`}>
-        {derivedState.rows.map((inv, index) => (
-          <DashboardRecentActivityRow key={inv.id} invoice={inv} tab={activeTab} position={index} />
-        ))}
+    <>
+      {derivedState.loading ? (
+        <DashboardRecentActivityLoading tabs={tabs} periodCaptionVisible={hasPeriodChanged} periodLabel={periodLabel} />
+      ) : derivedState.error ? (
+        <DashboardRecentActivityError
+          tabs={tabs}
+          periodCaptionVisible={hasPeriodChanged}
+          periodLabel={periodLabel}
+          message="Gagal memuat data aktivitas."
+        />
+      ) : derivedState.rows.length === 0 ? (
+        <DashboardRecentActivityEmpty
+          tabs={tabs}
+          periodCaptionVisible={hasPeriodChanged}
+          periodLabel={periodLabel}
+          message={EMPTY_COPY[activeTab]}
+        />
+      ) : (
+        <SectionCard title="Aktivitas Terbaru" bodyClassName="p-0" headerAction={tabs}>
+          <div className={clsx("px-6 py-2 text-xs text-neutral-300", !hasPeriodChanged && "invisible")}>
+            {`Periode: ${periodLabel}`}
+          </div>
+          <DashboardRecentActivityColumnHeader />
+          <div role="tabpanel" aria-labelledby={`activity-tab-${activeTab}`}>
+            {derivedState.rows.map((inv, index) => (
+              <DashboardRecentActivityRow key={inv.id} invoice={inv} tab={activeTab} position={index} />
+            ))}
+          </div>
+        </SectionCard>
+      )}
+      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {liveMessage}
       </div>
-    </SectionCard>
+    </>
   );
 }
