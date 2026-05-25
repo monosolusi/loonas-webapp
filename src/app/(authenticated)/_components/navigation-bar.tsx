@@ -4,6 +4,8 @@ import { NavigationGroup } from "@/app/(authenticated)/_components/navigation-gr
 import { NavigationChildItem } from "@/app/(authenticated)/_components/navigation-child-item";
 import { KycReviewNavItem } from "@/app/(authenticated)/_components/kyc-review-nav-item";
 import { FinanceNavGroup } from "@/app/(authenticated)/_components/finance-nav-group";
+import { PurchasingNavGroup } from "@/app/(authenticated)/_components/purchasing-nav-group";
+import { SalesNavGroup } from "@/app/(authenticated)/_components/sales-nav-group";
 
 export function NavigationBar() {
   return (
@@ -16,25 +18,8 @@ export function NavigationBar() {
           iconPath="/assets/images/dashboard-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/dashboard-icon-primary-300-w16-h16.svg"
         />
-        <NavigationGroup
-          label="Pembelian"
-          iconPath="/assets/images/invoice-in-icon-neutral-300-w16-h16.svg"
-          selectedIconPath="/assets/images/invoice-in-icon-primary-300-w16-h16.svg"
-          matchPrefixes={["/purchasing", "/invoices/incoming"]}
-        >
-          <NavigationChildItem href="/purchasing" label="Order Pembelian" />
-          <NavigationChildItem href="/invoices/incoming" label="Faktur Masukan" />
-        </NavigationGroup>
-        <NavigationGroup
-          label="Penjualan"
-          iconPath="/assets/images/invoice-out-icon-neutral-300-w16-h16.svg"
-          selectedIconPath="/assets/images/invoice-out-icon-primary-300-w16-h16.svg"
-          matchPrefixes={["/pos", "/sales/pos", "/invoices/outgoing"]}
-        >
-          <NavigationChildItem href="/pos" label="POS" />
-          <NavigationChildItem href="/sales/pos" label="Riwayat POS" />
-          <NavigationChildItem href="/invoices/outgoing" label="Faktur Keluaran" />
-        </NavigationGroup>
+        <PurchasingNavGroup />
+        <SalesNavGroup />
         <NavigationGroup
           label="Produk"
           iconPath="/assets/images/box-icon-neutral-300-w16-h16.svg"
