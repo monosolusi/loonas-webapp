@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx";
+import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { IncomingInvoiceEntity, InvoiceStatus } from "@/features/invoice/domain/entities/incoming-invoice";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
@@ -15,8 +16,16 @@ import {
   InvoiceStatusType,
 } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-status-text";
 import { DateTime } from "luxon";
+import { track } from "@/core/analytics";
+import type { ActivityTab } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-tabs";
 
 type ActivityKind = "pos" | "incoming" | "outgoing";
+
+const DESTINATION_TEMPLATE: Record<ActivityKind, string> = {
+  pos: "/sales/pos/:id",
+  incoming: "/invoices/incoming/:id",
+  outgoing: "/invoices/outgoing/:id",
+};
 
 type ActivityRowView = {
   kind: ActivityKind;
@@ -88,18 +97,38 @@ function toActivityView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): Act
 
 interface DashboardRecentActivityRowProps {
   invoice: IncomingInvoiceEntity | OutgoingInvoiceEntity;
+  tab: ActivityTab;
+  position: number;
 }
 
-export function DashboardRecentActivityRow({ invoice }: DashboardRecentActivityRowProps) {
+export function DashboardRecentActivityRow({ invoice, tab, position }: DashboardRecentActivityRowProps) {
   const router = useRouter();
   const view = toActivityView(invoice);
 
+  const handleActivate = useCallback(() => {
+    track("recent_activity_row_clicked", {
+      tab,
+      row_position: position,
+      destination: DESTINATION_TEMPLATE[view.kind],
+    });
+    router.push(view.href);
+  }, [tab, position, view.kind, view.href, router]);
+
   return (
     <div
-      onClick={() => router.push(view.href)}
+      role="button"
+      tabIndex={0}
+      onClick={handleActivate}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleActivate();
+        }
+      }}
       className={clsx(
         "grid cursor-pointer grid-cols-[2fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0",
         "hover:border-l-primary-300 hover:bg-primary-50",
+        "focus:outline-none focus-visible:border-l-primary-300 focus-visible:bg-primary-50",
       )}
     >
       <div className="flex items-center gap-2">

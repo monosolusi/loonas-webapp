@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
 import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-list-item";
@@ -13,6 +13,7 @@ import { DashboardRecentActivityRow } from "@/app/(authenticated)/home/_componen
 import { DashboardRecentActivityLoading } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-loading";
 import { DashboardRecentActivityError } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-error";
 import { DashboardRecentActivityEmpty } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-empty";
+import { track } from "@/core/analytics";
 
 const EMPTY_COPY: Record<ActivityTab, string> = {
   all: "Belum ada aktivitas pada periode ini",
@@ -29,9 +30,30 @@ export function DashboardRecentActivity() {
   const incomingResult = useListInvoices({ type: InvoiceType.INCOMING, limit: 10, from, to });
   const outgoingResult = useListInvoices({ type: InvoiceType.OUTGOING, channel: InvoiceChannel.INVOICE, limit: 10, from, to });
 
-  const tabs = useMemo(
-    () => <DashboardRecentActivityTabs active={activeTab} onChange={setActiveTab} />,
+  const handleTabChange = useCallback(
+    (next: ActivityTab) => {
+      if (next !== activeTab) {
+        track("recent_activity_tab_switched", { from_tab: activeTab, to_tab: next });
+      }
+      setActiveTab(next);
+    },
     [activeTab],
+  );
+
+  const prevRangeRef = useRef<{ from: string; to: string } | null>(null);
+  useEffect(() => {
+    if (prevRangeRef.current === null) {
+      prevRangeRef.current = { from, to };
+      return;
+    }
+    if (prevRangeRef.current.from === from && prevRangeRef.current.to === to) return;
+    prevRangeRef.current = { from, to };
+    track("recent_activity_period_changed", { tab: activeTab, from_date: from, to_date: to });
+  }, [from, to, activeTab]);
+
+  const tabs = useMemo(
+    () => <DashboardRecentActivityTabs active={activeTab} onChange={handleTabChange} />,
+    [activeTab, handleTabChange],
   );
 
   const derivedState = useMemo(() => {
@@ -74,6 +96,17 @@ export function DashboardRecentActivity() {
     return { loading: false, error: null, rows: outgoingResult.invoices ?? [] } as const;
   }, [activeTab, posResult, incomingResult, outgoingResult]);
 
+  const emptyStateSeenRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (derivedState.loading) return;
+    if (derivedState.error) return;
+    if (derivedState.rows.length !== 0) return;
+    const key = `${activeTab}|${from}|${to}`;
+    if (emptyStateSeenRef.current.has(key)) return;
+    emptyStateSeenRef.current.add(key);
+    track("recent_activity_empty_state_shown", { tab: activeTab, from_date: from, to_date: to });
+  }, [derivedState, activeTab, from, to]);
+
   if (derivedState.loading) {
     return <DashboardRecentActivityLoading tabs={tabs} periodCaptionVisible={false} />;
   }
@@ -102,8 +135,8 @@ export function DashboardRecentActivity() {
     <SectionCard title="Aktivitas Terbaru" bodyClassName="p-0" headerAction={tabs}>
       <DashboardRecentActivityColumnHeader />
       <div role="tabpanel" aria-labelledby={`activity-tab-${activeTab}`}>
-        {derivedState.rows.map((inv) => (
-          <DashboardRecentActivityRow key={inv.id} invoice={inv} />
+        {derivedState.rows.map((inv, index) => (
+          <DashboardRecentActivityRow key={inv.id} invoice={inv} tab={activeTab} position={index} />
         ))}
       </div>
     </SectionCard>
