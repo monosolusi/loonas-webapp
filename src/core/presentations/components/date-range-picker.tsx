@@ -9,6 +9,7 @@ import { id } from "react-day-picker/locale";
 import { DateTime } from "luxon";
 import clsx from "clsx";
 import "react-day-picker/style.css";
+import { PRESETS, formatDate, resolveLabel } from "@/core/presentations/components/date-range-picker-presets";
 
 type DateRangeValue = { from: Date | undefined; to: Date | undefined };
 
@@ -18,44 +19,6 @@ type DateRangePickerProps = {
   maxSpanDays?: number;
   disableFutureDates?: boolean;
 };
-
-const TZ = "Asia/Jakarta";
-
-const PRESETS = [
-  {
-    label: "Bulan ini",
-    getRange: () => ({
-      from: DateTime.now().setZone(TZ).startOf("month").toJSDate(),
-      to: DateTime.now().setZone(TZ).toJSDate(),
-    }),
-  },
-  {
-    label: "7 hari terakhir",
-    getRange: () => ({
-      from: DateTime.now().setZone(TZ).minus({ days: 6 }).toJSDate(),
-      to: DateTime.now().setZone(TZ).toJSDate(),
-    }),
-  },
-  {
-    label: "14 hari terakhir",
-    getRange: () => ({
-      from: DateTime.now().setZone(TZ).minus({ days: 13 }).toJSDate(),
-      to: DateTime.now().setZone(TZ).toJSDate(),
-    }),
-  },
-  {
-    label: "30 hari terakhir",
-    getRange: () => ({
-      from: DateTime.now().setZone(TZ).minus({ days: 29 }).toJSDate(),
-      to: DateTime.now().setZone(TZ).toJSDate(),
-    }),
-  },
-];
-
-function formatDate(date: Date | undefined): string | null {
-  if (!date) return null;
-  return DateTime.fromJSDate(date).setLocale("id").toFormat("d MMM yyyy");
-}
 
 function computeSpanDays(from: Date | undefined, to: Date | undefined): number {
   if (!from || !to) return 0;
@@ -179,24 +142,6 @@ export function DateRangePicker({ value, onChange, maxSpanDays = 365, disableFut
     setDraft(value);
   }, [value.from?.getTime(), value.to?.getTime()]);
 
-  const resolveLabel = () => {
-    if (!value.from || !value.to) return "Pilih periode";
-    const fromDt = DateTime.fromJSDate(value.from).setZone(TZ);
-    const toDt = DateTime.fromJSDate(value.to).setZone(TZ);
-    const matchedPreset = PRESETS.find((preset) => {
-      const range = preset.getRange();
-      const presetFrom = DateTime.fromJSDate(range.from).setZone(TZ);
-      const presetTo = DateTime.fromJSDate(range.to).setZone(TZ);
-      return fromDt.toISODate() === presetFrom.toISODate() && toDt.toISODate() === presetTo.toISODate();
-    });
-    if (matchedPreset) return matchedPreset.label;
-    const from = formatDate(value.from);
-    if (!from) return "Pilih periode";
-    const to = formatDate(value.to);
-    if (!to) return from;
-    return `${from} — ${to}`;
-  };
-
   const handleSelect = (range: DateRange | undefined) => {
     if (!range) {
       setDraft({ from: undefined, to: undefined });
@@ -237,7 +182,7 @@ export function DateRangePicker({ value, onChange, maxSpanDays = 365, disableFut
       <>
         <button type="button" onClick={() => setDialogOpen(true)} className={triggerClasses}>
           <CalendarIcon className="size-4 shrink-0" />
-          <span className="whitespace-nowrap">{resolveLabel()}</span>
+          <span className="whitespace-nowrap">{resolveLabel(value.from, value.to)}</span>
         </button>
 
         <Dialog open={dialogOpen} onClose={() => handleCancel()} className="relative z-50">
@@ -280,7 +225,7 @@ export function DateRangePicker({ value, onChange, maxSpanDays = 365, disableFut
     <Popover className="relative">
       <PopoverButton className={triggerClasses}>
         <CalendarIcon className="size-4 shrink-0" />
-        <span className="whitespace-nowrap">{resolveLabel()}</span>
+        <span className="whitespace-nowrap">{resolveLabel(value.from, value.to)}</span>
       </PopoverButton>
 
       <Transition
