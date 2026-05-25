@@ -156,6 +156,19 @@ metadata:
 - All three grep patterns returned exit 1 (zero hits): `useGetIncomingInvoice`, `GET_INCOMING_INVOICE`, `GetIncomingInvoiceFetcher`.
 - Verification path: tsc exit 0 + lint exit 0 + 3x grep exit 1 + clean compile log = PASS.
 
+## LNS-239 Analytics Shim Structure (2026-05-25)
+
+- `track()` is a plain function export (not a hook). SSR guard via `typeof window === "undefined"` early-return. Body is a no-op (`void name; void properties;`). Try/catch wraps entire body; `console.warn` only fires when `process.env.NODE_ENV !== "production"`.
+- `events.ts` is a discriminated union `AnalyticsEvent` — four variants: `recent_activity_tab_switched`, `recent_activity_period_changed`, `recent_activity_row_clicked`, `recent_activity_empty_state_shown`.
+- `AnalyticsEventProperties<N>` uses `Extract<AnalyticsEvent, { name: N }>["properties"]` — tsc enforces payload shape per event name at call sites.
+- AC6 tab-switch guard: `if (next !== activeTab) { track(...) }` inside `handleTabChange` — no-op click on active tab fires nothing.
+- AC8 initial-mount guard: `prevRangeRef = useRef(null)`; first effect run sets the ref and returns early without firing `track()`. The brief referenced `didInitRef` from `dashboard-range-provider.tsx` as a reference pattern — SWE used `prevRangeRef` in `dashboard-recent-activity.tsx` instead. Functionally equivalent; not a defect.
+- AC9 destination: `DESTINATION_TEMPLATE: Record<ActivityKind, string>` (`pos: "/sales/pos/:id"`, `incoming: "/invoices/incoming/:id"`, `outgoing: "/invoices/outgoing/:id"`). `destination: DESTINATION_TEMPLATE[view.kind]` — NOT `view.href`. AC9 PASSES.
+- AC11 empty-state guard: three sequential early-returns (`if loading return; if error return; if rows.length !== 0 return`) semantically equivalent to `loading === false && error === null && rows.length === 0`. Not a defect.
+- AC12 dedupe: `emptyStateSeenRef = useRef<Set<string>>(new Set())`, keyed by `${activeTab}|${from}|${to}`.
+- Playwright NOT installed in project node_modules. Browser smoke fully blocked by Clerk env gap AND missing playwright package. Source-code static analysis is the only viable QA path.
+- Build output: `/home` = 18.5 kB (up ~0.5 kB from LNS-232 baseline of 18 kB — expected from analytics call sites). Build time: 6.6s compile. 44 pages total.
+
 ## LNS-219 Refactor Structure (2026-05-21)
 
 - `cart-summary.tsx` and `peek-strip.tsx` are now thin parent routers. All logic (disabled gate, context reads for Bayar) lives in sibling files.
