@@ -1,12 +1,11 @@
 "use client";
 
 import { useListAccountBankAccout } from "@/features/bank/presentation/hooks/use-list-account-bank-account";
-import {
-  BankAccountsTable,
-  BankAccountRow,
-} from "@/app/(authenticated)/accounts/[id]/_components/bank-accounts-table";
+import { BankAccountRow } from "@/app/(authenticated)/accounts/[id]/_components/bank-accounts-table";
 import { CreateBankAccountDialog } from "@/app/(authenticated)/accounts/[id]/_components/create-bank-account-dialog";
-import { SectionCard } from "@/core/presentations/components/section-card";
+import { BankAccountsTableLoading } from "@/app/(authenticated)/accounts/[id]/_components/bank-accounts-table-loading";
+import { BankAccountsTableError } from "@/app/(authenticated)/accounts/[id]/_components/bank-accounts-table-error";
+import { BankAccountsTableContent } from "@/app/(authenticated)/accounts/[id]/_components/bank-accounts-table-content";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import Image from "next/image";
 import { useMemo, useState } from "react";
@@ -29,57 +28,32 @@ export function BankAccountsTableImpl() {
     />
   );
 
-  if (loading) {
-    return (
-      <SectionCard
-        title="Rekening Bank"
-        iconSrc="/assets/images/credit-card-icon-primary-300-w16-h16.svg"
-        headerAction={headerAction}
-      >
-        <div className="flex items-center justify-center py-12">
-          <span className="text-sm text-neutral-300">Memuat data...</span>
-        </div>
-      </SectionCard>
-    );
-  }
+  const rows: BankAccountRow[] = useMemo(
+    () =>
+      bankAccounts.map((ba) => {
+        const masked =
+          ba.accountNumber.length > 4
+            ? "*".repeat(ba.accountNumber.length - 4) + ba.accountNumber.slice(-4)
+            : ba.accountNumber;
+        return {
+          id: ba.id,
+          bankName: ba.bankName,
+          maskedAccountNumber: masked,
+          accountHolderName: ba.accountHolderName,
+        };
+      }),
+    [bankAccounts],
+  );
 
-  if (error && !isEmptyAccount) {
-    return (
-      <SectionCard
-        title="Rekening Bank"
-        iconSrc="/assets/images/credit-card-icon-primary-300-w16-h16.svg"
-        headerAction={headerAction}
-      >
-        <div className="flex items-center justify-center py-12">
-          <span className="text-sm text-neutral-300">Gagal memuat data rekening.</span>
-        </div>
-      </SectionCard>
-    );
+  function renderTable() {
+    if (loading) return <BankAccountsTableLoading headerAction={headerAction} />;
+    if (error && !isEmptyAccount) return <BankAccountsTableError headerAction={headerAction} />;
+    return <BankAccountsTableContent rows={rows} headerAction={headerAction} />;
   }
-
-  const rows: BankAccountRow[] = bankAccounts.map((ba) => {
-    const masked =
-      ba.accountNumber.length > 4
-        ? "*".repeat(ba.accountNumber.length - 4) + ba.accountNumber.slice(-4)
-        : ba.accountNumber;
-    return {
-      id: ba.id,
-      bankName: ba.bankName,
-      maskedAccountNumber: masked,
-      accountHolderName: ba.accountHolderName,
-    };
-  });
 
   return (
     <>
-      <SectionCard
-        title="Rekening Bank"
-        iconSrc="/assets/images/credit-card-icon-primary-300-w16-h16.svg"
-        headerAction={headerAction}
-        bodyClassName="p-0"
-      >
-        <BankAccountsTable rows={rows} />
-      </SectionCard>
+      {renderTable()}
       <CreateBankAccountDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
     </>
   );
