@@ -8,14 +8,13 @@ type PersonalAccountFormWrapperProps = {
 };
 
 export function PersonalAccountFormWrapper(props: PersonalAccountFormWrapperProps) {
-  const { submit, isCreating, clearSubmitError, markSubmitAttempted } = usePersonalAccountData();
+  const { submit, isCreating, markSubmitAttempted } = usePersonalAccountData();
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
 
     markSubmitAttempted?.();
-    clearSubmitError();
     await submit();
   };
 

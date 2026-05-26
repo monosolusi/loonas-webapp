@@ -10,19 +10,19 @@ import { StepIndicatorImpl } from "@/app/(user)/onboarding/account/_components/s
 import { SubmitButton } from "@/app/(user)/onboarding/account/@businessAccount/_components/submit-button";
 import {
   BusinessAccountFormWrapper
-} from "@/app/(user)/onboarding/account/@businessAccount/_components/business-account-form";
+} from "@/app/(user)/onboarding/account/@businessAccount/_components/business-account-form-wrapper";
 import { BusinessSubmitErrorBanner } from "@/app/(user)/onboarding/account/@businessAccount/_components/submit-error-banner";
 
-type PersonalAccountCreationLayoutProps = {
+type BusinessAccountCreationLayoutProps = {
   businessDetail: React.ReactNode;
   addressDetail: React.ReactNode;
   documentUpload: React.ReactNode;
 };
 
-export default function PersonalAccountCreationLayout(props: PersonalAccountCreationLayoutProps) {
+export default function BusinessAccountCreationLayout(props: BusinessAccountCreationLayoutProps) {
   const { type } = useCreateAccount();
 
-  if (type !== "business") return null; // Do not render this page if the user has not selected a personal account.
+  if (type !== "business") return null; // Do not render this page if the user has not selected a business account.
   return (
     <BusinessAccountFormWrapper>
       <div className="flex flex-col items-center justify-center gap-10">

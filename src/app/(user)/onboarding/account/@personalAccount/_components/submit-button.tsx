@@ -13,7 +13,7 @@ export function SubmitButton() {
     <PrimaryButton
       label="Buat Akun"
       type="submit"
-      disabled={!isClean && !isCreating}
+      disabled={!isClean}
       loading={isCreating}
       loadingLabel="Membuat akun..."
       aria-label={isCreating ? "Sedang membuat akun..." : "Buat Akun"}

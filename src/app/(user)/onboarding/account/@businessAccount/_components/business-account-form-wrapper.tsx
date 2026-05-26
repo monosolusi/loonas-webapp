@@ -8,14 +8,13 @@ type BusinessAccountFormWrapperProps = {
 };
 
 export function BusinessAccountFormWrapper(props: BusinessAccountFormWrapperProps) {
-  const { submit, isCreating, clearSubmitError, markSubmitAttempted } = useBusinessAccountData();
+  const { submit, isCreating, markSubmitAttempted } = useBusinessAccountData();
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
 
     markSubmitAttempted?.();
-    clearSubmitError();
     await submit();
   };
 
