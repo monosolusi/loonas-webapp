@@ -1,4 +1,6 @@
-import { useRouter } from "next/navigation";
+"use client";
+
+import React from "react";
 import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
 
 type BusinessAccountFormWrapperProps = {
@@ -6,19 +8,20 @@ type BusinessAccountFormWrapperProps = {
 };
 
 export function BusinessAccountFormWrapper(props: BusinessAccountFormWrapperProps) {
-  const { createAccount } = useBusinessAccountData();
-  const router = useRouter();
+  const { submit, isCreating, clearSubmitError, markSubmitAttempted } = useBusinessAccountData();
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    try {
-      event.preventDefault();
-      event.stopPropagation();
-      await createAccount();
-      router.push(`/onboarding/kyc-summary`);
-    } catch (err) {
-      console.error(err);
-    }
+    event.preventDefault();
+    event.stopPropagation();
+
+    markSubmitAttempted?.();
+    clearSubmitError();
+    await submit();
   };
 
-  return <form onSubmit={onSubmit}>{props.children}</form>;
+  return (
+    <form onSubmit={onSubmit} aria-busy={isCreating}>
+      {props.children}
+    </form>
+  );
 }

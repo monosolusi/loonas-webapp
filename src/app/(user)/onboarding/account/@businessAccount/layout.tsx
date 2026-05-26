@@ -11,6 +11,7 @@ import { SubmitButton } from "@/app/(user)/onboarding/account/@businessAccount/_
 import {
   BusinessAccountFormWrapper
 } from "@/app/(user)/onboarding/account/@businessAccount/_components/business-account-form";
+import { BusinessSubmitErrorBanner } from "@/app/(user)/onboarding/account/@businessAccount/_components/submit-error-banner";
 
 type PersonalAccountCreationLayoutProps = {
   businessDetail: React.ReactNode;
@@ -34,6 +35,7 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
             {props.addressDetail}
             {props.documentUpload}
           </div>
+          <BusinessSubmitErrorBanner />
           <div className="flex flex-row gap-3 border-t border-neutral-100 pt-4">
             <div className="flex-1">
               <PreviousButton />
@@ -43,6 +45,9 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
               <SubmitButton />
             </div>
           </div>
+          <p className="mt-2 text-center text-xs text-neutral-200">
+            Unggah dokumen mungkin membutuhkan beberapa saat pada jaringan lambat.
+          </p>
         </div>
       </div>
     </BusinessAccountFormWrapper>
