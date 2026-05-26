@@ -10,6 +10,7 @@ import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subd
 import { AccountRepository } from "@/features/account/domain/repositories/account";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { NIK_PATTERN, PASSPORT_PATTERN } from "@/features/account/domain/constants/identity-field-limits";
 
 type CreatePersonalAccountUseCaseParamsConstructor = {
   nationality: string;
@@ -66,6 +67,12 @@ export class CreatePersonalAccountUseCase
   ) {}
 
   public async execute(params: CreatePersonalAccountUseCaseParams): Promise<DataState<PersonalAccountEntity>> {
+    const isWNI = params.nationality === "WNI";
+    const pattern = isWNI ? NIK_PATTERN : PASSPORT_PATTERN;
+    if (!pattern.test(params.idNumber)) {
+      return new DataFailed(new ServerError(ErrorCodes.INVALID_IDENTITY_NUMBER));
+    }
+
     const session = await this.sessionRepository.retrieve();
     if (session instanceof DataFailed) return session;
     if (!session.data) return new DataFailed(new ServerError(ErrorCodes.INVALID_INSTANCE));
