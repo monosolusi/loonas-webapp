@@ -169,6 +169,14 @@ metadata:
 - Playwright NOT installed in project node_modules. Browser smoke fully blocked by Clerk env gap AND missing playwright package. Source-code static analysis is the only viable QA path.
 - Build output: `/home` = 18.5 kB (up ~0.5 kB from LNS-232 baseline of 18 kB — expected from analytics call sites). Build time: 6.6s compile. 44 pages total.
 
+## LNS-251 SWR Key Stabilization + Dialog Hoist (2026-05-25)
+
+- `useMemo(() => ({ clerk }), [clerk])` pattern adopted in both `use-list-account-bank-account.ts` and `use-list-account.ts` to stabilize the SWR key object reference. Without this, every render creates a new object, causing SWR to treat each render as a distinct key — triggering remount.
+- `CreateBankAccountDialog` hoisted to unconditional path of a single fragment return in `BankAccountsTableImpl`. Loading and error states rendered as `body` variable via ternary; dialog always rendered as a sibling below. This prevents dialog unmount/remount on data-state transitions (loading → loaded).
+- `BankAccountsTableLoading` and `BankAccountsTableError` are thin presentational siblings with `headerAction` prop passthrough — no state, no hooks.
+- SWR key tuple form: `["list-account-bank-account", swrParams]` where `swrParams` is the memoized `{ clerk }` object. SWR serializes objects for key equality by reference — `useMemo` is required to prevent false cache miss.
+- Browser smoke BLOCKED (Clerk env gap — same as all prior authenticated-route tickets). Source-level structural review validated all three fix claims.
+
 ## LNS-219 Refactor Structure (2026-05-21)
 
 - `cart-summary.tsx` and `peek-strip.tsx` are now thin parent routers. All logic (disabled gate, context reads for Bayar) lives in sibling files.

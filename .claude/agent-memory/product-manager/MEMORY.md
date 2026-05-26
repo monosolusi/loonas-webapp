@@ -9,5 +9,4 @@
 - [Linear: Accounting Bootstrap v1 issues](reference_linear_accounting_bootstrap_v1.md) — LNS-76 tracker + P1/P3/P4/P6 (LNS-77/78/79/80) + 6 v1.1 tech-debts (LNS-81–86)
 - [UNOFEST project](project_unofest.md) — Loonas Ubaya UNOFEST: POS-led GTM pilot at Ubaya Festival June 2026, 5-step F&B happy path
 - [fe-requested-be label](reference_fe_requested_be_label.md) — Linear workspace label `fe-requested-be` (pair with Backend) for FE-originated BE dependencies
-- [Linear quota blocked 2026-05-19](project_linear_quota_blocked.md) — `loonas` workspace hit free-tier issue cap; `save_issue` creates fail until upgrade; reads still work
 - [Proactively file BE-gap tickets](feedback_proactive_be_gap_ticket.md) — when EL flags a BE gap in Phase 7, PM MUST file fe-requested-be ticket BEFORE moving parent to In Review
