@@ -7,11 +7,12 @@ export type ButtonProps = {
   rightIcon?: React.ReactNode; // Must be width and height props of 16x16
   label: string;
   loading?: boolean;
+  loadingLabel?: string;
 } & React.ComponentPropsWithoutRef<"button">;
 
 export function Button(props: ButtonProps) {
   const cleanedButtonProps = useMemo(() => {
-    const { label, className, leftIcon, rightIcon, loading, ...rest } = props;
+    const { label, className, leftIcon, rightIcon, loading, loadingLabel, ...rest } = props;
     return rest;
   }, [props]);
 
@@ -26,7 +27,14 @@ export function Button(props: ButtonProps) {
     >
       <div className="flex flex-row items-center justify-center gap-2">
         {props.leftIcon && !props.loading && <div className="shrink-0">{props.leftIcon}</div>}
-        {props.loading ? <Spinner /> : <span className="text-base">{props.label}</span>}
+        {props.loading ? (
+          <>
+            <Spinner />
+            {props.loadingLabel && <span className="text-base">{props.loadingLabel}</span>}
+          </>
+        ) : (
+          <span className="text-base">{props.label}</span>
+        )}
         {props.rightIcon && !props.loading && <div className="shrink-0">{props.rightIcon}</div>}
       </div>
     </button>
