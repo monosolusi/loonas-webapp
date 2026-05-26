@@ -7,9 +7,10 @@ import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/cre
 import { PersonalAccountEntity } from "@/features/account/domain/entities/personal-account";
 import { useCreatePersonalAccount } from "@/features/account/presentation/hooks/use-create-personal-account";
 import { useOrganizationList } from "@clerk/nextjs";
+import { NIK_PATTERN, PASSPORT_PATTERN } from "@/features/account/domain/constants/identity-field-limits";
 
 export function usePersonalAccountData() {
-  const { accountData, updatePersonalData } = useCreateAccount();
+  const { accountData, updatePersonalData, submitAttempted, markSubmitAttempted } = useCreateAccount();
   const { isLoaded, setActive } = useOrganizationList();
   if (accountData?.type !== "personal") throw new ServerError(ErrorCodes.INVALID_PERSONAL_ACCOUNT_HOOK_CALL);
 
@@ -21,6 +22,9 @@ export function usePersonalAccountData() {
       isNonEmptyString(data.nationality) &&
       isNonEmptyString(data.fullName) &&
       isNonEmptyString(data.identityNumber) &&
+      (data.nationality === "WNA"
+        ? PASSPORT_PATTERN.test(data.identityNumber ?? "")
+        : NIK_PATTERN.test(data.identityNumber ?? "")) &&
       !!data.occupation &&
       isNonEmptyString(data.placeOfBirth) &&
       !!data.dateOfBirth &&
@@ -80,5 +84,5 @@ export function usePersonalAccountData() {
     return account;
   };
 
-  return { data, update: updatePersonalData, isClean, isCreating: isMutating, createAccount };
+  return { data, update: updatePersonalData, isClean, isCreating: isMutating, createAccount, submitAttempted, markSubmitAttempted };
 }
