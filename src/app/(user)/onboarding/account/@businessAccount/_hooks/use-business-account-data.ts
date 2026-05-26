@@ -1,17 +1,27 @@
+"use client";
+
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { isNonEmptyString, isValidFile } from "@/core/utilities/validation-patterns";
 import { useCreateBusinessAccount } from "@/features/account/presentation/hooks/use-create-business-account";
 import { useOrganizationList } from "@clerk/nextjs";
-import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
+import { mapSubmitError, ERROR_COPY_NO_VALID_SESSION } from "@/app/(user)/onboarding/account/_lib/map-submit-error";
+import { useRouter } from "next/navigation";
 
 export function useBusinessAccountData() {
-  const { accountData, updateBusinessData } = useCreateAccount();
-  const { isLoaded, setActive } = useOrganizationList();
+  const { accountData, updateBusinessData, submitAttempted, markSubmitAttempted } = useCreateAccount();
+  const { setActive } = useOrganizationList();
   if (accountData?.type !== "business") throw new ServerError(ErrorCodes.INVALID_BUSINESS_ACCOUNT_HOOK_CALL);
 
   const { trigger, isMutating } = useCreateBusinessAccount();
+  const router = useRouter();
+
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [createdAccountId, setCreatedAccountId] = useState<string | null>(null);
+  const [setActiveAttempts, setSetActiveAttempts] = useState(0);
+
+  const clearSubmitError = () => setSubmitError(null);
 
   const data = accountData.data;
   const isClean = useMemo(() => {
@@ -44,35 +54,93 @@ export function useBusinessAccountData() {
     data.bankStatement,
   ]);
 
-  const createAccount = async (): Promise<BusinessAccountEntity> => {
-    if (!isClean) throw new ServerError(ErrorCodes.INCOMPLETE_FORM);
-    if (!isLoaded) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+  const runCreate = async (): Promise<string> => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort(new DOMException("TimeoutError", "TimeoutError"));
+    }, 60_000);
 
-    const account = await trigger({
-      company: {
-        name: data.companyName!,
-        email: data.companyEmail!,
-        phoneNumber: data.companyPhone!,
-        address: {
-          province: data.companyProvince!,
-          city: data.companyCity!,
-          district: data.companyDistrict!,
-          subdistrict: data.companySubdistrict!,
-          address: data.companyAddress!,
-        },
-        deedOfEstablishment: data.deedOfEstablishment!,
-        mostRecentDeedOfAmendment: data.mostRecentDeededOfEstablishment ?? undefined,
-        businessIdentificationNumber: data.businessRegistrationNumber!,
-        financial: { bankStatement: data.bankStatement! },
-      },
-      director: {
-        nationalIdentityCard: data.directorNationalIdentityCard!,
-      },
-    });
-
-    await setActive({ organization: account.metadata.clerkId });
-    return account;
+    try {
+      const raceResult = await Promise.race([
+        trigger({
+          company: {
+            name: data.companyName!,
+            email: data.companyEmail!,
+            phoneNumber: data.companyPhone!,
+            address: {
+              province: data.companyProvince!,
+              city: data.companyCity!,
+              district: data.companyDistrict!,
+              subdistrict: data.companySubdistrict!,
+              address: data.companyAddress!,
+            },
+            deedOfEstablishment: data.deedOfEstablishment!,
+            mostRecentDeedOfAmendment: data.mostRecentDeededOfEstablishment ?? undefined,
+            businessIdentificationNumber: data.businessRegistrationNumber!,
+            financial: { bankStatement: data.bankStatement! },
+          },
+          director: {
+            nationalIdentityCard: data.directorNationalIdentityCard!,
+          },
+        }),
+        new Promise<never>((_, reject) =>
+          controller.signal.addEventListener("abort", () =>
+            reject(new DOMException("TimeoutError", "TimeoutError")),
+        ),
+        ),
+      ]);
+      clearTimeout(timeoutId);
+      return raceResult.metadata.clerkId;
+    } catch (err) {
+      clearTimeout(timeoutId);
+      controller.abort();
+      throw err;
+    }
   };
 
-  return { data, update: updateBusinessData, isClean, isCreating: isMutating, createAccount };
+  const runSetActive = async (clerkId: string): Promise<void> => {
+    if (!setActive) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
+    await setActive({ organization: clerkId });
+    router.push("/onboarding/kyc-summary");
+  };
+
+  const submit = async (): Promise<void> => {
+    setSubmitError(null);
+
+    let accountClerkId = createdAccountId;
+
+    if (accountClerkId === null) {
+      try {
+        accountClerkId = await runCreate();
+        setCreatedAccountId(accountClerkId);
+      } catch (err) {
+        setSubmitError(mapSubmitError(err));
+        return;
+      }
+    }
+
+    try {
+      await runSetActive(accountClerkId);
+    } catch (err) {
+      const nextAttempts = setActiveAttempts + 1;
+      setSetActiveAttempts(nextAttempts);
+      if (nextAttempts >= 2) {
+        setSubmitError(ERROR_COPY_NO_VALID_SESSION);
+      } else {
+        setSubmitError(mapSubmitError(err));
+      }
+    }
+  };
+
+  return {
+    data,
+    update: updateBusinessData,
+    isClean,
+    isCreating: isMutating,
+    submit,
+    submitError,
+    clearSubmitError,
+    submitAttempted,
+    markSubmitAttempted,
+  };
 }
