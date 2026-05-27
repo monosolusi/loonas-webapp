@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
+import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
 
-type PersonalAccountFormWrapperProps = {
+type BusinessAccountFormWrapperProps = {
   children: React.ReactNode;
 };
 
-export function PersonalAccountFormWrapper(props: PersonalAccountFormWrapperProps) {
-  const { submit, isCreating, markSubmitAttempted } = usePersonalAccountData();
+export function BusinessAccountFormWrapper(props: BusinessAccountFormWrapperProps) {
+  const { submit, isCreating, markSubmitAttempted } = useBusinessAccountData();
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

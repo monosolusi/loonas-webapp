@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import { DateTime } from "luxon";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
@@ -63,6 +63,8 @@ type CreateAccountContextProps = {
   accountData?: AccountData;
   updatePersonalData?: (data: Partial<PersonalAccountData>) => void;
   updateBusinessData?: (data: Partial<BusinessAccountData>) => void;
+  submitAttempted?: boolean;
+  markSubmitAttempted?: () => void;
 };
 
 type CreateAccountProviderProps = {
@@ -76,6 +78,9 @@ export function CreateAccountProvider(props: CreateAccountProviderProps) {
   const [currentStep, setCurrentStep] = React.useState<Step>();
   const [personalData, setPersonalData] = React.useState<PersonalAccountData>({});
   const [businessData, setBusinessData] = React.useState<BusinessAccountData>({});
+  const [submitAttempted, setSubmitAttempted] = React.useState(false);
+
+  const markSubmitAttempted = useCallback(() => setSubmitAttempted(true), []);
 
   const nextStep = () => {
     // Type and currentStep are guaranteed to be filled after type selection
@@ -123,6 +128,8 @@ export function CreateAccountProvider(props: CreateAccountProviderProps) {
         setCurrentStep,
         nextStep,
         prevStep,
+        submitAttempted,
+        markSubmitAttempted,
       }}
     >
       {props.children}

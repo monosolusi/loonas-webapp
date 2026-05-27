@@ -36,7 +36,7 @@ export function NationalityRadioGroup() {
   const { data, update } = usePersonalAccountData();
 
   const onChange = (value: Nationality) => (checked: boolean) => {
-    if (checked && update) update({ nationality: value });
+    if (checked && update) update({ nationality: value, identityNumber: "" });
   };
 
   return (

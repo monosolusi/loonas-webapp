@@ -262,6 +262,12 @@ export class ErrorCodes {
     message: "Invalid tax type",
   };
 
+  public static readonly INVALID_IDENTITY_NUMBER: ErrorStructureType = {
+    code: "INVALID_IDENTITY_NUMBER",
+    httpCode: 400,
+    message: "NIK harus terdiri dari 16 digit",
+  };
+
   public static readonly INVALID_INVOICE_DATE: ErrorStructureType = {
     code: "INVALID_INVOICE_DATE",
     httpCode: 400,

@@ -9,6 +9,7 @@ import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/cre
 import { StepIndicatorImpl } from "@/app/(user)/onboarding/account/_components/step-indicator.impl";
 import { SubmitButton } from "@/app/(user)/onboarding/account/@personalAccount/_components/submit-button";
 import { PersonalAccountFormWrapper } from "@/app/(user)/onboarding/account/@personalAccount/_components/personal-account-form-wrapper";
+import { PersonalSubmitErrorBanner } from "@/app/(user)/onboarding/account/@personalAccount/_components/submit-error-banner";
 
 type PersonalAccountCreationLayoutProps = {
   personalDetail: React.ReactNode;
@@ -32,6 +33,7 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
             {props.addressDetail}
             {props.documentUpload}
           </div>
+          <PersonalSubmitErrorBanner />
           <div className="flex flex-row gap-3 border-t border-neutral-100 pt-4">
             <div className="flex-1">
               <PreviousButton />
@@ -41,6 +43,9 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
               <SubmitButton />
             </div>
           </div>
+          <p className="mt-2 text-center text-xs text-neutral-200">
+            Unggah dokumen mungkin membutuhkan beberapa saat pada jaringan lambat.
+          </p>
         </div>
       </div>
     </PersonalAccountFormWrapper>

@@ -169,6 +169,30 @@ metadata:
 - Playwright NOT installed in project node_modules. Browser smoke fully blocked by Clerk env gap AND missing playwright package. Source-code static analysis is the only viable QA path.
 - Build output: `/home` = 18.5 kB (up ~0.5 kB from LNS-232 baseline of 18 kB — expected from analytics call sites). Build time: 6.6s compile. 44 pages total.
 
+## LNS-255 Personal Account NIK Validation (2026-05-26)
+
+- `identity-number-input.tsx` — full rewrite. Mask enforced in `handleChange` via `raw.replace(/\D/g, "").slice(0, 16)` (WNI) and `raw.replace(/[^A-Za-z0-9]/g, "").slice(0, 16)` (WNA). `maxLength={16}` on the input (belt-and-suspenders). `inputMode="numeric"` on WNI.
+- Paste sanitization: `handleChange` receives raw value and strips/truncates — covers paste path identical to keystroke path.
+- `isClean` in `use-personal-account-data.ts` gates submit: WNI needs `/^\d{16}$/`, WNA `/^[A-Za-z0-9]{1,16}$/`. No submit until condition satisfied.
+- Domain guard in `create-personal-account.ts` (execute): same regex check; returns `DataFailed(INVALID_IDENTITY_NUMBER)` without hitting repo if pattern fails — AC10 short-circuit confirmed.
+- Toast wiring: `personal-account-form-wrapper.tsx` catches `ServerError` whose `code !== ErrorCodes.UNKNOWN.code` → shows `err.message`; all other errors (UNKNOWN + non-ServerError) → shows generic "Terjadi kesalahan" copy — AC11 PASS.
+- Nationality toggle clears `identityNumber: ""` in `nationality-radio-group.tsx` `onChange` handler — AC9 clear confirmed.
+- `submitAttempted` flag lives in `create-account.tsx` provider, surfaced through `usePersonalAccountData()`. `markSubmitAttempted()` called on form submit. `identity-number-input.tsx` reads `submitAttempted` in `showError` — error shown even if not touched after submit attempt.
+- WNA option has `disabled: true` in `NATIONALITY_OPTIONS` — AC5/6 are structurally present but WNA flow is UI-blocked (disabled radio). Not a defect — WNA support is pending.
+- Browser smoke: Clerk env gap (no `.env.local`) — `/onboarding/account` route blocked. Source-code static analysis used for all 12 ACs.
+
+## LNS-254 Onboarding Submit Feedback (2026-05-26)
+
+- `mapSubmitError()` at `src/app/(user)/onboarding/account/_lib/map-submit-error.ts` maps: `AbortError|TimeoutError` (DOMException) → `ERROR_COPY_NETWORK_TIMEOUT`; `ACCOUNT_CREATION_FAILED|DUPLICATE_ENTRY|DUPLICATE_IDENTITY|NO_VALID_SESSION` → dedicated copy; all other `ServerError` codes + non-ServerError → `ERROR_COPY_GENERIC`. NOTE: `HTTP_ERROR` and `UNKNOWN` codes fall through to `default` → `ERROR_COPY_GENERIC`. They are NOT missing — they are intentionally caught by the default branch.
+- **AbortController signal NOT threaded to HTTP layer**: `runCreate()` builds an `AbortController` but does NOT pass `controller.signal` to `trigger()` (the SWR mutation). The 60s timeout fires via `Promise.race()` on the JS side — the user sees the error — but the underlying `fetch` continues in-flight. This means on timeout + retry, a second network request fires while the first may still be running. The `createdAccountId` guard partially mitigates double-create on retry (if first call succeeds while timed out, second submit skips create), but only if the in-flight request eventually resolves and `setCreatedAccountId` has been called. In practice this state is unreachable (JS race already threw, so `setCreatedAccountId` is never called on timeout). This is a yellow-severity behavioral gap — not a crash.
+- **`disabled` logic in `SubmitButton`**: condition is `!isClean && !isCreating` (AND not OR). Correct intent would be `disabled={!isClean}` (disable when form is invalid). As written, when `isClean=false AND isCreating=true` → button is enabled. This state is practically unreachable in normal flow (form can't become invalid while submitting), but is logically incorrect. Low severity.
+- **`ErrorCard` has no dismiss button**: `clearSubmitError` is exported but nothing calls it from the banner. Error clears only on next submit attempt (form `onSubmit` calls `clearSubmitError()` before `submit()`). This is a deliberate design choice — no manual dismiss needed.
+- `PersonalSubmitErrorBanner` / `BusinessSubmitErrorBanner` — `role="status" aria-live="polite" aria-atomic="true"` wrapper is always rendered in the DOM (empty div when no error). Correct a11y pattern.
+- Helper caption `"Unggah dokumen mungkin membutuhkan beberapa saat pada jaringan lambat."` is a static `<p>` below the button row — visible in ALL states (idle, loading, error) unconditionally.
+- `aria-busy={isCreating}` placed on the `<form>` element (not just the button). Button also gets `aria-busy={loading}` and `aria-disabled={disabled || loading}` via `PrimaryButton` → `Button`.
+- `cursor-wait` applied via `loading ? "cursor-wait opacity-100" : "disabled:cursor-not-allowed disabled:opacity-50"` in `PrimaryButton`. When loading, `disabled:opacity-50` is NOT active — overridden by `opacity-100`. Clean.
+- Browser smoke BLOCKED: Clerk env gap (no `.env.local`) — `/onboarding/account` blocked. Source-code static analysis used for all ACs.
+
 ## LNS-219 Refactor Structure (2026-05-21)
 
 - `cart-summary.tsx` and `peek-strip.tsx` are now thin parent routers. All logic (disabled gate, context reads for Bayar) lives in sibling files.
