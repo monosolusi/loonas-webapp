@@ -10,7 +10,7 @@ type PrimaryButtonProps = {
 } & ButtonProps;
 
 export function PrimaryButton(props: PrimaryButtonProps) {
-  const { inverse = false, outlined = false, className, ...buttonProps } = props;
+  const { inverse = false, outlined = false, className, loading, disabled, ...buttonProps } = props;
 
   const variantClasses = useMemo(() => {
     if (outlined) {
@@ -27,9 +27,13 @@ export function PrimaryButton(props: PrimaryButtonProps) {
   return (
     <Button
       {...buttonProps}
+      loading={loading}
+      disabled={disabled}
+      aria-busy={loading}
+      aria-disabled={disabled || loading}
       className={clsx(
         "transition-colors duration-200",
-        "disabled:cursor-not-allowed disabled:opacity-50",
+        loading ? "cursor-wait opacity-100" : "disabled:cursor-not-allowed disabled:opacity-50",
         outlined
           ? "disabled:border-neutral-200 disabled:bg-transparent disabled:text-neutral-200"
           : "disabled:bg-neutral-200 disabled:text-white",
