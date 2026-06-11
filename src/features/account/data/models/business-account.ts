@@ -2,53 +2,61 @@ import { DateTime } from "luxon";
 import { AbstractModel } from "@/core/resources/model";
 import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
 import { AccountType } from "@/features/account/domain/enums/account-type";
+import { MembershipModel } from "@/features/account/data/models/membership";
 
-interface BusinessAccountModelConstructor {
+type Metadata = { clerkId: string };
+
+type AddressInformation = {
+  province: { id: string; label: string };
+  city: { id: string; label: string };
+  district: { id: string; label: string };
+  subdistrict: { id: string; label: string };
+  address: string;
+};
+
+type CompanyInformation = {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  address: AddressInformation;
+};
+
+type BusinessAccountModelConstructor = {
   id: string;
   type: AccountType;
-  company: {
-    name: string;
-    email: string;
-    phoneNumber: string;
-    address: {
-      province: { id: string; label: string };
-      city: { id: string; label: string };
-      district: { id: string; label: string };
-      subdistrict: { id: string; label: string };
-      address: string;
-    };
-  };
+  company: CompanyInformation;
+  metadata: Metadata;
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
-}
+  membership?: MembershipModel;
+  role?: string;
+  features?: string[];
+};
 
 export class BusinessAccountModel implements AbstractModel {
   public id: string;
   public type: AccountType;
-  public company: {
-    name: string;
-    email: string;
-    phoneNumber: string;
-    address: {
-      province: { id: string; label: string };
-      city: { id: string; label: string };
-      district: { id: string; label: string };
-      subdistrict: { id: string; label: string };
-      address: string;
-    };
-  };
+  public company: CompanyInformation;
+  public metadata: Metadata;
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
+  public membership?: MembershipModel;
+  public role?: string;
+  public features?: string[];
 
   constructor(args: BusinessAccountModelConstructor) {
     this.id = args.id;
     this.type = args.type;
     this.company = args.company;
+    this.metadata = args.metadata;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
+    this.membership = args.membership;
+    this.role = args.role;
+    this.features = args.features;
   }
 
   public static fromJson(doc: Record<string, any>): BusinessAccountModel {
@@ -79,23 +87,13 @@ export class BusinessAccountModel implements AbstractModel {
           address: doc["company"]["address"]["address"],
         },
       },
+      metadata: { clerkId: doc["metadata"]["clerk_id"] },
       createdAt: DateTime.fromISO(doc["created_at"]),
       updatedAt: DateTime.fromISO(doc["updated_at"]),
       deletedAt: doc["deleted_at"] ? DateTime.fromISO(doc["deleted_at"]) : undefined,
-    });
-  }
-
-  public static fromLocalStorage(encodedData: string): BusinessAccountModel {
-    const jsonAccount = atob(encodedData);
-    const data = JSON.parse(jsonAccount);
-
-    return new BusinessAccountModel({
-      id: data.id,
-      type: data.type,
-      company: data.company,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-      deletedAt: data.deletedAt,
+      membership: doc["membership"] ? MembershipModel.fromJson(doc["membership"]) : undefined,
+      role: doc["role"],
+      features: Array.isArray(doc["features"]) ? doc["features"] : [],
     });
   }
 
@@ -104,6 +102,7 @@ export class BusinessAccountModel implements AbstractModel {
       id: entity.id,
       type: entity.type,
       company: entity.company,
+      metadata: entity.metadata,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
       deletedAt: entity.deletedAt,
@@ -114,21 +113,14 @@ export class BusinessAccountModel implements AbstractModel {
     return new BusinessAccountEntity({
       id: this.id,
       type: this.type,
-      company: {
-        name: this.company.name,
-        email: this.company.email,
-        phoneNumber: this.company.phoneNumber,
-        address: {
-          province: this.company.address.province,
-          city: this.company.address.city,
-          district: this.company.address.district,
-          subdistrict: this.company.address.subdistrict,
-          address: this.company.address.address,
-        },
-      },
+      company: this.company,
+      metadata: this.metadata,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,
+      membership: this.membership?.toEntity(),
+      role: this.role,
+      features: this.features,
     });
   }
 }

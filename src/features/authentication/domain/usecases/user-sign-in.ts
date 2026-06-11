@@ -1,7 +1,7 @@
 import { UseCase } from "@/core/resources/use-case";
 import { DataState } from "@/core/resources/data-state";
-import { SessionEntity } from "../entities/session";
-import { AuthRepository } from "../repositories/auth";
+import { SessionEntity } from "@/features/authentication/domain/entities/session";
+import { AuthRepository } from "@/features/authentication/domain/repositories/auth";
 
 export class UserSignInUseCaseParams {
   constructor(public email: string, public password: string) {

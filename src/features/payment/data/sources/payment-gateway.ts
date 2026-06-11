@@ -1,6 +1,6 @@
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { PaymentGatewayModel } from "../models/payment-gateway";
+import { PaymentGatewayModel } from "@/features/payment/data/models/payment-gateway";
 import { PaymentSchemeModel } from "@/features/payment/data/models/payment-scheme";
 
 export abstract class PaymentGatewayService {

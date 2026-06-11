@@ -1,4 +1,4 @@
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
+import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { InvoiceServiceImpl } from "@/features/invoice/data/sources/invoice";
@@ -9,15 +9,17 @@ import { SendInvoiceUseCase, SendInvoiceUseCaseParams } from "@/features/invoice
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import useSWRMutation from "swr/mutation";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
+import { useClerk } from "@clerk/nextjs";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 interface SendInvoiceFetcherParams {
   invoice: { id: string };
   sendChannel: NotificationChannel[];
+  clerk: ReturnType<typeof useClerk>;
 }
 
 async function SendInvoiceFetcher(_: string, { arg }: { arg: SendInvoiceFetcherParams }): Promise<boolean> {
-  const sessionService = new LocalStorageSessionService();
-  const sessionRepository = new SessionRepositoryImpl(sessionService);
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: arg.clerk }));
 
   const http = new HttpRequest();
   const invoiceService = new InvoiceServiceImpl(http);
@@ -35,5 +37,11 @@ async function SendInvoiceFetcher(_: string, { arg }: { arg: SendInvoiceFetcherP
 }
 
 export function useSendInvoice() {
-  return useSWRMutation("send-invoice", SendInvoiceFetcher);
+  const clerk = useClerk();
+  const { trigger: baseTrigger, ...rest } = useSWRMutation(INVOICE_SWR_KEYS.SEND_INVOICE, SendInvoiceFetcher);
+
+  const trigger = (params: { invoice: { id: string }; sendChannel: NotificationChannel[] }) =>
+    baseTrigger({ ...params, clerk });
+
+  return { trigger, ...rest };
 }

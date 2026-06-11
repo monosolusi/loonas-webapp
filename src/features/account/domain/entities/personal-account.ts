@@ -6,8 +6,11 @@ import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
 import { AccountType } from "@/features/account/domain/enums/account-type";
+import { MembershipEntity } from "@/features/account/domain/entities/membership";
 
-interface PersonalAccountEntityConstructor {
+type Metadata = { clerkId: string };
+
+type PersonalAccountEntityConstructor = {
   id: string;
   type: AccountType;
   nationality: string;
@@ -21,10 +24,14 @@ interface PersonalAccountEntityConstructor {
   district: DistrictEntity;
   subdistrict: SubdistrictEntity;
   address: string;
+  metadata: Metadata;
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
-}
+  membership?: MembershipEntity;
+  role?: string;
+  features?: string[];
+};
 
 export class PersonalAccountEntity implements AbstractEntity {
   public id: string;
@@ -40,9 +47,13 @@ export class PersonalAccountEntity implements AbstractEntity {
   public district: DistrictEntity;
   public subdistrict: SubdistrictEntity;
   public address: string;
+  public metadata: Metadata;
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
+  public membership?: MembershipEntity;
+  public role: string;
+  public features: string[];
 
   constructor(args: PersonalAccountEntityConstructor) {
     this.id = args.id;
@@ -58,9 +69,17 @@ export class PersonalAccountEntity implements AbstractEntity {
     this.district = args.district;
     this.subdistrict = args.subdistrict;
     this.address = args.address;
+    this.metadata = args.metadata;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
+    this.membership = args.membership;
+    this.role = args.role ?? "user";
+    this.features = args.features ?? [];
+  }
+
+  public hasFeature(feature: string): boolean {
+    return this.features.includes(feature);
   }
 
   public get fullAddress() {

@@ -1,29 +1,13 @@
 "use client";
 
-import React from "react";
-import { parsePhoneNumberFromString } from "libphonenumber-js";
+import React, { useContext, useMemo } from "react";
+import {
+  CreateNewPartnerContextProps,
+  CreateNewPartnerProviderProps,
+} from "@/features/partner/presentation/providers/create-new-partner.types";
+import { useCreatePartner } from "@/features/partner/presentation/hooks/use-create-partner";
+import { isNonEmptyString, isValidEmail, isValidPhoneNumber } from "@/core/utilities/validation-patterns";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
-import { DataFailed } from "@/core/resources/data-state";
-import { CreatePartnerUseCase, CreatePartnerUseCaseParams } from "@/features/partner/domain/usecases/create-partner";
-import { PartnerRepositoryImpl } from "@/features/partner/data/repositories/partner";
-import { PartnerServiceImpl } from "@/features/partner/data/sources/partner";
-import { HttpRequest } from "@/core/helpers/http-request";
-
-interface CreateNewPartnerContextProps {
-  name: string;
-  email: string;
-  phone: string;
-  loading: boolean;
-  error?: Error;
-  setName?: React.Dispatch<React.SetStateAction<string>>;
-  setEmail?: React.Dispatch<React.SetStateAction<string>>;
-  setPhone?: React.Dispatch<React.SetStateAction<string>>;
-  createPartner?: () => Promise<boolean>;
-  clearError?: () => void;
-  clearInput?: () => void;
-}
 
 const CreateNewPartnerContext = React.createContext<CreateNewPartnerContextProps>({
   name: "",
@@ -32,16 +16,15 @@ const CreateNewPartnerContext = React.createContext<CreateNewPartnerContextProps
   loading: false,
 });
 
-export function CreateNewPartnerProvider({ children }: { children: React.ReactNode }) {
+export function CreateNewPartnerProvider(props: CreateNewPartnerProviderProps) {
   const [name, setName] = React.useState<string>("");
   const [email, setEmail] = React.useState<string>("");
   const [phone, setPhone] = React.useState<string>("");
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<Error>();
+  const { trigger, isMutating } = useCreatePartner();
 
-  const clearError = React.useCallback(() => {
-    setError(undefined);
-  }, []);
+  const isClean = useMemo(() => {
+    return isNonEmptyString(name) && isValidEmail(email) && isValidPhoneNumber(phone);
+  }, [name, email, phone]);
 
   const clearInput = React.useCallback(() => {
     setName("");
@@ -50,45 +33,10 @@ export function CreateNewPartnerProvider({ children }: { children: React.ReactNo
   }, []);
 
   async function createPartner() {
-    try {
-      setLoading(true);
-      if (!name) throw new ServerError(ErrorCodes.EMPTY_NAME);
-      if (!email) throw new ServerError(ErrorCodes.EMPTY_EMAIL);
-      if (!phone) throw new ServerError(ErrorCodes.EMPTY_PHONE);
+    if (!isClean) throw new ServerError(ErrorCodes.INCOMPLETE_FORM);
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) throw new ServerError(ErrorCodes.INVALID_EMAIL);
-
-      const parsedPhoneNumber =
-        parsePhoneNumberFromString(phone, { defaultCountry: "ID" }) ||
-        parsePhoneNumberFromString(phone, { defaultCountry: "SG" });
-
-      // If still not valid, throw an error
-      if (!parsedPhoneNumber || !parsedPhoneNumber.isValid()) throw new ServerError(ErrorCodes.INVALID_PHONE_NUMBER);
-
-      // The phone number is correct here, now it is time to insert the database
-      const http = new HttpRequest();
-      const partnerService = new PartnerServiceImpl(http);
-      const sessionService = new LocalStorageSessionService();
-      const sessionRepository = new SessionRepositoryImpl(sessionService);
-      const partnerRepository = new PartnerRepositoryImpl(partnerService);
-      const createPartner = new CreatePartnerUseCase(partnerRepository, sessionRepository);
-      const createPartnerParams = new CreatePartnerUseCaseParams(name, email, parsedPhoneNumber.number.toString());
-
-      const result = await createPartner.execute(createPartnerParams);
-      if (result instanceof DataFailed) throw result.error;
-      if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
-      // Reset form after successful creation
-      clearInput();
-      setLoading(false);
-
-      return true;
-    } catch (err: any) {
-      setLoading(false);
-      setError(err);
-      return false;
-    }
+    await trigger({ name, email, phoneNumber: phone });
+    clearInput();
   }
 
   return (
@@ -97,21 +45,20 @@ export function CreateNewPartnerProvider({ children }: { children: React.ReactNo
         name,
         email,
         phone,
-        loading,
-        error,
+        loading: isMutating,
         setName,
         setEmail,
         setPhone,
-        createPartner,
-        clearError,
-        clearInput,
+        create: createPartner,
       }}
     >
-      {children}
+      {props.children}
     </CreateNewPartnerContext.Provider>
   );
 }
 
-export function useCreateNewPartner() {
-  return React.useContext(CreateNewPartnerContext);
+export function useCreateNewPartnerProvider() {
+  const context = useContext(CreateNewPartnerContext);
+  if (!context) throw new ServerError(ErrorCodes.INVALID_HOOK_CALL);
+  return context;
 }

@@ -1,19 +1,15 @@
 import { AbstractModel } from "@/core/resources/model";
-import { SessionEntity } from "../../domain/entities/session";
-import { AccountTypeModel } from "@/features/account/domain/types/account-type";
+import { SessionEntity } from "@/features/authentication/domain/entities/session";
 
 interface SessionModelConstructor {
   accessToken: string;
-  selectedAccount?: AccountTypeModel;
 }
 
 export class SessionModel implements AbstractModel {
   public accessToken: string;
-  public selectedAccount?: AccountTypeModel;
 
   constructor(args: SessionModelConstructor) {
     this.accessToken = args.accessToken;
-    this.selectedAccount = args.selectedAccount;
   }
 
   public static fromJson(doc: Record<string, any>): SessionModel {
@@ -25,7 +21,6 @@ export class SessionModel implements AbstractModel {
   toEntity(): SessionEntity {
     return new SessionEntity({
       accessToken: this.accessToken,
-      selectedAccount: this.selectedAccount?.toEntity(),
     });
   }
 }

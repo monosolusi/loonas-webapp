@@ -6,7 +6,7 @@ import { ProvinceServiceImpl } from "@/core/utilities/address/data/sources/provi
 import { CityServiceImpl } from "@/core/utilities/address/data/sources/city";
 import { DistrictServiceImpl } from "@/core/utilities/address/data/sources/district";
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
-import { ListSubdistrictUseCase, ListSubdistrictUseCaseParams } from "../../domain/usecases/list-subdistrict";
+import { ListSubdistrictUseCase, ListSubdistrictUseCaseParams } from "@/core/utilities/address/domain/usecases/list-subdistrict";
 import { SubdistrictServiceImpl } from "@/core/utilities/address/data/sources/subdistrict";
 
 // data, loading

@@ -1,4 +1,7 @@
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
+"use client";
+
+import { useClerk } from "@clerk/nextjs";
+import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { AccountServiceImpl } from "@/features/account/data/sources/account";
 import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
@@ -6,10 +9,11 @@ import { ListAccountBankAccountUseCase } from "@/features/account/domain/usecase
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import useSWR from "swr";
+import { useMemo } from "react";
 import { HttpRequest } from "@/core/helpers/http-request";
 
-async function listAccountBankAccountFetcher() {
-  const sessionService = new LocalStorageSessionService();
+async function listAccountBankAccountFetcher([_, params]: [string, { clerk: ReturnType<typeof useClerk> }]) {
+  const sessionService = new ClerkSessionService({ clerk: params.clerk });
   const sessionRepository = new SessionRepositoryImpl(sessionService);
   const http = new HttpRequest();
   const accountService = new AccountServiceImpl(http);
@@ -22,7 +26,9 @@ async function listAccountBankAccountFetcher() {
 }
 
 export function useListAccountBankAccout() {
-  const { data, error, isLoading } = useSWR("list-account-bank-account", listAccountBankAccountFetcher);
+  const clerk = useClerk();
+  const swrParams = useMemo(() => ({ clerk }), [clerk]);
+  const { data, error, isLoading } = useSWR(["list-account-bank-account", swrParams], listAccountBankAccountFetcher);
   return {
     bankAccounts: data ?? [],
     loading: isLoading,

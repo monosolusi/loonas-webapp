@@ -1,6 +1,6 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PayInDetailServiceImpl } from "@/features/payment/data/sources/pay-in-detail";
-import { VirtualAccountPayInDetailModel } from "../models/va-pay-in-detail";
+import { VirtualAccountPayInDetailModel } from "@/features/payment/data/models/va-pay-in-detail";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 export class VirtualAccountPayInService extends PayInDetailServiceImpl {

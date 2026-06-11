@@ -13,6 +13,9 @@ type FilledButtonProps = {
   color?: "primary" | "secondary" | "danger";
 };
 
+/**
+ * @deprecated Use PrimaryButton, SecondaryButton, or DangerButton from `@/core/presentations/components/buttons/` instead.
+ */
 export function FilledButton(props: FilledButtonProps) {
   const buttonColor = useMemo(() => {
     const colors = {

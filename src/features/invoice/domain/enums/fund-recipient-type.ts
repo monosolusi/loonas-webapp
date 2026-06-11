@@ -1,0 +1,4 @@
+export enum FundRecipientType {
+  ACCOUNT_PERSONAL = "ACCOUNT_PERSONAL",
+  ACCOUNT_BUSINESS = "ACCOUNT_BUSINESS",
+}

@@ -1,15 +1,16 @@
 import { HttpRequest } from "@/core/helpers/http-request";
-import { InvoiceRepositoryImpl } from "../../data/repositories/invoice";
-import { InvoiceServiceImpl } from "../../data/sources/invoice";
+import { InvoiceRepositoryImpl } from "@/features/invoice/data/repositories/invoice";
+import { InvoiceServiceImpl } from "@/features/invoice/data/sources/invoice";
 import { DataFailed } from "@/core/resources/data-state";
 import useSWR from "swr";
-import { PublicOutgoingInvoiceEntity } from "../../domain/entities/public-outgoing-invoice";
+import { PublicOutgoingInvoiceEntity } from "@/features/invoice/domain/entities/public-outgoing-invoice";
 import {
   GetPublicOutgoingInvoiceUseCase,
   GetPublicOutgoingInvoiceUseCaseParams,
-} from "../../domain/usecases/get-public-outgoing-invoice";
+} from "@/features/invoice/domain/usecases/get-public-outgoing-invoice";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 interface GetPublicOutgoingInvoiceFetcherParams {
   id: string;
@@ -32,7 +33,7 @@ async function GetPublicOutgoingInvoiceFetcher([_, params]: [
 }
 
 export function useGetPublicOutgoingInvoice(Params: GetPublicOutgoingInvoiceFetcherParams) {
-  const { data, isLoading, error } = useSWR(["get-public-outgoing-invoice", Params], GetPublicOutgoingInvoiceFetcher);
+  const { data, isLoading, error } = useSWR([INVOICE_SWR_KEYS.GET_PUBLIC_OUTGOING_INVOICE, Params], GetPublicOutgoingInvoiceFetcher);
 
   return {
     invoice: data,

@@ -1,24 +1,23 @@
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { BankServiceImpl } from "@/features/bank/data/sources/bank";
 import { BankRepositoryImpl } from "@/features/bank/data/repositories/bank";
 import {
   VerifyAccountHolderUseCase,
-  VerifyAccountHolderUseCaseParams
+  VerifyAccountHolderUseCaseParams,
 } from "@/features/bank/domain/usecases/verify-account-holder";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { AccountInquiryResultEntity } from "@/features/bank/domain/entities/account-inquiry-result";
-import useSWRMutation from "swr/mutation";
+import { VerifyBankAccountFetcherParams } from "@/features/bank/presentation/hooks/use-inquiry-bank-account.types";
+import { useSWRMutationClerk } from "@/core/helpers/use-swr-mutation-clerk";
+import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 
-async function verifyBankAccountFetcher(
+async function VerifyBankAccountFetcher(
   _: string,
-  { arg }: { arg: { bankId: string, accountNumber: string } }
+  { arg }: { arg: VerifyBankAccountFetcherParams },
 ): Promise<AccountInquiryResultEntity> {
-  const sessionService = new LocalStorageSessionService();
-  const sessionRepository = new SessionRepositoryImpl(sessionService);
-  const bankService = new BankServiceImpl();
-  const bankRepository = new BankRepositoryImpl(bankService);
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: arg.clerk }));
+  const bankRepository = new BankRepositoryImpl(new BankServiceImpl());
   const verifyAccountHolder = new VerifyAccountHolderUseCase(bankRepository, sessionRepository);
   const params = new VerifyAccountHolderUseCaseParams(arg.bankId, arg.accountNumber);
 
@@ -29,5 +28,5 @@ async function verifyBankAccountFetcher(
 }
 
 export function useInquiryBankAccount() {
-  return useSWRMutation("inquiry-bank-account", verifyBankAccountFetcher);
+  return useSWRMutationClerk("inquiry-bank-account", VerifyBankAccountFetcher);
 }

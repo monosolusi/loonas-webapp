@@ -1,53 +1,65 @@
 import { AbstractEntity } from "@/core/resources/entity";
 import { DateTime } from "luxon";
 import { AccountType } from "@/features/account/domain/enums/account-type";
+import { MembershipEntity } from "@/features/account/domain/entities/membership";
 
-interface BusinessAccountEntityConstructor {
+type Metadata = { clerkId: string };
+
+type AddressInformation = {
+  province: { id: string; label: string };
+  city: { id: string; label: string };
+  district: { id: string; label: string };
+  subdistrict: { id: string; label: string };
+  address: string;
+};
+
+type CompanyInformation = {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  address: AddressInformation;
+};
+
+type BusinessAccountEntityConstructor = {
   id: string;
   type: AccountType;
-  company: {
-    name: string;
-    email: string;
-    phoneNumber: string;
-    address: {
-      province: { id: string; label: string };
-      city: { id: string; label: string };
-      district: { id: string; label: string };
-      subdistrict: { id: string; label: string };
-      address: string;
-    };
-  };
+  company: CompanyInformation;
+  metadata: Metadata;
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
-}
+  membership?: MembershipEntity;
+  role?: string;
+  features?: string[];
+};
 
 export class BusinessAccountEntity implements AbstractEntity {
   public id: string;
   public type: AccountType;
-  public company: {
-    name: string;
-    email: string;
-    phoneNumber: string;
-    address: {
-      province: { id: string; label: string };
-      city: { id: string; label: string };
-      district: { id: string; label: string };
-      subdistrict: { id: string; label: string };
-      address: string;
-    };
-  };
+  public company: CompanyInformation;
+  public metadata: Metadata;
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
+  public membership?: MembershipEntity;
+  public role: string;
+  public features: string[];
 
   constructor(args: BusinessAccountEntityConstructor) {
     this.id = args.id;
     this.type = args.type;
     this.company = args.company;
+    this.metadata = args.metadata;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
+    this.membership = args.membership;
+    this.role = args.role ?? "user";
+    this.features = args.features ?? [];
+  }
+
+  public hasFeature(feature: string): boolean {
+    return this.features.includes(feature);
   }
 
   public get fullAddress() {

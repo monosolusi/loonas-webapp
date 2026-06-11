@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { TaxCalculator } from "@/core/utilities/tax/domain/calculator";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
@@ -35,34 +35,22 @@ interface AddItemContextProps {
   taxBase: number;
   total: number;
   mustRecalculateTax: boolean;
-  recalculated?: () => void;
-  clearInput?: () => void;
-  setInput?: (data: InitialItem) => void;
-  setName?: React.Dispatch<React.SetStateAction<string>>;
-  setDescription?: React.Dispatch<React.SetStateAction<string>>;
-  setQty?: React.Dispatch<React.SetStateAction<number>>;
-  setPrice?: React.Dispatch<React.SetStateAction<number>>;
-  setDiscountType?: React.Dispatch<React.SetStateAction<DiscountType>>;
-  setDiscount?: React.Dispatch<React.SetStateAction<number>>;
-  setTaxType?: React.Dispatch<React.SetStateAction<TaxType>>;
-  setTax?: React.Dispatch<React.SetStateAction<number>>;
-  setTaxBase?: React.Dispatch<React.SetStateAction<number>>;
-  setTotal?: React.Dispatch<React.SetStateAction<number>>;
+  recalculated: () => void;
+  setCalculatedTax: (result: { tax: number; taxBase: number; total: number }) => void;
+  clearInput: () => void;
+  setInput: (data: InitialItem) => void;
+  setName: (value: string) => void;
+  setDescription: (value: string) => void;
+  setQty: (value: number) => void;
+  setPrice: (value: number) => void;
+  setDiscountType: (value: DiscountType) => void;
+  setDiscount: (value: number) => void;
+  setTaxType: (value: TaxType) => void;
+  setTax: (value: number) => void;
+  setTaxBase: (value: number) => void;
 }
 
-const AddItemContext = React.createContext<AddItemContextProps>({
-  name: "",
-  description: "",
-  qty: 0,
-  price: 0,
-  discountType: DiscountType.NO_DISCOUNT,
-  discount: 0,
-  taxType: TaxType.NON_TAXABLE,
-  tax: 0,
-  taxBase: 0,
-  total: 0,
-  mustRecalculateTax: true,
-});
+const AddItemContext = React.createContext<AddItemContextProps>(null!);
 
 export function AddItemProvider(props: AddItemProviderProps) {
   const [name, setName] = useState<string>(props.initialValue?.name ?? "");
@@ -80,11 +68,21 @@ export function AddItemProvider(props: AddItemProviderProps) {
 
   // Utility States
   const [mustRecalculateTax, setMustRecalculateTax] = useState<boolean>(true);
+  const isCalculatingRef = useRef(false);
 
   // Functions
   const recalculated = () => setMustRecalculateTax(false);
 
+  const setCalculatedTax = (result: { tax: number; taxBase: number; total: number }) => {
+    isCalculatingRef.current = true;
+    setTax(result.tax);
+    setTaxBase(result.taxBase);
+    setTotal(result.total);
+    setMustRecalculateTax(false);
+  };
+
   const clearInput = () => {
+    isCalculatingRef.current = true;
     setName("");
     setDescription("");
     setQty(1);
@@ -99,6 +97,7 @@ export function AddItemProvider(props: AddItemProviderProps) {
   };
 
   const setInput = (data: InitialItem) => {
+    isCalculatingRef.current = true;
     setName(data.name);
     setDescription(data.description ?? "");
     setQty(data.qty);
@@ -109,14 +108,17 @@ export function AddItemProvider(props: AddItemProviderProps) {
     setTax(data.tax);
     setTaxBase(data.taxBase);
     setTotal(data.total);
+    setMustRecalculateTax(false);
   };
 
   useEffect(() => {
+    if (isCalculatingRef.current) return;
     if (taxType === TaxType.NON_TAXABLE) setMustRecalculateTax(false);
     else setMustRecalculateTax(true);
   }, [qty, price, taxType, discount, discountType, tax, taxBase]);
 
   useEffect(() => {
+    if (isCalculatingRef.current) return;
     if (taxType === TaxType.NON_TAXABLE) {
       const total = TaxCalculator.calculateAmountBeforeTax({
         price: price,
@@ -128,6 +130,11 @@ export function AddItemProvider(props: AddItemProviderProps) {
       setTotal(total);
     }
   }, [taxType, qty, price, discountType, discount]);
+
+  // Reset the calculating flag AFTER all guarded effects so they can check it first
+  useEffect(() => {
+    isCalculatingRef.current = false;
+  });
 
   return (
     <AddItemContext.Provider
@@ -144,6 +151,7 @@ export function AddItemProvider(props: AddItemProviderProps) {
         total,
         mustRecalculateTax,
         recalculated,
+        setCalculatedTax,
         clearInput,
         setInput,
         setName,
@@ -155,7 +163,6 @@ export function AddItemProvider(props: AddItemProviderProps) {
         setTaxType,
         setTax,
         setTaxBase,
-        setTotal,
       }}
     >
       {props.children}
@@ -164,5 +171,7 @@ export function AddItemProvider(props: AddItemProviderProps) {
 }
 
 export function useAddItem() {
-  return React.useContext(AddItemContext);
+  const ctx = React.useContext(AddItemContext);
+  if (!ctx) throw new Error("useAddItem must be used within AddItemProvider");
+  return ctx;
 }

@@ -1,6 +1,12 @@
 type ErrorStructureType = { code: string; httpCode: number; message: string };
 
 export class ErrorCodes {
+  public static readonly USER_SIGNED_IN = {
+    code: "USER_SIGNED_IN",
+    httpCode: 400,
+    message: "User already signed in",
+  };
+
   public static readonly EMPTY_RESPONSE = {
     code: "EMPTY_RESPONSE",
     httpCode: 400,
@@ -232,10 +238,34 @@ export class ErrorCodes {
     message: "Not Implemented",
   };
 
+  public static readonly INVALID_HOOK_CALL = {
+    code: "INVALID_HOOK_CALL",
+    httpCode: 400,
+    message: "A hook must be used in the same component as the one that calls it.",
+  };
+
+  public static readonly INVALID_BUSINESS_ACCOUNT_HOOK_CALL = {
+    code: "INVALID_BUSINESS_ACCOUNT_HOOK_CALL",
+    httpCode: 400,
+    message: "useBusinessAccountData must be used in business account flow",
+  };
+
+  public static readonly INVALID_PERSONAL_ACCOUNT_HOOK_CALL = {
+    code: "INVALID_PERSONAL_ACCOUNT_HOOK_CALL",
+    httpCode: 400,
+    message: "usePersonalAccountData must be used in personal account flow",
+  };
+
   public static readonly INVALID_TAX_TYPE = {
     code: "INVALID_TAX_TYPE",
     httpCode: 400,
     message: "Invalid tax type",
+  };
+
+  public static readonly INVALID_IDENTITY_NUMBER: ErrorStructureType = {
+    code: "INVALID_IDENTITY_NUMBER",
+    httpCode: 400,
+    message: "NIK harus terdiri dari 16 digit",
   };
 
   public static readonly INVALID_INVOICE_DATE: ErrorStructureType = {
@@ -316,10 +346,46 @@ export class ErrorCodes {
     message: "No associated accounts for user",
   };
 
-  public static readonly NO_SELECTED_ACCOUNT: ErrorStructureType = {
-    code: "NO_SELECTED_ACCOUNT",
-    httpCode: 404,
-    message: "No selected account",
+  public static readonly PAYMENT_METHOD_DISABLED: ErrorStructureType = {
+    code: "PAYMENT_METHOD_DISABLED",
+    httpCode: 400,
+    message: "Metode pembayaran tidak tersedia. Pilih metode lain.",
+  };
+
+  public static readonly INSUFFICIENT_STOCK: ErrorStructureType = {
+    code: "INSUFFICIENT_STOCK",
+    httpCode: 400,
+    message: "Stok tidak mencukupi untuk beberapa item.",
+  };
+
+  public static readonly RECIPE_NOT_DEFINED: ErrorStructureType = {
+    code: "RECIPE_NOT_DEFINED",
+    httpCode: 400,
+    message: "Resep produk belum lengkap. Lengkapi resep sebelum dijual.",
+  };
+
+  public static readonly IDEMPOTENCY_KEY_CONFLICT: ErrorStructureType = {
+    code: "IDEMPOTENCY_KEY_CONFLICT",
+    httpCode: 409,
+    message: "Permintaan duplikat dengan isi berbeda. Coba lagi.",
+  };
+
+  public static readonly IDEMPOTENCY_KEY_IN_PROGRESS: ErrorStructureType = {
+    code: "IDEMPOTENCY_KEY_IN_PROGRESS",
+    httpCode: 409,
+    message: "Transaksi sebelumnya masih diproses. Mohon tunggu sebentar.",
+  };
+
+  public static readonly FUND_RECIPIENT_NOT_CONFIGURED: ErrorStructureType = {
+    code: "FUND_RECIPIENT_NOT_CONFIGURED",
+    httpCode: 400,
+    message: "Operator belum mengatur rekening penerima. Hubungi pemilik akun untuk melengkapi pengaturan.",
+  };
+
+  public static readonly PAY_IN_NOT_SUPPORTED: ErrorStructureType = {
+    code: "PAY_IN_NOT_SUPPORTED",
+    httpCode: 400,
+    message: "Metode pembayaran ini belum didukung di POS.",
   };
 
   public static find(code: string): ErrorStructureType | undefined {
@@ -337,7 +403,7 @@ export class ServerError extends Error {
     super(code.message);
     this.code = code.code;
     this.httpCode = code.httpCode;
-    this.message = code.message;
+    this.message = details?.message ?? code.message;
     this.details = Object.assign({}, { code: code.code, message: code.message }, details);
   }
 }

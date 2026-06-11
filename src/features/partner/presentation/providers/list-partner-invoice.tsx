@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { InvoiceEntity } from "@/features/invoice/domain/entities/invoice";
+import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { PartnerRepositoryImpl } from "@/features/partner/data/repositories/partner";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
@@ -15,7 +15,7 @@ import {
 import { HttpRequest } from "@/core/helpers/http-request";
 
 interface ListPartnerInvoiceContextProps {
-  invoices: InvoiceEntity[];
+  invoices: IncomingInvoiceEntity[];
   loading: boolean;
   error?: ServerError;
 }
@@ -37,7 +37,7 @@ const ListPartnerInvoiceContext = React.createContext<ListPartnerInvoiceContextP
  * @constructor
  */
 export function ListPartnerInvoiceProvider(props: ListPartnerInvoiceProviderProps) {
-  const [invoices, setInvoices] = useState<InvoiceEntity[]>([]);
+  const [invoices, setInvoices] = useState<IncomingInvoiceEntity[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<ServerError>();
 

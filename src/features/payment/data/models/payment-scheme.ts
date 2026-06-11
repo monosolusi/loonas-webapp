@@ -1,5 +1,5 @@
 import { AbstractModel } from "@/core/resources/model";
-import { PaymentSchemeEntity } from "../../domain/entities/payment-scheme";
+import { PaymentSchemeEntity } from "@/features/payment/domain/entities/payment-scheme";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 interface PaymentSchemeModelConstructor {

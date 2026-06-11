@@ -1,6 +1,6 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { NotificationService } from "@/features/notification/domain/sources/notification";
-import { NotificationConfigModel } from "../models/notification-config";
+import { NotificationConfigModel } from "@/features/notification/data/models/notification-config";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 

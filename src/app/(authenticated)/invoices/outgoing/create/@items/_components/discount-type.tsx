@@ -8,20 +8,20 @@ import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 export function DiscountTypeSelect() {
   const { discountType, setDiscountType } = useAddItem();
 
-  const handleChange = (data: { value: string; label: string }) => {
-    if (data.value === "") return;
+  const handleChange = (value: string) => {
+    if (value === "") return;
     if (!setDiscountType) return;
-    if (discountType === data.value) return; // No Changes
+    if (discountType === value) return;
 
-    setDiscountType(data.value as DiscountType);
+    setDiscountType(value as DiscountType);
   };
 
   return (
     <SelectInput
-      title="Jenis Diskon"
+      label="Jenis Diskon"
       value={discountType}
       onChange={handleChange}
-      data={[
+      options={[
         { value: DiscountType.PERCENTAGE, label: "Persentase" },
         { value: DiscountType.FIXED, label: "Fixed" },
         { value: DiscountType.NO_DISCOUNT, label: "Tidak Ada Diskon" },

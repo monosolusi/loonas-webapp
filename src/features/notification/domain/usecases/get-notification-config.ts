@@ -3,7 +3,7 @@ import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { NotificationConfigEntity } from "@/features/notification/domain/entities/notification-config";
-import { NotificationRepository } from "../repositories/notification";
+import { NotificationRepository } from "@/features/notification/domain/repositories/notification";
 
 export class GetNotificationConfigUseCase implements UseCase<DataState<NotificationConfigEntity>, void> {
   constructor(
@@ -11,7 +11,7 @@ export class GetNotificationConfigUseCase implements UseCase<DataState<Notificat
     private readonly sessionRepository: SessionRepository,
   ) {}
 
-  public async execute(params: void): Promise<DataState<NotificationConfigEntity>> {
+  public async execute(): Promise<DataState<NotificationConfigEntity>> {
     try {
       const session = await this.sessionRepository.retrieve();
       if (session instanceof DataFailed) throw session.error;

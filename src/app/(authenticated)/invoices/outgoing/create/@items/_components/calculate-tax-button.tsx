@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
-import { FilledButton } from "@/core/presentations/components/filled-button";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 import { TaxCalculator } from "@/core/utilities/tax/domain/calculator";
 import { useCalculateTax } from "@/features/tax/presentation/hooks/use-calculate-tax";
@@ -18,10 +18,7 @@ export function CalculateTaxButton() {
     tax,
     taxBase,
     mustRecalculateTax,
-    setTax,
-    setTaxBase,
-    setTotal,
-    recalculated,
+    setCalculatedTax,
   } = useAddItem();
 
   const isDisabled = useMemo(() => {
@@ -31,10 +28,7 @@ export function CalculateTaxButton() {
   }, [taxType, mustRecalculateTax, isMutating]);
 
   const handleClick = async () => {
-    if (!recalculated) return;
-    if (!setTax) return;
-    if (!setTaxBase) return;
-    if (!setTotal) return;
+    if (!setCalculatedTax) return;
 
     const amountBeforeTax = TaxCalculator.calculateAmountBeforeTax({ price, qty, discount, discountType });
     const result = await trigger({
@@ -44,16 +38,20 @@ export function CalculateTaxButton() {
       taxBase: taxBase,
     });
 
-    setTax(result.tax);
-    setTaxBase(result.taxBase);
-    setTotal(result.amountAfterTax);
-
-    recalculated();
+    setCalculatedTax({
+      tax: result.tax,
+      taxBase: result.taxBase,
+      total: result.amountAfterTax,
+    });
   };
 
   return (
-    <FilledButton type="button" onClick={handleClick} disabled={isDisabled}>
-      Hitung Pajak
-    </FilledButton>
+    <PrimaryButton
+      type="button"
+      label="Hitung Pajak"
+      loading={isMutating}
+      disabled={isDisabled}
+      onClick={handleClick}
+    />
   );
 }

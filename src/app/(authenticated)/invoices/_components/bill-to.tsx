@@ -6,13 +6,13 @@ interface BillToProps {
   email: string;
 }
 
-export function BilLTo(props: BillToProps) {
+export function BillTo(props: BillToProps) {
   return (
     <>
-      <div className="flex-1 text-gray-500 italic">Tagihan Untuk</div>
-      <div className="flex-1 text-base font-semibold text-gray-900">{props.name}</div>
-      <div className="flex-1 text-gray-500">Telp. {props.phoneNumber}</div>
-      <div className="flex-1 text-gray-500">Email. {props.email}</div>
+      <div className="flex-1 text-neutral-300 italic">Tagihan Untuk</div>
+      <div className="flex-1 text-base font-semibold text-neutral-500">{props.name}</div>
+      <div className="flex-1 text-neutral-300">Telp. {props.phoneNumber}</div>
+      <div className="flex-1 text-neutral-300">Email. {props.email}</div>
     </>
   );
 }

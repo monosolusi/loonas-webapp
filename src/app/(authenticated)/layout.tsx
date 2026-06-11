@@ -1,15 +1,16 @@
+import { ProtectedPage } from "@/app/(authenticated)/_components/protected-page";
+import { NavigationBar } from "@/app/(authenticated)/_components/navigation-bar";
 import { Header } from "@/app/(authenticated)/_components/header";
-import { ProtectedPage } from "@/core/presentations/components/protected-page";
-import { PageMain } from "@/core/presentations/components/page-main";
 
-export default function AuthenticatedLayout({ children }: { children: any }) {
+export default function AuthenticatedLayout(props: { children: React.ReactNode }) {
   return (
     <ProtectedPage>
-      <div className="min-h-full">
-        <Header />
-        <PageMain>
-          {children}
-        </PageMain>
+      <div className="flex h-screen flex-row overflow-hidden">
+        <NavigationBar />
+        <div className="flex flex-1 flex-col overflow-hidden bg-white">
+          <Header />
+          <div className="flex-1 overflow-y-auto p-8">{props.children}</div>
+        </div>
       </div>
     </ProtectedPage>
   );

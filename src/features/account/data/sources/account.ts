@@ -4,19 +4,35 @@ import { DistrictEntity } from "@/core/utilities/address/domain/entities/distric
 import { DateTime } from "luxon";
 import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
-import { PersonalAccountModel } from "../models/personal-account";
+import { PersonalAccountModel } from "@/features/account/data/models/personal-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { AccountVerificationWorkModel } from "../models/account-verification-work";
-import { AccountBankAccountModel } from "../models/account-bank-account";
+import { AccountVerificationWorkModel } from "@/features/account/data/models/account-verification-work";
+import { AccountBankAccountModel } from "@/features/account/data/models/account-bank-account";
 import { AccountService, CreateBusinessParams } from "@/features/account/domain/sources/account";
-import { BusinessAccountModel } from "../models/business-account";
+import { BusinessAccountModel } from "@/features/account/data/models/business-account";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { AccountTypeModel } from "@/features/account/domain/types/account-type";
 import { AccountType } from "@/features/account/domain/enums/account-type";
 
 export class AccountServiceImpl implements AccountService {
   constructor(private readonly http: HttpRequest) {}
+
+  public async getCurrent(session: SessionEntity): Promise<AccountTypeModel> {
+    try {
+      const path = "/accounts/me";
+      const method = "GET";
+
+      // It doesn't require an account because we use the token directly from clerk token.
+      const result = await this.http.request({ path, method, session });
+      if (result.type === AccountType.PERSONAL) return PersonalAccountModel.fromJson(result);
+      else if (result.type === AccountType.BUSINESS) return BusinessAccountModel.fromJson(result);
+      else throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
 
   public async createBusiness(params: CreateBusinessParams, session: SessionEntity): Promise<BusinessAccountModel> {
     try {
@@ -65,23 +81,14 @@ export class AccountServiceImpl implements AccountService {
     }
   }
 
-  public async listBankAccount(
-    params: {
-      accountId: string;
-    },
-    session: SessionEntity,
-  ): Promise<AccountBankAccountModel[]> {
+  public async listBankAccount(session: SessionEntity): Promise<AccountBankAccountModel[]> {
     try {
-      if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-      if (!params.accountId) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const url = `${baseUrl}/accounts/bank-accounts`;
       const headers = {
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id,
       };
 
       const response = await fetch(url, { headers });
@@ -107,7 +114,7 @@ export class AccountServiceImpl implements AccountService {
     try {
       const path = "/accounts";
       const method = "GET";
-      const result = await this.http.request({ path, method, session }, { requireAccount: false });
+      const result = await this.http.request({ path, method, session });
 
       // The result will be an array, therefore, we need to check if it is a personal or business account
       if (!Array.isArray(result)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);

@@ -28,7 +28,6 @@ export interface BankRepository {
     params: {
       bankId: string;
       accountNumber: string;
-      account: { id: string };
     },
     session: SessionEntity,
   ): Promise<DataState<AccountBankAccountEntity>>;

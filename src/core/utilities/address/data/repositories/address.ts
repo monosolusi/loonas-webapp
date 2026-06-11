@@ -2,11 +2,11 @@ import { AddressRepository } from "@/core/utilities/address/domain/repositories/
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
 import { ProvinceService } from "@/core/utilities/address/data/sources/province";
-import { CityEntity } from "../../domain/entities/city";
+import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { CityService } from "@/core/utilities/address/data/sources/city";
-import { DistrictEntity } from "../../domain/entities/district";
+import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
 import { DistrictService } from "@/core/utilities/address/data/sources/district";
-import { SubdistrictEntity } from "../../domain/entities/subdistrict";
+import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
 import { SubdistrictService } from "@/core/utilities/address/data/sources/subdistrict";
 
 export class AddressRepositoryImpl implements AddressRepository {

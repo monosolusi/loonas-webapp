@@ -1,11 +1,21 @@
 import { AuthRepository } from "@/features/authentication/domain/repositories/auth";
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
-import { SessionEntity } from "../../domain/entities/session";
+import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { AuthService } from "../sources/auth";
+import { AuthService } from "@/features/authentication/data/sources/auth";
 
 export class AuthRepositoryImpl implements AuthRepository {
   constructor(private authService: AuthService) {
+  }
+
+  public async verifyResetToken(token: string): Promise<DataState<boolean>> {
+    try {
+      await this.authService.verifyResetToken(token);
+      return new DataSuccess(true);
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
   }
 
   public async submitNewPassword(resetToken: string, password: string): Promise<DataState<boolean>> {

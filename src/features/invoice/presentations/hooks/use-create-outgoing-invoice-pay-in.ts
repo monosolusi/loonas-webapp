@@ -1,15 +1,16 @@
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { InvoiceServiceImpl } from "../../data/sources/invoice";
+import { InvoiceServiceImpl } from "@/features/invoice/data/sources/invoice";
 import { HttpRequest } from "@/core/helpers/http-request";
-import { InvoiceRepositoryImpl } from "../../data/repositories/invoice";
-import { PayInEntity } from "../../domain/entities/pay-in";
+import { InvoiceRepositoryImpl } from "@/features/invoice/data/repositories/invoice";
+import { PayInEntity } from "@/features/invoice/domain/entities/pay-in";
 import {
   CreateOutgoingInvoicePayInUseCase,
   CreateOutgoingInvoicePayInUseCaseParams,
-} from "../../domain/usecases/create-outgoing-invoice-pay-in";
+} from "@/features/invoice/domain/usecases/create-outgoing-invoice-pay-in";
 import useSWRMutation from "swr/mutation";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 interface CreateOutgoingInvoicePayInParams {
   invoiceId: string;
@@ -39,5 +40,5 @@ async function CreateOutgoingInvoicePayInFetcher(
 }
 
 export function useCreateOutgoingInvoicePayIn() {
-  return useSWRMutation("create-outgoing-invoice-pay-in", CreateOutgoingInvoicePayInFetcher);
+  return useSWRMutation(INVOICE_SWR_KEYS.CREATE_OUTGOING_INVOICE_PAY_IN, CreateOutgoingInvoicePayInFetcher);
 }

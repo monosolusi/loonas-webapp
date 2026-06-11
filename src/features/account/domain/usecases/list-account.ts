@@ -1,6 +1,6 @@
 import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
-import { AccountRepository } from "../repositories/account";
+import { AccountRepository } from "@/features/account/domain/repositories/account";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
@@ -11,7 +11,7 @@ export class ListAccountUseCase implements UseCase<DataState<AccountTypeEntity[]
     private readonly sessionRepository: SessionRepository,
   ) {}
 
-  public async execute(params: void): Promise<DataState<AccountTypeEntity[]>> {
+  public async execute(): Promise<DataState<AccountTypeEntity[]>> {
     try {
       const session = await this.sessionRepository.retrieve();
       if (session instanceof DataFailed) throw session.error;

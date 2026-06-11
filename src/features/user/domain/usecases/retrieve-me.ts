@@ -1,7 +1,7 @@
 import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { UserEntity } from "../entities/user";
+import { UserEntity } from "@/features/user/domain/entities/user";
 import { UserRepository } from "@/features/user/domain/repositories/user";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
@@ -12,7 +12,7 @@ export class RetrieveMeUseCase implements UseCase<DataState<UserEntity>, void> {
   ) {
   }
 
-  public async execute(params: void): Promise<DataState<UserEntity>> {
+  public async execute(): Promise<DataState<UserEntity>> {
     const session = await this.sessionRepository.retrieve();
     if (session instanceof DataFailed) return session;
     if (!session.data) return new DataFailed(new ServerError(ErrorCodes.INVALID_INSTANCE));

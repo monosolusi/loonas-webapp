@@ -1,32 +1,11 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
-import { SessionRepository } from "../../domain/repositories/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { SessionEntity } from "../../domain/entities/session";
-import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
+import { SessionEntity } from "@/features/authentication/domain/entities/session";
+import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { SessionService } from "@/features/authentication/domain/sources/session";
 
 export class SessionRepositoryImpl implements SessionRepository {
   constructor(private sessionService: SessionService) {}
-
-  public async retrieveAccount(): Promise<DataState<AccountTypeEntity>> {
-    try {
-      const selectedAccount = await this.sessionService.retrieveSelectedAccount();
-      return new DataSuccess(selectedAccount.toEntity());
-    } catch (err) {
-      if (err instanceof ServerError) return new DataFailed(err);
-      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
-    }
-  }
-
-  public async selectAccount(account: AccountTypeEntity): Promise<DataState<AccountTypeEntity>> {
-    try {
-      const newAccount = await this.sessionService.selectAccount(account);
-      return new DataSuccess(newAccount.toEntity());
-    } catch (err) {
-      if (err instanceof ServerError) return new DataFailed(err);
-      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
-    }
-  }
 
   public async saveSession(accessToken: string): Promise<DataState<SessionEntity>> {
     try {

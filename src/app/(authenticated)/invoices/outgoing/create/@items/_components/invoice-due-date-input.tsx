@@ -1,14 +1,15 @@
-import { DateInput } from "@/core/presentations/components/date-input";
-import {
-  useCreateOutgoingInvoice
-} from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+"use client";
+
+import { DatePickerInput } from "@/core/presentations/components/text-inputs/date-picker-input";
+import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 import { DateTime } from "luxon";
 
 export function InvoiceDueDateInput() {
   const { invoiceDate, dueDate, setDueDate } = useCreateOutgoingInvoice();
 
-  const handleDateChange = (date: DateTime) => {
+  const handleDateChange = (date?: DateTime) => {
     if (!setDueDate) return;
+    if (!date) return;
     if (!invoiceDate) {
       setDueDate(date.startOf("day"));
       return;
@@ -22,10 +23,10 @@ export function InvoiceDueDateInput() {
   };
 
   return (
-    <DateInput
-      title="Tanggal Jatuh Tempo"
+    <DatePickerInput
+      label="Tanggal Jatuh Tempo"
       value={dueDate}
-      onChange={setDueDate}
+      onChange={handleDateChange}
       required
     />
   );

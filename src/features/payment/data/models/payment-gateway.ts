@@ -1,5 +1,5 @@
 import { AbstractModel } from "@/core/resources/model";
-import { PaymentGatewayEntity } from "../../domain/entities/payment-gateway";
+import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { PaymentSchemeModel } from "./payment-scheme";
 import { PricingModel } from "./pricing";
 
@@ -36,15 +36,16 @@ export class PaymentGatewayModel implements AbstractModel {
   }
 
   public static fromJson(json: Record<string, any>): PaymentGatewayModel {
+    const rawSchemes = json["schemes"];
     return new PaymentGatewayModel({
-      id: json["id"],
-      title: json["title"],
-      description: json["description"],
-      isActive: json["is_active"],
-      requiresSchemeSelection: json["requires_scheme_selection"],
+      id: json["id"] ?? "",
+      title: json["title"] ?? "",
+      description: json["description"] ?? "",
+      isActive: json["is_active"] ?? false,
+      requiresSchemeSelection: json["requires_scheme_selection"] ?? false,
       pricing: PricingModel.fromJson(json["pricing"]),
-      schemes: json["schemes"].map((scheme: any) => PaymentSchemeModel.fromJson(scheme)),
-      type: json["type"],
+      schemes: Array.isArray(rawSchemes) ? rawSchemes.map((scheme: any) => PaymentSchemeModel.fromJson(scheme)) : [],
+      type: json["type"] ?? "",
     });
   }
 

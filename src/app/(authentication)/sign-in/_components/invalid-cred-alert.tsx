@@ -1,24 +1,34 @@
 "use client";
 
-import { XCircleIcon } from "@heroicons/react/20/solid";
-import { useSignInProvider } from "@/features/authentication/presentation/providers/sign-in";
+import { SignInError, useSignInProvider } from "@/features/authentication/presentation/providers/sign-in";
+import Image from "next/image";
+
+const COPY: Record<NonNullable<SignInError>, string> = {
+  wrong_credentials: "Email atau kata sandi salah. Silakan periksa kembali dan coba lagi.",
+  too_many_requests: "Terlalu banyak percobaan masuk. Silakan tunggu beberapa saat, lalu coba lagi.",
+  network: "Gagal terhubung ke server. Periksa koneksi internet Anda, lalu coba lagi.",
+  fallback: "Terjadi kesalahan. Silakan coba lagi atau hubungi support jika masalah berlanjut.",
+};
 
 export function InvalidCredAlert() {
-  const { showInvalidCred } = useSignInProvider();
+  const { signInError } = useSignInProvider();
 
-  if (!showInvalidCred) return <></>;
+  if (signInError === null) return null;
+
   return (
-    <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-[480px]">
-      <div className="rounded-md bg-red-50 p-4">
-        <div className="flex">
-          <div className="shrink-0">
-            <XCircleIcon aria-hidden="true" className="size-5 text-red-400" />
-          </div>
-          <div className="ml-3">
-            <p className="text-sm text-red-800">Oops! Email atau password-nya nggak cocok nih. Coba lagi ya!</p>
-          </div>
-        </div>
-      </div>
+    <div
+      role="alert"
+      aria-live="polite"
+      className="bg-error-50 border-error-100 mt-8 flex flex-row gap-3 rounded-lg border p-4"
+    >
+      <Image
+        src="/assets/images/exclamation-circle-w20-h20.svg"
+        alt=""
+        aria-hidden="true"
+        width={20}
+        height={20}
+      />
+      <span className="text-error-500 text-base">{COPY[signInError]}</span>
     </div>
   );
 }

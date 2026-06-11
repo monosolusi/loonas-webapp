@@ -14,7 +14,7 @@ interface SendOptionsDialogImplProps {
   onCompleted?: (item: OutgoingInvoiceEntity) => void | Promise<void>;
 }
 
-export function SendOptionsDialogImpl(props: SendOptionsDialogImplProps) {
+export function CreateInvoiceSendOptionsDialogImpl(props: SendOptionsDialogImplProps) {
   const { trigger } = useCreateOutgoingInvoice();
   const { recipient, invoiceNumber, invoiceDate, dueDate, items, note, tnc, paymentConfiguration, signature } =
     useCreateOutgoingInvoiceProvider();

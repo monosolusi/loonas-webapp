@@ -1,9 +1,9 @@
-import { Card } from "@/core/presentations/components/card";
+import { SectionCard } from "@/core/presentations/components/section-card";
 import { RemainingPaymentTime } from "@/core/presentations/components/remaining-payment-time";
 import { VirtualAccountDetailBox } from "@/core/presentations/components/va-detail";
 import { useParams } from "next/navigation";
 import { useGetPublicPayInDetailForOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";
-import { PayInType } from "@/features/payment/domain/enums/pay-in-type";
+import { PayInType } from "@/features/invoice/domain/enums/pay-in-type";
 
 export function VirtualAccountPayInDetail() {
   const { id } = useParams<{ id: string }>();
@@ -12,7 +12,7 @@ export function VirtualAccountPayInDetail() {
   if (!payIn || loading) return null;
   if (payIn.payIn.type !== PayInType.VIRTUAL_ACCOUNT) return null;
   return (
-    <Card>
+    <SectionCard title="Detail Pembayaran">
       <div className="flex flex-col space-y-4">
         <RemainingPaymentTime deadline={payIn.payIn.expirationTime} />
         <VirtualAccountDetailBox
@@ -22,6 +22,6 @@ export function VirtualAccountPayInDetail() {
           totalPayment={payIn.summary.totalPayable}
         />
       </div>
-    </Card>
+    </SectionCard>
   );
 }

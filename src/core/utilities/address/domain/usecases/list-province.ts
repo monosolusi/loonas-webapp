@@ -7,7 +7,7 @@ export class ListProvinceUseCase implements UseCase<DataState<ProvinceEntity[]>,
   constructor(private addressRepository: AddressRepository) {
   }
 
-  public async execute(params: void): Promise<DataState<ProvinceEntity[]>> {
+  public async execute(): Promise<DataState<ProvinceEntity[]>> {
     return this.addressRepository.listProvince();
   }
 }

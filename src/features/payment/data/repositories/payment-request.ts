@@ -5,7 +5,7 @@ import {
   PaymentRequestRepositoryGetParams,
   PaymentRequestRepositoryUploadInvoicesParams
 } from "@/features/payment/domain/repositories/payment-request";
-import {PaymentRequestEntity} from "../../domain/entities/payment-request";
+import {PaymentRequestEntity} from "@/features/payment/domain/entities/payment-request";
 import {ErrorCodes, ServerError} from "@/core/resources/server-error";
 import {PaymentRequestService} from "@/features/payment/data/sources/payment-request";
 import {SessionEntity} from "@/features/authentication/domain/entities/session";

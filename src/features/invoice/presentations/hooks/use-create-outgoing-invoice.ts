@@ -1,9 +1,10 @@
 import useSWRMutation from "swr/mutation";
 import { DateTime } from "luxon";
+import { useClerk } from "@clerk/nextjs";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
+import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { InvoiceServiceImpl } from "@/features/invoice/data/sources/invoice";
 import { InvoiceRepositoryImpl } from "@/features/invoice/data/repositories/invoice";
@@ -18,6 +19,7 @@ import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
 import { NotificationChannel } from "@/features/notification/domain/enums/notification-channel";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
+import { INVOICE_SWR_KEYS } from "@/features/invoice/presentations/constants/swr-keys";
 
 interface InvoiceItem {
   name: string;
@@ -53,7 +55,10 @@ interface CreateOutgoingInvoiceFetcherParams {
   };
 }
 
-async function createOutgoingInvoiceFetcher(_: string, { arg }: CreateOutgoingInvoiceFetcherParams) {
+async function createOutgoingInvoiceFetcher(
+  [_, params]: [string, { clerk: ReturnType<typeof useClerk> }],
+  { arg }: CreateOutgoingInvoiceFetcherParams,
+) {
   if (!arg.recipient) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
   if (!arg.invoiceNumber) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
   if (!arg.invoiceDate) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
@@ -62,7 +67,7 @@ async function createOutgoingInvoiceFetcher(_: string, { arg }: CreateOutgoingIn
   if (!arg.items.length) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
   const httpRequest = new HttpRequest();
-  const sessionService = new LocalStorageSessionService();
+  const sessionService = new ClerkSessionService({ clerk: params.clerk });
   const sessionRepository = new SessionRepositoryImpl(sessionService);
   const invoiceService = new InvoiceServiceImpl(httpRequest);
   const invoiceRepository = new InvoiceRepositoryImpl(invoiceService, new PayInDetailFactory());
@@ -102,5 +107,6 @@ async function createOutgoingInvoiceFetcher(_: string, { arg }: CreateOutgoingIn
 }
 
 export function useCreateOutgoingInvoice() {
-  return useSWRMutation("create-outgoing-invoice", createOutgoingInvoiceFetcher);
+  const clerk = useClerk();
+  return useSWRMutation([INVOICE_SWR_KEYS.CREATE_OUTGOING_INVOICE, { clerk }], createOutgoingInvoiceFetcher);
 }

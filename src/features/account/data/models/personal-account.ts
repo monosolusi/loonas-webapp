@@ -7,8 +7,11 @@ import { ProvinceModel } from "@/core/utilities/address/data/model/province";
 import { CityModel } from "@/core/utilities/address/data/model/city";
 import { AbstractModel } from "@/core/resources/model";
 import { AccountType } from "@/features/account/domain/enums/account-type";
+import { MembershipModel } from "@/features/account/data/models/membership";
 
-interface PersonalAccountModelConstructor {
+type Metadata = { clerkId: string };
+
+type PersonalAccountModelConstructor = {
   id: string;
   type: AccountType;
   nationality: string;
@@ -22,10 +25,14 @@ interface PersonalAccountModelConstructor {
   district: DistrictModel;
   subdistrict: SubdistrictModel;
   address: string;
+  metadata: Metadata;
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
-}
+  membership?: MembershipModel;
+  role?: string;
+  features?: string[];
+};
 
 export class PersonalAccountModel implements AbstractModel {
   public readonly id: string;
@@ -41,9 +48,13 @@ export class PersonalAccountModel implements AbstractModel {
   public readonly district: DistrictModel;
   public readonly subdistrict: SubdistrictModel;
   public readonly address: string;
+  public readonly metadata: Metadata;
   public readonly createdAt: DateTime;
   public readonly updatedAt: DateTime;
   public readonly deletedAt?: DateTime;
+  public readonly membership?: MembershipModel;
+  public readonly role?: string;
+  public readonly features?: string[];
 
   constructor(args: PersonalAccountModelConstructor) {
     this.id = args.id;
@@ -59,9 +70,13 @@ export class PersonalAccountModel implements AbstractModel {
     this.district = args.district;
     this.subdistrict = args.subdistrict;
     this.address = args.address;
+    this.metadata = args.metadata;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
+    this.membership = args.membership;
+    this.role = args.role;
+    this.features = args.features;
   }
 
   public static fromJson(data: Record<string, any>): PersonalAccountModel {
@@ -79,33 +94,13 @@ export class PersonalAccountModel implements AbstractModel {
       district: new DistrictModel({ id: data["district_id"], label: data["district"] }),
       subdistrict: new SubdistrictModel({ id: data["subdistrict_id"], label: data["subdistrict"] }),
       address: data["address"],
+      metadata: { clerkId: data["metadata"]["clerk_id"] },
       createdAt: DateTime.fromISO(data["created_at"]),
       updatedAt: DateTime.fromISO(data["updated_at"]),
       deletedAt: data["deleted_at"] ? DateTime.fromISO(data["deleted_at"]) : undefined,
-    });
-  }
-
-  public static fromLocalStorage(encodedData: string): PersonalAccountModel {
-    const jsonAccount = atob(encodedData);
-    const data = JSON.parse(jsonAccount);
-
-    return new PersonalAccountModel({
-      id: data.id,
-      type: AccountType.PERSONAL,
-      nationality: data.nationality,
-      idNumber: data.idNumber,
-      fullName: data.fullName,
-      occupation: new OccupationModel({ id: data.occupation.id, label: data.occupation.label }),
-      pob: data.pob,
-      dob: data.dob,
-      province: new ProvinceModel({ id: data.province.id, label: data.province.label }),
-      city: new CityModel({ id: data.city.id, label: data.city.label }),
-      district: new DistrictModel({ id: data.district.id, label: data.district.label }),
-      subdistrict: new SubdistrictModel({ id: data.subdistrict.id, label: data.subdistrict.label }),
-      address: data.address,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-      deletedAt: data.deletedAt,
+      membership: data["membership"] ? MembershipModel.fromJson(data["membership"]) : undefined,
+      role: data["role"],
+      features: Array.isArray(data["features"]) ? data["features"] : [],
     });
   }
 
@@ -124,6 +119,7 @@ export class PersonalAccountModel implements AbstractModel {
       district: new DistrictModel({ id: entity.district.id, label: entity.district.label }),
       subdistrict: new SubdistrictModel({ id: entity.subdistrict.id, label: entity.subdistrict.label }),
       address: entity.address,
+      metadata: entity.metadata,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
       deletedAt: entity.deletedAt,
@@ -145,9 +141,13 @@ export class PersonalAccountModel implements AbstractModel {
       district: this.district.toEntity(),
       subdistrict: this.subdistrict.toEntity(),
       address: this.address,
+      metadata: this.metadata,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,
+      membership: this.membership?.toEntity(),
+      role: this.role,
+      features: this.features,
     });
   }
 }

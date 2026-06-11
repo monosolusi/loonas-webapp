@@ -6,7 +6,7 @@ export class UserSignOutUseCase implements UseCase<DataState<void>, void> {
   constructor(private sessionRepository: SessionRepository) {
   }
 
-  public async execute(params: void): Promise<DataState<void>> {
+  public async execute(): Promise<DataState<void>> {
     return this.sessionRepository.signOut();
   }
 

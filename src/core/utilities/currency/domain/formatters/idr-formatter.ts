@@ -15,12 +15,10 @@ export class IDRFormatter {
     options: {
       minimumFractionDigits?: number;
       maximumFractionDigits?: number;
-    } = {}
+    } = {},
   ): string {
     // If value is a string, try to parse it as a number
-    const numericValue = typeof value === "string"
-      ? parseFloat(value.replace(/[^0-9.-]/g, ""))
-      : value;
+    const numericValue = typeof value === "string" ? parseFloat(value.replace(/[^0-9.-]/g, "")) : value;
 
     // Return empty string if value is not a valid number
     if (isNaN(numericValue)) return "";
@@ -30,10 +28,14 @@ export class IDRFormatter {
       style: "currency",
       currency: "IDR",
       minimumFractionDigits: options.minimumFractionDigits ?? 0,
-      maximumFractionDigits: options.maximumFractionDigits ?? 0
+      maximumFractionDigits: options.maximumFractionDigits ?? 0,
     });
 
     return formatter.format(numericValue);
+  }
+
+  public static toThousand(value: number): string {
+    return value.toLocaleString("id-ID", { style: "decimal" });
   }
 
   /**

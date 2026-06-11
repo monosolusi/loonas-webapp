@@ -1,0 +1,25 @@
+- [Feature flag mechanism](project_feature_flag_mechanism.md) — client gating via `account.hasFeature(key)` from `useGetCurrentAccount`; no other flag service exists
+- [Accounting module audit 2026-05](project_accounting_module_audit_2026_05.md) — accounting feature was pre-scaffolded against an earlier BE contract; check existing files before planning new accounting work
+- [CoA mapping account 2-shape](project_coa_account_two_shape.md) — BE v1 line.account is full|null (stub dropped per B2 lock 2026-05-12); narrow to nullable, strip dynamic lines from update payload
+- [PRD lock 2026-05-12 deltas](project_accounting_prd_lock_2026_05_12.md) — Idempotency-Key v1 (BE-ignored), regime radio FE-only, locked-menu chip, CoA viewer reuses /finance/ledger, is_pkp via useGetAccountingSettings
+- [CoA read-only as of 2026-05-12](project_accounting_coa_readonly.md) — no create-ledger-account stack exists; "Tambah Manual" needs full create stack as one delivery
+- [Tax periods no BE resource v1](project_tax_periods_no_be_resource.md) — period selector derives 12-month rolling window client-side via Luxon; swap to real endpoint in v2
+- [Accounting BE reply 2026-05-12](project_accounting_be_reply_2026_05_12.md) — codes flip (1410/2210=PPN, 1420/2220=PPh Final), no create-ledger v1, PPN auto-seed Branch A/B fork
+- [Accounting B11–B15 lock 2026-05-12](project_accounting_b11_b15_lock_2026_05_12.md) — Branch B locked (no auto-seed v1), B15 tax_accounts resolver `{id,code,name}|null`, 4-phase plan
+- [SWR refresh pattern](project_swr_refresh_pattern.md) — bound `mutate` exposed as `refresh: KeyedMutator<T>` on LoadedState only; null on Initial/Error
+- [Invoice vs payment feature stacks](project_invoice_vs_payment_features.md) — two parallel QrisPayInDetail models exist; features/invoice = POS+authd, features/payment = external customer
+- [POS idempotency lifecycle](project_pos_idempotency_lifecycle.md) — key owned by PosProvider, auto-regen on cart/method change; explicit regenerate action exists for recovery flows
+- [QRIS pay-in BE contract 2026-05-20](project_qris_pay_in_contract_2026_05_20.md) — QrisPayIn schema, webhook-vs-clock authority for EXPIRED, POS=15min/B2B=24h expiry windows; FE countdown is advisory only
+- [Dashboard feature shape](project_dashboard_feature_shape.md) — thin single-repo feature; no swr-keys file pre-LNS-193; entity readonly drift; home page is composition-only
+- [DateRangePicker — two parallel files](project_date_range_picker_shared.md) — core (home/LNS-230) + finance (ledger) pickers, each with 1 caller; unify when 3rd caller lands
+- [Authenticated chrome clipping](project_authenticated_chrome_clipping.md) — 3-level overflow stack crops inline popovers; use Headless UI v2 `anchor` to portal+flip
+- [No next/dynamic callers yet](project_no_next_dynamic_callers.md) — LNS-193 introduces the pattern; keep leaf imports, no generic helper until 2nd consumer
+- [OpenAPI WebFetch truncates and hallucinates fields](feedback_openapi_webfetch_truncation.md) — curl + python parse the raw spec; never trust the WebFetch summary for FE/BE contract verification
+- [Clerk error classification stays in auth provider](project_clerk_error_classification.md) — discriminated union in provider state; never add Clerk codes to ErrorCodes registry; classify in catch, never throw from useEffect
+- [No API routes in src/app](project_no_api_routes.md) — zero route handlers as of 2026-05-21; healthcheck/observability plans must default to `/` (Clerk 307 = healthy), never silently add `/api/health`
+- [Dashboard range provider scope](project_dashboard_range_provider_scope.md) — provider in /home wraps only DashboardRangeSection; LNS-227 Bug B hoist makes the picker reachable from sibling widgets
+- [Authenticated chrome widths](project_authenticated_chrome_widths.md) — fixed 256px sidebar + p-8, no max-w; design to 1280px viewport / 960px content / ~310px chart cell as worst case
+- [OpenAPI spec outage pattern](project_openapi_spec_outage_pattern.md) — dev-api.loonas.id/openapi.json hard-down across 2 LNS-227 windows (Ph2 504, Ph7 502); pivot to FE-code review after 3 retries
+- [Dashboard widget card pattern](project_dashboard_widget_card_pattern.md) — SectionCard.iconSrc is string-only; list-style widgets use SectionCard no-icon, compact metric widgets mirror DashboardStatistics custom div
+- [Analytics module LNS-239](project_analytics_module_lns239.md) — src/core/analytics/ typed no-op shim; vendor wiring deferred to LNS-247; PII allow-list; tab-string aligned to widget ('all' not 'combined')
+- [didInitRef pattern](project_didinitref_pattern.md) — in-repo blueprint at dashboard-range-provider.tsx for one-shot effects under React 19 StrictMode; prev-value and Set-dedupe variants

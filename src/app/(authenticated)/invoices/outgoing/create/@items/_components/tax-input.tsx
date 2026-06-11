@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { TextInputWithLeftAddOn } from "@/core/presentations/components/text-input-with-left-add-on";
-import { TextInput } from "@/core/presentations/components/text-input";
+import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 
@@ -19,18 +18,17 @@ export function TaxInput() {
     if (!setTax) return;
 
     const numberValue = Number(value.replace(/\./g, ""));
-    if (tax === numberValue) return; // No Changes
+    if (tax === numberValue) return;
 
     setTax(numberValue);
   };
 
-  if (taxType === TaxType.NON_TAXABLE) return <TextInput title="Pajak" disabled />;
   return (
-    <TextInputWithLeftAddOn
-      title="Pajak"
+    <TextInput
+      label="Pajak"
       leftAddOn="Rp"
-      textDirection="text-right"
-      value={tax.toLocaleString("id-ID")}
+      inputTextAlign="text-right"
+      value={isDisabled ? "" : tax.toLocaleString("id-ID")}
       onChange={handleChange}
       disabled={isDisabled}
     />

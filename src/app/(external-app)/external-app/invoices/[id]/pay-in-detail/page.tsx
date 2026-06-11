@@ -1,13 +1,13 @@
 "use client";
 
 import { LogoImage } from "@/core/presentations/components/logo-image";
-import { InvoiceMetadataImpl } from "../pay/_components/invoice-metadata-impl";
+import { InvoiceMetadataImpl } from "@/app/(external-app)/external-app/invoices/[id]/pay/_components/invoice-metadata-impl";
 import { PaymentSummaryImpl } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/payment-summary-impl";
 import { VirtualAccountPayInDetail } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/va-pay-in-detail";
 import { useGetPublicPayInDetailForOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
+import { PayInStatus } from "@/features/invoice/domain/enums/pay-in-status";
 import { CreditCardFullRedirectPayInDetail } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/cc-full-redirect-pay-in-detail";
 import { QrisPayInDetail } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/qris-pay-in-detail";
 
@@ -47,8 +47,8 @@ export default function PayInDetailPage() {
         </div>
         <div className="flex flex-1 flex-col space-y-4">
           <div className="flex-1">
-            <h1 className="text-base font-semibold text-gray-900">Lakukan Pembayaran</h1>
-            <p className="mt-2 text-sm text-gray-700">
+            <h1 className="text-base font-semibold text-neutral-900">Lakukan Pembayaran</h1>
+            <p className="mt-2 text-sm text-neutral-700">
               Silahkan membayar sesuai dengan instruksi yang diberikan di bawah ini.
             </p>
           </div>

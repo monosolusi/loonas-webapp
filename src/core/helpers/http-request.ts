@@ -11,9 +11,9 @@ interface FetchParams {
 
 interface FetchConfig {
   requireAuth?: boolean;
-  requireAccount?: boolean;
   contentType?: string;
   inferContentType?: boolean;
+  headers?: Record<string, string>;
 }
 
 export class HttpRequest {
@@ -21,22 +21,19 @@ export class HttpRequest {
     params: FetchParams,
     config: FetchConfig = {
       requireAuth: true,
-      requireAccount: true,
       contentType: "application/json",
+      headers: {},
     },
-  ) {
+  ): Promise<Record<string, any>> {
     const mergedConfig = {
       requireAuth: config.requireAuth ?? true,
-      requireAccount: config.requireAccount ?? true,
-      contentType: config.contentType,
+      contentType: config.contentType ?? "application/json",
+      headers: Object.assign({}, config.headers),
     };
 
-    if (mergedConfig.requireAuth || mergedConfig.requireAccount) {
+    if (mergedConfig.requireAuth) {
       if (!params.session) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
       if (!params.session.accessToken) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
-      if (mergedConfig.requireAccount && !params.session.selectedAccount) {
-        throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-      }
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
@@ -49,10 +46,10 @@ export class HttpRequest {
 
     const headers: Record<string, string> = {};
     if (mergedConfig.requireAuth && params.session) headers["Authorization"] = `Bearer ${params.session.accessToken}`;
-    if (mergedConfig.contentType) headers["Content-Type"] = mergedConfig.contentType;
-    if (mergedConfig.requireAccount && params.session && params.session.selectedAccount) {
-      headers["X-Account-Id"] = params.session.selectedAccount.id;
-    }
+
+    // Skip Content-Type for FormData so the browser sets the multipart boundary itself.
+    const isFormDataBody = params.body instanceof FormData;
+    if (mergedConfig.contentType && !isFormDataBody) headers["Content-Type"] = mergedConfig.contentType;
 
     const generateBody = (body?: Record<string, any> | FormData) => {
       if (!body) return undefined;
@@ -62,7 +59,7 @@ export class HttpRequest {
 
     const response = await fetch(url, {
       method: params.method,
-      headers: headers,
+      headers: Object.assign({}, headers, mergedConfig.headers ?? {}),
       body: generateBody(params.body),
     });
 
@@ -71,11 +68,13 @@ export class HttpRequest {
       if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
 
       const ErrorCode = ErrorCodes.find(data.code);
-      if (ErrorCode) throw new ServerError(ErrorCode);
+      if (ErrorCode) throw new ServerError(ErrorCode, data.message ? { message: data.message } : undefined);
 
       throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
     }
 
-    return response.json();
+    const text = await response.text();
+    if (!text) return {};
+    else return JSON.parse(text);
   }
 }

@@ -1,0 +1,183 @@
+---
+name: work-on-issue
+description: Orchestrate end-to-end delivery of a Linear issue across the full agent chain — PM consults CPO/EL/UI, EL plans and spawns SWE, QA + architecture-reviewer verify the implementation, EL summarises, and PM moves the Linear issue to "In Review". Use when the user wants to work on a Linear issue from intake to ready-for-review.
+argument-hint: <Linear issue key or URL> (e.g. LOO-142 or https://linear.app/.../LOO-142)
+---
+
+# Work On Issue — Full-Chain Orchestration
+
+End-to-end orchestration of a Linear issue through the existing agent chain:
+
+```
+PM ──► (CPO, UI, EL consults) ──► EL plan ──► SWE implement
+                                                │
+                                                ▼
+                                  QA + architecture-reviewer
+                                                │
+                                                ▼
+                                           EL summary
+                                                │
+                                                ▼
+                                  PM verifies → Linear "In Review"
+```
+
+The orchestrator (`claude`) is the conductor — it never short-circuits a step or absorbs a specialist's lane. Agents communicate only through the orchestrator.
+
+## Pre-flight
+
+1. Parse `$ARGUMENTS` to extract the Linear issue key (e.g. `LOO-142`). Accept either a bare key or a Linear URL.
+2. **Resolve issue type** via Linear MCP (`get_issue` → inspect `labels`, issue type, or title) to pick the conventional prefix:
+
+   | Linear signal | Branch prefix |
+   |---|---|
+   | Feature / new capability | `feat/` |
+   | Bug / defect | `fix/` |
+   | Chore / maintenance / config | `chore/` |
+   | Refactor / tech debt | `refactor/` |
+   | Performance | `perf/` |
+   | Docs only | `docs/` |
+
+   Fall back to `feat/` if the signal is ambiguous. Surface the chosen prefix to the user before branching so they can override if needed.
+
+3. **Create the branch off `dev`** (never `main`) named `{prefix}/{issue-key-lower}-{kebab-case-slug}` — e.g. `feat/loo-142-recurring-invoices`, `fix/loo-204-payout-rounding`. If a branch for this issue already exists, check it out instead of recreating.
+
+   ```bash
+   git fetch origin dev
+   git checkout -b {prefix}/{issue-key-lower}-{slug} origin/dev
+   ```
+
+4. State the parsed issue key, chosen prefix, branch name, and the workflow plan summary to the user before dispatching the first agent.
+
+## Phase 1 — PM intake (Linear → PRD)
+
+Dispatch `product-manager` with the issue key. PM must:
+
+- Read the Linear issue via Linear MCP (`get_issue`, `list_comments`).
+- Surface ambiguities; if any business clarification is genuinely blocking, relay it back to the user via the orchestrator (do not invent answers).
+- Produce a PRD covering: problem, goals, non-goals, user stories, acceptance criteria, edge cases, open questions grouped by audience (CPO / UI / EL).
+
+PM stays the **sole** holder of Linear access throughout the workflow.
+
+## Phase 2 — PM cross-consults (CPO, UI, EL)
+
+After the PRD draft, PM consults — in parallel where possible — each of:
+
+| Agent | Purpose |
+|---|---|
+| `frans-siswanto-cpo` | Strategy / business-value validation, fintech framing, Indonesian-market fit |
+| `ui-designer` | UX flow, states, copy, accessibility — produces the design spec |
+| `engineer-lead` | Technical feasibility sanity-check on the PRD (NOT a full plan yet) |
+
+The orchestrator runs these as **parallel** Agent calls (single message, multiple tool uses). Each consult returns notes back to PM via the orchestrator. PM revises the PRD if any consultant flags a blocking concern.
+
+PM emits a **finalised PRD + UI design spec** for EL to consume.
+
+## Phase 3 — EL plan
+
+Dispatch `engineer-lead` with the finalised PRD + UI spec. EL must:
+
+- Consult Context7 for library / pattern best practices.
+- Produce an ordered implementation plan respecting `CLAUDE.md` conventions (Clean Architecture layers, feature module structure, provider patterns, naming, deprecated lists).
+- Identify SWE task atoms, files to touch, and risks.
+- Flag any BE-side question that needs the orchestrator to relay to the user (FE agents have no BE access).
+
+EL does **not** write code and does **not** have Linear access.
+
+## Phase 4 — SWE implementation
+
+EL spawns `software-engineer` with the EL plan + UI spec. SWE:
+
+- Implements per the plan and project conventions.
+- Verifies with `npx tsc --noEmit` and `npm run lint`.
+- Reports back to EL via the orchestrator when done.
+
+If SWE hits a blocker, route it back to EL (technical) or PM (scope) — never to the user directly except for BE-relay questions.
+
+## Phase 5 — Verification fan-out (QA + architecture-reviewer)
+
+After SWE reports completion, the orchestrator launches **two parallel** verification agents (single message, two Agent calls):
+
+### 5a. QA (`qa` agent)
+
+Spawn the `qa` agent (NOT `general-purpose`) with a self-contained QA brief:
+
+- Run `npx tsc --noEmit` and `npm run lint`; report any failure.
+- Use the `/restart-server` skill (or a free port) to boot the dev server.
+- Browser-smoke the changed flow at **1280×720** (per user preference). Cover golden path + the acceptance criteria from PM's PRD.
+- Look for regressions in adjacent flows the change might touch.
+- Produce a QA report: pass/fail per acceptance-criterion, screenshots/observations for failures.
+
+### 5b. Architecture review
+
+Spawn `architecture-reviewer` (it runs the `/architecture-review` skill internally) over the diff. Output is a structured violation report.
+
+Both reports are returned to the orchestrator, which forwards them **to `engineer-lead`** — not back to SWE directly. EL triages.
+
+## Phase 6 — EL triage loop
+
+EL receives the QA + architecture reports and decides:
+
+- **All clear** → emit an "implementation accepted" summary for PM.
+- **Issues found** → re-engage `software-engineer` with a targeted fix brief; on completion, re-run Phase 5 (QA + arch-review) on the new diff. Loop until clear.
+
+The orchestrator enforces the loop and never lets a failing report skip to PM.
+
+## Phase 7 — EL re-validates BE contract
+
+After EL signs off in Phase 6 but **before** PM is dispatched, the orchestrator re-engages `engineer-lead` for a final contract check. EL must:
+
+- Fetch the live BE OpenAPI spec at `https://dev-api.loonas.id/openapi.json`.
+- Verify every BE-touched surface in the implementation against the spec: field names, nesting, enum values, request/response shapes, nullability.
+- If aligned → emit a one-paragraph "contract validated" confirmation citing the spec sections checked.
+- If misaligned → produce a targeted SWE micro-fix brief; loop returns to Phase 4/5 until aligned.
+
+This step is mandatory, not optional. The BE may have shipped contract changes since EL's initial planning, and silent drift is the #1 cause of post-merge regressions. Skip this step and PM will move a broken implementation to "In Review".
+
+## Phase 8 — PM verification & Linear move
+
+Once EL confirms contract alignment, dispatch `product-manager` with EL's summary. PM:
+
+- Cross-checks EL's summary against the original Linear acceptance criteria.
+- If acceptance criteria are met, moves the Linear issue to the **"In Review"** state via Linear MCP (`save_issue` with the appropriate `stateId`). PM must look up the team's "In Review" status — do NOT hardcode an ID.
+- Posts a Linear comment summarising what shipped + branch name (for the human reviewer).
+- If anything is missing, PM kicks back to EL with a gap list and the loop returns to Phase 4/5.
+
+## Phase 9 — Commit + PR
+
+After PM moves the issue to "In Review", the orchestrator runs the commit + PR phase:
+
+1. **Dispatch `software-engineer`** with a "commit your work in logical chunks" brief. Multiple commits are expected — one per logical unit (e.g., model narrowing, hook extraction, plugin component, fix-loop revisions). Conventional Commits per `CLAUDE.md` (`feat(scope):`, `fix(scope):`, `refactor(scope):`, `chore(scope):`). SWE commits locally; does NOT push.
+2. **Dispatch `engineer-lead`** with an "open PR" brief. EL invokes the `/github-pr` skill, which pushes the branch and creates the PR against `dev`.
+
+The orchestrator NEVER runs `git commit` or `gh pr create` directly — those belong to SWE and EL respectively.
+
+## Rules
+
+- **Never bypass an agent's lane.** Orchestrator does not write the PRD, the plan, or the code. Orchestrator does not call Linear directly — that is PM only. Orchestrator does not run `git commit` or `gh pr create` — SWE and EL respectively own those in Phase 9.
+- **Parallelise where independent.** Phase 2 consults and Phase 5 verifications must be dispatched in a single message with multiple Agent calls.
+- **SWE commits, EL opens PR.** In Phase 9, SWE commits its work in logical chunks (multiple commits expected — one per logical unit, Conventional Commits style). EL then opens the PR via the `/github-pr` skill. The orchestrator dispatches, but never runs git/gh tooling itself.
+- **BE-shape questions: EL reads OpenAPI spec; BE-behavior questions go through the user.** EL has `WebFetch` read access to `https://dev-api.loonas.id/openapi.json` and uses it for contract validation (field names, enums, request/response shapes). Questions about BE *behavior* not visible in the schema (auth nuances, business rules, race conditions, undocumented constraints) still get relayed to the user. PM / UI / CPO / SWE / architecture-reviewer have no BE access at all — they always flag.
+- **Stop on genuine forks.** Pause for user input only on (a) blocking business clarification PM cannot resolve, (b) destructive actions, (c) BE-relay questions. Otherwise execute autonomously.
+- **Match the existing presentation-layer directory** (singular `presentation/` vs plural `presentations/`) per feature — SWE follows the feature's local convention.
+- **Use Linear skills for any new sub-issue creation.** If PM needs to file a sub-bug or tech-debt spinout during the workflow, use `/linear-bug` or `/linear-techdebt`.
+
+## Output (orchestrator → user)
+
+At the end of the run, summarise in this shape:
+
+```
+Issue: LOO-XXX — {title}
+Branch: features/{slug}
+PRD: {1-line summary of scope landed}
+Implementation: {1-line summary of what SWE built}
+QA: pass | fail({n} items)
+Architecture: pass | fail({n} items)
+EL verdict: accepted | iterated x{n}
+BE contract: re-validated against live OpenAPI spec | mismatch found
+Linear state: moved to "In Review" at {timestamp}
+Commits: {n} commits by SWE
+PR: #{n} → dev
+Next: awaiting human reviewer.
+```
+
+Keep the body short. Detail lives in agent transcripts and the Linear comment PM posted.

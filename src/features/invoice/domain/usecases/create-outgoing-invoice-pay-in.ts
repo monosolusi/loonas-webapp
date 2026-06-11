@@ -1,9 +1,7 @@
-import { DataFailed, DataState } from "@/core/resources/data-state";
-import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { DataState } from "@/core/resources/data-state";
 import { UseCase } from "@/core/resources/use-case";
-import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { InvoiceRepository } from "../repositories/invoice";
-import { PayInEntity } from "../entities/pay-in";
+import { InvoiceRepository } from "@/features/invoice/domain/repositories/invoice";
+import { PayInEntity } from "@/features/invoice/domain/entities/pay-in";
 
 export class CreateOutgoingInvoicePayInUseCaseParams {
   public invoiceId: string;

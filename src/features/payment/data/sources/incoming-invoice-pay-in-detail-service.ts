@@ -1,10 +1,10 @@
 import { IPayInDetailService } from "@/features/payment/domain/sources/i-pay-in-detail-service";
-import { PaymentMethodPayInDetailModel } from "../../domain/types/payment-method-pay-in-detail-model";
+import { PaymentMethodPayInDetailModel } from "@/features/payment/domain/types/payment-method-pay-in-detail-model";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { PayInDetailFactory } from "@/features/invoice/domain/factories/pay-in-detail-factory";
-import { PayInType } from "@/features/payment/domain/enums/pay-in-type";
+import { PayInType } from "@/features/invoice/domain/enums/pay-in-type";
 
 export class IncomingInvoicePayInDetailService implements IPayInDetailService {
   constructor(
@@ -28,7 +28,6 @@ export class IncomingInvoicePayInDetailService implements IPayInDetailService {
 
       const Model = this.payInDetailFactory.getModel({ type: result.type as PayInType });
 
-      // @ts-ignore
       return Model.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;

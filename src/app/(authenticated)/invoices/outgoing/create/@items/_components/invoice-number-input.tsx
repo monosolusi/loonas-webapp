@@ -1,7 +1,5 @@
-import { TextInput } from "@/core/presentations/components/text-input";
-import {
-  useCreateOutgoingInvoice
-} from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
+import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 
 export function InvoiceNumberInput() {
   const { invoiceNumber, setInvoiceNumber } = useCreateOutgoingInvoice();
@@ -9,7 +7,7 @@ export function InvoiceNumberInput() {
   return (
     <TextInput
       placeholder="cth. INV/2025/05/0001"
-      title="No. Faktur"
+      label="No. Faktur"
       value={invoiceNumber}
       onChange={setInvoiceNumber}
     />

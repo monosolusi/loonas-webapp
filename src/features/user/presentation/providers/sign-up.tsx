@@ -14,6 +14,7 @@ import { UserSignUpUseCase, UserSignUpUseCaseParams } from "@/features/user/doma
 import { UserServiceImpl } from "@/features/user/data/sources/user";
 import { UserRepositoryImpl } from "@/features/user/data/repositories/user";
 import { UserSignOutUseCase } from "@/features/authentication/domain/usecases/user-sign-out";
+import { HttpRequest } from "@/core/helpers/http-request";
 
 type SignUpContextProps = {
   email: string;
@@ -28,7 +29,7 @@ type SignUpContextProps = {
   setPassword?: React.Dispatch<React.SetStateAction<string>>;
   setRePassword?: React.Dispatch<React.SetStateAction<string>>;
   signUp?: () => Promise<void>;
-}
+};
 
 const SignUpContext = React.createContext<SignUpContextProps>({
   email: "",
@@ -36,7 +37,7 @@ const SignUpContext = React.createContext<SignUpContextProps>({
   rePassword: "",
   agree: false,
   loading: true,
-  showInvalidCred: false
+  showInvalidCred: false,
 });
 
 export function SignUpProvider({ children }: { children: any }) {
@@ -93,7 +94,7 @@ export function SignUpProvider({ children }: { children: any }) {
       const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
       if (!passwordRegex.test(password)) throw new ServerError(ErrorCodes.INVALID_PASSWORD);
 
-      const userService = new UserServiceImpl();
+      const userService = new UserServiceImpl(new HttpRequest());
       const userRepository = new UserRepositoryImpl(userService);
       const signUp = new UserSignUpUseCase(userRepository);
       const params = new UserSignUpUseCaseParams(email, password);
@@ -140,7 +141,7 @@ export function SignUpProvider({ children }: { children: any }) {
         setEmail,
         setPassword,
         setRePassword,
-        signUp
+        signUp,
       }}
     >
       {children}

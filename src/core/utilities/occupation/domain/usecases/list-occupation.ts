@@ -8,7 +8,7 @@ export class ListOccupationUseCase implements UseCase<DataState<OccupationEntity
   constructor(private readonly occupationRepository: OccupationRepository) {
   }
 
-  public async execute(params: void): Promise<DataState<OccupationEntity[]>> {
+  public async execute(): Promise<DataState<OccupationEntity[]>> {
     return this.occupationRepository.list();
   }
 

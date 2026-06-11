@@ -1,5 +1,5 @@
 import { AbstractModel } from "@/core/resources/model";
-import { BankEntity } from "../../domain/entities/bank";
+import { BankEntity } from "@/features/bank/domain/entities/bank";
 import { DateTime } from "luxon";
 
 interface BankModelConstructor {

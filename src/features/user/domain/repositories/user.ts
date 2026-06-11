@@ -1,9 +1,12 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { UserEntity } from "@/features/user/domain/entities/user";
 import { DataState } from "@/core/resources/data-state";
+import { UserStatusEntity } from "@/features/user/domain/entities/user-status.entity";
 
-export abstract class UserRepository {
-  public abstract create(email: string, password: string): Promise<DataState<void>>;
+export interface UserRepository {
+  create(email: string, password: string): Promise<DataState<void>>;
 
-  public abstract retrieveMe(session: SessionEntity): Promise<DataState<UserEntity>>;
+  retrieveMe(session: SessionEntity): Promise<DataState<UserEntity>>;
+
+  getStatus(session: SessionEntity): Promise<DataState<UserStatusEntity>>;
 }

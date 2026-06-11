@@ -1,0 +1,115 @@
+"use client";
+
+import React, { useMemo } from "react";
+import { isValidEmail, isValidPassword } from "@/core/utilities/validation-patterns";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { useGetMe } from "@/features/user/presentation/hooks/use-get-me";
+import { useAuth, useSignUp } from "@clerk/nextjs";
+import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
+
+type CreateUserContextProps = {
+  email: string;
+  password: string;
+  repeatPassword: string;
+  isClean: boolean;
+  isCreating: boolean;
+  emailError: string | null;
+  passwordError: string | null;
+  repeatPasswordError: string | null;
+  setEmail?: React.Dispatch<React.SetStateAction<string>>;
+  setPassword?: React.Dispatch<React.SetStateAction<string>>;
+  setRepeatPassword?: React.Dispatch<React.SetStateAction<string>>;
+  createUser?: () => Promise<void>;
+};
+
+type CreateUserProviderProps = {
+  children: React.ReactNode;
+};
+
+const CreateUserContext = React.createContext<CreateUserContextProps>({
+  email: "",
+  password: "",
+  repeatPassword: "",
+  isClean: true,
+  isCreating: false,
+  emailError: null,
+  passwordError: null,
+  repeatPasswordError: null,
+});
+
+export function CreateUserProvider(props: CreateUserProviderProps) {
+  const [email, setEmail] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
+  const [repeatPassword, setRepeatPassword] = React.useState<string>("");
+  const [isCreating, setIsCreating] = React.useState<boolean>(false);
+  const { isLoaded, signUp, setActive } = useSignUp();
+  const { isSignedIn } = useAuth();
+  const { me, loading: isLoadingMe } = useGetMe();
+
+  const emailError = useMemo(() => {
+    if (email) return isValidEmail(email) ? null : "Email tidak valid";
+    return null;
+  }, [email]);
+
+  const passwordError = useMemo(() => {
+    if (!password) return null;
+    return isValidPassword(password) ? null : "Kata sandi harus mengandung huruf besar, kecil, angka dan simbol";
+  }, [password]);
+
+  const repeatPasswordError = useMemo(() => {
+    if (!repeatPassword) return null;
+    return password === repeatPassword ? null : "Kata sandi tidak cocok";
+  }, [password, repeatPassword]);
+
+  const isClean = useMemo(
+    () => isValidEmail(email) && isValidPassword(password) && password === repeatPassword,
+    [email, password, repeatPassword],
+  );
+
+  const createUser = async () => {
+    try {
+      setIsCreating(true);
+      if (!isClean || isLoadingMe) throw new ServerError(ErrorCodes.VALIDATION_FAILED);
+      if (!isLoaded) return;
+      if (isSignedIn) throw new ServerError(ErrorCodes.USER_SIGNED_IN);
+
+      // Check if the user already logged in. If so, we will redirect to the home page directly
+      // TODO: Change this to use clerk
+      if (me) throw new ServerError(ErrorCodes.USER_SIGNED_IN);
+
+      const resource = await signUp.create({ emailAddress: email, password });
+      if (resource.status === "complete") await setActive({ session: resource.createdSessionId });
+      else throw new ServerError(ErrorCodes.UNKNOWN, { message: resource.status });
+    } catch (err) {
+      if (isClerkAPIResponseError(err)) throw new ServerError(ErrorCodes.UNKNOWN, { message: err.message });
+      console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  return (
+    <CreateUserContext.Provider
+      value={{
+        email,
+        setEmail,
+        password,
+        setPassword,
+        repeatPassword,
+        setRepeatPassword,
+        isClean,
+        emailError,
+        passwordError,
+        repeatPasswordError,
+        createUser,
+        isCreating,
+      }}
+    >
+      {props.children}
+    </CreateUserContext.Provider>
+  );
+}
+
+export function useCreateUser() {
+  return React.useContext(CreateUserContext);
+}

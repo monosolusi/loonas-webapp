@@ -1,56 +1,77 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { DataFailed } from "@/core/resources/data-state";
-import { UserSignInUseCase, UserSignInUseCaseParams } from "@/features/authentication/domain/usecases/user-sign-in";
-import { AuthRepositoryImpl } from "@/features/authentication/data/repositories/auth";
-import { AuthServiceImpl } from "@/features/authentication/data/sources/auth";
-import { SaveSessionUseCase, SaveSessionUseCaseParams } from "@/features/authentication/domain/usecases/save-session";
-import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
-import { UserRepositoryImpl } from "@/features/user/data/repositories/user";
-import { UserServiceImpl } from "@/features/user/data/sources/user";
-import { useRouter } from "next/navigation";
-import { CheckSessionUseCase } from "@/features/authentication/domain/usecases/check-session";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth, useSignIn } from "@clerk/nextjs";
+
+export type SignInError =
+  | "wrong_credentials"
+  | "too_many_requests"
+  | "network"
+  | "fallback"
+  | null;
+
+function classifyClerkError(err: unknown): SignInError {
+  if (err instanceof TypeError) return "network";
+  const clerkErr = (err as any)?.errors?.[0];
+  if (!clerkErr) return "network";
+  switch (clerkErr.code) {
+    case "form_password_incorrect":
+    case "form_identifier_not_found":
+      return "wrong_credentials";
+    case "too_many_requests":
+    case "user_locked":
+      return "too_many_requests";
+    default:
+      return "fallback";
+  }
+}
 
 type SignInContextProps = {
   email: string;
   password: string;
   loading: boolean;
-  showInvalidCred: boolean;
-  setEmail?: React.Dispatch<React.SetStateAction<string>>;
-  setPassword?: React.Dispatch<React.SetStateAction<string>>;
+  signInError: SignInError;
+  setEmail: (value: string) => void;
+  setPassword: (value: string) => void;
   login?: () => Promise<void>;
-}
+};
 
 const SignInContext = createContext<SignInContextProps>({
   email: "",
   password: "",
   loading: true,
-  showInvalidCred: false
+  signInError: null,
+  setEmail: () => {},
+  setPassword: () => {},
 });
 
 export function SignInProvider({ children }: { children: any }) {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(true);
-  const [showInvalidCred, setShowInvalidCred] = useState<boolean>(false);
-  const [error, setError] = useState<Error>();
+  const [email, setEmailRaw] = useState<string>("");
+  const [password, setPasswordRaw] = useState<string>("");
+  const [isLogginIn, setIsLoggingIn] = useState<boolean>(false);
+  const [signInError, setSignInError] = useState<SignInError>(null);
+  const { isLoaded, isSignedIn } = useAuth();
+  const { signIn, setActive } = useSignIn();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect_url") ?? "/home";
 
   useEffect(() => {
-    if (error) {
-      if (error instanceof ServerError) {
-        if (error.code === ErrorCodes.FORBIDDEN.code) setShowInvalidCred(true);
-        else if (error.code === ErrorCodes.NO_VALID_SESSION.code) console.log("No valid session");
-      } else throw error;
-    }
-  }, [error]);
+    if (!isLoaded) return;
+    if (isSignedIn) router.replace(redirectUrl);
+  }, [isLoaded, isSignedIn]);
 
-  useEffect(() => {
-    checkSession();
-  }, []);
+  function setEmail(value: string) {
+    setSignInError(null);
+    setEmailRaw(value);
+  }
+
+  function setPassword(value: string) {
+    setSignInError(null);
+    setPasswordRaw(value);
+  }
 
   function checkCleanInput() {
     if (email === "") return false;
@@ -62,59 +83,55 @@ export function SignInProvider({ children }: { children: any }) {
     return emailRegex.test(email);
   }
 
-  async function checkSession(): Promise<void> {
-    try {
-      setLoading(true);
-
-      const sessionService = new LocalStorageSessionService();
-      const sessionRepository = new SessionRepositoryImpl(sessionService);
-      const userService = new UserServiceImpl();
-      const userRepository = new UserRepositoryImpl(userService);
-      const checkSession = new CheckSessionUseCase(sessionRepository, userRepository);
-      const me = await checkSession.execute();
-      if (me instanceof DataFailed) throw me.error;
-
-      // We have a valid access token and session, we can redirect to protected page
-      router.replace("/home");
-    } catch (err: any) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function login() {
     try {
-      setLoading(true);
+      setIsLoggingIn(true);
+      setSignInError(null);
       const isClean = checkCleanInput();
       if (!isClean) throw new ServerError(ErrorCodes.VALIDATION_FAILED);
+      if (!isLoaded || !signIn || !setActive) {
+        console.warn("[sign-in]", { signInError: "network", clerkCode: "clerk_not_loaded" });
+        setSignInError("network");
+        setIsLoggingIn(false);
+        return;
+      }
 
-      const authService = new AuthServiceImpl();
-      const authRepository = new AuthRepositoryImpl(authService);
-      const useCase = new UserSignInUseCase(authRepository);
-      const params = new UserSignInUseCaseParams(email, password);
-      const result = await useCase.execute(params);
-      if (result instanceof DataFailed) throw result.error;
-      if (result.data === undefined) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      const { createdSessionId } = await signIn.create({
+        strategy: "password",
+        identifier: email,
+        password: password,
+      });
 
-      // This time, the login success, and we will save the session to the local storage for easy access
-      const sessionService = new LocalStorageSessionService();
-      const sessionRepository = new SessionRepositoryImpl(sessionService);
-      const saveSession = new SaveSessionUseCase(sessionRepository);
-      const saveSessionParams = new SaveSessionUseCaseParams(result.data.accessToken);
-      const savedSession = await saveSession.execute(saveSessionParams);
-      if (savedSession instanceof DataFailed) throw savedSession.error;
+      if (!createdSessionId) {
+        console.warn("[sign-in]", { signInError: "network", clerkCode: "no_session_id" });
+        setSignInError("network");
+        setIsLoggingIn(false);
+        return;
+      }
 
-      router.replace("/home");
-    } catch (err: any) {
-      setError(err);
-      setLoading(false);
+      await setActive({ session: createdSessionId, redirectUrl });
+    } catch (err: unknown) {
+      setIsLoggingIn(false);
+
+      if (err instanceof ServerError && err.code === ErrorCodes.VALIDATION_FAILED.code) {
+        setSignInError("wrong_credentials");
+        return;
+      }
+
+      const classified = classifyClerkError(err);
+      const clerkCode = (err as any)?.errors?.[0]?.code ?? null;
+      console.warn("[sign-in]", { signInError: classified, clerkCode });
+      setSignInError(classified);
     }
   }
+
+  const isLoading = useMemo(() => {
+    return isLogginIn || !isLoaded;
+  }, [isLoaded, isLogginIn]);
 
   return (
     <SignInContext.Provider
-      value={{ email, password, loading, setEmail, setPassword, login, showInvalidCred }}
+      value={{ email, password, loading: isLoading, setEmail, setPassword, login, signInError }}
     >
       {children}
     </SignInContext.Provider>

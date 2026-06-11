@@ -9,14 +9,24 @@ import { PersonalAccountEntity } from "@/features/account/domain/entities/person
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { AccountVerificationWorkEntity } from "@/features/account/domain/entities/account-verification-work";
 import { AccountRepository, CreateBusinessParams } from "@/features/account/domain/repositories/account";
-import { AccountBankAccountEntity } from "../../domain/entities/account-bank-account";
+import { AccountBankAccountEntity } from "@/features/account/domain/entities/account-bank-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { BusinessAccountEntity } from "../../domain/entities/business-account";
+import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
 import { AccountService } from "@/features/account/domain/sources/account";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 
 export class AccountRepositoryImpl implements AccountRepository {
   constructor(private readonly accountService: AccountService) {}
+
+  public async getCurrent(session: SessionEntity): Promise<DataState<AccountTypeEntity>> {
+    try {
+      const account = await this.accountService.getCurrent(session);
+      return new DataSuccess(account.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
 
   public async createBusiness(
     params: CreateBusinessParams,
@@ -31,12 +41,9 @@ export class AccountRepositoryImpl implements AccountRepository {
     }
   }
 
-  public async listBankAccount(
-    account: { id: string },
-    session: SessionEntity,
-  ): Promise<DataState<AccountBankAccountEntity[]>> {
+  public async listBankAccount(session: SessionEntity): Promise<DataState<AccountBankAccountEntity[]>> {
     try {
-      const accounts = await this.accountService.listBankAccount({ accountId: account.id }, session);
+      const accounts = await this.accountService.listBankAccount(session);
       return new DataSuccess(accounts.map((account) => account.toEntity()));
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);

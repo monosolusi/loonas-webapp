@@ -6,9 +6,9 @@ import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { AccountServiceImpl } from "../../data/sources/account";
-import { AccountRepositoryImpl } from "../../data/repositories/account";
-import { ListAccountUseCase } from "../../domain/usecases/list-account";
+import { AccountServiceImpl } from "@/features/account/data/sources/account";
+import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
+import { ListAccountUseCase } from "@/features/account/domain/usecases/list-account";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 

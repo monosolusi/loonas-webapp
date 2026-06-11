@@ -1,8 +1,8 @@
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { UseCase } from "@/core/resources/use-case";
-import { InvoiceRepository } from "../repositories/invoice";
+import { InvoiceRepository } from "@/features/invoice/domain/repositories/invoice";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { PublicOutgoingInvoiceEntity } from "../entities/public-outgoing-invoice";
+import { PublicOutgoingInvoiceEntity } from "@/features/invoice/domain/entities/public-outgoing-invoice";
 
 export class GetPublicOutgoingInvoiceUseCaseParams {
   public readonly invoiceId: string;

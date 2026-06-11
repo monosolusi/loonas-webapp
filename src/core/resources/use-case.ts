@@ -1,3 +1,3 @@
-export abstract class UseCase<ReturnValue, Params> {
-  abstract execute(params: Params): Promise<ReturnValue>;
+export abstract class UseCase<ReturnValue, Params = void> {
+  abstract execute(...args: Params extends void ? [] : [params: Params]): Promise<ReturnValue>;
 }

@@ -4,11 +4,11 @@ import { useParams } from "next/navigation";
 import {
   useGetPublicPayInDetailForOutgoingInvoice
 } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";
-import { PayInType } from "@/features/payment/domain/enums/pay-in-type";
+import { PayInType } from "@/features/invoice/domain/enums/pay-in-type";
 import { RemainingPaymentTime } from "@/core/presentations/components/remaining-payment-time";
 import {
   QrisPayInDetailBox
-} from "@/app/(authenticated)/invoices/[id]/qris-pay-in-detail/_components/qris-pay-in-detail-box";
+} from "@/app/(authenticated)/invoices/incoming/[id]/qris-pay-in-detail/_components/qris-pay-in-detail-box";
 
 export function QrisPayInDetail() {
   const { id } = useParams<{ id: string }>();

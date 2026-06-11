@@ -1,179 +1,171 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
-import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
-import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { RetrieveSessionAccountUseCase } from "@/features/authentication/domain/usecases/retrieve-session-account";
-import { DataFailed } from "@/core/resources/data-state";
-import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+
+import { createContext, useContext, useEffect } from "react";
 import {
-  SelectSessionAccountUseCase,
-  SelectSessionAccountUseCaseParams,
-} from "@/features/authentication/domain/usecases/select-session-account";
-import {
-  RetrieveAccountVerificationWorkUseCase,
-  RetrieveAccountVerificationWorkUseCaseParams,
-} from "@/features/account/domain/usecases/retrieve-account-verification-work";
-import { AccountServiceImpl } from "@/features/account/data/sources/account";
-import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
+  SelectedAccountContextProps,
+  SelectedAccountProviderProps,
+} from "@/features/authentication/presentation/providers/selected-account.types";
+import { usePathname, useRouter } from "next/navigation";
+import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
+import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
+import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
-import { HttpRequest } from "@/core/helpers/http-request";
-import { useRouter } from "next/navigation";
-import { FilledButton } from "@/core/presentations/components/filled-button";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
-interface SelectedAccountContextProps {
-  states: [boolean]; // loading
-  selectedAccount?: AccountTypeEntity;
-  changeAccount?: (account: AccountTypeEntity, reload?: boolean) => void | Promise<void>;
-}
+// const SelectedAccountContext = createContext<SelectedAccountContextProps>({
+//   states: [true],
+// });
 
-const SelectedAccountContext = createContext<SelectedAccountContextProps>({
-  states: [true],
-});
+// export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
+//   const [rejectedDialog, setRejectedDialog] = useState<boolean>(false);
+//   const [selectedAccount, setSelectedAccount] = useState<AccountTypeEntity>();
+//   const [loading, setLoading] = useState<boolean>(true);
+//   const [error, setError] = useState<Error>();
+//   const { isLoaded: isOrganizationListLoaded, setActive } = useOrganizationList();
+//   const { loading: isGetAccountLoading, account } = useGetCurrentAccount();
+//
+//   useEffect(() => {
+//     if (error) {
+//       if (error instanceof ServerError && error.code === ErrorCodes.ACCOUNT_VERIFICATION_REJECTED.code) {
+//         setRejectedDialog(true);
+//       } else throw error;
+//     }
+//   }, [error]);
+//
+//   useEffect(() => {
+//     if (isGetAccountLoading) return;
+//     setSelectedAccount(account);
+//   }, [isGetAccountLoading, account]);
+//
+//   async function changeAccount(newAccount: AccountTypeEntity) {
+//     if (!isOrganizationListLoaded) return;
+//     await setActive({ organization: newAccount.metadata.clerkId });
+//   }
+//   /**
+//    * This function will do dumb select only and will not check the account ownership.
+//    * However, the backend will be able to check the account ownership.
+//    * It Should be a good thing for a moment until we release the MVP.
+//    * @param newAccount
+//    * @param reload
+//    */
+//   async function changeAccount(newAccount: AccountTypeEntity, reload: boolean = true) {
+//     try {
+//       const sessionService = new LocalStorageSessionService();
+//       const sessionRepository = new SessionRepositoryImpl(sessionService);
+//       const selectAccount = new SelectSessionAccountUseCase(sessionRepository);
+//       const selectAccountParams = new SelectSessionAccountUseCaseParams(newAccount);
+//
+//       // Also, we need to check if the account verification is rejected or not
+//       const http = new HttpRequest();
+//       const accountService = new AccountServiceImpl(http);
+//       const accountRepository = new AccountRepositoryImpl(accountService);
+//       const retrieveVerification = new RetrieveAccountVerificationWorkUseCase(accountRepository, sessionRepository);
+//       const retrieveVerificationParams = new RetrieveAccountVerificationWorkUseCaseParams(newAccount.id);
+//       const verification = await retrieveVerification.execute(retrieveVerificationParams);
+//       if (verification instanceof DataFailed) throw verification.error;
+//       if (!verification.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+//
+//       if (verification.data.latestStatus !== VerificationStatus.COMPLETED) {
+//         // Still not yet completed the verification, so we still allow the use to change the account
+//         const selectedAccount = await selectAccount.execute(selectAccountParams);
+//         if (selectedAccount instanceof DataFailed) throw selectedAccount.error;
+//         if (!selectedAccount.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+//
+//         setSelectedAccount(selectedAccount.data);
+//         if (reload) window.location.reload();
+//       } else {
+//         // This is where the latest status is completed, so we need to check the verification outcome
+//         if (verification.data.verificationOutcome === VerificationOutcome.REJECTED) {
+//           // If the verification outcome is rejected, we need to throw an error
+//           throw new ServerError(ErrorCodes.ACCOUNT_VERIFICATION_REJECTED);
+//         } else {
+//           const selectedAccount = await selectAccount.execute(selectAccountParams);
+//           if (selectedAccount instanceof DataFailed) throw selectedAccount.error;
+//           if (!selectedAccount.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+//
+//           setSelectedAccount(selectedAccount.data);
+//           if (reload) window.location.reload();
+//         }
+//       }
+//     } catch (err: any) {
+//       setError(err);
+//     }
+//   }
+//   return (
+//     <SelectedAccountContext.Provider value={{ selectedAccount, changeAccount, states: [loading] }}>
+//       <RejectedDialog open={rejectedDialog} setOpen={setRejectedDialog} />
+//       {children}
+//     </SelectedAccountContext.Provider>
+//   );
+//   return (
+//     <SelectedAccountContext.Provider value={{ states: [false] }}>{props.children}</SelectedAccountContext.Provider>
+//   );
+// }
 
-export function SelectedAccountProvider({ children }: { children: any }) {
-  const [rejectedDialog, setRejectedDialog] = useState<boolean>(false);
-  const [selectedAccount, setSelectedAccount] = useState<AccountTypeEntity>();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error>();
+const SelectedAccountContext = createContext<SelectedAccountContextProps>({});
 
-  useEffect(() => {
-    if (error) {
-      if (error instanceof ServerError && error.code === ErrorCodes.ACCOUNT_VERIFICATION_REJECTED.code) {
-        setRejectedDialog(true);
-      } else throw error;
-    }
-  }, [error]);
-
-  useEffect(() => {
-    setLoading(true);
-
-    const sessionService = new LocalStorageSessionService();
-    const sessionRepository = new SessionRepositoryImpl(sessionService);
-    const retrieveAccount = new RetrieveSessionAccountUseCase(sessionRepository);
-    retrieveAccount
-      .execute()
-      .then((account) => {
-        if (account instanceof DataFailed) throw account.error;
-        if (!account.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-        setSelectedAccount(account.data);
-      })
-      .catch((err: any) => {
-        // Ignore if the account is not found
-        if (err instanceof ServerError && err.code === ErrorCodes.NOT_FOUND.code) return;
-        else setError(err);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+/**
+ * @deprecated This provider no longer manages account selection. The redirect logic it contains
+ * should be migrated elsewhere. Use `useGetCurrentAccount()` from
+ * `@/features/account/presentation/hooks/use-get-current-account` for account data instead.
+ */
+export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
+  const { accounts, error, loading } = useListAccount();
+  const { account, error: currentAccountError, loading: currentAccountLoading } = useGetCurrentAccount();
+  const { verificationWork } = useGetAccountVerificationWork({ accountId: account?.id ?? null });
+  const router = useRouter();
+  const pathname = usePathname();
 
   /**
-   * This function will do dumb select only and will not check the account ownership.
-   * However, the backend will be able to check the account ownership.
-   * It Should be a good thing for a moment until we release the MVP.
-   * @param newAccount
-   * @param reload
+   * Redirects users without any organization memberships to the onboarding flow.
+   *
+   * This effect runs on every route change (pathname dependency) to ensure users
+   * who haven't joined or created an account are always redirected to complete
+   * the onboarding process.
+   *
+   * - Waits for an organization list to be loaded before checking
+   * - If a user has no memberships (count === 0), redirects to account creation
    */
-  async function changeAccount(newAccount: AccountTypeEntity, reload: boolean = true) {
-    try {
-      const sessionService = new LocalStorageSessionService();
-      const sessionRepository = new SessionRepositoryImpl(sessionService);
-      const selectAccount = new SelectSessionAccountUseCase(sessionRepository);
-      const selectAccountParams = new SelectSessionAccountUseCaseParams(newAccount);
+  useEffect(() => {
+    if (loading || error) return;
+    if (accounts.length === 0) router.push("/onboarding/account");
+  }, [accounts, pathname, loading, error]);
 
-      // Also, we need to check if the account verification is rejected or not
-      const http = new HttpRequest();
-      const accountService = new AccountServiceImpl(http);
-      const accountRepository = new AccountRepositoryImpl(accountService);
-      const retrieveVerification = new RetrieveAccountVerificationWorkUseCase(accountRepository, sessionRepository);
-      const retrieveVerificationParams = new RetrieveAccountVerificationWorkUseCaseParams(newAccount.id);
-      const verification = await retrieveVerification.execute(retrieveVerificationParams);
-      if (verification instanceof DataFailed) throw verification.error;
-      if (!verification.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+  /**
+   * Redirects users to the accounts page if they try to access a non-existent account.
+   */
+  useEffect(() => {
+    if (currentAccountLoading) return;
+    if (!currentAccountError) return;
 
-      if (verification.data.latestStatus !== VerificationStatus.COMPLETED) {
-        // Still not yet completed the verification, so we still allow the use to change the account
-        const selectedAccount = await selectAccount.execute(selectAccountParams);
-        if (selectedAccount instanceof DataFailed) throw selectedAccount.error;
-        if (!selectedAccount.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    const isAccountNotFound =
+      currentAccountError instanceof ServerError && currentAccountError.code === ErrorCodes.NOT_FOUND.code;
 
-        setSelectedAccount(selectedAccount.data);
-        if (reload) window.location.reload();
-      } else {
-        // This is where the latest status is completed, so we need to check the verification outcome
-        if (verification.data.verificationOutcome === VerificationOutcome.REJECTED) {
-          // If the verification outcome is rejected, we need to throw an error
-          throw new ServerError(ErrorCodes.ACCOUNT_VERIFICATION_REJECTED);
-        } else {
-          const selectedAccount = await selectAccount.execute(selectAccountParams);
-          if (selectedAccount instanceof DataFailed) throw selectedAccount.error;
-          if (!selectedAccount.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    if (isAccountNotFound) router.push("/accounts");
+  }, [account, currentAccountLoading, currentAccountError, pathname]);
 
-          setSelectedAccount(selectedAccount.data);
-          if (reload) window.location.reload();
-        }
-      }
-    } catch (err: any) {
-      setError(err);
-    }
-  }
+  /**
+   * Redirects users to the KYC summary page if their account verification status is not pending.
+   */
+  useEffect(() => {
+    if (!verificationWork) return;
+    const routeMap: Record<string, string> = {
+      [`${VerificationStatus.NEW}.${VerificationOutcome.PENDING}`]: "/onboarding/kyc-summary",
+      [`${VerificationStatus.PROCESSING}.${VerificationOutcome.PENDING}`]: "/onboarding/kyc-summary",
+      [`${VerificationStatus.COMPLETED}.${VerificationOutcome.REJECTED}`]: "/onboarding/kyc-summary",
+    };
 
-  return (
-    <SelectedAccountContext.Provider value={{ selectedAccount, changeAccount, states: [loading] }}>
-      <RejectedDialog open={rejectedDialog} setOpen={setRejectedDialog} />
-      {children}
-    </SelectedAccountContext.Provider>
-  );
+    const redirectRoute = routeMap[`${verificationWork.latestStatus}.${verificationWork.verificationOutcome}`];
+    if (redirectRoute) router.push(redirectRoute);
+  }, [verificationWork]);
+
+  return <SelectedAccountContext value={{}}>{props.children}</SelectedAccountContext>;
 }
 
+/**
+ * @deprecated Use `useGetCurrentAccount()` from `@/features/account/presentation/hooks/use-get-current-account` instead.
+ */
 export function useSelectedAccountProvider() {
   return useContext(SelectedAccountContext);
-}
-
-function RejectedDialog({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
-  const router = useRouter();
-
-  const onAcknowledged = () => {
-    router.replace("/accounts/select");
-    setOpen(false);
-  };
-
-  return (
-    <Dialog open={open} onClose={() => {}} className="relative z-10">
-      <DialogBackdrop
-        transition
-        className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-      />
-
-      <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <DialogPanel
-            transition
-            className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-sm sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
-          >
-            <div>
-              <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-red-100">
-                <XMarkIcon aria-hidden="true" className="size-6 text-red-600" />
-              </div>
-              <div className="mt-3 text-center sm:mt-5">
-                <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
-                  Akun Tidak Bisa Dipilih
-                </DialogTitle>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">
-                    Maaf ya, akun ini nggak bisa kamu pilih karena sudah ditolak sebelumnya.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="mt-5 sm:mt-6">
-              <FilledButton onClick={onAcknowledged}>Mengerti</FilledButton>
-            </div>
-          </DialogPanel>
-        </div>
-      </div>
-    </Dialog>
-  );
 }

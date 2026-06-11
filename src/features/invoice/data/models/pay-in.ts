@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
-import { PayInReferenceType } from "../../domain/enums/pay-in-reference-type";
+import { PayInReferenceType } from "@/features/invoice/domain/enums/pay-in-reference-type";
 import { AbstractModel } from "@/core/resources/model";
-import { PayInEntity } from "../../domain/entities/pay-in";
+import { PayInEntity } from "@/features/invoice/domain/entities/pay-in";
 
 interface PayInModelConstructor {
   id: string;

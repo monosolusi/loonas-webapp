@@ -1,18 +1,12 @@
 "use client";
 
-import DoneAnimation from "@/core/presentations/static-files/done-animation.json";
 import { LogoImage } from "@/core/presentations/components/logo-image";
 import { InvoiceMetadataImpl } from "@/app/(external-app)/external-app/invoices/[id]/pay/_components/invoice-metadata-impl";
 import { PaymentSummaryImpl } from "@/app/(external-app)/external-app/invoices/[id]/pay-in-detail/_components/payment-summary-impl";
-import { Card } from "@/core/presentations/components/card";
+import { SectionCard } from "@/core/presentations/components/section-card";
 import React, { useEffect } from "react";
-import dynamic from "next/dynamic";
 import { useParams, useRouter } from "next/navigation";
 import { useGetPublicPayInDetailForOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-public-pay-in-detail-for-outgoing-invoice";
-
-const Player = dynamic(() => import("@lottiefiles/react-lottie-player").then((mod) => ({ default: mod.Player })), {
-  ssr: false,
-});
 
 export default function PaidPage() {
   const { id } = useParams<{ id: string }>();
@@ -37,17 +31,27 @@ export default function PaidPage() {
         <div className="flex flex-1 flex-col space-y-4">
           <div className="flex flex-row space-x-4">
             <div className="flex-2">
-              <Card>
+              <SectionCard title="Pembayaran Berhasil">
                 <div className="flex flex-col items-center space-y-4">
-                  <h1 className="text-base font-semibold text-gray-900">Pembayaran Berhasil</h1>
-                  <div className="h-35 w-35">
-                    <Player autoplay loop src={DoneAnimation} />
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-10 w-10 text-green-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
                   </div>
                   <div className="w-3/4 text-center">
-                    <p>Dana Anda sedang kami teruskan ke pengirim invoice. Terima kasih telah menggunakan Loonas.</p>
+                    <p className="text-neutral-900">
+                      Dana Anda sedang kami teruskan ke pengirim invoice. Terima kasih telah menggunakan Loonas.
+                    </p>
                   </div>
                 </div>
-              </Card>
+              </SectionCard>
             </div>
             <div className="flex-1">
               <PaymentSummaryImpl />

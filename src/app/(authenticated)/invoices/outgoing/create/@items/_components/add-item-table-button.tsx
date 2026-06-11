@@ -1,46 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  AddItemDialog,
-  ItemDetail
-} from "@/app/(authenticated)/invoices/outgoing/create/@items/_components/add-item-dialog";
-import {
-  useCreateOutgoingInvoice
-} from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
+import React from "react";
+import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 
 export function AddItemTableButton() {
-  const { addInvoiceItem } = useCreateOutgoingInvoice();
-  const [open, setOpen] = useState(false);
+  const { setCurrentStep } = useCreateOutgoingInvoice();
 
   const handleClick = () => {
-    setOpen(true);
-  };
-
-  const handleSubmit = (item: ItemDetail) => {
-    addInvoiceItem?.(item);
-    setOpen(false);
+    setCurrentStep?.("invoice-details.add-item");
   };
 
   return (
-    <>
-      <div
-        className="flex flex-col items-center justify-center"
-        onClick={handleClick}
-      >
-        <div
-          className="group flex flex-row items-center space-x-1 rounded-sm px-6 py-3 hover:bg-gray-50"
-        >
-          <div className="text-primary-default">
-            Tambah Item
-          </div>
-        </div>
+    <div className="flex flex-col items-center justify-center" onClick={handleClick}>
+      <div className="group flex flex-row items-center space-x-1 rounded-sm px-6 py-3 hover:bg-neutral-50">
+        <div className="text-primary-default">Tambah Item</div>
       </div>
-      <AddItemDialog
-        open={open}
-        onSubmit={handleSubmit}
-        onClose={() => setOpen(false)}
-      />
-    </>
+    </div>
   );
 }

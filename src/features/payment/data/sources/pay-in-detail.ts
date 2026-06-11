@@ -1,7 +1,7 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { GetDetailReturnType, PayInDetailService } from "@/features/payment/domain/sources/pay-in-detail";
-import { PublicPayInDetailModel } from "../models/public-pay-in-detail";
+import { PublicPayInDetailModel } from "@/features/payment/data/models/public-pay-in-detail";
 import { HttpRequest } from "@/core/helpers/http-request";
 
 export class PayInDetailServiceImpl implements PayInDetailService {
@@ -11,7 +11,7 @@ export class PayInDetailServiceImpl implements PayInDetailService {
     try {
       const method = "GET";
       const path = `/invoices/public-outgoing/${params.invoiceId}/pay-in`;
-      const config = { requireAuth: false, requireAccount: false };
+      const config = { requireAuth: false };
       const result = await this.http.request({ path, method }, config);
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
@@ -22,14 +22,12 @@ export class PayInDetailServiceImpl implements PayInDetailService {
     }
   }
 
-  public async getDetail(params: { requestId: string }, session: SessionEntity): Promise<GetDetailReturnType> {
+  public async getDetail(_params: { requestId: string }, _session: SessionEntity): Promise<GetDetailReturnType> {
     throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
   }
 
   // TODO: the below is weird implementation. Please change this in the future.
   protected async getDetailImpl(params: { requestId: string }, session: SessionEntity): Promise<Record<string, any>> {
-    if (!session.selectedAccount) throw new ServerError(ErrorCodes.NO_SELECTED_ACCOUNT);
-
     const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
     if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
@@ -38,7 +36,6 @@ export class PayInDetailServiceImpl implements PayInDetailService {
       method: "GET",
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
-        "X-Account-Id": session.selectedAccount.id,
       },
     });
 

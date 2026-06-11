@@ -6,13 +6,13 @@ import { VirtualAccountPayInDetailEntity } from "@/features/payment/domain/entit
 import { VirtualAccountPayInService } from "@/features/payment/data/sources/va-pay-in";
 import { PayInDetailRepository } from "@/features/payment/domain/repositories/pay-in-detail";
 import { PayInDetailService } from "@/features/payment/domain/sources/pay-in-detail";
-import { PublicPayInDetailEntity } from "../../domain/entities/public-pay-in-detail";
+import { PublicPayInDetailEntity } from "@/features/payment/domain/entities/public-pay-in-detail";
 
 export class VirtualAccountPayInRepository implements PayInDetailRepository {
   constructor(private readonly payInService: PayInDetailService) {}
 
-  public async getPublic(params: { invoiceId: string }): Promise<DataState<PublicPayInDetailEntity>> {
-    throw new Error("Method not implemented.");
+  public async getPublic(_params: { invoiceId: string }): Promise<DataState<PublicPayInDetailEntity>> {
+    throw new ServerError(ErrorCodes.NOT_IMPLEMENTED);
   }
 
   public async getDetail(

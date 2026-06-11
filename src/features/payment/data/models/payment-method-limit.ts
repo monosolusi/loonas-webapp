@@ -1,4 +1,4 @@
-import { PaymentMethodLimitEntity } from "../../domain/entities/payment-method-limit";
+import { PaymentMethodLimitEntity } from "@/features/payment/domain/entities/payment-method-limit";
 
 type SupportedLimitType = { isSupported: true; min: number; max: number };
 type NotSupportedLimitType = { isSupported: false };

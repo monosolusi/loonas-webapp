@@ -9,14 +9,14 @@ import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
 import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { AccountServiceImpl } from "../../data/sources/account";
+import { AccountServiceImpl } from "@/features/account/data/sources/account";
 import { LocalStorageSessionService } from "@/features/authentication/data/sources/local-storage-session";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
-import { AccountRepositoryImpl } from "../../data/repositories/account";
+import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
 import {
   CreatePersonalAccountUseCase,
   CreatePersonalAccountUseCaseParams,
-} from "../../domain/usecases/create-personal-account";
+} from "@/features/account/domain/usecases/create-personal-account";
 import { DataFailed } from "@/core/resources/data-state";
 import { HttpRequest } from "@/core/helpers/http-request";
 
@@ -112,7 +112,7 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
 
       setDob(dobDate);
       setDobError(false);
-    } catch (err) {
+    } catch (_) {
       setDobError(true);
     }
   }, [dobDay, dobMonth, dobYear]);
@@ -156,10 +156,10 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
       const sessionRepository = new SessionRepositoryImpl(sessionService);
       const accountRepository = new AccountRepositoryImpl(accountService);
       const createAccount = new CreatePersonalAccountUseCase(accountRepository, sessionRepository);
-      const createAccountParams = new CreatePersonalAccountUseCaseParams(
+      const createAccountParams = new CreatePersonalAccountUseCaseParams({
         nationality,
         idNumber,
-        identityDocument,
+        idDocument: identityDocument,
         fullName,
         occupation,
         pob,
@@ -169,7 +169,7 @@ export function CreatePersonalAccountProvider({ children }: { children: any }) {
         district,
         subdistrict,
         address,
-      );
+      });
 
       const account = await createAccount.execute(createAccountParams);
       if (account instanceof DataFailed) throw account.error;

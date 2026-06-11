@@ -1,4 +1,4 @@
-import { PayInStatus } from "@/features/payment/domain/enums/pay-in";
+import { PayInStatus } from "@/features/invoice/domain/enums/pay-in-status";
 import { VirtualAccountPayInDetailEntity } from "@/features/payment/domain/entities/va-pay-in-detail";
 import { DateTime } from "luxon";
 import { PaymentSchemeModel } from "@/features/payment/data/models/payment-scheme";

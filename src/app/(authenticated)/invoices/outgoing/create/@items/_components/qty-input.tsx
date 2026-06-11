@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { TextInput } from "@/core/presentations/components/text-input";
+import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 
 export function QtyInput() {
@@ -17,7 +17,7 @@ export function QtyInput() {
 
   return (
     <TextInput
-      title="Qty"
+      label="Qty"
       type="text"
       inputTextAlign="text-right"
       value={qty.toLocaleString("id-ID")}

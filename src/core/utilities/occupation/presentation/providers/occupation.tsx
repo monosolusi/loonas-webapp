@@ -3,10 +3,10 @@
 import React, { useEffect } from "react";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { OccupationEntity } from "../../domain/entities/occupation";
+import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 import { ListOccupationUseCase } from "@/core/utilities/occupation/domain/usecases/list-occupation";
-import { OccupationRepositoryImpl } from "../../data/repostiroies/occupation";
-import { OccupationServiceImpl } from "../../data/sources/occupation";
+import { OccupationRepositoryImpl } from "@/core/utilities/occupation/data/repostiroies/occupation";
+import { OccupationServiceImpl } from "@/core/utilities/occupation/data/sources/occupation";
 
 type OccupationContextProps = [OccupationEntity[], boolean];
 
