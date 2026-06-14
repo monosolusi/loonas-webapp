@@ -205,6 +205,17 @@ metadata:
 - No journal create/reverse FE endpoints exist anywhere in `src/features/accounting/`. AC-7 vacuously satisfied.
 - Build output: 44 pages, `/accounts` = 5.46 kB. Build time ~14s compile. All three static gates exit 0.
 
+## LNS-389 Account Picker Verification Status (2026-06-14)
+
+- Accounts list badge moved from `useGetAccountVerificationWork` (N+1 per account, org-less failure) to reading `latestStatus`/`verificationOutcome` directly off `props.account`.
+- Both `PersonalAccountEntity` + `BusinessAccountEntity` now carry `latestStatus?: VerificationStatus` and `verificationOutcome?: VerificationOutcome` as optional fields — added in this diff. NOTE: entity properties are `public` without `readonly` modifier (pre-existing pattern in these two entity files — not new in this diff). `PersonalAccountModel` already uses `public readonly`; `BusinessAccountModel` does NOT use `readonly` (pre-existing pattern as well — not introduced in this diff).
+- `fromJson` parses `latest_status` / `verification_outcome` from JSON; `toEntity()` carries both fields forward. Verified for both PERSONAL and BUSINESS types.
+- `AccountStatusBadge` uses `useMemo([props.account.latestStatus, props.account.verificationOutcome])` — no stale dep array risk.
+- `useGetAccountVerificationWork` hook + `retrieve-account-verification-work.ts` usecase still exist (used by kyc-summary detail flow).
+- `/accounts/[id]` detail page `AccountDetailLeftPanel` consumes `AccountStatusBadge` via `AccountTypeEntity` — same type union — no regression.
+- Org-less multi-account picker with mixed verification states is **auth + state gated** — requires live Clerk session + seeded accounts. Headless QA cannot cover this path. Flag for manual smoke.
+- Build output: 44 pages, `/accounts` = 5.44 kB (down from 5.46 kB — `useGetAccountVerificationWork` import tree gone). All three static gates exit 0.
+
 ## LNS-219 Refactor Structure (2026-05-21)
 
 - `cart-summary.tsx` and `peek-strip.tsx` are now thin parent routers. All logic (disabled gate, context reads for Bayar) lives in sibling files.

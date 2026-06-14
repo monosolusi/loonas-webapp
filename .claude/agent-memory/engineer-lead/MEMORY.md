@@ -27,3 +27,4 @@
 - [LNS-384 JWT-tenant migration](project_lns384_jwt_tenant_migration.md) — PRD "6 calls" wrong: journal CRUD never built in FE, list already on /accounting/journals; only verification-works URL migrates; kyc-review /internal/* is a DIFFERENT namespace
 - [Journal list param drift](project_journal_list_param_drift.md) — FE GET /accounting/journals sends page+limit but spec wants offset+limit; pre-existing, separate ticket
 - [LNS-384 tech-debt deferred](project_lns384_techdebt_deferred.md) — Ph6 triage: empty params class fixed in-ticket; swr-keys/.types/dead-provider/fetcher-name bundled to tech-debt; N-calls is a BE gate
+- [Accounts list vs /me status drift](project_accounts_list_vs_me_status_drift.md) — LNS-388 status fields on /accounts list only, NOT /accounts/me; same model feeds both → fields MUST be optional; fromEntity is dead; detail page reuses useListAccount

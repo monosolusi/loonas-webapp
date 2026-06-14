@@ -15,3 +15,4 @@
 - [Finance nav IA](project_finance_nav_ia.md) — "Keuangan" NavigationGroup (accounting feature-gated); children Buku Besar/Jurnal Umum/Biaya Tetap; new accounting FE extends it
 - [Linear: Accounting FE batch 2026-06-14](reference_linear_accounting_fe_batch.md) — LNS-364..381 FE viewers/forms + 4 BE-clarification blockers; dependency graph
 - [JWT-only tenant resolution](project_jwt_only_tenant_resolution.md) — LNS-382 shipped (PR#266): journal+verification-works re-mounted w/o :accountId; old paths 404; FE migrates via LNS-384; never carry tenant id
+- [Account verification-status chain](reference_linear_account_verification_status.md) — LNS-388 (BE done, status now in GET /accounts) → LNS-389 (FE consume, drop per-card N+1); 3-member enums; badge map locked
