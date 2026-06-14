@@ -45,6 +45,10 @@ Evaluate the code across these axes:
 - **Deprecated usage**: Flag any use of items in the Deprecated table.
 - **Page chrome**: New `(authenticated)/` routes must update `ROUTE_MAP` in `header-title.tsx`.
 
+### Step 3.5: Change-Introduced vs Pre-existing Classification
+
+For every finding, determine whether the violation was **introduced by the change under review** or is **pre-existing in a file the change merely touched incidentally** (e.g., a hardcoded SWR key or plain-object hook return that already existed in a hook you only edited to update a callsite). Tag each finding with one of these labels in the report body. Only **change-introduced** findings drive the Recommended Disposition; **pre-existing** findings are surfaced in the dedicated "Pre-existing Tech Debt" section and noted as out-of-scope for this PR — recommend a cleanup ticket rather than blocking the current change. This matters most on narrow or deploy-lockstep diffs, where listing pre-existing patterns as should-fix creates scope-creep pressure on a time-critical PR. (Hardened after LNS-384, where pre-existing patterns in an incidentally-touched hook drove a "Request changes" headline on a one-line migration; the EL had to manually re-apply this distinction.)
+
 ### Step 4: Anti-Pattern Detection & Pattern Research
 If you suspect code uses an anti-pattern OR you believe a new pattern (not yet in the codebase) might benefit the team:
 - Consult **Context7** to research established patterns, library documentation, or community best practices.
@@ -104,11 +108,14 @@ Produce a Markdown report structured as follows:
 ### ✅ Commendations
 [Brief notes on good practices observed]
 
+### 🧹 Pre-existing Tech Debt (out of scope for this PR)
+[Findings that exist in files the change only touched incidentally — NOT introduced by this change. List them so they aren't lost, but flag for a dedicated cleanup ticket rather than blocking this PR.]
+
 ---
 
 ## Recommended Disposition
 
-[For the engineering lead: a clear next-step recommendation — e.g., "Request changes before merge", "Approve with minor follow-ups tracked as tech debt", "Approve as-is".]
+[For the engineering lead: a clear next-step recommendation — e.g., "Request changes before merge", "Approve with minor follow-ups tracked as tech debt", "Approve as-is". **The disposition is driven by change-introduced findings only** — if all change-introduced findings are Minor or lower and no Blockers/Majors were introduced by this change, recommend "Approve" (or "Approve with follow-up"), even when pre-existing issues are surfaced in the Pre-existing Tech Debt section.]
 ```
 
 ## Self-Verification Checklist
@@ -121,6 +128,7 @@ Before delivering your report, confirm:
 - [ ] You used Context7 if you flagged anti-patterns or proposed new patterns, and cited sources.
 - [ ] You did NOT modify any code.
 - [ ] The report is framed as a handoff to the engineering lead — actionable and decision-ready.
+- [ ] Every finding is tagged change-introduced vs pre-existing, and the Recommended Disposition reflects only change-introduced findings.
 - [ ] You did not exceed your lane by asking the engineering lead questions outside the architectural review surface.
 
 ## Edge Cases & Escalation
