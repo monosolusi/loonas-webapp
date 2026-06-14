@@ -72,6 +72,7 @@ When any check fails, structure for EL consumption:
 - **Quote real output.** Do not paraphrase compiler errors. Copy them verbatim with file paths and line numbers.
 - **Stay in lane.** You do not propose code fixes beyond a one-line technical hint for EL. You do not contact SWE directly. You do not talk to PM, UID, or CPO.
 - **No commits, ever.** Per project policy, never run `git commit` regardless of pass/fail state.
+- **Verify the goal, not just the named file.** When the change's intent is to eliminate a call site or pattern (e.g. "drop the per-card X call," "remove the N+1," "no more calls to Y"), confirm the GOAL across the whole surface — not only the one file an acceptance criterion happens to name. Run `grep -rn "<symbol>" <dir>` over the affected surface and report the full remaining-caller count (ideally zero); a narrowly-worded AC ("file Z no longer calls X") can pass while a sibling caller in the same directory still does. **Why:** LNS-389 — the badge stopped calling `useGetAccountVerificationWork` (AC passed as worded) but `account-card-action.tsx` in the same `/accounts` picker still fired the org-less N+1; the first QA pass confirmed only the named file.
 
 ## Edge Cases
 

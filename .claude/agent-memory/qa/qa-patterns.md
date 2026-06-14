@@ -203,7 +203,22 @@ metadata:
 - Accounting `ledger-account` source uses `accountId` for `/accounting/accounts/${accountId}/balance` and `/accounting/accounts/${accountId}/ledger` — these are CHART-OF-ACCOUNTS account IDs (ledger accounts), NOT tenant IDs. Do not flag as AC violations.
 - `journal.ts` source confirms `/accounting/journals` — no account param in path.
 - No journal create/reverse FE endpoints exist anywhere in `src/features/accounting/`. AC-7 vacuously satisfied.
-- Build output: 44 pages, `/accounts` = 5.46 kB. Build time ~14s compile. All three static gates exit 0.
+- `account-card-action.tsx` was a SECOND per-card caller that was missed in the initial QA pass — it also called `useGetAccountVerificationWork` and has since been fixed to read `props.account.latestStatus`/`props.account.verificationOutcome`. N+1 goal check: always grep the entire `src/app/(authenticated)/accounts` subtree, not just the named badge file.
+- `ActionState` in `account-card-action.tsx` is now `"current" | "approved" | "disabled"` — `"loading"` member and "Memuat..." entry fully removed. Absent/unmapped status falls to `"disabled"` via ternary (no throw).
+- `useGetCurrentAccount` is retained in `account-card-action.tsx` — it is NOT a verification-works caller; it resolves the currently active org account for the "Sedang Digunakan" badge.
+- Template-literal className at line 66 of `account-card-action.tsx` is pre-existing debt, intentionally out of scope for LNS-389.
+- Build output after fold-in fix: 44 pages, `/accounts` = 5.14 kB (down from 5.46 kB at LNS-384 baseline — both hook import trees removed). All three static gates exit 0.
+
+## LNS-389 Account Picker Verification Status (2026-06-14)
+
+- Accounts list badge moved from `useGetAccountVerificationWork` (N+1 per account, org-less failure) to reading `latestStatus`/`verificationOutcome` directly off `props.account`.
+- Both `PersonalAccountEntity` + `BusinessAccountEntity` now carry `latestStatus?: VerificationStatus` and `verificationOutcome?: VerificationOutcome` as optional fields — added in this diff. NOTE: entity properties are `public` without `readonly` modifier (pre-existing pattern in these two entity files — not new in this diff). `PersonalAccountModel` already uses `public readonly`; `BusinessAccountModel` does NOT use `readonly` (pre-existing pattern as well — not introduced in this diff).
+- `fromJson` parses `latest_status` / `verification_outcome` from JSON; `toEntity()` carries both fields forward. Verified for both PERSONAL and BUSINESS types.
+- `AccountStatusBadge` uses `useMemo([props.account.latestStatus, props.account.verificationOutcome])` — no stale dep array risk.
+- `useGetAccountVerificationWork` hook + `retrieve-account-verification-work.ts` usecase still exist (used by kyc-summary detail flow).
+- `/accounts/[id]` detail page `AccountDetailLeftPanel` consumes `AccountStatusBadge` via `AccountTypeEntity` — same type union — no regression.
+- Org-less multi-account picker with mixed verification states is **auth + state gated** — requires live Clerk session + seeded accounts. Headless QA cannot cover this path. Flag for manual smoke.
+- Build output: 44 pages, `/accounts` = 5.44 kB (down from 5.46 kB — `useGetAccountVerificationWork` import tree gone). All three static gates exit 0.
 
 ## LNS-219 Refactor Structure (2026-05-21)
 

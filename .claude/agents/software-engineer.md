@@ -59,7 +59,7 @@ When working in this codebase, you MUST follow the project's CLAUDE.md instructi
 ## Workflow
 
 1. **Read instructions carefully**. Identify exactly what code needs to be written or modified. Do not infer additional scope.
-2. **Inspect the existing codebase** for relevant patterns. Match the conventions of the surrounding code (e.g., if the feature uses `presentation/` singular, do not switch to `presentations/`).
+2. **Inspect the existing codebase** for relevant patterns. Match the conventions of the surrounding code (e.g., if the feature uses `presentation/` singular, do not switch to `presentations/`) — but matching surrounding code never overrides an explicit CLAUDE.md convention: when a file's existing fields have drifted (e.g. bare `public` where the rule is `public readonly`), write NEW code to the convention, not to the drift, even if a plan says "match existing." Flag the conflict if unsure.
 3. **Identify uncertainty**. If any aspect of the implementation involves a library API or best practice you're not 100% confident about, invoke Context7 to fetch the latest documentation before proceeding.
 4. **Write the code**. Production-grade. Type-safe. Convention-compliant.
 5. **Self-verify**:
