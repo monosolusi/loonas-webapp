@@ -1,10 +1,7 @@
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { AccountServiceImpl } from "@/features/account/data/sources/account";
 import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
-import {
-  RetrieveAccountVerificationWorkUseCase,
-  RetrieveAccountVerificationWorkUseCaseParams,
-} from "@/features/account/domain/usecases/retrieve-account-verification-work";
+import { RetrieveAccountVerificationWorkUseCase } from "@/features/account/domain/usecases/retrieve-account-verification-work";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import useSWR from "swr";
@@ -30,9 +27,8 @@ async function GetAccountVerificationWorkFetcher([_, params]: [
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const accountRepository = new AccountRepositoryImpl(new AccountServiceImpl(new HttpRequest()));
   const retrieve = new RetrieveAccountVerificationWorkUseCase(accountRepository, sessionRepository);
-  const retrieveParams = new RetrieveAccountVerificationWorkUseCaseParams(params.accountId);
 
-  const accountVerificationWork = await retrieve.execute(retrieveParams);
+  const accountVerificationWork = await retrieve.execute();
   if (accountVerificationWork instanceof DataFailed) throw accountVerificationWork.error;
   if (!accountVerificationWork.data) throw new ServerError(ErrorCodes.NOT_FOUND);
   return accountVerificationWork.data;

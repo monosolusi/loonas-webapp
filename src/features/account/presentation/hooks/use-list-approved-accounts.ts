@@ -10,10 +10,7 @@ import { ClerkSessionService } from "@/features/authentication/data/sources/cler
 import { AccountServiceImpl } from "@/features/account/data/sources/account";
 import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
 import { ListAccountUseCase } from "@/features/account/domain/usecases/list-account";
-import {
-  RetrieveAccountVerificationWorkUseCase,
-  RetrieveAccountVerificationWorkUseCaseParams,
-} from "@/features/account/domain/usecases/retrieve-account-verification-work";
+import { RetrieveAccountVerificationWorkUseCase } from "@/features/account/domain/usecases/retrieve-account-verification-work";
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 import { MembershipStatus } from "@/features/account/domain/enums/membership-status";
@@ -37,7 +34,7 @@ async function listApprovedAccountsFetcher([_, params]: [string, FetcherParams])
   const verifyUseCase = new RetrieveAccountVerificationWorkUseCase(accountRepository, sessionRepository);
 
   const verificationResults = await Promise.allSettled(
-    accountsResult.data.map((account) => verifyUseCase.execute(new RetrieveAccountVerificationWorkUseCaseParams(account.id))),
+    accountsResult.data.map(() => verifyUseCase.execute()),
   );
 
   return accountsResult.data.filter((account, index) => {
