@@ -24,3 +24,6 @@
 - [Analytics module LNS-239](project_analytics_module_lns239.md) — src/core/analytics/ typed no-op shim; vendor wiring deferred to LNS-247; PII allow-list; tab-string aligned to widget ('all' not 'combined')
 - [didInitRef pattern](project_didinitref_pattern.md) — in-repo blueprint at dashboard-range-provider.tsx for one-shot effects under React 19 StrictMode; prev-value and Set-dedupe variants
 - [Accounting LNS-96 FE batch](project_accounting_lns96_fe_batch.md) — CoA read layer already exists (use-list-ledger-accounts→/accounting/accounts); journal CRUD router split; per-report bespoke schemas; contract flags
+- [LNS-384 JWT-tenant migration](project_lns384_jwt_tenant_migration.md) — PRD "6 calls" wrong: journal CRUD never built in FE, list already on /accounting/journals; only verification-works URL migrates; kyc-review /internal/* is a DIFFERENT namespace
+- [Journal list param drift](project_journal_list_param_drift.md) — FE GET /accounting/journals sends page+limit but spec wants offset+limit; pre-existing, separate ticket
+- [LNS-384 tech-debt deferred](project_lns384_techdebt_deferred.md) — Ph6 triage: empty params class fixed in-ticket; swr-keys/.types/dead-provider/fetcher-name bundled to tech-debt; N-calls is a BE gate
