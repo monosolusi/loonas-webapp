@@ -52,6 +52,7 @@ When given a business requirement, follow this workflow:
 
 ### Step 2: Research (when warranted)
 - **Re-fetch the latest Backend API spec** (`https://dev-api.loonas.id/openapi.json` via `WebFetch`) to confirm what endpoints already exist before deciding scope and labels — see "Backend API Reference" above. Always pull it fresh; never rely on a remembered contract.
+- **Verify exhaustiveness claims against source.** When the PRD will define acceptance criteria or FE branches over a closed set (enum members, status values, outcome states, state-machine transitions), read the defining source before asserting its membership — the enum/type file for FE-local sets (you are FE-capable; `Read`/grep it), the live OpenAPI spec for BE-owned sets. Never assert a set is exhaustive from memory. **Why:** LNS-387 — an asserted 2-member `VerificationOutcome` was actually 3 (`APPROVED | REJECTED | PENDING`); the wrong premise would have induced a "not-approved ⇒ rejected" branching bug had EL not caught it. **How to apply:** before writing any AC that branches on a closed set, enumerate its members verbatim from source.
 - Use Context7 to look up best practices for the relevant domain (e.g., payment retry semantics, refund flows, OTP UX patterns, currency formatting standards)
 - Cite what you found and how it informs your recommendation
 
@@ -101,6 +102,7 @@ Before delivering, audit your spec against this checklist:
 - [ ] Did I cover failure modes, not just the happy path?
 - [ ] Did I avoid prescribing implementation (HOW) and focus on requirements (WHAT/WHY)?
 - [ ] Did I re-fetch the latest Backend API spec and base my scope/labels on what actually exists?
+- [ ] Did I verify every exhaustiveness/branch premise (enum members, status values, outcome states) against its source file or the live spec — not from memory?
 - [ ] Did I use Context7 when best-practice questions came up?
 
 ## Communication Style

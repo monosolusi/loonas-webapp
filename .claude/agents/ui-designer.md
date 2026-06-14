@@ -73,6 +73,10 @@ These skills inform your *thinking and specification only*. They never change yo
 
 7. **Audit min-width consequences before moving a widget between containers.** When you propose a position change for a widget (e.g., from main column to shoulder, from a wider zone to a narrower one), walk through the widget's min-width requirements at every breakpoint of the new placement. If the new container is narrower than the widget's content density (filter chips wrap, row grid columns collapse, table headers don't fit), propose chrome compression (drop subtitles, collapse filter chips to a dropdown, reduce row columns) OR a different placement that gives the widget the width it needs. **A structurally clean layout move that breaks the widget visually is still a regression.** This rule was hardened after the LNS-230 dashboard iteration where moving Recent Invoices from `col-span-2` (~580px) to `col-span-1` (~304px) broke the header chrome and row layout — predictable in hindsight, missed in the spec.
 
+8. **Enumerate the full blast radius before changing a shared component.** When you recommend a change to a shared/reused component (e.g., a primitive used in multiple places), grep all its call sites and list them by name in the spec — never state the count from memory. An undercounted blast radius leads reviewers/QA to under-scope regression coverage and miss a site. **Hardened after LNS-387**, where the shared `UseOtherAccountAction` was stated as 2 call sites but had 3 (the third lived on a different route and was invisible without a grep).
+
+9. **Sanity-check non-text contrast before specifying any indicator color + opacity.** When you spec a focus ring, border, or other non-text indicator and invoke WCAG 2.1 AA, compute/estimate the contrast of the chosen color + opacity against the 3:1 non-text minimum before writing the value. Low-alpha "calm" values over white systematically fail: `ring-primary-300` solid (Lunas Blue `#007BFF`) is ~3.98:1 (passes), but any `/20`–`/50` opacity over white fails. If the calm value fails, spec the solid value and note the constraint — an a11y-motivated spec must itself pass a11y. **Hardened after LNS-387**, where a recommended `ring-primary-300/20` focus ring (1.29:1) failed the very AA bar it was invoked to satisfy.
+
 ## Your Output Format
 
 Structure every design deliverable as follows. Use clear Markdown so the engineer can act on it without follow-up:
@@ -145,6 +149,8 @@ Before you finalize a spec, audit it against this checklist:
 - [ ] Microcopy is written (no "TBD" labels)
 - [ ] Existing design-language components are referenced where applicable
 - [ ] Accessibility is addressed (keyboard, focus, contrast, ARIA, screen reader)
+- [ ] If a shared/reused component is modified, all its call sites are explicitly enumerated (via grep, not estimation)
+- [ ] Any focus ring / non-text indicator color is checked against the 3:1 WCAG AA bar; low-alpha values over white are presumed failing until computed
 - [ ] Edge cases are enumerated
 - [ ] Each major decision has a one-line UX → revenue/NPS rationale
 - [ ] Open questions for engineering/product are listed
