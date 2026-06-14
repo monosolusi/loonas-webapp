@@ -6,10 +6,7 @@ import { LocalStorageSessionService } from "@/features/authentication/data/sourc
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { AccountServiceImpl } from "@/features/account/data/sources/account";
 import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
-import {
-  RetrieveAccountVerificationWorkUseCase,
-  RetrieveAccountVerificationWorkUseCaseParams,
-} from "@/features/account/domain/usecases/retrieve-account-verification-work";
+import { RetrieveAccountVerificationWorkUseCase } from "@/features/account/domain/usecases/retrieve-account-verification-work";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { HttpRequest } from "@/core/helpers/http-request";
@@ -22,7 +19,7 @@ const AccountVerificationWorkContext = createContext<AccountVerificationWorkCont
  * @deprecated This component is being phased out in favor of a new verification system.
  * Please use useGetAccountVerificationWork() hook if you just want to get the data.
  */
-export function AccountVerificationWorkProvider({ children, id }: { children: any; id: string }) {
+export function AccountVerificationWorkProvider({ children, id: _id }: { children: any; id: string }) {
   const [accountVerificationWork, setAccountVerificationWork] = useState<AccountVerificationWorkEntity>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error>();
@@ -45,8 +42,7 @@ export function AccountVerificationWorkProvider({ children, id }: { children: an
       const accountService = new AccountServiceImpl(http);
       const accountRepository = new AccountRepositoryImpl(accountService);
       const retrieve = new RetrieveAccountVerificationWorkUseCase(accountRepository, sessionRepository);
-      const retrieveParams = new RetrieveAccountVerificationWorkUseCaseParams(id);
-      const accountVerificationWork = await retrieve.execute(retrieveParams);
+      const accountVerificationWork = await retrieve.execute();
       if (accountVerificationWork instanceof DataFailed) throw accountVerificationWork.error;
       if (!accountVerificationWork.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 

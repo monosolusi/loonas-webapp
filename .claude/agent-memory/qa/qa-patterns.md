@@ -1,6 +1,6 @@
 ---
 name: qa-patterns
-description: Recurring build warnings, CI ticket scope rules, build perf baseline, JSON validity gate, Playwright session/backend patterns, SWR key isolation, LNS-232 widget migration
+description: Recurring build warnings, CI ticket scope rules, build perf baseline, JSON validity gate, Playwright session/backend patterns, SWR key isolation, LNS-384 JWT tenant resolution
 metadata:
   type: project
 ---
@@ -192,6 +192,19 @@ metadata:
 - `aria-busy={isCreating}` placed on the `<form>` element (not just the button). Button also gets `aria-busy={loading}` and `aria-disabled={disabled || loading}` via `PrimaryButton` → `Button`.
 - `cursor-wait` applied via `loading ? "cursor-wait opacity-100" : "disabled:cursor-not-allowed disabled:opacity-50"` in `PrimaryButton`. When loading, `disabled:opacity-50` is NOT active — overridden by `opacity-100`. Clean.
 - Browser smoke BLOCKED: Clerk env gap (no `.env.local`) — `/onboarding/account` blocked. Source-code static analysis used for all ACs.
+
+## LNS-384 JWT-Only Tenant Resolution (2026-06-14)
+
+- `retrieveVerificationWork(session)` on `AccountService`/`AccountRepository`/`UseCase` all accept `session: SessionEntity` only — no `accountId` param on the wire path.
+- `accountId` survives ONLY as a client-side SWR key discriminator + fetch gate in `use-get-account-verification-work.ts`: `shouldFetch = !!params.accountId`. It is NOT forwarded into the use case, repo, or service. Wire check: `retrieveVerificationWork(session)` is the entire call chain — no `accountId` in signature anywhere below the hook.
+- `use-list-approved-accounts.ts` calls `verifyUseCase.execute(new RetrieveAccountVerificationWorkUseCaseParams())` per account in a `Promise.allSettled` loop — no `accountId` passed to execute. The result is used only for client-side filtering.
+- Deprecated `AccountVerificationWorkProvider` retains `LocalStorageSessionService` (deprecated) — not a regression, no code changes there beyond existing compile fix. Flag for future cleanup.
+- `/accounts/verification-works` path confirmed in `AccountServiceImpl.retrieveVerificationWork()` at line 137 of `account.ts`.
+- `kyc-review` `internal/verification-works` paths are OUT OF SCOPE and remain untouched — confirmed via grep.
+- Accounting `ledger-account` source uses `accountId` for `/accounting/accounts/${accountId}/balance` and `/accounting/accounts/${accountId}/ledger` — these are CHART-OF-ACCOUNTS account IDs (ledger accounts), NOT tenant IDs. Do not flag as AC violations.
+- `journal.ts` source confirms `/accounting/journals` — no account param in path.
+- No journal create/reverse FE endpoints exist anywhere in `src/features/accounting/`. AC-7 vacuously satisfied.
+- Build output: 44 pages, `/accounts` = 5.46 kB. Build time ~14s compile. All three static gates exit 0.
 
 ## LNS-219 Refactor Structure (2026-05-21)
 

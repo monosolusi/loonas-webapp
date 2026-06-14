@@ -60,12 +60,9 @@ export class AccountRepositoryImpl implements AccountRepository {
     }
   }
 
-  public async retrieveVerificationWork(
-    accountId: string,
-    session: SessionEntity,
-  ): Promise<DataState<AccountVerificationWorkEntity>> {
+  public async retrieveVerificationWork(session: SessionEntity): Promise<DataState<AccountVerificationWorkEntity>> {
     try {
-      const work = await this.accountService.retrieveVerificationWork(accountId, session);
+      const work = await this.accountService.retrieveVerificationWork(session);
       return new DataSuccess(work.toEntity());
     } catch (err: any) {
       return new DataFailed(err);

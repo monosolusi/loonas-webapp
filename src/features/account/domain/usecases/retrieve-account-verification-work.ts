@@ -10,12 +10,7 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { AccountVerificationWorkEntity } from "@/features/account/domain/entities/account-verification-work";
 import { AccountRepository } from "@/features/account/domain/repositories/account";
 
-export class RetrieveAccountVerificationWorkUseCaseParams {
-  constructor(public readonly accountId: string) {
-  }
-}
-
-export class RetrieveAccountVerificationWorkUseCase implements UseCase<DataState<AccountVerificationWorkEntity>, RetrieveAccountVerificationWorkUseCaseParams> {
+export class RetrieveAccountVerificationWorkUseCase implements UseCase<DataState<AccountVerificationWorkEntity>> {
 
   constructor(
     private readonly accountRepository: AccountRepository,
@@ -23,12 +18,12 @@ export class RetrieveAccountVerificationWorkUseCase implements UseCase<DataState
   ) {
   }
 
-  public async execute(params: RetrieveAccountVerificationWorkUseCaseParams): Promise<DataState<AccountVerificationWorkEntity>> {
+  public async execute(): Promise<DataState<AccountVerificationWorkEntity>> {
     const session = await this.sessionRepository.retrieve();
     if (session instanceof DataFailed) return session;
     if (!session.data) return new DataFailed(new ServerError(ErrorCodes.INVALID_INSTANCE));
 
-    return this.accountRepository.retrieveVerificationWork(params.accountId, session.data);
+    return this.accountRepository.retrieveVerificationWork(session.data);
   }
 
 }

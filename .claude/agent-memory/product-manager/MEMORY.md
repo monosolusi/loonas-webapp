@@ -14,3 +14,4 @@
 - [Accounting BE done, FE is the gap](project_accounting_be_done_fe_gap.md) — 2026-06-14: BE feature-complete; open work is FE viewers/forms consuming shipped /accounting/* contracts
 - [Finance nav IA](project_finance_nav_ia.md) — "Keuangan" NavigationGroup (accounting feature-gated); children Buku Besar/Jurnal Umum/Biaya Tetap; new accounting FE extends it
 - [Linear: Accounting FE batch 2026-06-14](reference_linear_accounting_fe_batch.md) — LNS-364..381 FE viewers/forms + 4 BE-clarification blockers; dependency graph
+- [JWT-only tenant resolution](project_jwt_only_tenant_resolution.md) — LNS-382 shipped (PR#266): journal+verification-works re-mounted w/o :accountId; old paths 404; FE migrates via LNS-384; never carry tenant id
