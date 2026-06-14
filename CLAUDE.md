@@ -211,3 +211,17 @@ SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockI
 - Branch naming: `features/{description}` for new features
 - Always create branches from `dev`
 - Commit style: Conventional Commits — `feat(scope):`, `fix(scope):`, `refactor(scope):`, `chore(scope):`
+
+## Design Context
+
+Design intent lives in two root files (source of truth for any UI/UX work; read before designing new screens):
+
+- **`PRODUCT.md`** — strategic: register (`product`), users (Indonesian SME owners + staff), the all-in-one merchant
+  OS purpose, brand personality (**trustworthy, precise, calm**), references (Mekari, Xero), anti-references, the 5
+  design principles, and the WCAG 2.1 AA bar.
+- **`DESIGN.md`** — visual: the "Calm Ledger" system. Lunas Blue (`#007BFF`) as the single accent, flat
+  border-not-shadow elevation, Manrope on a fixed rem scale, and the canonical component vocabulary. Machine-readable
+  tokens live in its YAML frontmatter; `.impeccable/design.json` is the live-mode sidecar.
+
+These are maintained via the `impeccable` skill (`/impeccable document` regenerates DESIGN.md; `/impeccable critique`
+/ `audit` / `polish` evaluate surfaces against this intent).
