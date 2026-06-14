@@ -1,6 +1,6 @@
 ---
 name: work-on-issue
-description: Orchestrate end-to-end delivery of a Linear issue across the full agent chain — PM consults CPO/EL/UI, EL plans and spawns SWE, QA + architecture-reviewer verify the implementation, EL summarises, and PM moves the Linear issue to "In Review". Use when the user wants to work on a Linear issue from intake to ready-for-review.
+description: Orchestrate end-to-end delivery of a Linear issue across the full agent chain — PM consults CPO/EL/UI, EL plans and spawns SWE, QA + architecture-reviewer verify the implementation, EL summarises, PM moves the Linear issue to "In Review", and every participating agent reflects on its own lane (per-agent /learn triage of what to preserve vs discard). Use when the user wants to work on a Linear issue from intake to ready-for-review.
 argument-hint: <Linear issue key or URL> (e.g. LOO-142 or https://linear.app/.../LOO-142)
 ---
 
@@ -15,10 +15,16 @@ PM ──► (CPO, UI, EL consults) ──► EL plan ──► SWE implement
                                   QA + architecture-reviewer
                                                 │
                                                 ▼
-                                           EL summary
+                                    EL summary + BE re-validate
                                                 │
                                                 ▼
                                   PM verifies → Linear "In Review"
+                                                │
+                                                ▼
+                                     SWE commit → EL open PR
+                                                │
+                                                ▼
+                        per-agent reflection → /learn triage (always)
 ```
 
 The orchestrator (`claude`) is the conductor — it never short-circuits a step or absorbs a specialist's lane. Agents communicate only through the orchestrator.
@@ -151,6 +157,45 @@ After PM moves the issue to "In Review", the orchestrator runs the commit + PR p
 
 The orchestrator NEVER runs `git commit` or `gh pr create` directly — those belong to SWE and EL respectively.
 
+## Phase 10 — Per-agent reflection (always run)
+
+The work isn't finished when the PR opens. A run that taught the chain something and then forgot it will re-learn the same lesson on the next issue — so every run ends with a reflection pass. This phase always runs; it is the chain's only mechanism for getting better over time.
+
+Reflect **per agent, never as one blended whole-session triage.** A correction aimed at SWE's commit habit belongs in the SWE agent file; a gap in PM's Linear handling belongs in PM's. A single mixed table loses the signal of *which role* needs hardening and tends to produce vague, misrouted learnings. Each role is also the best judge of what — in its own behaviour — was a one-off versus a durable rule, which is exactly the judgment `/learn` triage asks for.
+
+### Decide who has something to reflect on
+
+Reflection always runs, but a full agent round-trip is only worth spending where the lane hit friction. For each agent that participated in this run (PM, UI, EL, SWE, QA, architecture-reviewer — include CPO only if it was actually consulted), the orchestrator asks: did this lane see a correction, a kickback, a re-run, or a gap the orchestrator had to fill? If the lane ran clean, record it as "no learnings" and move on — don't spend a round-trip confirming nothing. Dispatch a reflection only for the agents that hit friction.
+
+### Dispatch the reflections
+
+Dispatch the friction-hitting agents **in parallel** (single message, multiple Agent calls) — each reflection is independent. Subagents are stateless, so each reflection brief must carry the context the agent needs to reflect well:
+
+- The issue key + one-line scope.
+- That agent's own outputs and decisions during this run.
+- The specific friction the orchestrator observed for that agent (e.g. "QA was re-run because the first pass missed the empty-state regression", "PM had to be reminded to move Linear state only after the PR opened, not before").
+- A pointer to the `/learn` skill's triage criteria — the same preserve-vs-discard logic and destination routing, applied to **this agent's lane only**.
+
+Each agent returns a **per-agent triage table** — one row per candidate learning from its own lane, and nothing from anyone else's:
+
+```
+| # | Candidate (1-line) | Signal | Preserve? | Destination | Proposed diff (summary) |
+```
+
+`Preserve?` is yes/no following the `/learn` recommendation. `Destination` is normally the agent's **own** agent file (`.claude/agents/{agent}.md`) for behavioural hardening, or memory / CLAUDE.md / a skill when the triage criteria point elsewhere. Agents **propose only** — they never write durable files themselves.
+
+### Consolidate, confirm, apply
+
+The orchestrator then:
+
+1. Consolidates the per-agent tables, keeping them grouped by agent.
+2. Reads each target file and drops rows whose rule is already captured verbatim; flags any row that conflicts with existing text rather than silently overwriting.
+3. Presents the consolidated plan to the user and waits for confirmation. Persistent writes to agent / skill / CLAUDE.md files change every future run, so this gate holds even in autonomous mode — treat it like a destructive action. High-stakes rows (changing a hard agent constraint, rewriting a skill section) need explicit per-row confirmation; low-stakes memory rows can be bulk-approved.
+4. Applies confirmed writes — surgical `Edit` on existing files; for memory, follow the auto-memory rules (new `name.md` with frontmatter + a one-line `MEMORY.md` index entry). Discarded rows are simply dropped.
+5. Summarises what landed, grouped by agent and destination.
+
+Inherit the `/learn` guardrails: reflect on **this run only** (no `git log`, no cross-session expansion); **update existing files only** — if a learning warrants a brand-new agent or skill, surface it as a recommendation for the user to file separately, never create it here; never silently overwrite a rule the new learning contradicts.
+
 ## Rules
 
 - **Never bypass an agent's lane.** Orchestrator does not write the PRD, the plan, or the code. Orchestrator does not call Linear directly — that is PM only. Orchestrator does not run `git commit` or `gh pr create` — SWE and EL respectively own those in Phase 9.
@@ -160,6 +205,7 @@ The orchestrator NEVER runs `git commit` or `gh pr create` directly — those be
 - **Stop on genuine forks.** Pause for user input only on (a) blocking business clarification PM cannot resolve, (b) destructive actions, (c) BE-relay questions. Otherwise execute autonomously.
 - **Match the existing presentation-layer directory** (singular `presentation/` vs plural `presentations/`) per feature — SWE follows the feature's local convention.
 - **Use Linear skills for any new sub-issue creation.** If PM needs to file a sub-bug or tech-debt spinout during the workflow, use `/linear-bug` or `/linear-techdebt`.
+- **Always reflect, per agent.** Every run ends with Phase 10: each agent that hit friction reflects on its OWN lane and proposes a preserve-vs-discard triage (following `/learn`); the orchestrator consolidates, confirms with the user, and applies the writes. Never collapse this into one whole-session reflection, and never skip the phase — an un-reflected run silently re-learns the same lessons next issue.
 
 ## Output (orchestrator → user)
 
@@ -177,6 +223,7 @@ BE contract: re-validated against live OpenAPI spec | mismatch found
 Linear state: moved to "In Review" at {timestamp}
 Commits: {n} commits by SWE
 PR: #{n} → dev
+Reflection: {n} learnings preserved across {m} agents (or "none — all lanes ran clean")
 Next: awaiting human reviewer.
 ```
 
