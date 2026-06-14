@@ -3,6 +3,8 @@ import { AbstractModel } from "@/core/resources/model";
 import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
 import { AccountType } from "@/features/account/domain/enums/account-type";
 import { MembershipModel } from "@/features/account/data/models/membership";
+import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
+import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 
 type Metadata = { clerkId: string };
 
@@ -32,6 +34,8 @@ type BusinessAccountModelConstructor = {
   membership?: MembershipModel;
   role?: string;
   features?: string[];
+  latestStatus?: VerificationStatus;
+  verificationOutcome?: VerificationOutcome;
 };
 
 export class BusinessAccountModel implements AbstractModel {
@@ -45,6 +49,8 @@ export class BusinessAccountModel implements AbstractModel {
   public membership?: MembershipModel;
   public role?: string;
   public features?: string[];
+  public readonly latestStatus?: VerificationStatus;
+  public readonly verificationOutcome?: VerificationOutcome;
 
   constructor(args: BusinessAccountModelConstructor) {
     this.id = args.id;
@@ -57,6 +63,8 @@ export class BusinessAccountModel implements AbstractModel {
     this.membership = args.membership;
     this.role = args.role;
     this.features = args.features;
+    this.latestStatus = args.latestStatus;
+    this.verificationOutcome = args.verificationOutcome;
   }
 
   public static fromJson(doc: Record<string, any>): BusinessAccountModel {
@@ -94,6 +102,8 @@ export class BusinessAccountModel implements AbstractModel {
       membership: doc["membership"] ? MembershipModel.fromJson(doc["membership"]) : undefined,
       role: doc["role"],
       features: Array.isArray(doc["features"]) ? doc["features"] : [],
+      latestStatus: doc["latest_status"],
+      verificationOutcome: doc["verification_outcome"],
     });
   }
 
@@ -121,6 +131,8 @@ export class BusinessAccountModel implements AbstractModel {
       membership: this.membership?.toEntity(),
       role: this.role,
       features: this.features,
+      latestStatus: this.latestStatus,
+      verificationOutcome: this.verificationOutcome,
     });
   }
 }
