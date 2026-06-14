@@ -1,6 +1,6 @@
 ---
 name: work-on-issue
-description: Orchestrate end-to-end delivery of a Linear issue across the full agent chain — PM consults CPO/EL/UI, EL plans and spawns SWE, QA + architecture-reviewer verify the implementation, EL summarises, PM moves the Linear issue to "In Review", and every participating agent reflects on its own lane (per-agent /learn triage of what to preserve vs discard). Use when the user wants to work on a Linear issue from intake to ready-for-review.
+description: Orchestrate end-to-end delivery of a Linear issue across the full agent chain — PM moves the issue to "In Progress" on pickup, consults CPO/EL/UI, EL plans and spawns SWE, QA + architecture-reviewer verify the implementation, EL summarises, the PR opens, PM then moves the issue to "In Review", and every participating agent reflects on its own lane (per-agent /learn triage of what to preserve vs discard). Use when the user wants to work on a Linear issue from intake to ready-for-review.
 argument-hint: <Linear issue key or URL> (e.g. LOO-142 or https://linear.app/.../LOO-142)
 ---
 
@@ -9,7 +9,7 @@ argument-hint: <Linear issue key or URL> (e.g. LOO-142 or https://linear.app/...
 End-to-end orchestration of a Linear issue through the existing agent chain:
 
 ```
-PM ──► (CPO, UI, EL consults) ──► EL plan ──► SWE implement
+PM intake → Linear "In Progress" ──► (CPO, UI, EL consults) ──► EL plan ──► SWE implement
                                                 │
                                                 ▼
                                   QA + architecture-reviewer
@@ -18,10 +18,13 @@ PM ──► (CPO, UI, EL consults) ──► EL plan ──► SWE implement
                                     EL summary + BE re-validate
                                                 │
                                                 ▼
-                                  PM verifies → Linear "In Review"
+                                       PM verifies criteria
                                                 │
                                                 ▼
                                      SWE commit → EL open PR
+                                                │
+                                                ▼
+                                PM → Linear "In Review" (after PR)
                                                 │
                                                 ▼
                         per-agent reflection → /learn triage (always)
@@ -59,6 +62,7 @@ The orchestrator (`claude`) is the conductor — it never short-circuits a step 
 Dispatch `product-manager` with the issue key. PM must:
 
 - Read the Linear issue via Linear MCP (`get_issue`, `list_comments`).
+- **Move the Linear issue to "In Progress"** to signal pickup, so the board reflects active work the moment the chain starts. PM looks up the team's "In Progress" status via Linear MCP (`save_issue` with the resolved `stateId`) — do NOT hardcode an ID. If the issue is already "In Progress" (e.g. resuming an existing branch), leave it untouched.
 - Surface ambiguities; if any business clarification is genuinely blocking, relay it back to the user via the orchestrator (do not invent answers).
 - Produce a PRD covering: problem, goals, non-goals, user stories, acceptance criteria, edge cases, open questions grouped by audience (CPO / UI / EL).
 
@@ -139,23 +143,23 @@ After EL signs off in Phase 6 but **before** PM is dispatched, the orchestrator 
 
 This step is mandatory, not optional. The BE may have shipped contract changes since EL's initial planning, and silent drift is the #1 cause of post-merge regressions. Skip this step and PM will move a broken implementation to "In Review".
 
-## Phase 8 — PM verification & Linear move
+## Phase 8 — PM verification
 
 Once EL confirms contract alignment, dispatch `product-manager` with EL's summary. PM:
 
 - Cross-checks EL's summary against the original Linear acceptance criteria.
-- If acceptance criteria are met, moves the Linear issue to the **"In Review"** state via Linear MCP (`save_issue` with the appropriate `stateId`). PM must look up the team's "In Review" status — do NOT hardcode an ID.
-- Posts a Linear comment summarising what shipped + branch name (for the human reviewer).
+- If acceptance criteria are met, signals "ready for PR" back to the orchestrator — but does **not** move Linear state here. The "In Review" move is deferred to Phase 9, *after* the PR opens, because GitHub's PR-open integration auto-maps the issue to "In Progress" and would clobber an early "In Review". Moving to "In Review" before the PR exists is the #1 source of Linear↔GitHub state drift.
 - If anything is missing, PM kicks back to EL with a gap list and the loop returns to Phase 4/5.
 
-## Phase 9 — Commit + PR
+## Phase 9 — Commit, PR, then Linear "In Review"
 
-After PM moves the issue to "In Review", the orchestrator runs the commit + PR phase:
+After PM verifies the implementation in Phase 8, the orchestrator runs the commit + PR phase:
 
 1. **Dispatch `software-engineer`** with a "commit your work in logical chunks" brief. Multiple commits are expected — one per logical unit (e.g., model narrowing, hook extraction, plugin component, fix-loop revisions). Conventional Commits per `CLAUDE.md` (`feat(scope):`, `fix(scope):`, `refactor(scope):`, `chore(scope):`). SWE commits locally; does NOT push.
 2. **Dispatch `engineer-lead`** with an "open PR" brief. EL invokes the `/github-pr` skill, which pushes the branch and creates the PR against `dev`.
+3. **Dispatch `product-manager`** to move the Linear issue to **"In Review"** — now that the PR exists. PM looks up the team's "In Review" status via Linear MCP (`save_issue` with the resolved `stateId`; do NOT hardcode an ID) and posts a Linear comment summarising what shipped + the PR link + branch name (for the human reviewer). Doing this *after* the PR opens is deliberate: GitHub's integration moves the issue to "In Progress" on PR-open, so PM's "In Review" must land last to stick.
 
-The orchestrator NEVER runs `git commit` or `gh pr create` directly — those belong to SWE and EL respectively.
+The orchestrator NEVER runs `git commit` or `gh pr create` directly — those belong to SWE and EL respectively. Linear state moves are PM's alone.
 
 ## Phase 10 — Per-agent reflection (always run)
 
@@ -201,6 +205,7 @@ Inherit the `/learn` guardrails: reflect on **this run only** (no `git log`, no 
 - **Never bypass an agent's lane.** Orchestrator does not write the PRD, the plan, or the code. Orchestrator does not call Linear directly — that is PM only. Orchestrator does not run `git commit` or `gh pr create` — SWE and EL respectively own those in Phase 9.
 - **Parallelise where independent.** Phase 2 consults and Phase 5 verifications must be dispatched in a single message with multiple Agent calls.
 - **SWE commits, EL opens PR.** In Phase 9, SWE commits its work in logical chunks (multiple commits expected — one per logical unit, Conventional Commits style). EL then opens the PR via the `/github-pr` skill. The orchestrator dispatches, but never runs git/gh tooling itself.
+- **PM owns Linear state, and order matters.** PM moves the issue to "In Progress" on pickup (Phase 1) and to "In Review" only *after* the PR opens (Phase 9). Never move to "In Review" before the PR exists — GitHub's PR-open integration auto-maps the issue to "In Progress" and clobbers an early "In Review", leaving the board out of sync.
 - **BE-shape questions: EL reads OpenAPI spec; BE-behavior questions go through the user.** EL has `WebFetch` read access to `https://dev-api.loonas.id/openapi.json` and uses it for contract validation (field names, enums, request/response shapes). Questions about BE *behavior* not visible in the schema (auth nuances, business rules, race conditions, undocumented constraints) still get relayed to the user. PM / UI / CPO / SWE / architecture-reviewer have no BE access at all — they always flag.
 - **Stop on genuine forks.** Pause for user input only on (a) blocking business clarification PM cannot resolve, (b) destructive actions, (c) BE-relay questions. Otherwise execute autonomously.
 - **Match the existing presentation-layer directory** (singular `presentation/` vs plural `presentations/`) per feature — SWE follows the feature's local convention.
@@ -220,7 +225,7 @@ QA: pass | fail({n} items)
 Architecture: pass | fail({n} items)
 EL verdict: accepted | iterated x{n}
 BE contract: re-validated against live OpenAPI spec | mismatch found
-Linear state: moved to "In Review" at {timestamp}
+Linear state: "In Progress" on pickup → "In Review" after PR at {timestamp}
 Commits: {n} commits by SWE
 PR: #{n} → dev
 Reflection: {n} learnings preserved across {m} agents (or "none — all lanes ran clean")
