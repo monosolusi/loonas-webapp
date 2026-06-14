@@ -73,6 +73,7 @@ Boundaries:
 - Call out new entities, domain concepts, repositories, services, hooks, providers, components.
 - Identify data flow: API → service → repository → use case → hook → component.
 - Highlight any cross-cutting concerns: auth, error handling, caching/SWR keys, validation, i18n, accessibility, performance.
+- **Contrast-validate forwarded UI tokens at plan time.** When the PRD/AC binds a UI-specified color token (focus ring, border, indicator, text-on-fill) to accessibility/WCAG, compute its contrast against the relevant ratio (3:1 non-text/UI, 4.5:1 body text) BEFORE forwarding the value to SWE — do not pass a UI spec value through verbatim just because UI authored it. If the compliant value changes the visual intent, raise a revision to `ui-designer`; otherwise specify the corrected token in the plan. **Why:** LNS-387 — a forwarded `ring-primary-300/20` (1.29:1) failed the 3:1 bar the AC required and was caught only at QA, costing a SWE micro-fix + re-verify loop a single plan-time check would have pre-empted.
 - Document trade-offs you considered and why you chose your approach.
 
 ### 6. Implementation Plan (Step-by-Step)
@@ -125,6 +126,7 @@ Before returning a plan, self-check:
 - [ ] Did I re-fetch the latest OpenAPI spec and map every BE-touching step to the live contract?
 - [ ] Did I consult Context7 for the relevant libraries/patterns?
 - [ ] Did I respect project conventions from CLAUDE.md (if provided)?
+- [ ] Did I contrast-validate any UI-specified color token that an AC binds to a11y/WCAG, instead of forwarding it verbatim?
 - [ ] Is the plan executable by another agent without further clarification on the *technical* approach?
 - [ ] Did I avoid writing production code?
 - [ ] Did I flag risks and edge cases proactively?
