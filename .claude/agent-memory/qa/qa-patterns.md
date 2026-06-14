@@ -62,12 +62,11 @@ metadata:
 - `npx tsc --noEmit` — ~20-30s.
 - `npm run lint` — ~15s.
 
-## Clerk Environment Gotcha (LNS-197, 2026-05-21)
+## Clerk Environment Gotcha (LNS-197, 2026-05-21; updated LNS-387 2026-06-14)
 
-- `.env.local` does NOT exist on this machine. Only `.env` exists, which is missing `CLERK_SECRET_KEY`.
-- Server boots and reports "Ready" but all pages throw `Runtime Error: @clerk/nextjs: Missing secretKey` in the browser overlay.
-- Playwright browser smoke tests are BLOCKED by this — the POS page (and all authenticated routes) cannot render at all in headless browser without valid Clerk keys.
-- **Mitigation**: Switch to source-code static analysis (read files, grep) for structural AC verification when Clerk env is missing. Note the environment gap in the report to EL.
+- `.env.local` does NOT exist on this machine. However, `.env` DOES contain `CLERK_SECRET_KEY` and `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (confirmed LNS-387 2026-06-14). Prior memory was stale.
+- Server boots. Auth-gated routes may return 200 for unauthenticated hits (Clerk redirects to sign-in), but kyc-summary requires a real authenticated session WITH a specific account state (e.g., REJECTED outcome) — not achievable in headless QA without a seeded account.
+- **Mitigation for state-dependent routes** (e.g., KYC REJECTED branch): source-code static analysis is the only viable path. Note "manual browser smoke required" in reports for these routes.
 - **Playwright note**: `playwright` package is NOT in the project's `node_modules`. It is only available globally via `npx` cache at `~/.npm/_npx/`. Run smoke scripts from a directory that contains the `playwright` package, e.g., `cd ~/.npm/_npx/<hash> && node script.mjs`.
 
 ## POS Source Code Structure (LNS-197)
