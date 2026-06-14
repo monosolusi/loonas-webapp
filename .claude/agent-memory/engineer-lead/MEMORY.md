@@ -23,3 +23,4 @@
 - [Dashboard widget card pattern](project_dashboard_widget_card_pattern.md) — SectionCard.iconSrc is string-only; list-style widgets use SectionCard no-icon, compact metric widgets mirror DashboardStatistics custom div
 - [Analytics module LNS-239](project_analytics_module_lns239.md) — src/core/analytics/ typed no-op shim; vendor wiring deferred to LNS-247; PII allow-list; tab-string aligned to widget ('all' not 'combined')
 - [didInitRef pattern](project_didinitref_pattern.md) — in-repo blueprint at dashboard-range-provider.tsx for one-shot effects under React 19 StrictMode; prev-value and Set-dedupe variants
+- [Accounting LNS-96 FE batch](project_accounting_lns96_fe_batch.md) — CoA read layer already exists (use-list-ledger-accounts→/accounting/accounts); journal CRUD router split; per-report bespoke schemas; contract flags

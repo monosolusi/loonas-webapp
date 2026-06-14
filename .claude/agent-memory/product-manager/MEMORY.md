@@ -5,9 +5,12 @@
 - [Pay-in-feature is separate](reference_payment_features_disambig.md) — `src/features/payment/` is for pay-in/incoming-invoice, NOT for POS or accounting expense payments; the accounting expense_payment endpoint is a different flow
 - [PKP/PPN account codes](project_pkp_ppn_codes.md) — RENUMBERED 2026-05-12: PPN=1410/2210 (canonical), PPh Final relocates to 1420/2220; manual-create dropped; v1 ships A (auto-seed) or B (CTA-only)
 - [Account 1230 badge surfaces](project_account_1230_badge_surfaces.md) — chip on list/mapping/combobox/journal-line; BANNER on `/finance/ledger/1230`; verbatim Bahasa copy locked
-- [Tax accounts v1 lock](project_tax_accounts_v1_lock.md) — 2026-05-12 Branch B confirmed: PKP regime is honest WhatsApp toggle (no PATCH); FE reads tax_accounts resolver; null = suppress, not fallback
+- [Tax accounts v1 lock](project_tax_accounts_v1_lock.md) — 2026-05-12 Branch B; SUPERSEDED 2026-06-14: live API now exposes real PATCH /accounting/account-settings (see LNS-367 to confirm end state)
 - [Linear: Accounting Bootstrap v1 issues](reference_linear_accounting_bootstrap_v1.md) — LNS-76 tracker + P1/P3/P4/P6 (LNS-77/78/79/80) + 6 v1.1 tech-debts (LNS-81–86)
 - [UNOFEST project](project_unofest.md) — Loonas Ubaya UNOFEST: POS-led GTM pilot at Ubaya Festival June 2026, 5-step F&B happy path
 - [fe-requested-be label](reference_fe_requested_be_label.md) — Linear workspace label `fe-requested-be` (pair with Backend) for FE-originated BE dependencies
 - [Linear quota blocked 2026-05-19](project_linear_quota_blocked.md) — `loonas` workspace hit free-tier issue cap; `save_issue` creates fail until upgrade; reads still work
 - [Proactively file BE-gap tickets](feedback_proactive_be_gap_ticket.md) — when EL flags a BE gap in Phase 7, PM MUST file fe-requested-be ticket BEFORE moving parent to In Review
+- [Accounting BE done, FE is the gap](project_accounting_be_done_fe_gap.md) — 2026-06-14: BE feature-complete; open work is FE viewers/forms consuming shipped /accounting/* contracts
+- [Finance nav IA](project_finance_nav_ia.md) — "Keuangan" NavigationGroup (accounting feature-gated); children Buku Besar/Jurnal Umum/Biaya Tetap; new accounting FE extends it
+- [Linear: Accounting FE batch 2026-06-14](reference_linear_accounting_fe_batch.md) — LNS-364..381 FE viewers/forms + 4 BE-clarification blockers; dependency graph

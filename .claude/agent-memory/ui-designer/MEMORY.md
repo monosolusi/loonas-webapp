@@ -6,3 +6,4 @@
 - [Accounting bootstrap v1 locked plan](project_accounting_bootstrap_plan.md) — Branch B only, B15 resolver tooltips, tax tile copy, ManagedByLoonasBadge call, v1.1 extension rules
 - [Dashboard revamp LNS-227](project_dashboard_revamp.md) — bg-primary-50 period zone, accent semantics, chart x-axis rules, empty-state pattern, loading coordination
 - [Recent activity widget LNS-232](project_recent_activity_widget.md) — tab anatomy, scoping caption placement, POS row icon badge, empty-state copy, natural expansion decision
+- [Accounting surfaces IA + routes](project_accounting_surfaces_ia.md) — 7 net-new surfaces, nav IA split, Reports Hub tab decision, ROUTE_MAP additions, critical BE open questions
