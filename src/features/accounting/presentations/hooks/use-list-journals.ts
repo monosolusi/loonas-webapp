@@ -13,6 +13,7 @@ import { JournalServiceImpl } from "@/features/accounting/data/sources/journal";
 import { ListJournalsUseCase, ListJournalsUseCaseParams } from "@/features/accounting/domain/usecases/list-journals.usecases";
 import { JournalEntity } from "@/features/accounting/domain/entities/journal";
 import { ListJournalsParams } from "@/features/accounting/domain/repositories/journal";
+import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 
 type FetcherParams = { clerk: ReturnType<typeof useClerk>; params: ListJournalsParams };
 
@@ -37,7 +38,7 @@ type ReturnType_ = {
 
 export function useListJournals(params: ListJournalsParams = {}): ReturnType_ {
   const clerk = useClerk();
-  const { data, isLoading, error } = useSWR(["list-journals", { clerk, params }], Fetcher);
+  const { data, isLoading, error } = useSWR([ACCOUNTING_SWR_KEYS.LIST_JOURNALS, { clerk, params }], Fetcher);
 
   const journals = data?.journals ?? [];
   const totalDebit = journals.reduce((sum, j) => sum + j.totalDebit, 0);
