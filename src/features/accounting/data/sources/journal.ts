@@ -1,8 +1,9 @@
 import { HttpRequest } from "@/core/helpers/http-request";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { JournalModel } from "@/features/accounting/data/models/journal";
-import { JournalService, ListJournalsServiceResult } from "@/features/accounting/domain/sources/journal";
-import { ListJournalsParams } from "@/features/accounting/domain/repositories/journal";
+import { JournalWriteResultModel } from "@/features/accounting/data/models/journal-write-result";
+import { JournalService, JournalWriteServiceResult, ListJournalsServiceResult } from "@/features/accounting/domain/sources/journal";
+import { CreateJournalParams, GetJournalParams, ListJournalsParams, ReverseJournalParams } from "@/features/accounting/domain/repositories/journal";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 export class JournalServiceImpl implements JournalService {
@@ -29,6 +30,68 @@ export class JournalServiceImpl implements JournalService {
           totalPages: result.meta?.total_pages ?? 1,
         },
       };
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async create(params: CreateJournalParams, session: SessionEntity): Promise<JournalWriteServiceResult> {
+    try {
+      const body: Record<string, any> = {
+        posting_date: params.postingDate,
+        memo: params.memo,
+        lines: params.lines.map((l) => ({ account_id: l.accountId, debit: l.debit, credit: l.credit })),
+      };
+      if (params.acknowledgedWarningCodes && params.acknowledgedWarningCodes.length > 0) {
+        body["acknowledged_warning_codes"] = params.acknowledgedWarningCodes;
+      }
+
+      const result = await this.http.request({ path: "/accounting/journals", method: "POST", body, session });
+      const envelope = JournalWriteResultModel.fromJson(result);
+      return { journal: envelope.journal, warnings: envelope.warnings };
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async get(params: GetJournalParams, session: SessionEntity): Promise<JournalModel> {
+    try {
+      const result = await this.http.request({
+        path: `/accounting/journals/${params.id}`,
+        method: "GET",
+        session,
+      });
+      if (!result?.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      return JournalModel.fromJson(result.data);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async reverse(params: ReverseJournalParams, session: SessionEntity): Promise<JournalWriteServiceResult> {
+    try {
+      const body: Record<string, any> = {
+        change_reason_category: params.changeReasonCategory,
+        change_reason_detail: params.changeReasonDetail,
+      };
+      if (params.postingDate !== undefined) {
+        body["posting_date"] = params.postingDate;
+      }
+      if (params.acknowledgedWarningCodes && params.acknowledgedWarningCodes.length > 0) {
+        body["acknowledged_warning_codes"] = params.acknowledgedWarningCodes;
+      }
+
+      const result = await this.http.request({
+        path: `/accounting/journals/${params.id}/reverse`,
+        method: "POST",
+        body,
+        session,
+      });
+      const envelope = JournalWriteResultModel.fromJson(result);
+      return { journal: envelope.journal, warnings: envelope.warnings };
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
