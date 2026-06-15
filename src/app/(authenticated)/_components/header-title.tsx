@@ -25,6 +25,7 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/invoices/outgoing/waiting-settlement": { title: "Faktur Keluaran" },
   "/settings": { title: "Pengaturan" },
   "/settings/bank-accounts": { title: "Pengaturan" },
+  "/finance/reports": { title: "Laporan Keuangan" },
 };
 
 export function HeaderTitle() {
