@@ -31,3 +31,4 @@
 - [Journal write contract 2026-06-15](project_journal_write_contract_2026_06_15.md) — LNS-369 verified: no {accountId}, create body posting_date, reverse split reason, get IS {data}-wrapped, JournalEntry NEW audit fields; extend the one shared model
 - [Two-phase warn→ack pattern](project_two_phase_warn_ack_pattern.md) — discriminated use-case result (success|needs-acknowledge); arbitration in use case not hook/repo; revalidate LIST only on success; never silent-post hard warnings
 - [Mutation-hook skill precedence](feedback_mutation_hook_skill_precedence.md) — before planning mutation-hook wiring read create-hook-mutation SKILL; keys are hook-local literals (NOT swr-keys.ts), revalidation is the caller's job (LNS-369 fix loop)
+- [Neraca contract 2026-06-15](project_neraca_contract_2026_06_15.md) — LNS-373 verified: 3-level nest section→buckets[]→lines[], parallel *_compare_to fields, _imbalance richer than shell RawImbalance type

@@ -231,6 +231,15 @@ metadata:
 - All 3 use cases define their own param types (no `CreateJournalParams` etc. from repo imported directly). `JournalRepository` interface is imported but no repo param types are referenced in use case bodies.
 - No-silent-post guarantee: `arbitrate()` returns `needs-acknowledge` when any unacknowledged HARD warning exists. Repo is called BEFORE arbitration — BE decides whether to post on their side (the front-end `acknowledgedWarningCodes` is passed in body). Revalidation of `LIST_JOURNALS` only fires in the `if (result.data.kind === "success")` guard. Reverse hook also revalidates `GET_JOURNAL` on success.
 
+## LNS-373 Reports Hub + Neraca Viewer (2026-06-15)
+
+- AC-7 retry is a known FAIL: `use-get-neraca-report.ts` returns `refresh: null` in `ErrorState`. The provider's `onRetry` guards with `if (hookResult.refresh)` — so when SWR is in error state, `onRetry` is a no-op. The retry button renders but clicking it does nothing. `mutate` is destructured from useSWR in scope but not exposed in error branch.
+- AC-4 banner position: `ReportImbalanceBanner` renders at line 33 of `report-shell.tsx`, BEFORE `tabStrip` (line 35) and before content area (line 37). Banner is above the tab strip and statement — correct.
+- AC-8 empty state: `neraca-impl.tsx` translates `shellState === "empty"` → passes `state="success"` to `ReportShell`, then renders `<NeracaEmptyBody/>` as children. `ReportShellEmpty` is never rendered for Neraca — the custom `NeracaEmptyBody` component with copy "Belum ada saldo per tanggal ini" is used inside `ReportShellSuccess`.
+- AC-3 confirmed: `neraca-viewer.tsx` has exactly 2 `<th scope="col">` columns (Akun + Saldo). No `compareTo` column rendered anywhere in viewer/section/identity-row. Single-column always.
+- Build output: `/finance/reports` = 14.6 kB, 45 pages total. Build time ~6.5s compile.
+- `NeracaReportEntity` implements `AbstractEntity` (empty abstract class) — no `id` field required on the report itself. Line/bucket/section entities do have `id`.
+
 ## LNS-219 Refactor Structure (2026-05-21)
 
 - `cart-summary.tsx` and `peek-strip.tsx` are now thin parent routers. All logic (disabled gate, context reads for Bayar) lives in sibling files.
