@@ -10,7 +10,6 @@ import { ClerkSessionService } from "@/features/authentication/data/sources/cler
 import { AccountServiceImpl } from "@/features/account/data/sources/account";
 import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
 import { ListAccountUseCase } from "@/features/account/domain/usecases/list-account";
-import { RetrieveAccountVerificationWorkUseCase } from "@/features/account/domain/usecases/retrieve-account-verification-work";
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 import { MembershipStatus } from "@/features/account/domain/enums/membership-status";
@@ -31,26 +30,16 @@ async function listApprovedAccountsFetcher([_, params]: [string, FetcherParams])
   if (accountsResult instanceof DataFailed) throw accountsResult.error;
   if (!accountsResult.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-  const verifyUseCase = new RetrieveAccountVerificationWorkUseCase(accountRepository, sessionRepository);
-
-  const verificationResults = await Promise.allSettled(
-    accountsResult.data.map(() => verifyUseCase.execute()),
-  );
-
-  return accountsResult.data.filter((account, index) => {
+  // The switcher only lists accounts the user can switch into and operate. Status is read from each
+  // account's own verification fields (the same per-account data the /accounts badge uses) — never
+  // from the current session's verification, which would taint every row with the active account's status.
+  return accountsResult.data.filter((account) => {
     // Exclude accounts with pending membership (not yet accepted invites)
     if (account.membership && account.membership.status === MembershipStatus.PENDING) return false;
 
-    const result = verificationResults[index];
-    if (result.status !== "fulfilled") return false;
-
-    const verificationWork = result.value;
-    if (verificationWork instanceof DataFailed) return false;
-    if (!verificationWork.data) return false;
-
     return (
-      verificationWork.data.latestStatus === VerificationStatus.COMPLETED &&
-      verificationWork.data.verificationOutcome === VerificationOutcome.APPROVED
+      account.latestStatus === VerificationStatus.COMPLETED &&
+      account.verificationOutcome === VerificationOutcome.APPROVED
     );
   });
 }
