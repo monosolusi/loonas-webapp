@@ -1,6 +1,7 @@
 import { DataState } from "@/core/resources/data-state";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
+import { NeracaReportEntity } from "@/features/accounting/domain/entities/neraca";
 
 export type GetNeracaRepoParams = {
   readonly asOf: string;
@@ -36,7 +37,7 @@ export type GetCalkRepoParams = {
   readonly asOf: string;
 };
 
-export type NeracaReportData = { readonly data: Record<string, any> };
+export type NeracaReportData = NeracaReportEntity;
 export type LabaRugiReportData = { readonly data: Record<string, any> };
 export type ArusKasReportData = { readonly data: Record<string, any> };
 export type TrialBalanceReportData = { readonly data: Record<string, any> };

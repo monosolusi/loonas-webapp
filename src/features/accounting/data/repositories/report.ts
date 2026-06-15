@@ -17,6 +17,7 @@ import {
   CalkReportData,
 } from "@/features/accounting/domain/repositories/report";
 import { ReportService } from "@/features/accounting/domain/sources/report";
+import { NeracaModel } from "@/features/accounting/data/models/neraca";
 
 export class ReportRepositoryImpl implements ReportRepository {
   constructor(private readonly service: ReportService) {}
@@ -24,7 +25,8 @@ export class ReportRepositoryImpl implements ReportRepository {
   public async getNeraca(params: GetNeracaRepoParams, session: SessionEntity): Promise<DataState<NeracaReportData>> {
     try {
       const result = await this.service.getNeraca(params, session);
-      return new DataSuccess({ data: result.data });
+      const model = NeracaModel.fromJson(result.data);
+      return new DataSuccess(model.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
