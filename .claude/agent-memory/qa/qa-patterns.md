@@ -220,6 +220,17 @@ metadata:
 - Org-less multi-account picker with mixed verification states is **auth + state gated** — requires live Clerk session + seeded accounts. Headless QA cannot cover this path. Flag for manual smoke.
 - Build output: 44 pages, `/accounts` = 5.44 kB (down from 5.46 kB — `useGetAccountVerificationWork` import tree gone). All three static gates exit 0.
 
+## LNS-369 Journal Infra (2026-06-15)
+
+- `JournalEntity` has 5 original fields (`id`, `date`, `memo`, `referenceType`, `referenceId`, `lines`, `createdAt`) without `readonly` — pre-existing pattern from before this diff (see `git show HEAD:src/features/accounting/domain/entities/journal.ts`). 5 NEW fields added in this diff (`postedBy`, `isReversal`, `reversedJournalId`, `supersededById`, `isReversedCurrently`) ARE `public readonly`. Mixed immutability is a pre-existing debt; the NEW fields conform to convention.
+- `WarningEntryModel.fromJson` severity mapping: checks `INFO` and `HARD` explicitly, falls back to `WARNING` for anything else — correctly handles unknown/future enum values.
+- `revalidateSWRKey()` is variadic (`...prefixes: string[]`) — reverse hook's two-arg call `revalidateSWRKey(LIST_JOURNALS, GET_JOURNAL)` is correct.
+- `ACCOUNTING_SWR_KEYS.LIST_JOURNALS` constant value = `"list-journals"` — exact string match to the hardcoded string it replaced in `use-list-journals.ts`. No SWR key collision or isolation break.
+- Discriminated-union type-narrowing (`CreateJournalResult`, `ReverseJournalResult`): tsc confirms accessing `.journal` on the `needs-acknowledge` branch is TS2339 compile error. Type safety verified via throwaway snippet.
+- `domain/sources/journal.ts` importing param types from `domain/repositories/journal.ts` is an established codebase-wide pattern (confirmed across accounting, inventory, product, pos, fixed-cost features).
+- All 3 use cases define their own param types (no `CreateJournalParams` etc. from repo imported directly). `JournalRepository` interface is imported but no repo param types are referenced in use case bodies.
+- No-silent-post guarantee: `arbitrate()` returns `needs-acknowledge` when any unacknowledged HARD warning exists. Repo is called BEFORE arbitration — BE decides whether to post on their side (the front-end `acknowledgedWarningCodes` is passed in body). Revalidation of `LIST_JOURNALS` only fires in the `if (result.data.kind === "success")` guard. Reverse hook also revalidates `GET_JOURNAL` on success.
+
 ## LNS-219 Refactor Structure (2026-05-21)
 
 - `cart-summary.tsx` and `peek-strip.tsx` are now thin parent routers. All logic (disabled gate, context reads for Bayar) lives in sibling files.

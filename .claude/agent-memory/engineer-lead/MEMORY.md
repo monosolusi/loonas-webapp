@@ -28,3 +28,6 @@
 - [Journal list param drift](project_journal_list_param_drift.md) — FE GET /accounting/journals sends page+limit but spec wants offset+limit; pre-existing, separate ticket
 - [LNS-384 tech-debt deferred](project_lns384_techdebt_deferred.md) — Ph6 triage: empty params class fixed in-ticket; swr-keys/.types/dead-provider/fetcher-name bundled to tech-debt; N-calls is a BE gate
 - [Accounts list vs /me status drift](project_accounts_list_vs_me_status_drift.md) — LNS-388 status fields on /accounts list only, NOT /accounts/me; same model feeds both → fields MUST be optional; fromEntity is dead; detail page reuses useListAccount
+- [Journal write contract 2026-06-15](project_journal_write_contract_2026_06_15.md) — LNS-369 verified: no {accountId}, create body posting_date, reverse split reason, get IS {data}-wrapped, JournalEntry NEW audit fields; extend the one shared model
+- [Two-phase warn→ack pattern](project_two_phase_warn_ack_pattern.md) — discriminated use-case result (success|needs-acknowledge); arbitration in use case not hook/repo; revalidate LIST only on success; never silent-post hard warnings
+- [Mutation-hook skill precedence](feedback_mutation_hook_skill_precedence.md) — before planning mutation-hook wiring read create-hook-mutation SKILL; keys are hook-local literals (NOT swr-keys.ts), revalidation is the caller's job (LNS-369 fix loop)
