@@ -47,7 +47,7 @@ export function useGetNeracaReport(params: UseGetNeracaReportParams): UseGetNera
       data: null,
       loading: false,
       error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
-      refresh: null,
+      refresh: () => mutate(),
     };
   }
   if (!data) return INITIAL_STATE;

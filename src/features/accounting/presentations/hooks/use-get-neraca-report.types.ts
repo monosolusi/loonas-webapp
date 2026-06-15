@@ -30,7 +30,7 @@ type ErrorState = {
   readonly data: null;
   readonly loading: false;
   readonly error: ServerError;
-  readonly refresh: null;
+  readonly refresh: () => void;
 };
 
 export type UseGetNeracaReportReturnType = InitialState | LoadedState | ErrorState;
