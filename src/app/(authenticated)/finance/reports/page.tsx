@@ -11,14 +11,18 @@ import { TrialBalanceProvider } from "@/app/(authenticated)/finance/reports/_pro
 import { TrialBalanceImpl } from "@/app/(authenticated)/finance/reports/_components/trial-balance-impl";
 import { BukuBesarProvider } from "@/app/(authenticated)/finance/reports/_providers/buku-besar-provider";
 import { BukuBesarImpl } from "@/app/(authenticated)/finance/reports/_components/buku-besar-impl";
+import { LabaRugiProvider } from "@/app/(authenticated)/finance/reports/_providers/laba-rugi-provider";
+import { LabaRugiImpl } from "@/app/(authenticated)/finance/reports/_components/laba-rugi-impl";
+import { ArusKasProvider } from "@/app/(authenticated)/finance/reports/_providers/arus-kas-provider";
+import { ArusKasImpl } from "@/app/(authenticated)/finance/reports/_components/arus-kas-impl";
 
-type ActiveTab = "neraca" | "trial-balance" | "buku-besar";
+type ActiveTab = "neraca" | "trial-balance" | "buku-besar" | "laba-rugi" | "arus-kas";
 
 export default function ReportsPage() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("neraca");
 
   const handleTabChange = (id: string) => {
-    if (id === "neraca" || id === "trial-balance" || id === "buku-besar") {
+    if (id === "neraca" || id === "trial-balance" || id === "buku-besar" || id === "laba-rugi" || id === "arus-kas") {
       setActiveTab(id);
     }
   };
@@ -39,6 +43,16 @@ export default function ReportsPage() {
         <BukuBesarProvider>
           <BukuBesarImpl onTabChange={handleTabChange} />
         </BukuBesarProvider>
+      )}
+      {activeTab === "laba-rugi" && (
+        <LabaRugiProvider>
+          <LabaRugiImpl onTabChange={handleTabChange} />
+        </LabaRugiProvider>
+      )}
+      {activeTab === "arus-kas" && (
+        <ArusKasProvider>
+          <ArusKasImpl onTabChange={handleTabChange} />
+        </ArusKasProvider>
       )}
     </>
   );
