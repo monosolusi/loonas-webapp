@@ -2,6 +2,8 @@ import { DataState } from "@/core/resources/data-state";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { NeracaReportEntity } from "@/features/accounting/domain/entities/neraca";
+import { LabaRugiReportEntity } from "@/features/accounting/domain/entities/laba-rugi";
+import { ArusKasReportEntity } from "@/features/accounting/domain/entities/arus-kas";
 import { TrialBalanceReportEntity } from "@/features/accounting/domain/entities/trial-balance";
 import { TrialBalanceLineEntity } from "@/features/accounting/domain/entities/trial-balance-line";
 import { GeneralLedgerReportEntity } from "@/features/accounting/domain/entities/general-ledger";
@@ -49,8 +51,8 @@ export type ListTrialBalanceLinesRepoParams = {
 };
 
 export type NeracaReportData = NeracaReportEntity;
-export type LabaRugiReportData = { readonly data: Record<string, any> };
-export type ArusKasReportData = { readonly data: Record<string, any> };
+export type LabaRugiReportData = LabaRugiReportEntity;
+export type ArusKasReportData = ArusKasReportEntity;
 export type TrialBalanceReportData = TrialBalanceReportEntity;
 export type GeneralLedgerReportData = {
   readonly data: GeneralLedgerReportEntity;

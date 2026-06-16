@@ -20,6 +20,8 @@ import {
 } from "@/features/accounting/domain/repositories/report";
 import { ReportService } from "@/features/accounting/domain/sources/report";
 import { NeracaModel } from "@/features/accounting/data/models/neraca";
+import { LabaRugiModel } from "@/features/accounting/data/models/laba-rugi";
+import { ArusKasModel } from "@/features/accounting/data/models/arus-kas";
 import { TrialBalanceReportModel } from "@/features/accounting/data/models/trial-balance";
 import { TrialBalanceLineModel } from "@/features/accounting/data/models/trial-balance-line";
 import { GeneralLedgerReportModel } from "@/features/accounting/data/models/general-ledger";
@@ -44,7 +46,8 @@ export class ReportRepositoryImpl implements ReportRepository {
   ): Promise<DataState<LabaRugiReportData>> {
     try {
       const result = await this.service.getLabaRugi(params, session);
-      return new DataSuccess({ data: result.data });
+      const model = LabaRugiModel.fromJson(result.data);
+      return new DataSuccess(model.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
@@ -54,7 +57,8 @@ export class ReportRepositoryImpl implements ReportRepository {
   public async getArusKas(params: GetArusKasRepoParams, session: SessionEntity): Promise<DataState<ArusKasReportData>> {
     try {
       const result = await this.service.getArusKas(params, session);
-      return new DataSuccess({ data: result.data });
+      const model = ArusKasModel.fromJson(result.data);
+      return new DataSuccess(model.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
