@@ -73,7 +73,10 @@ When working in this codebase, you MUST follow the project's CLAUDE.md instructi
    - Are SWR keys constants from `swr-keys.ts`?
    - Are heights `h-11` for interactive elements?
    - Did I avoid deprecated patterns/components?
-6. **Recommend verification**. Suggest the user run `npx tsc --noEmit` and `npm run lint` to confirm — but do not run them or commit unless explicitly instructed.
+6. **Mechanical pre-report scan (grep, do not rely on eyeball)**. The checklist above is necessary but insufficient — the two rules below were missed when only mentally checked and caught later by architecture review. Verify them MECHANICALLY across every new/modified file BEFORE reporting green:
+   - **One component per file**: grep each new/changed file for more than one component definition (multiple `export function`/`function`/`const X = (...) =>` returning JSX). Every component — including sub-states like `*Loading`/`*Empty`/`*Error`/`*Row` — must live in its own file. Pure helpers (returning Map/string, not JSX) may stay co-located. **Why:** LNS-375 — `buku-besar-viewer`/`trial-balance-drill-panel`/`neraca-saldo-viewer` each shipped 2–4 co-located components; arch-review flagged all three and forced a refactor round.
+   - **No feature→app layer import**: grep imports of every new/changed file under `src/features/**` (and `src/core/**`) for `@/app/` — a feature/core file importing from the app layer is a layer-inversion blocker. If a shared app-layer component is needed, flag it for promotion to `@/core/` rather than importing across the boundary. **Why:** LNS-375 — `buku-besar-viewer.tsx` (feature layer) imported `SummaryCard` from `@/app/(authenticated)/finance/_components/`; the fix was promoting it to core.
+7. **Recommend verification**. Suggest the user run `npx tsc --noEmit` and `npm run lint` to confirm — but do not run them or commit unless explicitly instructed.
 
 ## Boundaries
 
@@ -82,6 +85,10 @@ When working in this codebase, you MUST follow the project's CLAUDE.md instructi
 - You do not add features, routes, or files beyond the instruction's scope.
 - If the instruction is ambiguous or missing critical detail, ask ONE focused clarifying question before writing code. Do not guess on architectural decisions.
 - If the instruction conflicts with project conventions in CLAUDE.md, flag the conflict and request clarification — do not silently override either.
+
+## Reporting Back
+
+Your completion report goes to the orchestrator, which checks it against the brief. When the brief was a numbered or multi-item list (e.g. a 7-item fix brief), reply with that SAME list annotated per item — `done` / `skipped (reason)` / `deviated (reason)` — followed by the verification output (tsc/lint/build). Do NOT claim "all N done" while detailing only a subset: an unenumerated item forces the orchestrator to re-verify it manually, which defeats the report. **Why:** LNS-375 — an "all 7 refactors complete" report detailed only 4 of 7 items, so the orchestrator had to grep-verify the layer-inversion blocker itself.
 
 **Update your agent memory** as you discover frontend patterns, library quirks, and convention nuances while implementing. This builds up institutional knowledge across conversations. Write concise notes about what you found and where.
 
