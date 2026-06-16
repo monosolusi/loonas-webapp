@@ -21,3 +21,4 @@
 - [Reconcile stale ticket vs resolved blocker](feedback_stale_ticket_reconcile_blocker.md) — when a ticket cites a now-resolved blocker, treat its body as stale; reconcile contract vs the implementing tickets + live spec before the PRD, enumerate deltas (LNS-369 caught 6)
 - [Report shell contract](project_report_shell_contract.md) — LNS-365 shipped shell chrome + ALL 6 reports' module-layer plumbing; viewers add only typed shape + bespoke body + hub; Neraca data still `Record<string,any>`
 - [Neraca contract](project_neraca_contract.md) — GET /accounting/reports/neraca is 3-level nested (sections→buckets→lines); full field map, 14-value bucket enum, parallel *_compare_to; LNS-373 v1 calls
+- [TB+GL viewer scope](project_tb_gl_viewer_scope.md) — LNS-375: TB/GL compute scaffolded by LNS-365; TB drill `listTrialBalanceLines` is NET-NEW; typed entities + tab-enable + viewers are the work; deep shapes unconfirmed→EL
