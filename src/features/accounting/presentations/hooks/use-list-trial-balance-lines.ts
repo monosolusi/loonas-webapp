@@ -9,26 +9,25 @@ import { SessionRepositoryImpl } from "@/features/authentication/data/repositori
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { ReportRepositoryImpl } from "@/features/accounting/data/repositories/report";
 import { ReportServiceImpl } from "@/features/accounting/data/sources/report";
-import { GetGeneralLedgerReportUseCase } from "@/features/accounting/domain/usecases/get-general-ledger-report.usecases";
+import { ListTrialBalanceLinesUseCase } from "@/features/accounting/domain/usecases/list-trial-balance-lines.usecases";
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import {
-  GetGeneralLedgerReportFetcherParams,
-  UseGetGeneralLedgerReportParams,
-  UseGetGeneralLedgerReportReturnType,
-} from "@/features/accounting/presentations/hooks/use-get-general-ledger-report.types";
+  ListTrialBalanceLineFetcherParams,
+  UseListTrialBalanceLinesParams,
+  UseListTrialBalanceLinesReturnType,
+} from "@/features/accounting/presentations/hooks/use-list-trial-balance-lines.types";
 
-const INITIAL_STATE: UseGetGeneralLedgerReportReturnType = {
+const INITIAL_STATE: UseListTrialBalanceLinesReturnType = {
   data: null,
   loading: true,
-  isLoadingPage: false,
   error: null,
   refresh: null,
 };
 
-async function GetGeneralLedgerReportFetcher([_, params]: [string, GetGeneralLedgerReportFetcherParams]) {
+async function ListTrialBalanceLineFetcher([_, params]: [string, ListTrialBalanceLineFetcherParams]) {
   const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const repo = new ReportRepositoryImpl(new ReportServiceImpl(new HttpRequest()));
-  const uc = new GetGeneralLedgerReportUseCase(repo, sessionRepo);
+  const uc = new ListTrialBalanceLinesUseCase(repo, sessionRepo);
   const result = await uc.execute({
     accountId: params.accountId,
     from: params.from,
@@ -41,23 +40,21 @@ async function GetGeneralLedgerReportFetcher([_, params]: [string, GetGeneralLed
   return result.data;
 }
 
-export function useGetGeneralLedgerReport(
-  params: UseGetGeneralLedgerReportParams,
-): UseGetGeneralLedgerReportReturnType {
+export function useListTrialBalanceLines(
+  params: UseListTrialBalanceLinesParams,
+): UseListTrialBalanceLinesReturnType {
   const clerk = useClerk();
   const enabled = params.enabled !== false;
-  const { data, isLoading, isValidating, error, mutate } = useSWR(
-    enabled ? [ACCOUNTING_SWR_KEYS.GET_GENERAL_LEDGER_REPORT, { ...params, clerk }] : null,
-    GetGeneralLedgerReportFetcher,
-    { keepPreviousData: true },
+  const { data, isLoading, error, mutate } = useSWR(
+    enabled ? [ACCOUNTING_SWR_KEYS.LIST_TRIAL_BALANCE_LINES, { ...params, clerk }] : null,
+    ListTrialBalanceLineFetcher,
   );
 
-  if (isLoading && !data) return INITIAL_STATE;
-  if (error && !data) {
+  if (isLoading) return INITIAL_STATE;
+  if (error) {
     return {
       data: null,
       loading: false,
-      isLoadingPage: false,
       error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
       refresh: null,
     };
@@ -67,7 +64,6 @@ export function useGetGeneralLedgerReport(
   return {
     data,
     loading: false,
-    isLoadingPage: isValidating,
     error: null,
     refresh: mutate,
   };

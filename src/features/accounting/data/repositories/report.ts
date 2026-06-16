@@ -9,15 +9,20 @@ import {
   GetTrialBalanceRepoParams,
   GetGeneralLedgerRepoParams,
   GetCalkRepoParams,
+  ListTrialBalanceLinesRepoParams,
   NeracaReportData,
   LabaRugiReportData,
   ArusKasReportData,
   TrialBalanceReportData,
   GeneralLedgerReportData,
+  TrialBalanceLinesData,
   CalkReportData,
 } from "@/features/accounting/domain/repositories/report";
 import { ReportService } from "@/features/accounting/domain/sources/report";
 import { NeracaModel } from "@/features/accounting/data/models/neraca";
+import { TrialBalanceReportModel } from "@/features/accounting/data/models/trial-balance";
+import { TrialBalanceLineModel } from "@/features/accounting/data/models/trial-balance-line";
+import { GeneralLedgerReportModel } from "@/features/accounting/data/models/general-ledger";
 
 export class ReportRepositoryImpl implements ReportRepository {
   constructor(private readonly service: ReportService) {}
@@ -62,7 +67,8 @@ export class ReportRepositoryImpl implements ReportRepository {
   ): Promise<DataState<TrialBalanceReportData>> {
     try {
       const result = await this.service.getTrialBalance(params, session);
-      return new DataSuccess({ data: result.data });
+      const model = TrialBalanceReportModel.fromJson(result.data);
+      return new DataSuccess(model.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
@@ -75,7 +81,8 @@ export class ReportRepositoryImpl implements ReportRepository {
   ): Promise<DataState<GeneralLedgerReportData>> {
     try {
       const result = await this.service.getGeneralLedger(params, session);
-      return new DataSuccess({ data: result.data, meta: result.meta });
+      const model = GeneralLedgerReportModel.fromJson(result.data);
+      return new DataSuccess({ data: model.toEntity(), meta: result.meta });
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
@@ -86,6 +93,21 @@ export class ReportRepositoryImpl implements ReportRepository {
     try {
       const result = await this.service.getCalk(params, session);
       return new DataSuccess({ data: result.data });
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async listTrialBalanceLines(
+    params: ListTrialBalanceLinesRepoParams,
+    session: SessionEntity,
+  ): Promise<DataState<TrialBalanceLinesData>> {
+    try {
+      const result = await this.service.listTrialBalanceLines(params, session);
+      const lines = result.data.map(TrialBalanceLineModel.fromJson).map((m) => m.toEntity());
+      const counterparts = result.counterparts.map(TrialBalanceLineModel.fromJson).map((m) => m.toEntity());
+      return new DataSuccess({ lines, counterparts, meta: result.meta });
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
