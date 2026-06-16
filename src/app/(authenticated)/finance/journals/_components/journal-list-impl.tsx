@@ -8,7 +8,7 @@ import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
-import { SummaryCard } from "@/app/(authenticated)/finance/_components/summary-card";
+import { SummaryCard } from "@/core/presentations/components/summary-card";
 import { JournalRow } from "@/app/(authenticated)/finance/journals/_components/journal-row";
 import { useListJournals } from "@/features/accounting/presentations/hooks/use-list-journals";
 

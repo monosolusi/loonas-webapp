@@ -2,6 +2,9 @@ import { DataState } from "@/core/resources/data-state";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { NeracaReportEntity } from "@/features/accounting/domain/entities/neraca";
+import { TrialBalanceReportEntity } from "@/features/accounting/domain/entities/trial-balance";
+import { TrialBalanceLineEntity } from "@/features/accounting/domain/entities/trial-balance-line";
+import { GeneralLedgerReportEntity } from "@/features/accounting/domain/entities/general-ledger";
 
 export type GetNeracaRepoParams = {
   readonly asOf: string;
@@ -37,12 +40,25 @@ export type GetCalkRepoParams = {
   readonly asOf: string;
 };
 
+export type ListTrialBalanceLinesRepoParams = {
+  readonly accountId: string;
+  readonly from?: string;
+  readonly to?: string;
+  readonly page?: number;
+  readonly limit?: number;
+};
+
 export type NeracaReportData = NeracaReportEntity;
 export type LabaRugiReportData = { readonly data: Record<string, any> };
 export type ArusKasReportData = { readonly data: Record<string, any> };
-export type TrialBalanceReportData = { readonly data: Record<string, any> };
+export type TrialBalanceReportData = TrialBalanceReportEntity;
 export type GeneralLedgerReportData = {
-  readonly data: Record<string, any>;
+  readonly data: GeneralLedgerReportEntity;
+  readonly meta: PaginationMeta;
+};
+export type TrialBalanceLinesData = {
+  readonly lines: TrialBalanceLineEntity[];
+  readonly counterparts: TrialBalanceLineEntity[];
   readonly meta: PaginationMeta;
 };
 export type CalkReportData = { readonly data: Record<string, any> };
@@ -57,4 +73,8 @@ export interface ReportRepository {
     session: SessionEntity,
   ): Promise<DataState<GeneralLedgerReportData>>;
   getCalk(params: GetCalkRepoParams, session: SessionEntity): Promise<DataState<CalkReportData>>;
+  listTrialBalanceLines(
+    params: ListTrialBalanceLinesRepoParams,
+    session: SessionEntity,
+  ): Promise<DataState<TrialBalanceLinesData>>;
 }

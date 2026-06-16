@@ -1,22 +1,28 @@
 "use client";
 
+import { ReactNode } from "react";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
 import { AsOfDatePicker } from "@/features/accounting/presentations/components/as-of-date-picker";
 import { ReportShellDateProps } from "@/features/accounting/presentations/types/report-shell.types";
 
-type ReportControlsRowProps = ReportShellDateProps;
+type ReportControlsRowProps = ReportShellDateProps & {
+  readonly controlsSlot?: ReactNode;
+};
 
 export function ReportControlsRow(props: ReportControlsRowProps) {
   return (
     <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between sm:gap-y-0">
-      <div className="w-full sm:w-auto">
-        {props.dateMode === "as-of" ? (
-          <AsOfDatePicker value={props.dateValue} onChange={props.onDateChange} />
-        ) : (
-          <DateRangePicker value={props.dateValue} onChange={props.onDateChange} />
-        )}
+      <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:gap-x-3">
+        <div className="w-full sm:w-auto">
+          {props.dateMode === "as-of" ? (
+            <AsOfDatePicker value={props.dateValue} onChange={props.onDateChange} />
+          ) : (
+            <DateRangePicker value={props.dateValue} onChange={props.onDateChange} />
+          )}
+        </div>
+        {props.controlsSlot && <div className="w-full sm:w-auto">{props.controlsSlot}</div>}
       </div>
 
       <button

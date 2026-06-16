@@ -9,6 +9,7 @@ export type UseGetGeneralLedgerReportParams = {
   readonly to: string;
   readonly page?: number;
   readonly limit?: number;
+  readonly enabled?: boolean;
 };
 
 export type GetGeneralLedgerReportFetcherParams = UseGetGeneralLedgerReportParams & {
@@ -18,6 +19,7 @@ export type GetGeneralLedgerReportFetcherParams = UseGetGeneralLedgerReportParam
 type InitialState = {
   readonly data: null;
   readonly loading: true;
+  readonly isLoadingPage: false;
   readonly error: null;
   readonly refresh: null;
 };
@@ -25,6 +27,7 @@ type InitialState = {
 type LoadedState = {
   readonly data: GeneralLedgerReportData;
   readonly loading: false;
+  readonly isLoadingPage: boolean;
   readonly error: null;
   readonly refresh: KeyedMutator<GeneralLedgerReportData>;
 };
@@ -32,6 +35,7 @@ type LoadedState = {
 type ErrorState = {
   readonly data: null;
   readonly loading: false;
+  readonly isLoadingPage: false;
   readonly error: ServerError;
   readonly refresh: null;
 };

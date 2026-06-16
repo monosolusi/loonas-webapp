@@ -5,3 +5,4 @@
 - [Empty params class anti-pattern](feedback_empty_params_class_pattern.md) — Empty `class XxxUseCaseParams {}` is a should-fix; use `UseCase<ReturnValue>` with void default instead
 - [Text-link button h-11 exception](feedback_button_h11_exception.md) — `h-11` does not apply to text-link-styled `<button>` elements; only to form-interactive controls
 - [Inline style tab indicator](feedback_inline_style_tab_indicator.md) — Sliding tab indicator via `style` prop + imperative DOM mutation is a Rule 13 violation; use CSS custom props via className
+- [Feature imports app layer](feedback_feature_imports_app_layer.md) — `features/**/presentations/**` must never import from `@/app/`; promote shared components to `core/` first (found in LNS-375 buku-besar-viewer)

@@ -10,4 +10,5 @@ export const ACCOUNTING_SWR_KEYS = {
   GET_CALK_REPORT: "get-calk-report",
   LIST_JOURNALS: "list-journals",
   GET_JOURNAL: "get-journal",
+  LIST_TRIAL_BALANCE_LINES: "list-trial-balance-lines",
 } as const;

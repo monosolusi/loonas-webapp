@@ -15,6 +15,8 @@ import {
   GetTrialBalanceServiceResult,
   GetGeneralLedgerServiceResult,
   GetCalkServiceResult,
+  ListTrialBalanceLinesParams,
+  ListTrialBalanceLinesServiceResult,
 } from "@/features/accounting/domain/sources/report";
 
 export class ReportServiceImpl implements ReportService {
@@ -148,6 +150,44 @@ export class ReportServiceImpl implements ReportService {
 
       if (!result?.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
       return { data: result.data };
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async listTrialBalanceLines(
+    params: ListTrialBalanceLinesParams,
+    session: SessionEntity,
+  ): Promise<ListTrialBalanceLinesServiceResult> {
+    try {
+      const searchParams: Record<string, any> = {};
+      if (params.from !== undefined) searchParams["from"] = params.from;
+      if (params.to !== undefined) searchParams["to"] = params.to;
+      if (params.page !== undefined) searchParams["page"] = String(params.page);
+      if (params.limit !== undefined) searchParams["limit"] = String(params.limit);
+
+      const result = await this.http.request({
+        path: `/accounting/reports/trial-balance/${params.accountId}/lines`,
+        method: "GET",
+        searchParams,
+        session,
+      });
+
+      if (!result?.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const meta: ListTrialBalanceLinesServiceResult["meta"] = {
+        page: result.meta?.page ?? 1,
+        limit: result.meta?.limit ?? 50,
+        total: result.meta?.total ?? 0,
+        totalPages: result.meta?.total_pages ?? 1,
+      };
+
+      return {
+        data: result.data,
+        counterparts: result.counterparts ?? [],
+        meta,
+      };
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

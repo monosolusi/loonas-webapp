@@ -10,19 +10,20 @@ type TabDefinition = {
   id: TabId;
   label: string;
   disabled: boolean;
+  panelId: string;
 };
 
 const TABS: TabDefinition[] = [
-  { id: "neraca", label: "Neraca", disabled: false },
-  { id: "laba-rugi", label: "Laba Rugi", disabled: true },
-  { id: "arus-kas", label: "Arus Kas", disabled: true },
-  { id: "trial-balance", label: "Trial Balance", disabled: true },
-  { id: "buku-besar", label: "Buku Besar", disabled: true },
-  { id: "calk", label: "CaLK", disabled: true },
+  { id: "neraca", label: "Neraca", disabled: false, panelId: "panel-neraca" },
+  { id: "laba-rugi", label: "Laba Rugi", disabled: true, panelId: "panel-laba-rugi" },
+  { id: "arus-kas", label: "Arus Kas", disabled: true, panelId: "panel-arus-kas" },
+  { id: "trial-balance", label: "Neraca Saldo", disabled: false, panelId: "panel-trial-balance" },
+  { id: "buku-besar", label: "Buku Besar", disabled: false, panelId: "panel-buku-besar" },
+  { id: "calk", label: "CaLK", disabled: true, panelId: "panel-calk" },
 ];
 
 type ReportsTabStripProps = {
-  activeTab: "neraca";
+  activeTab: "neraca" | "trial-balance" | "buku-besar";
   onTabChange?: (id: string) => void;
 };
 
@@ -86,7 +87,7 @@ export function ReportsTabStrip({ activeTab, onTabChange }: ReportsTabStripProps
               role="tab"
               id={`tab-${tab.id}`}
               aria-selected={isActive}
-              aria-controls={tab.id === "neraca" ? "panel-neraca" : undefined}
+              aria-controls={!tab.disabled ? tab.panelId : undefined}
               aria-disabled={tab.disabled ? "true" : undefined}
               tabIndex={isActive ? 0 : -1}
               title={tab.disabled ? "Segera hadir" : undefined}

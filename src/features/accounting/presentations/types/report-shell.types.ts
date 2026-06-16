@@ -28,4 +28,5 @@ export type ReportShellProps = ReportShellDateProps & {
   readonly children: ReactNode;
   readonly headerAction?: ReactNode;
   readonly tabStrip?: ReactNode;
+  readonly controlsSlot?: ReactNode;
 };

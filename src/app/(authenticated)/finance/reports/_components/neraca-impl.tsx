@@ -10,7 +10,7 @@ import { useNeracaProvider } from "@/app/(authenticated)/finance/reports/_provid
 // ReportShell is shared infrastructure with a fixed prop contract — it cannot
 // consume page context. This is not the deprecated *-impl.tsx monolith pattern;
 // it owns zero fetch logic and zero rendering decisions. See LNS-373 arch review.
-export function NeracaImpl() {
+export function NeracaImpl({ onTabChange }: { onTabChange?: (id: string) => void }) {
   const { dateValue, onDateChange, shellState, imbalance, report, onRetry } = useNeracaProvider();
 
   return (
@@ -24,7 +24,7 @@ export function NeracaImpl() {
         imbalance={imbalance}
         state={shellState === "empty" ? "success" : shellState}
         onRetry={onRetry}
-        tabStrip={<ReportsTabStrip activeTab="neraca" />}
+        tabStrip={<ReportsTabStrip activeTab="neraca" onTabChange={onTabChange} />}
       >
         {shellState === "empty" ? <NeracaEmptyBody /> : report ? <NeracaViewer report={report} /> : null}
       </ReportShell>

@@ -9,7 +9,7 @@ import { ReportShellSuccess } from "@/features/accounting/presentations/componen
 import { ReportShellProps } from "@/features/accounting/presentations/types/report-shell.types";
 
 export function ReportShell(props: ReportShellProps) {
-  const { title, subtitle, imbalance, state, onRetry, children, headerAction, tabStrip } = props;
+  const { title, subtitle, imbalance, state, onRetry, children, headerAction, tabStrip, controlsSlot } = props;
 
   const showBanner =
     imbalance !== null &&
@@ -28,7 +28,7 @@ export function ReportShell(props: ReportShellProps) {
         {subtitle && <p className="leading-6 text-neutral-300">{subtitle}</p>}
       </div>
 
-      <ReportControlsRow {...dateProps} />
+      <ReportControlsRow {...dateProps} controlsSlot={controlsSlot} />
 
       {showBanner && <ReportImbalanceBanner imbalance={imbalance} />}
 

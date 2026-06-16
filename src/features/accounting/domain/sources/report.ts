@@ -1,6 +1,20 @@
 import { PaginationMeta } from "@/core/resources/paginated";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 
+export type ListTrialBalanceLinesParams = {
+  readonly accountId: string;
+  readonly from?: string;
+  readonly to?: string;
+  readonly page?: number;
+  readonly limit?: number;
+};
+
+export type ListTrialBalanceLinesServiceResult = {
+  readonly data: Record<string, any>[];
+  readonly counterparts: Record<string, any>[];
+  readonly meta: PaginationMeta;
+};
+
 export type GetNeracaParams = {
   readonly asOf: string;
   readonly compareTo?: string;
@@ -52,4 +66,8 @@ export interface ReportService {
   getTrialBalance(params: GetTrialBalanceParams, session: SessionEntity): Promise<GetTrialBalanceServiceResult>;
   getGeneralLedger(params: GetGeneralLedgerParams, session: SessionEntity): Promise<GetGeneralLedgerServiceResult>;
   getCalk(params: GetCalkParams, session: SessionEntity): Promise<GetCalkServiceResult>;
+  listTrialBalanceLines(
+    params: ListTrialBalanceLinesParams,
+    session: SessionEntity,
+  ): Promise<ListTrialBalanceLinesServiceResult>;
 }
