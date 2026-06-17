@@ -9,3 +9,5 @@
 - [Accounting surfaces IA + routes](project_accounting_surfaces_ia.md) — 7 net-new surfaces, nav IA split, Reports Hub tab decision, ROUTE_MAP additions, critical BE open questions
 - [KYC rejected escape hatch LNS-387](project_kyc_rejected_escape_hatch.md) — RejectedNextAction sibling pattern, div→button a11y upgrade, text-link weight for secondary escape actions
 - [Trial Balance + General Ledger viewers LNS-375](project_tb_gl_report_viewers.md) — inline drill-down decision, GL SummaryCard reuse, copy strings, tab routing architecture
+- [Laba Rugi + Arus Kas viewers LNS-374](project_laba_rugi_arus_kas_spec.md) — comparison column dash convention, non-cash disclosure placement, range default, empty body copy, tab-strip enablement needed
+- [Mark shape-dependent layout provisional](feedback_provisional_shape_dependent_layout.md) — when section structure depends on an unconfirmed schema, mark it PROVISIONAL and minimize speculative detail (additive to flagging the BE shape) (LNS-374)

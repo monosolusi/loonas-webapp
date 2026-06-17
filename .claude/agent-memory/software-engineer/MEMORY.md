@@ -6,3 +6,4 @@
 - [Use-case params are a class](feedback_usecase_params_class.md) — use-case input is always a named params CLASS, never a bare type alias, even when the plan writes `type Input` (LNS-369 m2)
 - [SWR conditional fetching via null key](feedback_swr_conditional_enabled.md) — add `enabled?: boolean` to hook params; pass `null` SWR key when disabled
 - [Discriminated union narrowing in components](feedback_discriminated_union_narrowing.md) — use sequential boolean flags, not compound checks, to narrow InitialState|LoadedState|ErrorState
+- [Verify computed state is consumed](feedback_verify_computed_state_consumed.md) — before completing, confirm every computed validation/error state (rangeError, isDisabled) is actually rendered; escalate plan-forced incompleteness instead of shipping a "known tradeoff" (LNS-374 fix loop)

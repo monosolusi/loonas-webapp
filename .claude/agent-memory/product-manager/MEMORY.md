@@ -22,3 +22,4 @@
 - [Report shell contract](project_report_shell_contract.md) — LNS-365 shipped shell chrome + ALL 6 reports' module-layer plumbing; viewers add only typed shape + bespoke body + hub; Neraca data still `Record<string,any>`
 - [Neraca contract](project_neraca_contract.md) — GET /accounting/reports/neraca is 3-level nested (sections→buckets→lines); full field map, 14-value bucket enum, parallel *_compare_to; LNS-373 v1 calls
 - [TB+GL viewer scope](project_tb_gl_viewer_scope.md) — LNS-375: TB/GL compute scaffolded by LNS-365; TB drill `listTrialBalanceLines` is NET-NEW; typed entities + tab-enable + viewers are the work; deep shapes unconfirmed→EL
+- [Laba Rugi + Arus Kas contract](project_laba_rugi_arus_kas_contract.md) — LNS-374: laba-rugi is POST(body)/arus-kas is GET; FE plumbing shipped (LNS-365); tab-strip+page-router unions widen to enable tabs; deep shapes→EL
