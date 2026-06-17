@@ -41,8 +41,11 @@ async function GetLabaRugiReportFetcher([_, params]: [string, GetLabaRugiReportF
 
 export function useGetLabaRugiReport(params: UseGetLabaRugiReportParams): UseGetLabaRugiReportReturnType {
   const clerk = useClerk();
+  const { from, to, compareFrom, compareTo } = params;
   const { data, isLoading, error, mutate } = useSWR(
-    [ACCOUNTING_SWR_KEYS.GET_LABA_RUGI_REPORT, { ...params, clerk }],
+    params.enabled
+      ? [ACCOUNTING_SWR_KEYS.GET_LABA_RUGI_REPORT, { from, to, compareFrom, compareTo, clerk }]
+      : null,
     GetLabaRugiReportFetcher,
   );
 

@@ -4,11 +4,12 @@ import { useClerk } from "@clerk/nextjs";
 import { ArusKasReportData } from "@/features/accounting/domain/repositories/report";
 
 export type UseGetArusKasReportParams = {
+  readonly enabled: boolean;
   readonly from: string;
   readonly to: string;
 };
 
-export type GetArusKasReportFetcherParams = UseGetArusKasReportParams & {
+export type GetArusKasReportFetcherParams = Omit<UseGetArusKasReportParams, "enabled"> & {
   readonly clerk: ReturnType<typeof useClerk>;
 };
 

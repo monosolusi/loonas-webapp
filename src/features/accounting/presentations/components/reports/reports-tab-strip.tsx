@@ -15,15 +15,15 @@ type TabDefinition = {
 
 const TABS: TabDefinition[] = [
   { id: "neraca", label: "Neraca", disabled: false, panelId: "panel-neraca" },
-  { id: "laba-rugi", label: "Laba Rugi", disabled: true, panelId: "panel-laba-rugi" },
-  { id: "arus-kas", label: "Arus Kas", disabled: true, panelId: "panel-arus-kas" },
+  { id: "laba-rugi", label: "Laba Rugi", disabled: false, panelId: "panel-laba-rugi" },
+  { id: "arus-kas", label: "Arus Kas", disabled: false, panelId: "panel-arus-kas" },
   { id: "trial-balance", label: "Neraca Saldo", disabled: false, panelId: "panel-trial-balance" },
   { id: "buku-besar", label: "Buku Besar", disabled: false, panelId: "panel-buku-besar" },
   { id: "calk", label: "CaLK", disabled: true, panelId: "panel-calk" },
 ];
 
 type ReportsTabStripProps = {
-  activeTab: "neraca" | "trial-balance" | "buku-besar";
+  activeTab: "neraca" | "trial-balance" | "buku-besar" | "laba-rugi" | "arus-kas";
   onTabChange?: (id: string) => void;
 };
 

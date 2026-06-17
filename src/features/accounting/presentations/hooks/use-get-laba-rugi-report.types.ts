@@ -4,13 +4,14 @@ import { useClerk } from "@clerk/nextjs";
 import { LabaRugiReportData } from "@/features/accounting/domain/repositories/report";
 
 export type UseGetLabaRugiReportParams = {
+  readonly enabled: boolean;
   readonly from: string;
   readonly to: string;
   readonly compareFrom?: string;
   readonly compareTo?: string;
 };
 
-export type GetLabaRugiReportFetcherParams = UseGetLabaRugiReportParams & {
+export type GetLabaRugiReportFetcherParams = Omit<UseGetLabaRugiReportParams, "enabled"> & {
   readonly clerk: ReturnType<typeof useClerk>;
 };
 

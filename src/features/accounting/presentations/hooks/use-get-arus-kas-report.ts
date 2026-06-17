@@ -36,8 +36,9 @@ async function GetArusKasReportFetcher([_, params]: [string, GetArusKasReportFet
 
 export function useGetArusKasReport(params: UseGetArusKasReportParams): UseGetArusKasReportReturnType {
   const clerk = useClerk();
+  const { from, to } = params;
   const { data, isLoading, error, mutate } = useSWR(
-    [ACCOUNTING_SWR_KEYS.GET_ARUS_KAS_REPORT, { ...params, clerk }],
+    params.enabled ? [ACCOUNTING_SWR_KEYS.GET_ARUS_KAS_REPORT, { from, to, clerk }] : null,
     GetArusKasReportFetcher,
   );
 
