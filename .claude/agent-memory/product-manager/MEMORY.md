@@ -23,3 +23,4 @@
 - [Neraca contract](project_neraca_contract.md) — GET /accounting/reports/neraca is 3-level nested (sections→buckets→lines); full field map, 14-value bucket enum, parallel *_compare_to; LNS-373 v1 calls
 - [TB+GL viewer scope](project_tb_gl_viewer_scope.md) — LNS-375: TB/GL compute scaffolded by LNS-365; TB drill `listTrialBalanceLines` is NET-NEW; typed entities + tab-enable + viewers are the work; deep shapes unconfirmed→EL
 - [Laba Rugi + Arus Kas contract](project_laba_rugi_arus_kas_contract.md) — LNS-374: laba-rugi is POST(body)/arus-kas is GET; FE plumbing shipped (LNS-365); tab-strip+page-router unions widen to enable tabs; deep shapes→EL
+- [Journal-line editor](project_journal_line_editor.md) — LNS-364: presentational double-entry editor (props-only); LedgerAccountCombobox has NO filter seam; NumberDisplay is display-only; IDR integer round-trip is the precision risk

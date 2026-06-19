@@ -11,3 +11,4 @@
 - [Trial Balance + General Ledger viewers LNS-375](project_tb_gl_report_viewers.md) — inline drill-down decision, GL SummaryCard reuse, copy strings, tab routing architecture
 - [Laba Rugi + Arus Kas viewers LNS-374](project_laba_rugi_arus_kas_spec.md) — comparison column dash convention, non-cash disclosure placement, range default, empty body copy, tab-strip enablement needed
 - [Mark shape-dependent layout provisional](feedback_provisional_shape_dependent_layout.md) — when section structure depends on an unconfirmed schema, mark it PROVISIONAL and minimize speculative detail (additive to flagging the BE shape) (LNS-374)
+- [Journal-line editor LNS-364](project_journal_line_editor_spec.md) — 4-col grid, coerce money model, column-lock UX, balance indicator placement, add/remove affordances, a11y annotations
