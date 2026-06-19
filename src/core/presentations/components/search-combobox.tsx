@@ -20,6 +20,7 @@ type SearchComboboxBaseProps<T extends SearchComboboxOption> = {
   onCreateNew?: () => void;
   createNewLabel?: string;
   required?: boolean;
+  autoFocus?: boolean;
 };
 
 type SearchComboboxWithLabel<T extends SearchComboboxOption> = SearchComboboxBaseProps<T> & {
@@ -73,6 +74,7 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
           onBlur={() => setQuery("")}
           displayValue={(opt: T | null) => opt?.label ?? ""}
           placeholder={props.placeholder}
+          autoFocus={props.autoFocus ?? false}
         />
         <ComboboxButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-hidden">
           <ChevronUpDownIcon className="size-5 text-neutral-200" aria-hidden="true" />
