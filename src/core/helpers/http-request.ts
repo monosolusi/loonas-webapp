@@ -68,9 +68,15 @@ export class HttpRequest {
       if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
 
       const ErrorCode = ErrorCodes.find(data.code);
-      if (ErrorCode) throw new ServerError(ErrorCode, data.message ? { message: data.message } : undefined);
+      if (ErrorCode) {
+        // Forward the server's `details` payload so callers can read e.g. `serverError.details.details.lines`
+        throw new ServerError(ErrorCode, {
+          ...(data.message ? { message: data.message } : {}),
+          details: data.details,
+        });
+      }
 
-      throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
+      throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message, details: data.details });
     }
 
     const text = await response.text();
