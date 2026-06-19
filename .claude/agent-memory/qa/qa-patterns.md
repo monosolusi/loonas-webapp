@@ -1,6 +1,6 @@
 ---
 name: qa-patterns
-description: Recurring build warnings, CI ticket scope rules, build perf baseline, JSON validity gate, Playwright session/backend patterns, SWR key isolation, LNS-384 JWT tenant resolution
+description: Recurring build warnings, CI ticket scope rules, build perf baseline, JSON validity gate, Playwright session/backend patterns, SWR key isolation, LNS-384 JWT tenant resolution, LNS-364 journal-line-editor patterns
 metadata:
   type: project
 ---
@@ -247,3 +247,20 @@ metadata:
 - `cart-summary-in-wizard-banner.tsx` and `peek-strip-in-wizard-label.tsx` are pure presentational components (no context reads, no "use client" directive).
 - Parent `cart-summary.tsx` still has one `inWizard ? <CartSummaryInWizardBanner /> : <CartSummaryBayarButton />` ternary, gated under `{showCta && (…)}` — single-expression routing, not a multi-block conditional. Deliberate design.
 - Browser smoke blocked on this machine: same Clerk env gap as LNS-197 — no `.env.local`, `CLERK_SECRET_KEY` absent.
+
+## LNS-364 Journal Line Editor (2026-06-19)
+
+- `_`-prefixed folders under Next.js App Router are NON-ROUTABLE ("private" convention). For QA throwaway harness pages, use a name WITHOUT leading underscore (e.g., `qa-lns364`, not `_qa-lns364`). Otherwise Turbopack compiles it as 404.
+- The throwaway harness should be started AFTER the file is created (not before), otherwise Turbopack may still 404 — observed in this session.
+- Browser smoke for authenticated pages is blocked by Clerk middleware even for QA throwaway pages under `(authenticated)/` — Clerk redirects to `/sign-in` before rendering. Source-level analysis is the only path for Clerk-gated routes.
+- `aria-label` threading through `CurrencyInput` → `TextInput` → `<input>`: the `cleanedInputProps` destructure only removes `leftIcon, rightIcon, leftAddOn, rightAddOn, label, onChange, description, error, inputTextAlign` — `aria-label` survives and reaches the `<input>`. All a11y labels on money cells are correctly wired.
+- `deEmphasized` in `JournalLineMoneyCell` sets `text-neutral-200` on the wrapper div, NOT on the `<input>`. The `disabled` prop is separate from `deEmphasized`. De-emphasized (inactive) money cells remain fully tab-reachable and interactive.
+- `useEffect(() => {...}, [])` in `JournalLineRow` (mount-only, intentional) does NOT trigger lint failure because `react-hooks/exhaustive-deps` is NOT in the project's ESLint config. Confirmed exit 0 on `npm run lint`.
+- `SearchCombobox` additive `autoFocus?: boolean` change: default `?? false` ensures zero regression to all 4 existing callers (none pass `autoFocus`). The existing callers: `raw-material-combobox.tsx`, `stock-item-combobox.tsx`, `manufactured-product-combobox.tsx`, `ledger-account-combobox.tsx`.
+- `computeJournalLineBalance`: `isBalanced = totalDebit === totalCredit && totalDebit > 0` — all-zero explicitly NOT balanced (AC-7 correct). Uses strict integer equality so no float drift.
+- `IDRFormatter.toNumber` strips all non-digits and `parseInt`s — no float drift. `1.500.000` → `1500000` (integer). `CurrencyInput` display uses `Intl.NumberFormat("id-ID")` which produces Indonesian thousands-dot format.
+- `keys` array in `JournalLineEditor` is managed in parallel with `lines` — UUID keys prevent React from reusing DOM across add/remove operations. The `autoFocusKey` + `clearAutoFocus` pattern ensures focus is claimed only at the mount moment of the new row.
+- **M1 focus fix (fix round)**: `isMobile` conditional render in `JournalLineRow` — `useState(false)` + `useEffect(window.matchMedia)` — guarantees exactly ONE `JournalLineAccountCombobox` instance in the DOM per row regardless of viewport. SSR-safe: defaults to desktop (false) on first paint, switches on hydration if viewport is <640px. `addEventListener("change", update)` ensures runtime resize updates the branch. The `removeButton` helper avoids code duplication across both branches.
+- **m1 constant fix (fix round)**: `LEDGER_ACCOUNT_FETCH_LIMIT = 500` extracted to module scope in `journal-line-account-combobox.tsx`. Zero behavior change — same `{ limit: 500 }` value passed to `useListLedgerAccounts`.
+- **Mobile footer fix (fix round)**: `JournalLineTotalsFooter` now has two sibling branches: `sm:hidden flex flex-col` (mobile — balance indicator full-width, then `grid-cols-2` debit/kredit) and `hidden sm:grid grid-cols-[1fr_1fr_1fr_auto]` (desktop — unchanged 4-col grid). `role="status"` and `aria-live="polite"` are on the shared `balanceIndicator` JSX variable, consumed by BOTH branches — a11y preserved. Transition classes (`transition-colors duration-200 motion-reduce:transition-none`) are on the `balanceIndicator` variable and therefore present in both branches.
+- Build output (LNS-364 fix round, 2026-06-19): 45 pages (stale `qa-lns364` route cleared — back to baseline). All three static gates exit 0.
