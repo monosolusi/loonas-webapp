@@ -388,6 +388,12 @@ export class ErrorCodes {
     message: "Metode pembayaran ini belum didukung di POS.",
   };
 
+  public static readonly NORMAL_BALANCE_HINT: ErrorStructureType = {
+    code: "NORMAL_BALANCE_HINT",
+    httpCode: 422,
+    message: "Beberapa akun diisi pada sisi debit/kredit yang salah.",
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }

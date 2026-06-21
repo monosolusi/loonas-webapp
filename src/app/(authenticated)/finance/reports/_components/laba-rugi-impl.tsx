@@ -5,8 +5,10 @@ import { ReportRangeError } from "@/features/accounting/presentations/components
 import { ReportsTabStrip } from "@/features/accounting/presentations/components/reports/reports-tab-strip";
 import { ComparePeriodControl } from "@/features/accounting/presentations/components/reports/compare-period-control";
 import { LabaRugiViewer } from "@/features/accounting/presentations/components/reports/laba-rugi-viewer";
+import { LabaRugiMigrationNotice } from "@/features/accounting/presentations/components/reports/laba-rugi-migration-notice";
 import { LabaRugiEmptyBody } from "@/app/(authenticated)/finance/reports/_components/laba-rugi-empty-body";
 import { useLabaRugiProvider } from "@/app/(authenticated)/finance/reports/_providers/laba-rugi-provider";
+import { useGetOpeningBalance } from "@/features/accounting/presentations/hooks/use-get-opening-balance";
 
 // Adapter component: translates LabaRugiProvider context to ReportShell props.
 // ReportShell is shared infrastructure with a fixed prop contract — it cannot
@@ -15,6 +17,7 @@ import { useLabaRugiProvider } from "@/app/(authenticated)/finance/reports/_prov
 export function LabaRugiImpl({ onTabChange }: { onTabChange?: (id: string) => void }) {
   const { dateValue, onRangeChange, compareRange, onCompareChange, shellState, imbalance, report, onRetry, rangeError } =
     useLabaRugiProvider();
+  const { isMigration, loading: migrationLoading } = useGetOpeningBalance();
 
   return (
     <div role="tabpanel" id="panel-laba-rugi" aria-labelledby="tab-laba-rugi" tabIndex={0}>
@@ -34,7 +37,10 @@ export function LabaRugiImpl({ onTabChange }: { onTabChange?: (id: string) => vo
         ) : shellState === "empty" ? (
           <LabaRugiEmptyBody />
         ) : report ? (
-          <LabaRugiViewer report={report} />
+          <>
+            {!migrationLoading && isMigration && <LabaRugiMigrationNotice />}
+            <LabaRugiViewer report={report} />
+          </>
         ) : null}
       </ReportShell>
     </div>
