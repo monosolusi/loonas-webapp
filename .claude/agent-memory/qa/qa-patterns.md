@@ -264,3 +264,14 @@ metadata:
 - **m1 constant fix (fix round)**: `LEDGER_ACCOUNT_FETCH_LIMIT = 500` extracted to module scope in `journal-line-account-combobox.tsx`. Zero behavior change — same `{ limit: 500 }` value passed to `useListLedgerAccounts`.
 - **Mobile footer fix (fix round)**: `JournalLineTotalsFooter` now has two sibling branches: `sm:hidden flex flex-col` (mobile — balance indicator full-width, then `grid-cols-2` debit/kredit) and `hidden sm:grid grid-cols-[1fr_1fr_1fr_auto]` (desktop — unchanged 4-col grid). `role="status"` and `aria-live="polite"` are on the shared `balanceIndicator` JSX variable, consumed by BOTH branches — a11y preserved. Transition classes (`transition-colors duration-200 motion-reduce:transition-none`) are on the `balanceIndicator` variable and therefore present in both branches.
 - Build output (LNS-364 fix round, 2026-06-19): 45 pages (stale `qa-lns364` route cleared — back to baseline). All three static gates exit 0.
+
+## LNS-344 Opening Balance Wizard Copy (2026-06-19)
+
+- `HttpRequest` change is purely additive: adds `details: data.details` to `ServerError` constructor arg in both the known-code and unknown-code error paths. Existing callers that read `.details.code` / `.details.message` are unaffected. `ServerError.details` is `Object.assign({}, { code, message }, details_arg)` so the new field appears at `error.details.details`.
+- `pos-provider.tsx` `handleStockErrorDetails` reads `error.details["items"]` (top-level). Before this change it was also undefined (no `items` in `{ code, message }` details). Pre-existing latent bug — not introduced or worsened by this diff. Handler early-returns gracefully on undefined.
+- `resolveNormalBalanceOutcome` early-returns on first equity+debit line → correctly implements "mix → deficit wins" for all orderings.
+- `useGetOpeningBalance` treats DataFailed as `null` (returns no migration) via `onErrorRetry: () => undefined`. 404 from the service is already absorbed as `null` before reaching the use case — double null-safe.
+- `LabaRugiMigrationNotice` has `role="note"` (not `role="alert"` / `aria-live`) — informational callout, not an error. Correct choice per ARIA spec.
+- `AccumulatedDeficitBlock` has `role="alert" aria-live="assertive"` + `tabIndex={-1}` + `useRef` focus-on-mount — all on a SINGLE layout branch (no dual-layout a11y risk).
+- Browser smoke for `/finance/reports` (Laba Rugi tab) requires a live authenticated Clerk session + seeded opening-balance journal with `account_code === "3200"` — not achievable in headless QA. Page is auth-gated. Flag for manual smoke.
+- Build output: `/finance/reports` = 22.3 kB (up from 14.6 kB at LNS-373 baseline — opening-balance read stack added to bundle). 45 pages total. All three gates exit 0.

@@ -24,3 +24,4 @@
 - [TB+GL viewer scope](project_tb_gl_viewer_scope.md) — LNS-375: TB/GL compute scaffolded by LNS-365; TB drill `listTrialBalanceLines` is NET-NEW; typed entities + tab-enable + viewers are the work; deep shapes unconfirmed→EL
 - [Laba Rugi + Arus Kas contract](project_laba_rugi_arus_kas_contract.md) — LNS-374: laba-rugi is POST(body)/arus-kas is GET; FE plumbing shipped (LNS-365); tab-strip+page-router unions widen to enable tabs; deep shapes→EL
 - [Journal-line editor](project_journal_line_editor.md) — LNS-364: presentational double-entry editor (props-only); LedgerAccountCombobox has NO filter seam; NumberDisplay is display-only; IDR integer round-trip is the precision risk
+- [Opening-balance copy contract](project_opening_balance_copy_contract.md) — LNS-344: FE copy for mid-year Laba Rugi explainer + frozen 422 NORMAL_BALANCE_HINT deficit-block ({lines:[{account_id,entered_side,corrected_side}]}); deficit=equity on debit; LNS-368 gates, LNS-339 override
