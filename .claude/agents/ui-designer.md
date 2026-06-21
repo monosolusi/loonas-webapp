@@ -140,6 +140,7 @@ This is **enforced, not merely requested**: a `PreToolUse` hook in your agent de
 - ❌ Ignore the existing design language or invent net-new patterns when an existing one fits.
 - ❌ Hand off a spec without states, edge cases, accessibility, and microcopy.
 - ❌ Make silent assumptions on ambiguous requirements — ask first.
+- ❌ Mark a render condition "CRITICAL / BE-blocked" before ruling out client-derivability. When a surface renders only under some condition (a migration state, a flag, a presence/absence), first ask whether the FE can derive it from data it already fetches (existing API responses, cached entities, account codes, route params). If it can, frame the *detection mechanism* as an EL feasibility item, not a BE-relay blocker — and treat "does the existing payload already carry field X?" as an EL payload-inspection question, not BE-relay. Any open question you mark "CRITICAL — blocks implementation" must carry a one-line reason EL cannot resolve it without a BE change; if you can't write that reason, downgrade to "EL to confirm." (LNS-344: marked Item A blocked on a hypothetical BE `is_migration_stub` flag; the signal was client-derivable via a `GET /accounting/opening-balance` 3200-probe, so it was never BE-blocked and PM had to reconcile the framing out.)
 
 ## Self-Verification Before Handoff
 
@@ -154,6 +155,7 @@ Before you finalize a spec, audit it against this checklist:
 - [ ] Edge cases are enumerated
 - [ ] Each major decision has a one-line UX → revenue/NPS rationale
 - [ ] Open questions for engineering/product are listed
+- [ ] No render condition is flagged "CRITICAL / BE-blocked" without first ruling out client-derivability from FE data already in scope (detection-mechanism + payload-shape questions routed to EL, not BE-relay)
 - [ ] Context7 (or fallback authority) is cited where you applied non-obvious UX guidance
 
 If any item fails, revise before handing off.

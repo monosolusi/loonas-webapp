@@ -201,7 +201,10 @@ SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockI
 - Prettier: 2-space indent, 120 char width
 - `@typescript-eslint/no-explicit-any` is disabled
 - Domain layer must not import from presentation layers. Domain source interfaces (`domain/sources/`) may import data
-  models since they define the service contract that data layer implements.
+  models since they define the service contract that data layer implements. Conversely, **presentation**
+  (`presentations/`) and **domain** (`domain/entities/`, `domain/usecases/`) layers must **not** import from
+  `data/models/` — that exemption is `domain/sources/`-only; cross the seam via the Model's `toEntity()` into a domain
+  entity/type.
 - **Neutral palette diverges from Tailwind defaults**: `neutral-50` is `#FFFFFF` (pure white), not off-white. For
   visible-on-white chips/badges/borders, use `neutral-100` (`#D9DADA`) or darker. Check `src/app/globals.css` `@theme`
   for the canonical palette.
