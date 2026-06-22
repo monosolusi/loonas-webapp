@@ -25,7 +25,7 @@
 - [didInitRef pattern](project_didinitref_pattern.md) — in-repo blueprint at dashboard-range-provider.tsx for one-shot effects under React 19 StrictMode; prev-value and Set-dedupe variants
 - [Accounting LNS-96 FE batch](project_accounting_lns96_fe_batch.md) — CoA read layer already exists (use-list-ledger-accounts→/accounting/accounts); journal CRUD router split; per-report bespoke schemas; contract flags
 - [LNS-384 JWT-tenant migration](project_lns384_jwt_tenant_migration.md) — PRD "6 calls" wrong: journal CRUD never built in FE, list already on /accounting/journals; only verification-works URL migrates; kyc-review /internal/* is a DIFFERENT namespace
-- [Journal list param drift](project_journal_list_param_drift.md) — FE GET /accounting/journals sends page+limit but spec wants offset+limit; pre-existing, separate ticket
+- [Journal list param drift](project_journal_list_param_drift.md) — GET /accounting/journals is offset-IN (request) / page-OUT (meta); LNS-386 fixes request side: offset=(page-1)*limit, max limit 100
 - [LNS-384 tech-debt deferred](project_lns384_techdebt_deferred.md) — Ph6 triage: empty params class fixed in-ticket; swr-keys/.types/dead-provider/fetcher-name bundled to tech-debt; N-calls is a BE gate
 - [Accounts list vs /me status drift](project_accounts_list_vs_me_status_drift.md) — LNS-388 status fields on /accounts list only, NOT /accounts/me; same model feeds both → fields MUST be optional; fromEntity is dead; detail page reuses useListAccount
 - [Journal write contract 2026-06-15](project_journal_write_contract_2026_06_15.md) — LNS-369 verified: no {accountId}, create body posting_date, reverse split reason, get IS {data}-wrapped, JournalEntry NEW audit fields; extend the one shared model
