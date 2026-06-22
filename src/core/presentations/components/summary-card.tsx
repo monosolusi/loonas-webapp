@@ -7,6 +7,7 @@ type SummaryCardProps = {
   value: string;
   subtitle?: string;
   variant?: SummaryCardVariant;
+  valueClassName?: string;
   loading?: boolean;
 };
 
@@ -26,14 +27,14 @@ const VALUE_CLASSES: Record<SummaryCardVariant, string> = {
   neutral: "text-neutral-500",
 };
 
-export function SummaryCard({ label, value, subtitle, variant = "neutral", loading }: SummaryCardProps) {
+export function SummaryCard({ label, value, subtitle, variant = "neutral", valueClassName, loading }: SummaryCardProps) {
   return (
     <div className={clsx("flex flex-col gap-y-1 rounded-lg border px-5 py-4", VARIANT_CLASSES[variant])}>
       <span className="text-xs font-medium text-neutral-300">{label}</span>
       {loading ? (
         <div className="h-7 w-32 animate-pulse rounded bg-neutral-100" />
       ) : (
-        <span className={clsx("text-xl font-bold", VALUE_CLASSES[variant])}>{value}</span>
+        <span className={clsx("text-xl font-bold", valueClassName ?? VALUE_CLASSES[variant])}>{value}</span>
       )}
       {subtitle && <span className="text-xs text-neutral-200">{subtitle}</span>}
     </div>
