@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { XMarkIcon } from "@heroicons/react/16/solid";
@@ -100,7 +101,7 @@ export function LedgerListImpl() {
             <div className="flex flex-row items-center">
               <AccountTypeBadge type={account.type} />
             </div>
-            <span className="text-right text-sm font-semibold text-neutral-500">{IDRFormatter.toCurrency(account.balance)}</span>
+            <span className={clsx("text-right text-sm font-semibold tabular-nums", account.balance < 0 ? "text-warning-500" : "text-neutral-500")}>{IDRFormatter.toCurrency(account.balance)}</span>
           </Link>
         ))}
         {meta && meta.totalPages > 1 && (

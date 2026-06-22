@@ -3,11 +3,15 @@ import { AccountType, ACCOUNT_TYPE_LABELS } from "@/features/accounting/domain/e
 
 const TYPE_VARIANT: Record<AccountType, StatusChipVariant> = {
   [AccountType.ASSET]: "primary",
+  [AccountType.CONTRA_ASSET]: "primary",
   [AccountType.LIABILITY]: "warning",
   [AccountType.EQUITY]: "success",
+  [AccountType.CONTRA_EQUITY]: "success",
   [AccountType.REVENUE]: "success",
+  [AccountType.CONTRA_REVENUE]: "success",
   [AccountType.COGS]: "error",
   [AccountType.EXPENSE]: "neutral",
+  [AccountType.CONTRA_EXPENSE]: "neutral",
 };
 
 type AccountTypeBadgeProps = { type: AccountType };

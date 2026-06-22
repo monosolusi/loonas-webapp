@@ -56,7 +56,7 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
       <DetailPageHeader backHref="/finance/ledger" title={accountName} subtitle={accountSubtitle} />
 
       <div className="grid grid-cols-3 gap-4">
-        <SummaryCard label="Saldo" value={balance?.displayBalance ?? "—"} variant="primary" loading={balanceLoading} />
+        <SummaryCard label="Saldo" value={balance?.displayBalance ?? "—"} variant="primary" valueClassName={balance && balance.balance < 0 ? "text-warning-500" : undefined} loading={balanceLoading} />
         <SummaryCard label="Total Debit" value={balance?.displayDebit ?? "—"} variant="neutral" loading={balanceLoading} />
         <SummaryCard label="Total Kredit" value={balance?.displayCredit ?? "—"} variant="neutral" loading={balanceLoading} />
       </div>
