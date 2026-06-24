@@ -13,3 +13,4 @@
 - [Mark shape-dependent layout provisional](feedback_provisional_shape_dependent_layout.md) — when section structure depends on an unconfirmed schema, mark it PROVISIONAL and minimize speculative detail (additive to flagging the BE shape) (LNS-374)
 - [Journal-line editor LNS-364](project_journal_line_editor_spec.md) — 4-col grid, coerce money model, column-lock UX, balance indicator placement, add/remove affordances, a11y annotations
 - [Opening Balance copy LNS-344](project_lns344_opening_balance_copy.md) — Item A migration notice callout placement + copy; Item B 422 NORMAL_BALANCE_HINT two-case design, per-line list, accumulated-deficit path + CTA
+- [Tax Posture settings LNS-380](project_tax_posture_lns380.md) — stacked sections, StatusChip for is_pkp, null-triad defaults framing, 403 state, a11y open items for EL
