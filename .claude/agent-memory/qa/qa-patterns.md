@@ -11,6 +11,14 @@ metadata:
 - `src/app/layout.tsx:29:11` — Warning: Custom fonts not added in `pages/_document.js` — pre-existing, not a regression.
 - Typecheck passes cleanly on a clean codebase; slow on first run (~20-30s).
 
+## QA Run Structure (avoid stalls — LNS-371 2026-06-24)
+
+- A QA run STALLED once (watchdog-killed after 600s, zero progress) when it tried to boot the dev server / run `build` up front without a time-box and without emitting interim output. Structure runs to avoid this:
+  - Run STATIC GATES first (`tsc` → `lint` → `build`), reporting each result before starting the next.
+  - Time-box long commands: if `npm run build` (or dev-server boot) hasn't finished in ~3 min, kill it, note "not completed," and continue — never wait indefinitely.
+  - SOURCE-LEVEL acceptance verification is the core deliverable and must complete even if the browser is unreachable.
+  - Browser smoke is LAST and OPTIONAL — given the Clerk auth + seeded-state env gap, fall back to source-level when sign-in/seeded state can't be reached headlessly; don't block the whole run on a dev server that won't come up.
+
 ## Playwright Session Patterns
 
 - The dev environment uses Clerk with a dev instance — a fresh headless Playwright context can load the authenticated page on FIRST navigation only, likely due to existing Clerk dev cookies on the machine.
@@ -264,6 +272,17 @@ metadata:
 - **m1 constant fix (fix round)**: `LEDGER_ACCOUNT_FETCH_LIMIT = 500` extracted to module scope in `journal-line-account-combobox.tsx`. Zero behavior change — same `{ limit: 500 }` value passed to `useListLedgerAccounts`.
 - **Mobile footer fix (fix round)**: `JournalLineTotalsFooter` now has two sibling branches: `sm:hidden flex flex-col` (mobile — balance indicator full-width, then `grid-cols-2` debit/kredit) and `hidden sm:grid grid-cols-[1fr_1fr_1fr_auto]` (desktop — unchanged 4-col grid). `role="status"` and `aria-live="polite"` are on the shared `balanceIndicator` JSX variable, consumed by BOTH branches — a11y preserved. Transition classes (`transition-colors duration-200 motion-reduce:transition-none`) are on the `balanceIndicator` variable and therefore present in both branches.
 - Build output (LNS-364 fix round, 2026-06-19): 45 pages (stale `qa-lns364` route cleared — back to baseline). All three static gates exit 0.
+
+## LNS-371 Manual Journal Entry (2026-06-24)
+
+- **PERIOD_CLOSED / DATE_IN_CLOSED_PERIOD not in ErrorCodes**: These two codes are checked in `journal-create-provider.tsx` `mapServerError()` by `serverError.code`, but neither is registered in `src/core/resources/server-error.ts`. `HttpRequest` falls through to the `UNKNOWN` path (httpCode 500) — the provider's period-closed branch is never reached. Inline date error "Periode untuk tanggal ini sudah ditutup." silently fails; user sees toast "Gagal menyimpan jurnal. Silakan coba lagi." instead. AC7 FAIL for PERIOD_CLOSED inline error path.
+- **Toast copy mismatch**: Both success paths in provider show "Jurnal berhasil disimpan." (line 149, 181). AC1 specifies "Jurnal berhasil diposting". EL must confirm which is canonical.
+- **JournalLineTotalsFooter dual-layout is JS-gated (not CSS-gated)**: `isMobile` boolean state switches between two exclusive early-return branches — only one `role="status"` is in the DOM at a time. NOT a dual-layout duplication issue (unlike CSS `hidden sm:grid`). This pattern is safe.
+- **SWR key alignment**: `revalidateSWRKey(ACCOUNTING_SWR_KEYS.LIST_JOURNALS)` uses variadic prefix matcher `key[0] === prefix` — matches `useListJournals` array key `[ACCOUNTING_SWR_KEYS.LIST_JOURNALS, { clerk, params }]`. Works correctly.
+- **Idempotency key A1–A4 chain confirmed clean**: usecase → repo → source all thread `idempotencyKey` parameter. Provider holds one `crypto.randomUUID()` in `useRef`, reused on ack, rotated only on terminal error.
+- **Partial re-warn accumulation confirmed**: `handleConfirmWarnings` does NOT call `setWarningDialogOpen(false)` on second `needs-acknowledge` — dialog stays open, codes accumulate.
+- Build output: `/finance/journals` = 7.06 kB, `/finance/journals/new` = 11.3 kB. 46 pages total. All three gates exit 0 after delta fix.
+- **Resolution (delta pass 2026-06-24)**: PERIOD_CLOSED (httpCode 409) and DATE_IN_CLOSED_PERIOD (httpCode 422) added to ErrorCodes registry after NORMAL_BALANCE_HINT. mapServerError defensive fallback: `const code = err.code === "UNKNOWN" ? (err.details?.code ?? err.code) : err.code` — handles both registered-code path and any future unregistered fallback. Toast copy "Jurnal berhasil disimpan." → "Jurnal berhasil diposting." at both provider call sites. All ACs PASS after fix round.
 
 ## LNS-344 Opening Balance Wizard Copy (2026-06-19)
 
