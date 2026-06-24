@@ -47,7 +47,10 @@ export class JournalServiceImpl implements JournalService {
         body["acknowledged_warning_codes"] = params.acknowledgedWarningCodes;
       }
 
-      const result = await this.http.request({ path: "/accounting/journals", method: "POST", body, session });
+      const result = await this.http.request(
+        { path: "/accounting/journals", method: "POST", body, session },
+        { headers: params.idempotencyKey ? { "Idempotency-Key": params.idempotencyKey } : {} },
+      );
       const envelope = JournalWriteResultModel.fromJson(result);
       return { journal: envelope.journal, warnings: envelope.warnings };
     } catch (err) {

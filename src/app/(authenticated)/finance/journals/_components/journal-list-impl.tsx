@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { XMarkIcon } from "@heroicons/react/16/solid";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
@@ -24,7 +27,10 @@ export function JournalListImpl() {
   const isBalanced = selisih === 0;
 
   const toolbar = (
-    <div className="flex flex-row items-center justify-end">
+    <div className="flex flex-row items-center justify-between">
+      <Link href="/finance/journals/new">
+        <PrimaryButton label="Jurnal Baru" leftIcon={<PlusIcon className="size-4" />} />
+      </Link>
       <div className="w-[280px]">
         <TextInput
           label=""
