@@ -108,6 +108,14 @@ export default function SettingsPage() {
       active: true,
       feature: "accounting",
     },
+    {
+      href: "/settings/tax-posture",
+      iconSrc: "/assets/images/chart-icon-primary-300-w16-h16.svg",
+      title: "Postur Pajak",
+      description: "Atur bentuk usaha, NPWP, dan status pajak untuk keperluan pencatatan akuntansi.",
+      active: true,
+      feature: "accounting",
+    },
   ];
 
   const visibleCategories = categories.filter((c) => !c.feature || account?.hasFeature(c.feature));
