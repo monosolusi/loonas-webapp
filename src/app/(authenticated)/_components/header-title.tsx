@@ -25,6 +25,7 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/invoices/outgoing/waiting-settlement": { title: "Faktur Keluaran" },
   "/settings": { title: "Pengaturan" },
   "/settings/bank-accounts": { title: "Pengaturan" },
+  "/settings/tax-posture": { title: "Pengaturan" },
   "/finance/reports": { title: "Laporan Keuangan" },
   "/finance/journals": { title: "Jurnal Umum" },
   "/finance/journals/new": { title: "Jurnal Baru" },

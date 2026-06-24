@@ -6,16 +6,17 @@ interface TablePaginationProps {
   meta: PaginationMeta;
   currentPage: number;
   onPageChange: (page: number) => void;
+  countLabel?: string;
 }
 
-export function TablePagination({ displayedCount, meta, currentPage, onPageChange }: TablePaginationProps) {
+export function TablePagination({ displayedCount, meta, currentPage, onPageChange, countLabel = "data" }: TablePaginationProps) {
   const totalPages = meta.totalPages;
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
     <div className="flex flex-row items-center justify-between border-t border-neutral-100 px-6 py-3">
       <span className="text-sm leading-5 text-neutral-300">
-        Menampilkan {displayedCount} dari {meta.total} data
+        Menampilkan {displayedCount} dari {meta.total} {countLabel}
       </span>
       <div className="flex flex-row items-center gap-x-2">
         <button
