@@ -394,6 +394,12 @@ export class ErrorCodes {
     message: "Beberapa akun diisi pada sisi debit/kredit yang salah.",
   };
 
+  public static readonly PERIOD_CLOSED: ErrorStructureType = {
+    code: "PERIOD_CLOSED",
+    httpCode: 409,
+    message: "Periode untuk tanggal ini sudah ditutup.",
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }

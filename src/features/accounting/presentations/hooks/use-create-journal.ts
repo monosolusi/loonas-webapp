@@ -21,6 +21,7 @@ type CreateJournalTriggerParams = {
   memo: string;
   lines: CreateJournalLineInput[];
   acknowledgedWarningCodes?: string[];
+  idempotencyKey?: string;
 };
 type CreateJournalFetcherParams = CreateJournalTriggerParams & { clerk: ReturnType<typeof useClerk> };
 
@@ -32,7 +33,7 @@ async function CreateJournalFetcher(
   const repo = new JournalRepositoryImpl(new JournalServiceImpl(new HttpRequest()));
   const uc = new CreateJournalUseCase(repo, sessionRepo);
   const result = await uc.execute(
-    new CreateJournalUseCaseParams(arg.postingDate, arg.memo, arg.lines, arg.acknowledgedWarningCodes),
+    new CreateJournalUseCaseParams(arg.postingDate, arg.memo, arg.lines, arg.acknowledgedWarningCodes, arg.idempotencyKey),
   );
   if (result instanceof DataFailed) throw result.error;
   if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);

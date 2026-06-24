@@ -19,6 +19,7 @@ export class CreateJournalUseCaseParams {
     public readonly memo: string,
     public readonly lines: CreateJournalLineInput[],
     public readonly acknowledgedWarningCodes?: string[],
+    public readonly idempotencyKey?: string,
   ) {}
 }
 
@@ -41,6 +42,7 @@ export class CreateJournalUseCase implements UseCase<DataState<CreateJournalResu
           memo: params.memo,
           lines: params.lines,
           acknowledgedWarningCodes: params.acknowledgedWarningCodes,
+          idempotencyKey: params.idempotencyKey,
         },
         session,
       );

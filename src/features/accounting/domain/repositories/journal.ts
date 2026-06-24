@@ -26,6 +26,7 @@ export type CreateJournalParams = {
   memo: string;
   lines: CreateJournalLineInput[];
   acknowledgedWarningCodes?: string[];
+  idempotencyKey?: string;
 };
 
 export type GetJournalParams = {
