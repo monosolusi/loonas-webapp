@@ -29,28 +29,3 @@ export class NormalBalanceHintLineModel implements AbstractModel {
   }
 }
 
-/**
- * Parses the `lines` array from a NORMAL_BALANCE_HINT ServerError details payload.
- *
- * Nesting path (set by HttpRequest Task 1 fix):
- *   serverError.details.details.lines
- *
- * Example: parseNormalBalanceHintLines(serverError.details.details)
- *
- * Malformed entries (missing or invalid `entered_side`/`corrected_side`) are
- * silently dropped rather than coerced to a default value.
- */
-export function parseNormalBalanceHintLines(details: Record<string, any> | undefined): NormalBalanceHintLine[] {
-  if (!details) return [];
-  const lines = details["lines"];
-  if (!Array.isArray(lines)) return [];
-
-  const result: NormalBalanceHintLine[] = [];
-  for (const item of lines) {
-    if (item && typeof item === "object") {
-      const model = NormalBalanceHintLineModel.fromJson(item);
-      if (model !== null) result.push(model.toEntity());
-    }
-  }
-  return result;
-}
