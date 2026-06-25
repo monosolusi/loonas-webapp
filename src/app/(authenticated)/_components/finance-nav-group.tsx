@@ -13,8 +13,9 @@ export function FinanceNavGroup() {
       label="Keuangan"
       iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
       selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
-      matchPrefixes={["/finance/ledger", "/finance/journals", "/finance/fixed-costs", "/finance/reports", "/finance/periods", "/finance/pph-final"]}
+      matchPrefixes={["/finance/ledger", "/finance/journals", "/finance/fixed-costs", "/finance/reports", "/finance/periods", "/finance/pph-final", "/finance/profitability"]}
     >
+      <NavigationChildItem href="/finance/profitability" label="Profitabilitas" />
       <NavigationChildItem href="/finance/ledger" label="Buku Besar" />
       <NavigationChildItem href="/finance/journals" label="Jurnal Umum" />
       <NavigationChildItem href="/finance/pph-final" label="PPh Final UMKM" />
