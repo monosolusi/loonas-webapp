@@ -14,4 +14,6 @@ export const ACCOUNTING_SWR_KEYS = {
   GET_OPENING_BALANCE: "get-opening-balance",
   GET_ACCOUNT_SETTING: "get-account-setting",
   LIST_ACCOUNT_SETTING_AUDIT: "list-account-setting-audit",
+  LIST_ACCOUNTING_PERIODS: "list-accounting-periods",
+  GET_ACCOUNTING_PERIOD: "get-accounting-period",
 } as const;

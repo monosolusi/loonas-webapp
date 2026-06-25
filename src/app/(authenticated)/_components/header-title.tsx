@@ -29,6 +29,7 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/finance/reports": { title: "Laporan Keuangan" },
   "/finance/journals": { title: "Jurnal Umum" },
   "/finance/journals/new": { title: "Jurnal Baru" },
+  "/finance/periods": { title: "Periode Akuntansi" },
   "/finance/opening-balance": { title: "Saldo Awal" },
 };
 

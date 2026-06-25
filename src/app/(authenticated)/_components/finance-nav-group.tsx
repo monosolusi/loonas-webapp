@@ -13,11 +13,12 @@ export function FinanceNavGroup() {
       label="Keuangan"
       iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
       selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
-      matchPrefixes={["/finance/ledger", "/finance/journals", "/finance/fixed-costs", "/finance/reports"]}
+      matchPrefixes={["/finance/ledger", "/finance/journals", "/finance/fixed-costs", "/finance/reports", "/finance/periods"]}
     >
       <NavigationChildItem href="/finance/ledger" label="Buku Besar" />
       <NavigationChildItem href="/finance/journals" label="Jurnal Umum" />
       <NavigationChildItem href="/finance/fixed-costs" label="Biaya Tetap" />
+      <NavigationChildItem href="/finance/periods" label="Periode Akuntansi" />
       <hr className="my-1 border-neutral-100" />
       <NavigationChildItem href="/finance/reports" label="Laporan" />
     </NavigationGroup>
