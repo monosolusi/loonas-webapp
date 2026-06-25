@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { StatusChip } from "@/core/presentations/components/status-chip";
-import { ActionMenu } from "@/core/presentations/components/action-menu";
+import { ActionMenu, ActionMenuOption } from "@/core/presentations/components/action-menu";
 import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
 import { usePeriods } from "@/app/(authenticated)/finance/periods/_providers/periods-provider";
 
@@ -14,10 +14,10 @@ export function PeriodRow({ period }: PeriodRowProps) {
   const { openCloseDialog, openReopenDialog } = usePeriods();
 
   const actionOptions = useMemo(() => {
-    if (period.isClosed) {
-      return [{ label: "Buka kembali periode", onClick: () => openReopenDialog(period) }];
-    }
-    return [{ label: "Tutup periode", onClick: () => openCloseDialog(period) }];
+    const opts: ActionMenuOption[] = [];
+    if (period.canClose) opts.push({ label: "Tutup periode", onClick: () => openCloseDialog(period) });
+    if (period.canReopen) opts.push({ label: "Buka kembali periode", onClick: () => openReopenDialog(period) });
+    return opts;
   }, [period, openCloseDialog, openReopenDialog]);
 
   return (
@@ -31,7 +31,7 @@ export function PeriodRow({ period }: PeriodRowProps) {
         />
       </div>
       <div className="flex justify-end">
-        <ActionMenu options={actionOptions} />
+        {actionOptions.length > 0 ? <ActionMenu options={actionOptions} /> : null}
       </div>
     </div>
   );
