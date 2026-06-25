@@ -333,3 +333,8 @@ metadata:
 
 - **When verifying any get-hook, check BOTH the success branch AND the error branch for `refresh: mutate` vs `refresh: null`.** An error component's retry button is a no-op if the hook returns `refresh: null` in the error branch — the provider's `onRetry` guard (`if (hookResult.refresh)`) silently swallows the click.
 - **Recurring pattern:** LNS-373 `use-get-neraca-report.ts` error branch returned `refresh: null` (AC-7 FAIL). LNS-372 `use-get-journal.ts` initially had the same gap (AC-8 PARTIAL → fixed to `refresh: mutate`). Check both branches on every get-hook review.
+
+## State-Transition Render Check (LNS-378)
+
+- **When a mutation flips a named boolean that gates which components render (e.g. `locked`, `isClosed`, `isActive`), enumerate which components are visible BEFORE vs AFTER the flip, and verify the post-success artifact (journal id, reversal id, etc.) is rendered in the AFTER set.** A returned value wired only to a pre-flip component is a surfacing gap even when the hook/provider wiring is technically correct — a static-gate-only or "does the hook return the id?" check passes while the user sees nothing.
+- **Why:** LNS-378 — the `YearEndJournalReference` strip only renders when `isLocked=true`; reopen-year success sets `isLocked=false`, so the returned `reversalJournalId` was invisible (AC-5 gap). Caught only by tracing the post-transition render branch, not by static gates. Fix added a transient `reopenedReversalJournalId` strip in the `!isLocked` branch.
