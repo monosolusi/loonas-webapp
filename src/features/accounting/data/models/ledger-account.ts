@@ -20,7 +20,7 @@ export class LedgerAccountModel implements AbstractModel {
       data["code"],
       data["name"],
       data["type"] as AccountType,
-      data["parent_id"] ?? null,
+      data["parent"]?.["id"] ?? null,
       data["balance"] ?? 0,
       data["total_debit"] ?? 0,
       data["total_credit"] ?? 0,
