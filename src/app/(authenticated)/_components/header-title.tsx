@@ -32,6 +32,7 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/finance/periods": { title: "Periode Akuntansi" },
   "/finance/opening-balance": { title: "Saldo Awal" },
   "/finance/pph-final": { title: "PPh Final UMKM" },
+  "/finance/profitability": { title: "Profitabilitas Produk" },
   "/settings/chart-of-accounts/accounts": { title: "Pengaturan" },
   "/settings/chart-of-accounts/mappings": { title: "Pengaturan" },
 };
@@ -66,6 +67,11 @@ export function HeaderTitle() {
     // /finance/journals/:id
     if (segments[0] === "finance" && segments[1] === "journals" && segments[2] && segments[2] !== "new") {
       return { title: "Detail Jurnal" };
+    }
+
+    // /finance/profitability/:productId/:variantId
+    if (segments[0] === "finance" && segments[1] === "profitability" && segments[2] && segments[3]) {
+      return { title: "Profitabilitas Produk" };
     }
 
     // Fallback: find closest parent route

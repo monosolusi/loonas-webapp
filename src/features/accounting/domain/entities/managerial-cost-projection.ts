@@ -8,6 +8,8 @@ export type ManagerialPeriod = {
 
 type ManagerialCostProjectionEntityConstructor = {
   variantId: string;
+  variantName: string | null;
+  sku: string | null;
   label: string;
   costBasis: string;
   capacityBasis: string;
@@ -23,6 +25,8 @@ type ManagerialCostProjectionEntityConstructor = {
 
 export class ManagerialCostProjectionEntity implements AbstractEntity {
   public readonly variantId: string;
+  public readonly variantName: string | null;
+  public readonly sku: string | null;
   public readonly label: string;
   public readonly costBasis: string;
   public readonly capacityBasis: string;
@@ -37,6 +41,8 @@ export class ManagerialCostProjectionEntity implements AbstractEntity {
 
   constructor(args: ManagerialCostProjectionEntityConstructor) {
     this.variantId = args.variantId;
+    this.variantName = args.variantName;
+    this.sku = args.sku;
     this.label = args.label;
     this.costBasis = args.costBasis;
     this.capacityBasis = args.capacityBasis;
