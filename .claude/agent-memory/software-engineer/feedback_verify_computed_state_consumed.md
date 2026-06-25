@@ -1,6 +1,6 @@
 ---
 name: verify-computed-state-consumed
-description: Before completing, confirm every computed validation/error state is actually rendered; escalate plan-forced incompleteness instead of shipping a tradeoff
+description: Before completing, confirm every computed validation/error state is rendered AND every helper authored is actually called; escalate plan-forced incompleteness instead of shipping a tradeoff
 metadata:
   type: feedback
 ---
@@ -11,4 +11,6 @@ If a planning constraint prevents the correct fix (e.g. "don't modify the hooks"
 
 **Why:** On LNS-374 the first pass computed `rangeError` in both providers but neither impl rendered it, and the same-year guard didn't stop the fetch — an invalid range produced a blank panel. It was filed as a "known tradeoff" and shipped, then came back as a MAJOR finding requiring a fix cycle.
 
-**How to apply:** As a pre-completion self-check, grep each computed error/guard variable for a consumer in the render path. If a constraint blocks the fix, escalate rather than ship. The correct fetch-gating mechanism is the SWR null-key — see [[swr-conditional-enabled]].
+**How to apply:** As a pre-completion self-check, grep each computed error/guard variable for a consumer in the render path. This applies equally to **helper functions/utilities** added in the PR — a new `export function`/`export const` helper with zero call sites in the render or action path is dead code and means the AC it was meant to satisfy is not closed; grep new exported helpers for a consumer too. If a constraint blocks the fix, escalate rather than ship. The correct fetch-gating mechanism is the SWR null-key — see [[swr-conditional-enabled]].
+
+**LNS-117:** `getCodeRangeHint()` was authored but left unwired (zero call sites) — a partial AC shipped as "done," caught by QA + architecture-review.
