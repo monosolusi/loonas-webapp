@@ -37,6 +37,8 @@ export class ManagerialPeriodModel implements AbstractModel {
 
 type ManagerialCostProjectionModelConstructor = {
   variantId: string;
+  variantName: string | null;
+  sku: string | null;
   label: string;
   costBasis: string;
   capacityBasis: string;
@@ -52,6 +54,8 @@ type ManagerialCostProjectionModelConstructor = {
 
 export class ManagerialCostProjectionModel implements AbstractModel {
   public readonly variantId: string;
+  public readonly variantName: string | null;
+  public readonly sku: string | null;
   public readonly label: string;
   public readonly costBasis: string;
   public readonly capacityBasis: string;
@@ -66,6 +70,8 @@ export class ManagerialCostProjectionModel implements AbstractModel {
 
   constructor(args: ManagerialCostProjectionModelConstructor) {
     this.variantId = args.variantId;
+    this.variantName = args.variantName;
+    this.sku = args.sku;
     this.label = args.label;
     this.costBasis = args.costBasis;
     this.capacityBasis = args.capacityBasis;
@@ -82,6 +88,8 @@ export class ManagerialCostProjectionModel implements AbstractModel {
   public static fromJson(data: Record<string, any>): ManagerialCostProjectionModel {
     return new ManagerialCostProjectionModel({
       variantId: data["variant_id"],
+      variantName: data["variant_name"] ?? null,
+      sku: data["sku"] ?? null,
       label: data["label"] ?? "",
       costBasis: data["cost_basis"] ?? "",
       capacityBasis: data["capacity_basis"] ?? "",
@@ -101,6 +109,8 @@ export class ManagerialCostProjectionModel implements AbstractModel {
   public toEntity(): ManagerialCostProjectionEntity {
     return new ManagerialCostProjectionEntity({
       variantId: this.variantId,
+      variantName: this.variantName,
+      sku: this.sku,
       label: this.label,
       costBasis: this.costBasis,
       capacityBasis: this.capacityBasis,
