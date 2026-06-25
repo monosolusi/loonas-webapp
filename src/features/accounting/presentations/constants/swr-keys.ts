@@ -18,4 +18,6 @@ export const ACCOUNTING_SWR_KEYS = {
   GET_ACCOUNTING_PERIOD: "get-accounting-period",
   GET_ACCOUNTING_YEAR_SUMMARY: "get-accounting-year-summary",
   GET_MANAGERIAL_COST: "get-managerial-cost",
+  CREATE_JOURNAL: "create-journal",
+  REVERSE_JOURNAL: "reverse-journal",
 } as const;
