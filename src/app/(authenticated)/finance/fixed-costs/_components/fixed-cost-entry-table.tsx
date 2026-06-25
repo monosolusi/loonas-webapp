@@ -5,7 +5,7 @@ import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-fo
 import { useFixedCostEntries } from "@/app/(authenticated)/finance/fixed-costs/_providers/fixed-cost-entries-provider";
 
 export function FixedCostEntryTable() {
-  const { entries, total, loading, hasNoMaster, setAmount } = useFixedCostEntries();
+  const { entries, total, loading, hasNoMaster, setAmount, isClosed } = useFixedCostEntries();
 
   return (
     <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
@@ -50,6 +50,9 @@ export function FixedCostEntryTable() {
               value={entry.amount}
               onChange={(val) => setAmount(entry.fixedCostId, val)}
               required={false}
+              disabled={isClosed}
+              aria-disabled={isClosed}
+              aria-describedby={isClosed ? "closed-period-note" : undefined}
             />
           </div>
         ))

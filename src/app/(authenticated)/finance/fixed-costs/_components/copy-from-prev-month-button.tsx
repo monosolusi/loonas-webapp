@@ -7,7 +7,7 @@ import { useFixedCostEntries } from "@/app/(authenticated)/finance/fixed-costs/_
 import { useListFixedCostEntriesByDate } from "@/features/fixed-cost/presentations/hooks/use-list-fixed-cost-entries-by-date";
 
 export function CopyFromPrevMonthButton() {
-  const { year, month, hasNoMaster, loading, saving, setAmount } = useFixedCostEntries();
+  const { year, month, hasNoMaster, loading, saving, setAmount, isClosed } = useFixedCostEntries();
 
   const { startDate: prevStartDate, endDate: prevEndDate } = useMemo(() => {
     const prev = DateTime.local(year, month, 1).minus({ months: 1 });
@@ -23,7 +23,7 @@ export function CopyFromPrevMonthButton() {
   });
 
   const prevHasEntries = prevEntries.length > 0;
-  const isDisabled = hasNoMaster || loading || saving || loadingPrev || !prevHasEntries;
+  const isDisabled = hasNoMaster || loading || saving || loadingPrev || !prevHasEntries || isClosed;
 
   const handleCopy = () => {
     for (const entry of prevEntries) {
