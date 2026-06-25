@@ -400,6 +400,31 @@ export class ErrorCodes {
     message: "Periode untuk tanggal ini sudah ditutup.",
   };
 
+  public static readonly PERIOD_ALREADY_CLOSED: ErrorStructureType = {
+    code: "PERIOD_ALREADY_CLOSED",
+    httpCode: 409,
+    message: "Periode ini sudah terkunci.",
+  };
+
+  public static readonly PERIOD_NOT_CLOSED: ErrorStructureType = {
+    code: "PERIOD_NOT_CLOSED",
+    httpCode: 409,
+    message: "Periode ini masih terbuka.",
+  };
+
+  public static readonly PERIOD_NOT_DRAINED: ErrorStructureType = {
+    code: "PERIOD_NOT_DRAINED",
+    httpCode: 422,
+    message:
+      "Periode belum bisa dikunci. Pastikan semua proses pencatatan sudah selesai, dan untuk wajib pajak PPh Final, entri PPh Final (akun 8110) sudah diposting sebelum batas setor.",
+  };
+
+  public static readonly IDEMPOTENCY_KEY_REQUIRED: ErrorStructureType = {
+    code: "IDEMPOTENCY_KEY_REQUIRED",
+    httpCode: 400,
+    message: "Terjadi gangguan teknis. Silakan coba lagi.",
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }
