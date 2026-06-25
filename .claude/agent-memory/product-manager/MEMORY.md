@@ -1,5 +1,6 @@
 - [Accounting domain map](project_accounting_domain.md) — Loonas accounting module: CoA, mappings, journals, ledger, manual journals (PPh Final, expenses), settings
 - [CoA mapping shape evolution](project_coa_mapping_shape.md) — Plan B+ release: new amount_role + account_role (dynamic) + 3-shape account field; entity-type catalogue with category/pattern/requires_account_role
+- [AccountType enum is 10 members](project_account_type_enum.md) — NOT "5 base + contra"; includes cogs w/ no non-contra sibling; verify from enum source before any type-branching AC
 - [Indonesian fintech vocab](reference_indonesian_fintech_vocab.md) — terms: Buku Besar, Jurnal, NPWP, NPPKP, PKP, PPh Final UMKM, sektor KLBI, Pemilik/Prive, HPP
 - [Manual journal idempotency standard](feedback_manual_journal_idempotency.md) — money-movement endpoints (PPh Final settle, expense payment) must guard double-submit via UI disable + client idempotency key
 - [Pay-in-feature is separate](reference_payment_features_disambig.md) — `src/features/payment/` is for pay-in/incoming-invoice, NOT for POS or accounting expense payments; the accounting expense_payment endpoint is a different flow
