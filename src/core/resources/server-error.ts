@@ -394,6 +394,12 @@ export class ErrorCodes {
     message: "Beberapa akun diisi pada sisi debit/kredit yang salah.",
   };
 
+  public static readonly PERIOD_NOT_FOUND: ErrorStructureType = {
+    code: "PERIOD_NOT_FOUND",
+    httpCode: 404,
+    message: "Periode tidak ditemukan.",
+  };
+
   public static readonly PERIOD_CLOSED: ErrorStructureType = {
     code: "PERIOD_CLOSED",
     httpCode: 409,

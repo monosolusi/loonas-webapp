@@ -8,11 +8,15 @@ import { TableToolbar } from "@/core/presentations/components/table/table-toolba
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { PeriodRow } from "@/app/(authenticated)/finance/periods/_components/period-row";
 import { PeriodAdvisory } from "@/app/(authenticated)/finance/periods/_components/period-advisory";
-import { usePeriods } from "@/app/(authenticated)/finance/periods/_providers/periods-provider";
+import { PeriodAllocationPanel } from "@/app/(authenticated)/finance/periods/_components/period-allocation-panel";
+import { AllocateFixedCostDialog } from "@/app/(authenticated)/finance/periods/_components/allocate-fixed-cost-dialog";
+import { usePeriods, MANAGERIAL_COSTING_FEATURE } from "@/app/(authenticated)/finance/periods/_providers/periods-provider";
+import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
 
 const TABLE_COLUMNS = [
   { label: "Periode" },
   { label: "Status" },
+  { label: "" },
   { label: "Aksi", align: "right" as const },
 ];
 
@@ -29,9 +33,12 @@ const STATUS_FILTER_OPTIONS: StatusFilterOption[] = [
 
 export function PeriodsTable() {
   const { periods, meta, page, setPage, statusFilter, setStatusFilter, pendingAdvisories, dismissAdvisory } = usePeriods();
+  const { account } = useGetCurrentAccount();
+  const hasManagerialCosting = account?.hasFeature(MANAGERIAL_COSTING_FEATURE) ?? false;
 
   return (
     <div className="flex flex-col gap-y-4">
+      {hasManagerialCosting ? <AllocateFixedCostDialog /> : null}
       <TableToolbar>
         <div className="flex flex-row gap-x-2">
           {STATUS_FILTER_OPTIONS.map((opt) => (
@@ -55,7 +62,7 @@ export function PeriodsTable() {
       <TableContainer>
         <TableHeader
           columns={TABLE_COLUMNS}
-          className="grid-cols-[2fr_1fr_64px]"
+          className="grid-cols-[2fr_1fr_auto_64px]"
         />
         {periods.map((period) => (
           <Fragment key={period.id}>
@@ -66,6 +73,9 @@ export function PeriodsTable() {
                 warnings={pendingAdvisories[period.id]}
                 onDismiss={() => dismissAdvisory(period.id)}
               />
+            ) : null}
+            {hasManagerialCosting && period.isClosed ? (
+              <PeriodAllocationPanel period={period} />
             ) : null}
           </Fragment>
         ))}

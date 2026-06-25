@@ -2,7 +2,7 @@ import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state"
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { FixedCostEntity } from "@/features/fixed-cost/domain/entities/fixed-cost";
-import { FixedCostRepository, ListFixedCostsParams, ListFixedCostsResult } from "@/features/fixed-cost/domain/repositories/fixed-cost";
+import { FixedCostRepository, ListFixedCostsParams, ListFixedCostsResult, CreateFixedCostParams, UpdateFixedCostParams } from "@/features/fixed-cost/domain/repositories/fixed-cost";
 import { FixedCostService } from "@/features/fixed-cost/domain/sources/fixed-cost";
 
 export class FixedCostRepositoryImpl implements FixedCostRepository {
@@ -21,9 +21,9 @@ export class FixedCostRepositoryImpl implements FixedCostRepository {
     }
   }
 
-  public async create(name: string, session: SessionEntity): Promise<DataState<FixedCostEntity>> {
+  public async create(params: CreateFixedCostParams, session: SessionEntity): Promise<DataState<FixedCostEntity>> {
     try {
-      const result = await this.service.create(name, session);
+      const result = await this.service.create(params, session);
       return new DataSuccess(result.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
@@ -31,9 +31,9 @@ export class FixedCostRepositoryImpl implements FixedCostRepository {
     }
   }
 
-  public async update(id: string, name: string, session: SessionEntity): Promise<DataState<FixedCostEntity>> {
+  public async update(params: UpdateFixedCostParams, session: SessionEntity): Promise<DataState<FixedCostEntity>> {
     try {
-      const result = await this.service.update(id, name, session);
+      const result = await this.service.update(params, session);
       return new DataSuccess(result.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);

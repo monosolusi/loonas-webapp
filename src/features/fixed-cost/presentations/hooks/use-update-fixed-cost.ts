@@ -10,9 +10,10 @@ import { FixedCostRepositoryImpl } from "@/features/fixed-cost/data/repositories
 import { FixedCostServiceImpl } from "@/features/fixed-cost/data/sources/fixed-cost";
 import { UpdateFixedCostUseCase, UpdateFixedCostUseCaseParams } from "@/features/fixed-cost/domain/usecases/update-fixed-cost.usecases";
 import { FixedCostEntity } from "@/features/fixed-cost/domain/entities/fixed-cost";
+import { FixedCostCategory } from "@/features/fixed-cost/domain/enums/fixed-cost-category";
 import { useClerk } from "@clerk/nextjs";
 
-type UpdateFixedCostTriggerParams = { id: string; name: string };
+type UpdateFixedCostTriggerParams = { id: string; name: string; category: FixedCostCategory };
 type UpdateFixedCostFetcherParams = UpdateFixedCostTriggerParams & { clerk: ReturnType<typeof useClerk> };
 
 async function UpdateFixedCostFetcher(_: string, { arg }: { arg: UpdateFixedCostFetcherParams }): Promise<FixedCostEntity> {
@@ -20,7 +21,7 @@ async function UpdateFixedCostFetcher(_: string, { arg }: { arg: UpdateFixedCost
   const fixedCostRepository = new FixedCostRepositoryImpl(new FixedCostServiceImpl(new HttpRequest()));
   const updateFixedCost = new UpdateFixedCostUseCase(fixedCostRepository, sessionRepository);
 
-  const result = await updateFixedCost.execute(new UpdateFixedCostUseCaseParams(arg.id, arg.name));
+  const result = await updateFixedCost.execute(new UpdateFixedCostUseCaseParams(arg.id, arg.name, arg.category));
   if (result instanceof DataFailed) throw result.error;
   if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
   return result.data;

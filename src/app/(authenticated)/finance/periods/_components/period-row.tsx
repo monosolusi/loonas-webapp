@@ -1,27 +1,40 @@
 "use client";
 
 import { useMemo } from "react";
+import clsx from "clsx";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { StatusChip } from "@/core/presentations/components/status-chip";
 import { ActionMenu, ActionMenuOption } from "@/core/presentations/components/action-menu";
 import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
-import { usePeriods } from "@/app/(authenticated)/finance/periods/_providers/periods-provider";
+import { usePeriods, MANAGERIAL_COSTING_FEATURE } from "@/app/(authenticated)/finance/periods/_providers/periods-provider";
+import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
 
 type PeriodRowProps = {
   period: AccountingPeriodEntity;
 };
 
 export function PeriodRow({ period }: PeriodRowProps) {
-  const { openCloseDialog, openReopenDialog } = usePeriods();
+  const { openCloseDialog, openReopenDialog, openAllocateDialog, toggleAllocationPanel, isPanelOpen, isPeriodAllocated } = usePeriods();
+  const { account } = useGetCurrentAccount();
+  const hasManagerialCosting = account?.hasFeature(MANAGERIAL_COSTING_FEATURE) ?? false;
+  const panelOpen = isPanelOpen(period.id);
+  const periodAllocated = isPeriodAllocated(period.id);
 
   const actionOptions = useMemo(() => {
     const opts: ActionMenuOption[] = [];
     if (period.canClose) opts.push({ label: "Tutup periode", onClick: () => openCloseDialog(period) });
     if (period.canReopen) opts.push({ label: "Buka kembali periode", onClick: () => openReopenDialog(period) });
+    if (hasManagerialCosting && period.isClosed) {
+      // Dynamic verb: "Alokasi ulang" only when panel is open AND allocation state has been loaded
+      // (written by PeriodAllocationPanel via setPeriodAllocated). Static default while closed.
+      const allocationLabel = panelOpen && periodAllocated ? "Alokasi ulang biaya tetap" : "Alokasikan biaya tetap";
+      opts.push({ label: allocationLabel, onClick: () => openAllocateDialog(period) });
+    }
     return opts;
-  }, [period, openCloseDialog, openReopenDialog]);
+  }, [period, openCloseDialog, openReopenDialog, openAllocateDialog, hasManagerialCosting, panelOpen, periodAllocated]);
 
   return (
-    <div className="grid grid-cols-[2fr_1fr_64px] items-center border-b border-neutral-100 px-6 py-4 last:border-b-0">
+    <div className="grid grid-cols-[2fr_1fr_auto_64px] items-center gap-x-2 border-b border-neutral-100 px-6 py-4 last:border-b-0">
       <span className="text-sm font-medium text-neutral-500">{period.label}</span>
       <div>
         <StatusChip
@@ -29,6 +42,22 @@ export function PeriodRow({ period }: PeriodRowProps) {
           variant={period.isClosed ? "success" : "neutral"}
           compact
         />
+      </div>
+      <div>
+        {hasManagerialCosting && period.isClosed ? (
+          <button
+            type="button"
+            onClick={() => toggleAllocationPanel(period.id)}
+            aria-label={panelOpen ? "Tutup panel alokasi" : "Buka panel alokasi"}
+            aria-expanded={panelOpen}
+            className="flex size-8 items-center justify-center rounded-lg text-neutral-300 transition-colors hover:bg-neutral-50 hover:text-neutral-400"
+          >
+            <ChevronDownIcon
+              className={clsx("size-4 transition-transform", panelOpen ? "rotate-180" : "rotate-0")}
+              aria-hidden="true"
+            />
+          </button>
+        ) : null}
       </div>
       <div className="flex justify-end">
         {actionOptions.length > 0 ? <ActionMenu options={actionOptions} /> : null}
