@@ -16,4 +16,5 @@ export const ACCOUNTING_SWR_KEYS = {
   LIST_ACCOUNT_SETTING_AUDIT: "list-account-setting-audit",
   LIST_ACCOUNTING_PERIODS: "list-accounting-periods",
   GET_ACCOUNTING_PERIOD: "get-accounting-period",
+  GET_ACCOUNTING_YEAR_SUMMARY: "get-accounting-year-summary",
 } as const;
