@@ -24,3 +24,4 @@
 
 - [LNS-379 opening balance wizard](project_lns379_opening_balance_wizard.md) — key decisions: 3200 FE-computed residual, tri-state GET hook, idempotency key pattern, balance gate = hasAnyNonZeroInput
 - [LNS-372 journal detail + reverse action](project_lns372_journal_detail_reverse.md) — shipped 2026-06-25, PR #98; warn→ack single-dialog pattern, page-level provider Rule 7 exception, dynamic ROUTE_MAP if-block
+- [LNS-378 year-end close + retained earnings](project_lns378_year_end_close.md) — R1–R6 risks mitigated; 3200 preselect, verbatim token, two journal-id keys, null not "", provider-extended not new
