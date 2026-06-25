@@ -1,0 +1,42 @@
+"use client";
+
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { DialogFooter } from "@/core/presentations/components/dialog-footer";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
+import { WarningSeverity } from "@/features/accounting/domain/enums/warning-severity";
+import { JournalWarningItem } from "@/features/accounting/presentations/components/journal-warning-item";
+import { useJournalDetail } from "@/app/(authenticated)/finance/journals/[id]/_providers/journal-detail-provider";
+
+export function JournalReverseAckView() {
+  const { isReversing, pendingWarnings, handleConfirmWarnings, closeReverseDialog } = useJournalDetail();
+
+  const hasHard = pendingWarnings.some((w) => w.severity === WarningSeverity.HARD);
+
+  const handleClose = () => {
+    if (isReversing) return;
+    closeReverseDialog();
+  };
+
+  return (
+    <>
+      {hasHard && (
+        <div className="flex flex-row items-center gap-x-3 rounded-lg bg-error-50 px-4 py-3">
+          <ExclamationCircleIcon className="size-4 shrink-0 text-error-400" />
+          <span className="text-sm font-medium">Harap perhatikan peringatan di bawah sebelum melanjutkan.</span>
+        </div>
+      )}
+
+      <div className="flex max-h-80 flex-col gap-y-2 overflow-y-auto">
+        {pendingWarnings.map((warning, index) => (
+          <JournalWarningItem key={`${warning.code}-${index}`} warning={warning} />
+        ))}
+      </div>
+
+      <DialogFooter>
+        <SecondaryButton outlined type="button" label="Batal" disabled={isReversing} onClick={handleClose} />
+        <PrimaryButton label="Tetap Balik" loading={isReversing} onClick={handleConfirmWarnings} />
+      </DialogFooter>
+    </>
+  );
+}

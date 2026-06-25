@@ -60,6 +60,11 @@ export function HeaderTitle() {
       return { title: "Faktur Keluaran", description: segments[2] };
     }
 
+    // /finance/journals/:id
+    if (segments[0] === "finance" && segments[1] === "journals" && segments[2] && segments[2] !== "new") {
+      return { title: "Detail Jurnal" };
+    }
+
     // Fallback: find closest parent route
     for (let i = segments.length; i > 0; i--) {
       const parentPath = "/" + segments.slice(0, i).join("/");
