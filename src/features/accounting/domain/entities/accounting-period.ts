@@ -49,4 +49,8 @@ export class AccountingPeriodEntity implements AbstractEntity {
   public get isClosed(): boolean {
     return this.status !== "open";
   }
+
+  public get isLocked(): boolean {
+    return this.status === "locked";
+  }
 }

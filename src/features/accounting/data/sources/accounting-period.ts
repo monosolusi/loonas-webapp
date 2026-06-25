@@ -1,9 +1,24 @@
 import { HttpRequest } from "@/core/helpers/http-request";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { AccountingPeriodModel } from "@/features/accounting/data/models/accounting-period";
+import { YearEndSummaryModel } from "@/features/accounting/data/models/year-end-summary";
 import { CloseWarningModel } from "@/features/accounting/data/models/close-warning";
-import { AccountingPeriodService, ClosePeriodServiceResult, ListPeriodsServiceResult } from "@/features/accounting/domain/sources/accounting-period";
-import { ClosePeriodParams, ListPeriodsParams, ReopenPeriodParams } from "@/features/accounting/domain/repositories/accounting-period";
+import {
+  AccountingPeriodService,
+  ClosePeriodServiceResult,
+  ListPeriodsServiceResult,
+  GetYearSummaryServiceResult,
+  CloseYearServiceResult,
+  ReopenYearServiceResult,
+} from "@/features/accounting/domain/sources/accounting-period";
+import {
+  ClosePeriodParams,
+  CloseYearParams,
+  GetYearSummaryParams,
+  ListPeriodsParams,
+  ReopenPeriodParams,
+  ReopenYearParams,
+} from "@/features/accounting/domain/repositories/accounting-period";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 export class AccountingPeriodServiceImpl implements AccountingPeriodService {
@@ -65,6 +80,61 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
       );
 
       return AccountingPeriodModel.fromJson(result);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async getYearSummary(params: GetYearSummaryParams, session: SessionEntity): Promise<GetYearSummaryServiceResult> {
+    try {
+      const result = await this.http.request({ path: `/accounting/periods/year/${params.year}`, method: "GET", session });
+      return YearEndSummaryModel.fromJson(result);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async closeYear(params: CloseYearParams, session: SessionEntity): Promise<CloseYearServiceResult> {
+    try {
+      const body: Record<string, any> = {
+        year: params.year,
+        ...(params.retainedEarningsAccountId ? { retained_earnings_account_id: params.retainedEarningsAccountId } : {}),
+      };
+
+      const result = await this.http.request(
+        { path: "/accounting/periods/close-year", method: "POST", body, session },
+        { headers: { "Idempotency-Key": params.idempotencyKey } },
+      );
+
+      return {
+        closingJournalId: result.closing_journal_id,
+        periods: (result.periods ?? []).map(AccountingPeriodModel.fromJson),
+      };
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async reopenYear(params: ReopenYearParams, session: SessionEntity): Promise<ReopenYearServiceResult> {
+    try {
+      const body: Record<string, any> = {
+        year: params.year,
+        confirmation_token: params.confirmationToken,
+        reason: params.reason,
+      };
+
+      const result = await this.http.request(
+        { path: "/accounting/periods/reopen-year", method: "POST", body, session },
+        { headers: { "Idempotency-Key": params.idempotencyKey } },
+      );
+
+      return {
+        reversalJournalId: result.reversal_journal_id,
+        periods: (result.periods ?? []).map(AccountingPeriodModel.fromJson),
+      };
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
