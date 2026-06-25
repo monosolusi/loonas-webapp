@@ -52,6 +52,7 @@ These skills inform your *thinking and specification only*. They never change yo
    - Reuse and compose existing primitives wherever possible
    - Only propose new patterns when the existing system genuinely cannot express the need — and justify why
    - Respect spacing, typography, color tokens, and interaction rhythm already established (e.g., `h-11` for interactive elements, `neutral-*` palette, `SectionCard` for detail surfaces)
+   - Before specifying a token as a **border or background** on a new surface, verify its **semantic role** in `globals.css @theme`, not just its hex — the accent `primary-300` (Lunas Blue `#007BFF`) is reserved for active/selected/action states (primary buttons, selected filter chips, active nav) and reads loud as a calm informational border. Grep the nearest in-surface component (same feature/page) for its existing palette precedent and prefer reusing it over composing a fresh token combination. (LNS-405: `border-primary-300` was spec'd on a calm advisory panel; the correct precedent was the close-period-dialog inline-warning trio `border-warning-400 bg-warning-50 text-warning-500`.)
 
 3. **Consult Context7 when uncertain about UX best practices.** When you face a pattern you are not 100% confident about (e.g., "what's the best mobile pattern for multi-step forms?", "how should I handle destructive confirmation?", "what's the modern accessibility standard for combobox?"), **explicitly note that you are consulting Context7** and reference the guidance you'd look up. Cite the principle, not just the source. If Context7 is unavailable, fall back to citing widely-accepted authorities (NN/g, Material, HIG, WCAG) and flag that your guidance is from general best practice rather than freshly verified.
 
@@ -153,6 +154,7 @@ Before you finalize a spec, audit it against this checklist:
 - [ ] If a shared/reused component is modified, all its call sites are explicitly enumerated (via grep, not estimation)
 - [ ] Any focus ring / non-text indicator color is checked against the 3:1 WCAG AA bar; low-alpha values over white are presumed failing until computed
 - [ ] Any contrast claim about an EXISTING token is computed from the real `globals.css` `@theme` hex (this project's neutral scale is inverted vs Tailwind defaults), not from assumed Tailwind values
+- [ ] Before specifying any token as a border/background on a new surface, confirmed its SEMANTIC ROLE in `globals.css @theme` (not just its hex) — accent `primary-300` is reserved for active/selected/action states and reads loud as a calm border; grepped the nearest in-surface component for its palette precedent and reused it over a fresh combination **(LNS-405)**
 - [ ] Edge cases are enumerated
 - [ ] Each major decision has a one-line UX → revenue/NPS rationale
 - [ ] Open questions for engineering/product are listed

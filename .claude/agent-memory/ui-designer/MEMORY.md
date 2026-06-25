@@ -17,3 +17,4 @@
 - [Accounting Periods page LNS-377](project_periods_page.md) — chip variants, hide-not-disable pattern, LoonasDialog+DialogFooter base (not ConfirmationDialog), inline error placement, PPh-Final 422 copy, Idempotency-Key on dialog open
 - [Manual Journal Entry page LNS-371](project_lns371_manual_journal_entry.md) — create form layout, 3-tier warning dialog severity, degenerate-zero guard, discard guard deferred, success flow
 - [Opening Balance Wizard LNS-379](project_lns379_opening_balance_wizard.md) — plain-category abstraction (no debit/credit exposed), U1–U4 resolutions, WizardSetupCard entry point, full state map
+- [Inline advisory below mutated row](feedback_inline_advisory_precedent.md) — must-persist compliance notice → dismissible inline panel below the row, not toast/banner (LNS-405)
