@@ -64,3 +64,7 @@ metadata:
 - error-100=#FEE4E2, error-500=#B42318
 - success-100=#DCFAE6, success-500=#067647
 - primary-300=#007BFF
+- Lightest tint fills (chips, callouts, severity blocks): `primary-50` (#F0F7FF), `success-50`, `warning-50`, `error-50` — plus `neutral-50` = #FFFFFF (white). These `-50` tokens are the canonical pale fills.
+
+## Token verification rule
+- Before naming ANY color token in a spec, verify it exists in `globals.css @theme` (or the DESIGN.md YAML frontmatter) — grep it first. This project's lightest tint suffix is `-50`; there are NO `-pale`, `-light`, or `-muted` suffix tokens. A wrong primary token name forces EL/SWE to remap and is a silent spec defect. (LNS-371: spec named `warning-pale`/`error-pale`, which don't exist → remapped to `warning-50`/`error-50`.)

@@ -14,3 +14,5 @@
 - [Journal-line editor LNS-364](project_journal_line_editor_spec.md) — 4-col grid, coerce money model, column-lock UX, balance indicator placement, add/remove affordances, a11y annotations
 - [Opening Balance copy LNS-344](project_lns344_opening_balance_copy.md) — Item A migration notice callout placement + copy; Item B 422 NORMAL_BALANCE_HINT two-case design, per-line list, accumulated-deficit path + CTA
 - [Tax Posture settings LNS-380](project_tax_posture_lns380.md) — stacked sections, StatusChip for is_pkp, null-triad defaults framing, 403 state, a11y open items for EL
+- [Accounting Periods page LNS-377](project_periods_page.md) — chip variants, hide-not-disable pattern, LoonasDialog+DialogFooter base (not ConfirmationDialog), inline error placement, PPh-Final 422 copy, Idempotency-Key on dialog open
+- [Manual Journal Entry page LNS-371](project_lns371_manual_journal_entry.md) — create form layout, 3-tier warning dialog severity, degenerate-zero guard, discard guard deferred, success flow

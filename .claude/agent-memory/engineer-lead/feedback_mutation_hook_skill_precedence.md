@@ -11,4 +11,6 @@ metadata:
 
 **How to apply:** Any plan touching mutation hooks — re-read `create-hook-mutation/SKILL.md` before prescribing key placement or revalidation. Keep mutation keys out of `swr-keys.ts`; assign revalidation to the consuming provider/call-site, not the hook. The discriminated success/needs-acknowledge result still lives in the use case — moving revalidation to the caller does not weaken it.
 
+**`revalidateSWRKey` matches array keys by `key[0]`:** `revalidateSWRKey(...prefixes)` does `mutate(key => Array.isArray(key) && prefixes.includes(key[0]))`, so passing the leading constant (e.g. `revalidateSWRKey(ACCOUNTING_SWR_KEYS.LIST_JOURNALS)`) correctly invalidates an array key like `[LIST_JOURNALS, { clerk, params }]` across all its param variants. Do NOT hand-roll a predicate `mutate` for this, and don't caution against the helper without reading its impl — verified LNS-371.
+
 Related: [[two-phase-warn-ack-pattern]]
