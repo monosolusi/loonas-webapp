@@ -16,6 +16,7 @@ metadata:
 - `next lint` emits deprecation warning about `next lint` being removed in Next.js 16 — this is a WARNING not a failure, exit 0. Do not flag as fail.
 - `src/app/layout.tsx:29:11` — Warning: Custom fonts not added in `pages/_document.js` — pre-existing, not a regression.
 - Typecheck passes cleanly on a clean codebase; slow on first run (~20-30s).
+- **Pre-existing `lightningcss.darwin-x64.node` build failure (as of LNS-355, 2026-06-25):** `npm run build` fails with `Error: Cannot find module '../lightningcss.darwin-x64.node'` — the native binary is missing from `node_modules/lightningcss/node/`. This is a LOCAL environment-only failure (missing native module), not a code regression. Baseline confirmed via `git stash -u` — same error on `dev` branch before LNS-355 changes. CI will pass if the CI runner has correct `node_modules` installed. Do NOT flag this as a branch regression; note as pre-existing environment issue.
 
 ## QA Run Structure (avoid stalls — LNS-371 2026-06-24)
 
