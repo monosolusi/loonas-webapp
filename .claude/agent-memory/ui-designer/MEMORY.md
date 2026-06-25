@@ -19,3 +19,4 @@
 - [Opening Balance Wizard LNS-379](project_lns379_opening_balance_wizard.md) — plain-category abstraction (no debit/credit exposed), U1–U4 resolutions, WizardSetupCard entry point, full state map
 - [Inline advisory below mutated row](feedback_inline_advisory_precedent.md) — must-persist compliance notice → dismissible inline panel below the row, not toast/banner (LNS-405)
 - [CoA Accounts page LNS-117](project_coa_accounts_page.md) — Daftar Akun modal pattern, seeded-hide decision, journal-line link degradation, Bagan Akun nav group
+- [Journal detail + reverse action LNS-372](project_lns372_journal_detail_reverse.md) — OQ-U1 ActionMenu decision, OQ-U2 disabled vs hidden CTA, inline warn-ack pattern, audit panel, ROUTE_MAP note

@@ -1,1 +1,1 @@
-- [QA Patterns](qa-patterns.md) — Recurring build warnings, CI ticket scope rules, build perf baseline, JSON validity gate, Playwright session/backend patterns, SWR key isolation
+- [QA Patterns](qa-patterns.md) — Recurring build warnings, CI ticket scope rules, build perf baseline, JSON validity gate, Playwright session/backend patterns, SWR key isolation, mid-edit race guard, dialog-split focus-trap check, shared component move consumer grep, error-branch refresh:null pattern
