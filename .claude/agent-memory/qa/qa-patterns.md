@@ -1,9 +1,15 @@
 ---
 name: qa-patterns
-description: Recurring build warnings, CI ticket scope rules, build perf baseline, JSON validity gate, Playwright session/backend patterns, SWR key isolation, LNS-384 JWT tenant resolution, LNS-364 journal-line-editor patterns
+description: Recurring build warnings, CI ticket scope rules, build perf baseline, JSON validity gate, Playwright session/backend patterns, SWR key isolation, LNS-384 JWT tenant resolution, LNS-364 journal-line-editor patterns, LNS-377 sibling-defect check, severity calibration, AC grading discipline, git stash -u baseline isolation
 metadata:
   type: project
 ---
+
+## Defect Inspection Discipline (LNS-377)
+
+- **Sibling-defect check (N-of-N rule):** When a defect pattern is found in one component, immediately read/grep ALL structurally-identical siblings (e.g. twin dialogs, parallel hooks) for the same pattern before closing the finding. Do NOT report after checking N-of-1. Example: catching stale-closure in ClosePeriodDialog but missing the identical latent defect in ReopenPeriodDialog.
+- **Severity calibration:** Severity = actual user impact on the operation's design intent, NOT "does it crash / does it block a numbered AC". Lost input on a mutation retry path (especially audit-trail fields like 'reason') is a real UX regression even if no AC names it. A user who hits 422 and loses their typed justification must retype before retrying a lock-the-books action — that defeats retry-without-re-entry intent.
+- **AC grading discipline:** Grade against the ACs as finalized at handoff time. If a stricter reading is possible, write "PASS — note: stricter reading would require X; confirm with EL" rather than PARTIAL. Reserve PARTIAL only for confirmed spec ambiguity, not self-imposed tighter criteria. (LNS-377: AC-6 collapsed two 409 codes to one message — finalized AC only required one close + one reopen message; it was a PASS.)
 
 ## Build / Static Check Patterns
 
@@ -64,18 +70,25 @@ metadata:
 - In the section, button order is: [picker button (index 0), Coba lagi (x3 if error state)].
 - For mobile Dialog test: target `mobileSectionButtons[0]` or filter by date text, not `.last()`.
 
+## Baseline Build Isolation (LNS-377)
+
+- **Use `git stash -u`, NOT plain `git stash`, to isolate a baseline build.** Plain `git stash` does not stash untracked new files. When a feature introduces new files (e.g. all `periods/` components as untracked), plain stash leaves them in place — their imports (e.g. `ACCOUNTING_SWR_KEYS.LIST_ACCOUNTING_PERIODS`) reference constants not yet in the stashed version of shared files, producing false build failures. `git stash -u` cleans the full tree.
+- After stash, verify with `git status` that untracked files are gone before running the baseline build. Restore with `git stash pop` immediately after.
+- If baseline build fails too, the build failure pre-exists on `dev` and is NOT introduced by the branch under review — report as "pre-existing, not a regression."
+
 ## Build Performance Baseline
 
 - `npm run build` — typical production build ~2-3 min on this machine.
 - `npx tsc --noEmit` — ~20-30s.
 - `npm run lint` — ~15s.
 
-## Clerk Environment Gotcha (LNS-197, 2026-05-21; updated LNS-387 2026-06-14)
+## Clerk Environment Gotcha (LNS-197, 2026-05-21; updated LNS-387 2026-06-14; updated LNS-377 2026-06-25)
 
 - `.env.local` does NOT exist on this machine. However, `.env` DOES contain `CLERK_SECRET_KEY` and `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (confirmed LNS-387 2026-06-14). Prior memory was stale.
 - Server boots. Auth-gated routes may return 200 for unauthenticated hits (Clerk redirects to sign-in), but kyc-summary requires a real authenticated session WITH a specific account state (e.g., REJECTED outcome) — not achievable in headless QA without a seeded account.
 - **Mitigation for state-dependent routes** (e.g., KYC REJECTED branch): source-code static analysis is the only viable path. Note "manual browser smoke required" in reports for these routes.
-- **Playwright note**: `playwright` package is NOT in the project's `node_modules`. It is only available globally via `npx` cache at `~/.npm/_npx/`. Run smoke scripts from a directory that contains the `playwright` package, e.g., `cd ~/.npm/_npx/<hash> && node script.mjs`.
+- **Feature-gate redirects:** Routes guarded by `account.hasFeature(X)` (e.g. `PeriodsLayout` → `/home` when account lacks `accounting` feature) are environmental limitations, NOT implementation failures. Name the gate mechanism and source file explicitly in the report (e.g. "redirected by `layout.tsx:13 account.hasFeature('accounting')`") so EL knows it is working-as-intended, not a crash or missing route.
+- **Playwright note**: `playwright` package is NOT in the project's `node_modules`. It is only available globally via `npx` cache at `~/.npm/_npx/`. Use the cache entry whose `package.json` version matches the `chromium-1228` browser in `~/Library/Caches/ms-playwright/` — confirmed working: `~/.npm/_npx/e41f203b7505f1fb/node_modules/playwright` (v1.61.1) as of 2026-06-25.
 
 ## POS Source Code Structure (LNS-197)
 
