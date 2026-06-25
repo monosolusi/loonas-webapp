@@ -10,3 +10,7 @@
 - [CSS hidden vs conditional render](feedback_css_hidden_vs_conditional_render.md) — CSS `hidden`/`sm:hidden` dual-layout keeps BOTH branches mounted → duplicates singleton-DOM elements (`autoFocus`, `aria-live`, `id`); use viewport-conditional render when a branch has one (LNS-364 row + footer fix loops)
 - [No eslint-disable for unconfigured rules](feedback_eslint_disable_missing_rule.md) — react-hooks/exhaustive-deps is NOT in this project's ESLint config; adding a disable comment for it causes a lint error (LNS-344)
 - [Ship spec copy verbatim](feedback_spec_copy_verbatim.md) — quoted user-facing strings in the brief are literals; ship as-is, flag a proposed deviation rather than silently substituting (LNS-371 "disimpan" vs "diposting")
+
+## Project
+
+- [LNS-379 opening balance wizard](project_lns379_opening_balance_wizard.md) — key decisions: 3200 FE-computed residual, tri-state GET hook, idempotency key pattern, balance gate = hasAnyNonZeroInput
