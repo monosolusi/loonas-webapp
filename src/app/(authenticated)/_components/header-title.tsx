@@ -31,6 +31,8 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/finance/journals/new": { title: "Jurnal Baru" },
   "/finance/periods": { title: "Periode Akuntansi" },
   "/finance/opening-balance": { title: "Saldo Awal" },
+  "/settings/chart-of-accounts/accounts": { title: "Pengaturan" },
+  "/settings/chart-of-accounts/mappings": { title: "Pengaturan" },
 };
 
 export function HeaderTitle() {

@@ -101,14 +101,6 @@ export default function SettingsPage() {
       feature: "accounting",
     },
     {
-      href: "/settings/coa-mappings",
-      iconSrc: "/assets/images/chart-icon-primary-300-w16-h16.svg",
-      title: "Pemetaan Akun",
-      description: "Kelola pemetaan akun debit dan kredit untuk setiap jenis transaksi.",
-      active: true,
-      feature: "accounting",
-    },
-    {
       href: "/settings/tax-posture",
       iconSrc: "/assets/images/chart-icon-primary-300-w16-h16.svg",
       title: "Postur Pajak",

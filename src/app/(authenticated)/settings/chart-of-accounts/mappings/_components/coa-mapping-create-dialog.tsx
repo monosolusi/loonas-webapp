@@ -6,9 +6,9 @@ import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import { useCreateCoaMapping } from "@/features/accounting/presentations/hooks/use-create-coa-mapping";
-import { useCoaMappings } from "@/app/(authenticated)/settings/coa-mappings/_providers/coa-mappings-provider";
-import { CoaMappingFormDialog } from "@/app/(authenticated)/settings/coa-mappings/_components/coa-mapping-form-dialog";
-import { CoaMappingLineFormItem } from "@/app/(authenticated)/settings/coa-mappings/_components/coa-mapping-form.types";
+import { useCoaMappings } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_providers/coa-mappings-provider";
+import { CoaMappingFormDialog } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_components/coa-mapping-form-dialog";
+import { CoaMappingLineFormItem } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_components/coa-mapping-form.types";
 
 function createEmptyLine(position: "debit" | "credit"): CoaMappingLineFormItem {
   return {

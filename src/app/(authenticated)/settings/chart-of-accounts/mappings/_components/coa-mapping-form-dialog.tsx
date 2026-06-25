@@ -8,8 +8,8 @@ import { SelectInput } from "@/core/presentations/components/select-input";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { CoaMappingEntityTypeEntity } from "@/features/accounting/domain/entities/coa-mapping-entity-type";
-import { CoaMappingLineRow } from "@/app/(authenticated)/settings/coa-mappings/_components/coa-mapping-line-row";
-import { CoaMappingLineFormItem } from "@/app/(authenticated)/settings/coa-mappings/_components/coa-mapping-form.types";
+import { CoaMappingLineRow } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_components/coa-mapping-line-row";
+import { CoaMappingLineFormItem } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_components/coa-mapping-form.types";
 
 type CoaMappingFormDialogProps = {
   open: boolean;
