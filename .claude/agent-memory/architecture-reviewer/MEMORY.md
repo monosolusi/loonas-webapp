@@ -11,3 +11,4 @@
 - [Presentation imports data/models Blocker](feedback_presentation_imports_data_models.md) — app/ and presentations/ must never import from data/models/; only domain/sources/ has that exemption (found LNS-379 provider)
 - [Use-case private method must not return DataState](feedback_usecase_private_method_datastate.md) — private methods throw on failure and return plain types; returning DataState from a private method is a Major violation (found LNS-379)
 - [Idempotency-Key belongs in use case, not service layer](feedback_idempotency_key_layer.md) — `crypto.randomUUID()` inside ServiceImpl is a Major violation; key must be generated in UseCase.execute() and threaded through params (found LNS-117)
+- [Provider empty-state gap](feedback_provider_empty_state_gap.md) — If provider shellState never emits "empty" but impl checks for it, EmptyBody is dead code; Minor finding (found LNS-376 calk)
