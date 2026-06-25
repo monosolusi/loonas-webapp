@@ -6,7 +6,7 @@ import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { WarningSeverity } from "@/features/accounting/domain/enums/warning-severity";
-import { JournalWarningItem } from "@/app/(authenticated)/finance/journals/new/_components/journal-warning-item";
+import { JournalWarningItem } from "@/features/accounting/presentations/components/journal-warning-item";
 import { useJournalCreate } from "@/app/(authenticated)/finance/journals/new/_providers/journal-create-provider";
 
 export function JournalWarningDialog() {
