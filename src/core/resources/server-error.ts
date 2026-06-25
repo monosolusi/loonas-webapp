@@ -456,6 +456,54 @@ export class ErrorCodes {
     message: "Kode ini termasuk dalam rentang yang dicadangkan sistem. Pilih kode lain.",
   };
 
+  public static readonly MONTHLY_PERIODS_NOT_CLOSED: ErrorStructureType = {
+    code: "MONTHLY_PERIODS_NOT_CLOSED",
+    httpCode: 409,
+    message: "Masih ada periode bulanan yang terbuka. Tutup semua periode bulan terlebih dahulu sebelum menutup tahun.",
+  };
+
+  public static readonly YEAR_ALREADY_CLOSED: ErrorStructureType = {
+    code: "YEAR_ALREADY_CLOSED",
+    httpCode: 409,
+    message: "Tahun ini sudah ditutup. Gunakan buka kembali tahun untuk mengubahnya.",
+  };
+
+  public static readonly YEAR_NOT_CLOSED: ErrorStructureType = {
+    code: "YEAR_NOT_CLOSED",
+    httpCode: 409,
+    message: "Tahun ini belum ditutup, jadi tidak dapat dibuka kembali.",
+  };
+
+  public static readonly YEAR_UNLOCK_TOKEN_MISMATCH: ErrorStructureType = {
+    code: "YEAR_UNLOCK_TOKEN_MISMATCH",
+    httpCode: 422,
+    message: "Token konfirmasi tidak cocok. Muat ulang halaman lalu coba lagi.",
+  };
+
+  public static readonly YEAR_CLOSE_BOUNDARY_INVALID: ErrorStructureType = {
+    code: "YEAR_CLOSE_BOUNDARY_INVALID",
+    httpCode: 422,
+    message: "Periode tahun ini belum lengkap (Januari–Desember). Hubungi tim dukungan.",
+  };
+
+  public static readonly RETAINED_EARNINGS_ACCOUNT_INVALID: ErrorStructureType = {
+    code: "RETAINED_EARNINGS_ACCOUNT_INVALID",
+    httpCode: 422,
+    message: "Akun Saldo Laba Ditahan tidak valid. Pilih akun ekuitas yang benar.",
+  };
+
+  public static readonly PERIOD_REOPEN_REASON_REQUIRED: ErrorStructureType = {
+    code: "PERIOD_REOPEN_REASON_REQUIRED",
+    httpCode: 400,
+    message: "Alasan minimal 10 karakter.",
+  };
+
+  public static readonly FEATURE_NOT_AVAILABLE: ErrorStructureType = {
+    code: "FEATURE_NOT_AVAILABLE",
+    httpCode: 403,
+    message: "Fitur ini belum tersedia untuk akun Anda.",
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }
