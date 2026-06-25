@@ -1,15 +1,20 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback } from "react";
+import { DateTime } from "luxon";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
+import { YearEndSummaryEntity } from "@/features/accounting/domain/entities/year-end-summary";
 import { CloseWarning } from "@/features/accounting/domain/entities/close-warning";
 import { useListPeriods } from "@/features/accounting/presentations/hooks/use-list-periods";
 import { useClosePeriod } from "@/features/accounting/presentations/hooks/use-close-period";
 import { useReopenPeriod } from "@/features/accounting/presentations/hooks/use-reopen-period";
+import { useGetYearSummary } from "@/features/accounting/presentations/hooks/use-get-year-summary";
+import { useCloseYear } from "@/features/accounting/presentations/hooks/use-close-year";
+import { useReopenYear } from "@/features/accounting/presentations/hooks/use-reopen-year";
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 
 type PeriodStatusFilter = "open" | "closed" | undefined;
@@ -23,14 +28,14 @@ type PeriodsContextValue = {
   page: number;
   setStatusFilter: (status: PeriodStatusFilter) => void;
   setPage: (page: number) => void;
-  // Close dialog
+  // Close period dialog
   closingPeriod: AccountingPeriodEntity | null;
   openCloseDialog: (period: AccountingPeriodEntity) => void;
   dismissCloseDialog: () => void;
   closePeriodError: string | null;
   isClosing: boolean;
   handleClosePeriod: (reason: string) => Promise<boolean>;
-  // Reopen dialog
+  // Reopen period dialog
   reopeningPeriod: AccountingPeriodEntity | null;
   openReopenDialog: (period: AccountingPeriodEntity) => void;
   dismissReopenDialog: () => void;
@@ -40,6 +45,27 @@ type PeriodsContextValue = {
   // Advisory state
   pendingAdvisories: Record<string, CloseWarning[]>;
   dismissAdvisory: (periodId: string) => void;
+  // Year-end state
+  selectedYear: number;
+  setSelectedYear: (year: number) => void;
+  yearSummary: YearEndSummaryEntity | null;
+  yearSummaryLoading: boolean;
+  // Close year dialog
+  isCloseYearDialogOpen: boolean;
+  openCloseYearDialog: () => void;
+  dismissCloseYearDialog: () => void;
+  closeYearError: string | null;
+  isClosingYear: boolean;
+  handleCloseYear: (retainedEarningsAccountId?: string) => Promise<boolean>;
+  // Reopen year dialog
+  isReopenYearDialogOpen: boolean;
+  openReopenYearDialog: () => void;
+  dismissReopenYearDialog: () => void;
+  reopenYearError: string | null;
+  isReopeningYear: boolean;
+  handleReopenYear: (reason: string) => Promise<boolean>;
+  // Post-reopen reversal journal reference
+  reopenedReversalJournalId: string | null;
 };
 
 const PeriodsContext = createContext<PeriodsContextValue | null>(null);
@@ -65,16 +91,34 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
   const { trigger: triggerClose, isMutating: isClosing } = useClosePeriod();
   const { trigger: triggerReopen, isMutating: isReopening } = useReopenPeriod();
 
-  // Close dialog state
+  // Close period dialog state
   const [closingPeriod, setClosingPeriod] = useState<AccountingPeriodEntity | null>(null);
   const [closePeriodError, setClosePeriodError] = useState<string | null>(null);
 
   // Advisory state
   const [pendingAdvisories, setPendingAdvisories] = useState<Record<string, CloseWarning[]>>({});
 
-  // Reopen dialog state
+  // Reopen period dialog state
   const [reopeningPeriod, setReopeningPeriod] = useState<AccountingPeriodEntity | null>(null);
   const [reopenPeriodError, setReopenPeriodError] = useState<string | null>(null);
+
+  // Year-end state
+  const [selectedYear, setSelectedYear] = useState<number>(DateTime.now().year);
+  const { summary: yearSummary, loading: yearSummaryLoading } = useGetYearSummary(selectedYear);
+
+  const { trigger: triggerCloseYear, isMutating: isClosingYear } = useCloseYear();
+  const { trigger: triggerReopenYear, isMutating: isReopeningYear } = useReopenYear();
+
+  // Close year dialog state
+  const [isCloseYearDialogOpen, setIsCloseYearDialogOpen] = useState(false);
+  const [closeYearError, setCloseYearError] = useState<string | null>(null);
+
+  // Reopen year dialog state
+  const [isReopenYearDialogOpen, setIsReopenYearDialogOpen] = useState(false);
+  const [reopenYearError, setReopenYearError] = useState<string | null>(null);
+
+  // Post-reopen reversal journal reference (transient — cleared when dialog re-opens)
+  const [reopenedReversalJournalId, setReopenedReversalJournalId] = useState<string | null>(null);
 
   const openCloseDialog = useCallback((period: AccountingPeriodEntity) => {
     setClosePeriodError(null);
@@ -102,6 +146,27 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
       delete n[id];
       return n;
     });
+  }, []);
+
+  const openCloseYearDialog = useCallback(() => {
+    setCloseYearError(null);
+    setIsCloseYearDialogOpen(true);
+  }, []);
+
+  const dismissCloseYearDialog = useCallback(() => {
+    setIsCloseYearDialogOpen(false);
+    setCloseYearError(null);
+  }, []);
+
+  const openReopenYearDialog = useCallback(() => {
+    setReopenYearError(null);
+    setReopenedReversalJournalId(null);
+    setIsReopenYearDialogOpen(true);
+  }, []);
+
+  const dismissReopenYearDialog = useCallback(() => {
+    setIsReopenYearDialogOpen(false);
+    setReopenYearError(null);
   }, []);
 
   const handleClosePeriod = useCallback(
@@ -179,6 +244,80 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
     [reopeningPeriod, triggerReopen, showToast],
   );
 
+  const handleCloseYear = useCallback(
+    async (retainedEarningsAccountId?: string): Promise<boolean> => {
+      setCloseYearError(null);
+      const idempotencyKey = crypto.randomUUID();
+      try {
+        await triggerCloseYear({ year: selectedYear, idempotencyKey, retainedEarningsAccountId });
+        await revalidateSWRKey(ACCOUNTING_SWR_KEYS.LIST_ACCOUNTING_PERIODS, ACCOUNTING_SWR_KEYS.GET_ACCOUNTING_YEAR_SUMMARY);
+        setIsCloseYearDialogOpen(false);
+        showToast("Tahun buku berhasil ditutup.", "success");
+        return true;
+      } catch (err) {
+        if (err instanceof ServerError) {
+          if (err.httpCode === 403) {
+            showToast(ErrorCodes.FEATURE_NOT_AVAILABLE.message, "error");
+          } else if (err.code === ErrorCodes.MONTHLY_PERIODS_NOT_CLOSED.code) {
+            setCloseYearError(ErrorCodes.MONTHLY_PERIODS_NOT_CLOSED.message);
+          } else if (err.code === ErrorCodes.YEAR_ALREADY_CLOSED.code) {
+            showToast(ErrorCodes.YEAR_ALREADY_CLOSED.message, "error");
+          } else if (err.code === ErrorCodes.YEAR_CLOSE_BOUNDARY_INVALID.code) {
+            setCloseYearError(ErrorCodes.YEAR_CLOSE_BOUNDARY_INVALID.message);
+          } else if (err.code === ErrorCodes.RETAINED_EARNINGS_ACCOUNT_INVALID.code) {
+            setCloseYearError(ErrorCodes.RETAINED_EARNINGS_ACCOUNT_INVALID.message);
+          } else if (err.httpCode === 422) {
+            setCloseYearError(err.message);
+          } else {
+            showToast("Terjadi kesalahan. Silakan coba lagi.", "error");
+          }
+        } else {
+          showToast("Terjadi kesalahan. Silakan coba lagi.", "error");
+        }
+        return false;
+      }
+    },
+    [selectedYear, triggerCloseYear, showToast],
+  );
+
+  const handleReopenYear = useCallback(
+    async (reason: string): Promise<boolean> => {
+      setReopenYearError(null);
+      const confirmationToken = yearSummary?.closingJournalCreatedAt ?? null;
+      if (confirmationToken === null) {
+        setReopenYearError("Token konfirmasi tidak tersedia. Muat ulang halaman lalu coba lagi.");
+        return false;
+      }
+      const idempotencyKey = crypto.randomUUID();
+      try {
+        const result = await triggerReopenYear({ year: selectedYear, confirmationToken, reason, idempotencyKey });
+        await revalidateSWRKey(ACCOUNTING_SWR_KEYS.LIST_ACCOUNTING_PERIODS, ACCOUNTING_SWR_KEYS.GET_ACCOUNTING_YEAR_SUMMARY);
+        setReopenedReversalJournalId(result.reversalJournalId);
+        setIsReopenYearDialogOpen(false);
+        showToast("Tahun buku berhasil dibuka kembali.", "success");
+        return true;
+      } catch (err) {
+        if (err instanceof ServerError) {
+          if (err.httpCode === 403) {
+            showToast("Hanya admin yang dapat membuka kembali tahun.", "error");
+          } else if (err.code === ErrorCodes.YEAR_UNLOCK_TOKEN_MISMATCH.code) {
+            setReopenYearError("Token konfirmasi tidak cocok. Muat ulang halaman lalu coba lagi.");
+          } else if (err.code === ErrorCodes.PERIOD_REOPEN_REASON_REQUIRED.code) {
+            setReopenYearError(ErrorCodes.PERIOD_REOPEN_REASON_REQUIRED.message);
+          } else if (err.code === ErrorCodes.YEAR_NOT_CLOSED.code) {
+            showToast(ErrorCodes.YEAR_NOT_CLOSED.message, "error");
+          } else {
+            showToast("Terjadi kesalahan. Silakan coba lagi.", "error");
+          }
+        } else {
+          showToast("Terjadi kesalahan. Silakan coba lagi.", "error");
+        }
+        return false;
+      }
+    },
+    [selectedYear, yearSummary, triggerReopenYear, showToast],
+  );
+
   const handleSetStatusFilter = useCallback(
     (status: PeriodStatusFilter) => {
       setStatusFilter(status);
@@ -212,6 +351,23 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
         handleReopenPeriod,
         pendingAdvisories,
         dismissAdvisory,
+        selectedYear,
+        setSelectedYear,
+        yearSummary,
+        yearSummaryLoading,
+        isCloseYearDialogOpen,
+        openCloseYearDialog,
+        dismissCloseYearDialog,
+        closeYearError,
+        isClosingYear,
+        handleCloseYear,
+        isReopenYearDialogOpen,
+        openReopenYearDialog,
+        dismissReopenYearDialog,
+        reopenYearError,
+        isReopeningYear,
+        handleReopenYear,
+        reopenedReversalJournalId,
       }}
     >
       {children}

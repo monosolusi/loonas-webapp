@@ -4,6 +4,9 @@ import { PeriodsProvider } from "@/app/(authenticated)/finance/periods/_provider
 import { PeriodsList } from "@/app/(authenticated)/finance/periods/_components/periods-list";
 import { ClosePeriodDialog } from "@/app/(authenticated)/finance/periods/_components/close-period-dialog";
 import { ReopenPeriodDialog } from "@/app/(authenticated)/finance/periods/_components/reopen-period-dialog";
+import { YearEndPanel } from "@/app/(authenticated)/finance/periods/_components/year-end-panel";
+import { CloseYearDialog } from "@/app/(authenticated)/finance/periods/_components/close-year-dialog";
+import { ReopenYearDialog } from "@/app/(authenticated)/finance/periods/_components/reopen-year-dialog";
 
 export default function PeriodsPage() {
   return (
@@ -15,6 +18,9 @@ export default function PeriodsPage() {
         <PeriodsList />
         <ClosePeriodDialog />
         <ReopenPeriodDialog />
+        <YearEndPanel />
+        <CloseYearDialog />
+        <ReopenYearDialog />
       </PeriodsProvider>
     </div>
   );
