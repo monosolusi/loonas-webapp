@@ -4,6 +4,7 @@ import { NavigationGroup } from "@/app/(authenticated)/_components/navigation-gr
 import { NavigationChildItem } from "@/app/(authenticated)/_components/navigation-child-item";
 import { KycReviewNavItem } from "@/app/(authenticated)/_components/kyc-review-nav-item";
 import { FinanceNavGroup } from "@/app/(authenticated)/_components/finance-nav-group";
+import { ChartOfAccountsNavGroup } from "@/app/(authenticated)/_components/chart-of-accounts-nav-group";
 import { PurchasingNavGroup } from "@/app/(authenticated)/_components/purchasing-nav-group";
 import { SalesNavGroup } from "@/app/(authenticated)/_components/sales-nav-group";
 
@@ -30,6 +31,7 @@ export function NavigationBar() {
           <NavigationChildItem href="/productions" label="Produksi" />
         </NavigationGroup>
         <FinanceNavGroup />
+        <ChartOfAccountsNavGroup />
         <NavigationItem
           href="/accounts"
           label="Manajemen Akun"

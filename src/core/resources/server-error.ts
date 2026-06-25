@@ -432,6 +432,30 @@ export class ErrorCodes {
     message: "Terjadi gangguan teknis. Silakan coba lagi.",
   };
 
+  public static readonly SEEDED_ACCOUNT_IMMUTABLE_FIELDS: ErrorStructureType = {
+    code: "SEEDED_ACCOUNT_IMMUTABLE_FIELDS",
+    httpCode: 409,
+    message: "Kode dan tipe akun bawaan tidak dapat diubah untuk menjaga integritas jurnal.",
+  };
+
+  public static readonly ACCOUNT_HAS_JOURNAL_LINES: ErrorStructureType = {
+    code: "ACCOUNT_HAS_JOURNAL_LINES",
+    httpCode: 409,
+    message: "Akun ini memiliki baris jurnal yang terkait. Hapus atau pindahkan entri jurnal terkait terlebih dahulu.",
+  };
+
+  public static readonly ACCOUNT_REFERENCED_BY_MAPPING: ErrorStructureType = {
+    code: "ACCOUNT_REFERENCED_BY_MAPPING",
+    httpCode: 409,
+    message: "Akun ini digunakan dalam Pemetaan Akun. Perbarui pemetaan akun terlebih dahulu sebelum menghapus akun ini.",
+  };
+
+  public static readonly CODE_RESERVED: ErrorStructureType = {
+    code: "CODE_RESERVED",
+    httpCode: 400,
+    message: "Kode ini termasuk dalam rentang yang dicadangkan sistem. Pilih kode lain.",
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }

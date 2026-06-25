@@ -1,7 +1,7 @@
 "use client";
 
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
-import { useCoaMappings } from "@/app/(authenticated)/settings/coa-mappings/_providers/coa-mappings-provider";
+import { useCoaMappings } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_providers/coa-mappings-provider";
 
 export function CoaMappingsHeader() {
   const { meta } = useCoaMappings();

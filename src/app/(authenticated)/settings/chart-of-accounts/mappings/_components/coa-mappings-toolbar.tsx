@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
-import { useCoaMappings } from "@/app/(authenticated)/settings/coa-mappings/_providers/coa-mappings-provider";
+import { useCoaMappings } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_providers/coa-mappings-provider";
 
 export function CoaMappingsToolbar() {
   const { setCreatingOpen } = useCoaMappings();

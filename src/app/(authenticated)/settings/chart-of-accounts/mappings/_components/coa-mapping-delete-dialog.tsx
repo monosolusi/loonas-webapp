@@ -6,7 +6,7 @@ import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import { useDeleteCoaMapping } from "@/features/accounting/presentations/hooks/use-delete-coa-mapping";
-import { useCoaMappings } from "@/app/(authenticated)/settings/coa-mappings/_providers/coa-mappings-provider";
+import { useCoaMappings } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_providers/coa-mappings-provider";
 
 export function CoaMappingDeleteDialog() {
   const { showToast } = useToast();
@@ -24,8 +24,7 @@ export function CoaMappingDeleteDialog() {
       showToast("Pemetaan berhasil dihapus", "success");
       setDeletingItem(null);
     } catch (err) {
-      const message =
-        err instanceof ServerError ? err.message : "Gagal menghapus pemetaan";
+      const message = err instanceof ServerError ? err.message : "Gagal menghapus pemetaan";
       showToast(message, "error");
     }
   };

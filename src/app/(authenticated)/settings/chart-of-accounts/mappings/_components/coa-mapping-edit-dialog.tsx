@@ -7,9 +7,9 @@ import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import { useUpdateCoaMapping } from "@/features/accounting/presentations/hooks/use-update-coa-mapping";
 import { CoaMappingEntity } from "@/features/accounting/domain/entities/coa-mapping";
-import { useCoaMappings } from "@/app/(authenticated)/settings/coa-mappings/_providers/coa-mappings-provider";
-import { CoaMappingFormDialog } from "@/app/(authenticated)/settings/coa-mappings/_components/coa-mapping-form-dialog";
-import { CoaMappingLineFormItem } from "@/app/(authenticated)/settings/coa-mappings/_components/coa-mapping-form.types";
+import { useCoaMappings } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_providers/coa-mappings-provider";
+import { CoaMappingFormDialog } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_components/coa-mapping-form-dialog";
+import { CoaMappingLineFormItem } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_components/coa-mapping-form.types";
 
 function toFormItems(mapping: CoaMappingEntity): CoaMappingLineFormItem[] {
   return mapping.lines.map((line) => ({
