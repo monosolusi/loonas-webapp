@@ -26,7 +26,7 @@ type ErrorState = {
   readonly data: null;
   readonly loading: false;
   readonly error: ServerError;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<JournalEntity>;
 };
 
 export type UseGetJournalReturnType = InitialState | LoadedState | ErrorState;

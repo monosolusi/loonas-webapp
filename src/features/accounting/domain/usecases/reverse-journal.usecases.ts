@@ -14,6 +14,7 @@ export class ReverseJournalUseCaseParams {
     public readonly changeReasonDetail: string,
     public readonly postingDate?: string,
     public readonly acknowledgedWarningCodes?: string[],
+    public readonly idempotencyKey?: string,
   ) {}
 }
 
@@ -37,6 +38,7 @@ export class ReverseJournalUseCase implements UseCase<DataState<ReverseJournalRe
           changeReasonDetail: params.changeReasonDetail,
           postingDate: params.postingDate,
           acknowledgedWarningCodes: params.acknowledgedWarningCodes,
+          idempotencyKey: params.idempotencyKey,
         },
         session,
       );
