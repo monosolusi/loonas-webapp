@@ -12,6 +12,8 @@ export class AccountingPeriodModel implements AbstractModel {
     public readonly closedByUserId: string | null,
     public readonly closedAt: string | null,
     public readonly createdAt: string,
+    public readonly canClose: boolean,
+    public readonly canReopen: boolean,
   ) {}
 
   public static fromJson(data: Record<string, any>): AccountingPeriodModel {
@@ -25,6 +27,8 @@ export class AccountingPeriodModel implements AbstractModel {
       data["closed_by"] ?? null,
       data["closed_at"] ?? null,
       data["created_at"] ?? "",
+      data["can_close"] ?? true,
+      data["can_reopen"] ?? false,
     );
   }
 
@@ -39,6 +43,8 @@ export class AccountingPeriodModel implements AbstractModel {
       closedByUserId: this.closedByUserId,
       closedAt: this.closedAt,
       createdAt: this.createdAt,
+      canClose: this.canClose,
+      canReopen: this.canReopen,
     });
   }
 }

@@ -11,6 +11,8 @@ type AccountingPeriodEntityConstructor = {
   closedByUserId: string | null;
   closedAt: string | null;
   createdAt: string;
+  canClose: boolean;
+  canReopen: boolean;
 };
 
 export class AccountingPeriodEntity implements AbstractEntity {
@@ -23,6 +25,8 @@ export class AccountingPeriodEntity implements AbstractEntity {
   public readonly closedByUserId: string | null;
   public readonly closedAt: string | null;
   public readonly createdAt: string;
+  public readonly canClose: boolean;
+  public readonly canReopen: boolean;
 
   constructor(args: AccountingPeriodEntityConstructor) {
     this.id = args.id;
@@ -34,6 +38,8 @@ export class AccountingPeriodEntity implements AbstractEntity {
     this.closedByUserId = args.closedByUserId;
     this.closedAt = args.closedAt;
     this.createdAt = args.createdAt;
+    this.canClose = args.canClose;
+    this.canReopen = args.canReopen;
   }
 
   public get label(): string {
