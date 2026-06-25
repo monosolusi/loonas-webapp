@@ -12,6 +12,9 @@ import {
   ListLedgerAccountsParams,
   GetAccountBalanceParams,
   ListLedgerEntriesParams,
+  CreateLedgerAccountParams,
+  UpdateLedgerAccountParams,
+  DeleteLedgerAccountParams,
 } from "@/features/accounting/domain/repositories/ledger-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
@@ -93,6 +96,63 @@ export class LedgerAccountServiceImpl implements LedgerAccountService {
           totalPages: result.meta?.total_pages ?? 1,
         },
       };
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async create(params: CreateLedgerAccountParams, session: SessionEntity): Promise<LedgerAccountModel> {
+    try {
+      const body: Record<string, any> = {
+        code: params.code,
+        name: params.name,
+        type: params.type,
+      };
+      if (params.parentId) body["parent"] = { id: params.parentId };
+
+      const result = await this.http.request(
+        { path: "/accounting/accounts", method: "POST", body, session },
+        { headers: { "Idempotency-Key": params.idempotencyKey } },
+      );
+
+      return LedgerAccountModel.fromJson(result);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async update(params: UpdateLedgerAccountParams, session: SessionEntity): Promise<LedgerAccountModel> {
+    try {
+      const body: Record<string, any> = {};
+      if (params.name !== undefined) body["name"] = params.name;
+      if (params.code !== undefined) body["code"] = params.code;
+      if (params.type !== undefined) body["type"] = params.type;
+      // Three-state sentinel: undefined = omit, null = clear, { id } = set
+      if (params.parent !== undefined) body["parent"] = params.parent;
+
+      const result = await this.http.request({
+        path: `/accounting/accounts/${params.id}`,
+        method: "PUT",
+        body,
+        session,
+      });
+
+      return LedgerAccountModel.fromJson(result);
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async delete(params: DeleteLedgerAccountParams, session: SessionEntity): Promise<void> {
+    try {
+      await this.http.request({
+        path: `/accounting/accounts/${params.id}`,
+        method: "DELETE",
+        session,
+      });
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

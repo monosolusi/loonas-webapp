@@ -35,8 +35,32 @@ export type ListLedgerEntriesResult = {
   meta: PaginationMeta;
 };
 
+export type CreateLedgerAccountParams = {
+  code: string;
+  name: string;
+  type: AccountType;
+  parentId?: string;
+  idempotencyKey: string;
+};
+
+export type UpdateLedgerAccountParams = {
+  id: string;
+  name?: string;
+  code?: string;
+  type?: AccountType;
+  // undefined = omit (unchanged), null = clear parent, { id } = set new parent
+  parent?: { id: string } | null;
+};
+
+export type DeleteLedgerAccountParams = {
+  id: string;
+};
+
 export interface LedgerAccountRepository {
   list(params: ListLedgerAccountsParams, session: SessionEntity): Promise<DataState<ListLedgerAccountsResult>>;
   getBalance(accountId: string, params: GetAccountBalanceParams, session: SessionEntity): Promise<DataState<AccountBalanceEntity>>;
   listEntries(accountId: string, params: ListLedgerEntriesParams, session: SessionEntity): Promise<DataState<ListLedgerEntriesResult>>;
+  create(params: CreateLedgerAccountParams, session: SessionEntity): Promise<DataState<LedgerAccountEntity>>;
+  update(params: UpdateLedgerAccountParams, session: SessionEntity): Promise<DataState<LedgerAccountEntity>>;
+  delete(params: DeleteLedgerAccountParams, session: SessionEntity): Promise<DataState<void>>;
 }
