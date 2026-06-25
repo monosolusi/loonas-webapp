@@ -10,6 +10,8 @@ import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { FIXED_COST_SWR_KEYS } from "@/features/fixed-cost/presentations/constants/swr-keys";
 import { useCreateFixedCost } from "@/features/fixed-cost/presentations/hooks/use-create-fixed-cost";
+import { FixedCostCategory } from "@/features/fixed-cost/domain/enums/fixed-cost-category";
+import { FixedCostCategoryRadio } from "@/app/(authenticated)/settings/fixed-costs/_components/fixed-cost-category-radio";
 
 type FixedCostCreateDialogProps = {
   open: boolean;
@@ -20,16 +22,18 @@ export function FixedCostCreateDialog({ open, onClose }: FixedCostCreateDialogPr
   const { showToast } = useToast();
   const { trigger, isMutating } = useCreateFixedCost();
   const [name, setName] = useState("");
+  const [category, setCategory] = useState<FixedCostCategory>("general");
 
   const handleClose = () => {
     setName("");
+    setCategory("general");
     onClose();
   };
 
   const handleCreate = async () => {
     if (!name.trim() || isMutating) return;
     try {
-      await trigger({ name: name.trim() });
+      await trigger({ name: name.trim(), category });
       await revalidateSWRKey(FIXED_COST_SWR_KEYS.LIST_FIXED_COSTS);
       showToast("Biaya tetap berhasil ditambahkan", "success");
       handleClose();
@@ -48,6 +52,7 @@ export function FixedCostCreateDialog({ open, onClose }: FixedCostCreateDialogPr
           onChange={setName}
           required
         />
+        <FixedCostCategoryRadio value={category} onChange={setCategory} />
         <DialogFooter>
           <SecondaryButton outlined label="Batal" onClick={handleClose} />
           <PrimaryButton

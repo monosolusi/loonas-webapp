@@ -10,27 +10,34 @@ import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { FIXED_COST_SWR_KEYS } from "@/features/fixed-cost/presentations/constants/swr-keys";
 import { useUpdateFixedCost } from "@/features/fixed-cost/presentations/hooks/use-update-fixed-cost";
+import { FixedCostCategory } from "@/features/fixed-cost/domain/enums/fixed-cost-category";
 import { useFixedCostMaster } from "@/app/(authenticated)/settings/fixed-costs/_providers/fixed-cost-master-provider";
+import { FixedCostCategoryRadio } from "@/app/(authenticated)/settings/fixed-costs/_components/fixed-cost-category-radio";
 
 export function FixedCostEditDialog() {
   const { showToast } = useToast();
   const { trigger, isMutating } = useUpdateFixedCost();
   const { editingItem, setEditingItem } = useFixedCostMaster();
   const [name, setName] = useState("");
+  const [category, setCategory] = useState<FixedCostCategory>("general");
 
   useEffect(() => {
-    if (editingItem) setName(editingItem.name);
+    if (editingItem) {
+      setName(editingItem.name);
+      setCategory(editingItem.category);
+    }
   }, [editingItem]);
 
   const handleClose = () => {
     setName("");
+    setCategory("general");
     setEditingItem(null);
   };
 
   const handleUpdate = async () => {
     if (!editingItem || !name.trim() || isMutating) return;
     try {
-      await trigger({ id: editingItem.id, name: name.trim() });
+      await trigger({ id: editingItem.id, name: name.trim(), category });
       await revalidateSWRKey(FIXED_COST_SWR_KEYS.LIST_FIXED_COSTS);
       showToast("Biaya tetap berhasil diubah", "success");
       handleClose();
@@ -49,6 +56,7 @@ export function FixedCostEditDialog() {
           onChange={setName}
           required
         />
+        <FixedCostCategoryRadio value={category} onChange={setCategory} />
         <DialogFooter>
           <SecondaryButton outlined label="Batal" onClick={handleClose} />
           <PrimaryButton

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { StatusChip } from "@/core/presentations/components/status-chip";
 import { FixedCostEntity } from "@/features/fixed-cost/domain/entities/fixed-cost";
 import { useFixedCostMaster } from "@/app/(authenticated)/settings/fixed-costs/_providers/fixed-cost-master-provider";
 
@@ -12,8 +13,13 @@ export function FixedCostMasterRow({ item }: FixedCostMasterRowProps) {
   const { setEditingItem, setDeletingItem } = useFixedCostMaster();
 
   return (
-    <div className="grid grid-cols-[1fr_120px] items-center border-b border-neutral-100 px-6 py-4 last:border-b-0">
+    <div className="grid grid-cols-[1fr_auto_120px] items-center gap-x-3 border-b border-neutral-100 px-6 py-4 last:border-b-0">
       <span className="text-sm font-medium text-neutral-500">{item.name}</span>
+      <div>
+        {item.category === "production" ? (
+          <StatusChip label="Produksi" variant="primary" compact />
+        ) : null}
+      </div>
       <div className="flex flex-row items-center justify-end gap-x-2">
         <button
           type="button"
