@@ -19,6 +19,7 @@ type LedgerAccountComboboxProps = {
   required?: boolean;
   disabled?: boolean;
   excludeIds?: string[];
+  filter?: (account: LedgerAccountEntity) => boolean;
 };
 
 export function LedgerAccountCombobox(props: LedgerAccountComboboxProps) {
@@ -28,13 +29,14 @@ export function LedgerAccountCombobox(props: LedgerAccountComboboxProps) {
     const excluded = new Set(props.excludeIds ?? []);
     return accounts
       .filter((a) => !excluded.has(a.id))
+      .filter((a) => (props.filter ? props.filter(a) : true))
       .map((a) => ({
         id: a.id,
         label: `${a.code} — ${a.name}`,
         description: a.type,
         entity: a,
       }));
-  }, [accounts, props.excludeIds]);
+  }, [accounts, props.excludeIds, props.filter]);
 
   const selected = useMemo<LedgerAccountOption | null>(() => {
     if (!props.value) return null;
