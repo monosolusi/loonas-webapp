@@ -19,11 +19,11 @@ const TABS: TabDefinition[] = [
   { id: "arus-kas", label: "Arus Kas", disabled: false, panelId: "panel-arus-kas" },
   { id: "trial-balance", label: "Neraca Saldo", disabled: false, panelId: "panel-trial-balance" },
   { id: "buku-besar", label: "Buku Besar", disabled: false, panelId: "panel-buku-besar" },
-  { id: "calk", label: "CaLK", disabled: true, panelId: "panel-calk" },
+  { id: "calk", label: "CALK", disabled: false, panelId: "panel-calk" },
 ];
 
 type ReportsTabStripProps = {
-  activeTab: "neraca" | "trial-balance" | "buku-besar" | "laba-rugi" | "arus-kas";
+  activeTab: "neraca" | "trial-balance" | "buku-besar" | "laba-rugi" | "arus-kas" | "calk";
   onTabChange?: (id: string) => void;
 };
 
