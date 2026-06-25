@@ -25,6 +25,7 @@ import { ArusKasModel } from "@/features/accounting/data/models/arus-kas";
 import { TrialBalanceReportModel } from "@/features/accounting/data/models/trial-balance";
 import { TrialBalanceLineModel } from "@/features/accounting/data/models/trial-balance-line";
 import { GeneralLedgerReportModel } from "@/features/accounting/data/models/general-ledger";
+import { CalkModel } from "@/features/accounting/data/models/calk";
 
 export class ReportRepositoryImpl implements ReportRepository {
   constructor(private readonly service: ReportService) {}
@@ -96,7 +97,8 @@ export class ReportRepositoryImpl implements ReportRepository {
   public async getCalk(params: GetCalkRepoParams, session: SessionEntity): Promise<DataState<CalkReportData>> {
     try {
       const result = await this.service.getCalk(params, session);
-      return new DataSuccess({ data: result.data });
+      const model = CalkModel.fromJson(result.data);
+      return new DataSuccess(model.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

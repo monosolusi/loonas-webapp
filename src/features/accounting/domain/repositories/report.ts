@@ -7,6 +7,7 @@ import { ArusKasReportEntity } from "@/features/accounting/domain/entities/arus-
 import { TrialBalanceReportEntity } from "@/features/accounting/domain/entities/trial-balance";
 import { TrialBalanceLineEntity } from "@/features/accounting/domain/entities/trial-balance-line";
 import { GeneralLedgerReportEntity } from "@/features/accounting/domain/entities/general-ledger";
+import { CalkReportEntity } from "@/features/accounting/domain/entities/calk";
 
 export type GetNeracaRepoParams = {
   readonly asOf: string;
@@ -63,7 +64,7 @@ export type TrialBalanceLinesData = {
   readonly counterparts: TrialBalanceLineEntity[];
   readonly meta: PaginationMeta;
 };
-export type CalkReportData = { readonly data: Record<string, any> };
+export type CalkReportData = CalkReportEntity;
 
 export interface ReportRepository {
   getNeraca(params: GetNeracaRepoParams, session: SessionEntity): Promise<DataState<NeracaReportData>>;
