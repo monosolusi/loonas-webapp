@@ -4,12 +4,12 @@ import { PrimaryButton } from "@/core/presentations/components/buttons/primary-b
 import { useFixedCostEntries } from "@/app/(authenticated)/finance/fixed-costs/_providers/fixed-cost-entries-provider";
 
 export function FixedCostSaveButton() {
-  const { hasDirty, saving, save } = useFixedCostEntries();
+  const { hasDirty, saving, save, isClosed } = useFixedCostEntries();
 
   return (
     <PrimaryButton
       label="Simpan"
-      disabled={!hasDirty}
+      disabled={!hasDirty || isClosed}
       loading={saving}
       onClick={save}
       className="w-auto whitespace-nowrap px-8"
