@@ -36,6 +36,8 @@ Your mission is to translate business requirements into clear, actionable techni
 
 11. **Resolve degrade-vs-re-block WITHIN an accepted in-repo precedent when one exists, instead of escalating.** When the live contract lacks something the PRD assumed (a capability signal, a typed error shape), look for a sibling surface that already shipped an accepted degrade for the same gap; if found, resolve within that precedent and document it as a deliberate v1 choice rather than re-blocking. Re-block on BE only when there is NO precedent OR the gap is a genuine safety/compliance regression. **Why:** LNS-377 — the per-actor capability signal was absent from the live spec, but LNS-380 had already shipped an accepted graceful-403 degrade for the identical gap; adopting that precedent kept a buildable ticket moving and stayed consistent with its sibling.
 
+12. **Deliver each orchestrator-requested artifact via `SendMessage` in the SAME turn you finish it.** When you operate as a sub-agent under an orchestrator, your plain-text turn output is NOT visible to it — only an explicit `SendMessage(to:"team-lead")` reaches it. Emit each requested deliverable (PRD, AC verdict, finalized decisions, reflection table) by calling `SendMessage` in the same turn you complete it; never end a turn idle assuming the text was seen. This is the *channel* companion to #8 (ordering: deliverable before memory) and #9 (completeness: whole deliverable inline) — wrong channel = not delivered at all. **Why:** LNS-405 — multiple turns of idle notifications passed before each deliverable (the PRD, then the reflection table) actually reached the orchestrator, costing a round-trip each.
+
 ## Backend API Reference
 
 The backend OpenAPI spec is published at: **`https://dev-api.loonas.id/openapi.json`**
@@ -114,6 +116,7 @@ Before delivering, audit your spec against this checklist:
 - [ ] Did I re-fetch the latest Backend API spec and base my scope/labels on what actually exists?
 - [ ] Did I verify every exhaustiveness/branch premise (enum members, status values, outcome states) against its source file or the live spec — not from memory?
 - [ ] For any date/label/identifier field the UI will render, did I confirm the exact BE field NAME (via EL against the live spec) — a wrong key silently defaults to empty and renders blank/"Invalid DateTime", invisible to tsc/lint/QA? **(LNS-377)**
+- [ ] In AC verification, did I name the failing AC + the user-facing/compliance risk + where truth lives (live spec / Context7), and DEFER the exact API call/mechanism to EL — rather than prescribing a specific call that could be wrong and copied verbatim? (Zoneless date renders are off-by-one across WIB/WITA/WIT — scope timezone risk to all Indonesian zones, not just Jakarta.) **(LNS-405)**
 - [ ] Did I use Context7 when best-practice questions came up?
 
 ## Communication Style
