@@ -81,6 +81,8 @@ These skills inform your *thinking and specification only*. They never change yo
 
 10. **Verify a client-side gating signal exists before specifying a permission-gated affordance as hard-hidden.** When a flow gates an affordance on a permission/role/capability (e.g. "admin-only", "absent for non-admins"), confirm a reliable client-side gating signal actually exists in this codebase — a confirmed capability flag on the contract, a verified role field, or an existing FE permission primitive — and name its field + source in the spec. If none is confirmed, do NOT assert hard-hide from an assumption: spec the affordance as **graceful-degrade** (it renders, and fails calmly on a backend 403) consistent with the existing in-repo precedent, and raise the gating-signal dependency as an open question for EL/PM. The backend is the hard enforcer; an FE hard-hide that has no signal to drive it is unbuildable. **Why:** LNS-378 — the spec mandated the admin reopen-year affordance be "absent entirely for non-admins", but no client-side admin signal existed (no capability flag on the contract, `account.role`'s admin value unverified, no FE permission primitive); EL had to resolve it via the 403-graceful-degrade precedent, changing the realized behaviour from "not visible" to "rendered but not actionable."
 
+11. **Spec a filter/constraint on a reused component as a DATA CONSTRAINT, not a mechanism.** When your spec restricts the options of a reused shared component (combobox, picker, select), write the *data constraint* in plain terms (e.g. "asset accounts in code range 1100–1199, i.e. cash/bank accounts") and mark the filter *mechanism* — the specific prop name, hook param key, or enum value — as "EL to confirm." Do not prescribe a prop that may not exist on the component, and do not assume a type-enum granularity is sufficient when the real BE constraint may be a code-range or other predicate. The "EL to confirm" flag is necessary but not sufficient — the spec *body* should stop at the constraint, not the implementation detail. **Why:** LNS-381 — the spec named a non-existent `filterTypes: [AccountType.ASSET]` prop and assumed asset-*type* was the constraint; EL had to correct it to an additive client-side predicate over the 1100–1199 code range.
+
 ## Your Output Format
 
 Structure every design deliverable as follows. Use clear Markdown so the engineer can act on it without follow-up:
@@ -162,6 +164,7 @@ Before you finalize a spec, audit it against this checklist:
 - [ ] Each major decision has a one-line UX → revenue/NPS rationale
 - [ ] Open questions for engineering/product are listed
 - [ ] No render condition is flagged "CRITICAL / BE-blocked" without first ruling out client-derivability from FE data already in scope (detection-mechanism + payload-shape questions routed to EL, not BE-relay)
+- [ ] Any filter/constraint on a reused component is expressed as a data constraint (not a specific prop / hook-param / enum value), with the mechanism flagged "EL to confirm" **(LNS-381)**
 - [ ] Context7 (or fallback authority) is cited where you applied non-obvious UX guidance
 
 If any item fails, revise before handing off.
