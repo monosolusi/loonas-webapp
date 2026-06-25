@@ -2,7 +2,7 @@ import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
+import { ClosePeriodResult } from "@/features/accounting/domain/entities/close-warning";
 import { AccountingPeriodRepository } from "@/features/accounting/domain/repositories/accounting-period";
 
 export class ClosePeriodUseCaseParams {
@@ -13,13 +13,13 @@ export class ClosePeriodUseCaseParams {
   ) {}
 }
 
-export class ClosePeriodUseCase implements UseCase<DataState<AccountingPeriodEntity>, ClosePeriodUseCaseParams> {
+export class ClosePeriodUseCase implements UseCase<DataState<ClosePeriodResult>, ClosePeriodUseCaseParams> {
   constructor(
     private readonly repo: AccountingPeriodRepository,
     private readonly sessionRepo: SessionRepository,
   ) {}
 
-  public async execute(params: ClosePeriodUseCaseParams): Promise<DataState<AccountingPeriodEntity>> {
+  public async execute(params: ClosePeriodUseCaseParams): Promise<DataState<ClosePeriodResult>> {
     try {
       const session = await this.sessionRepo.retrieve();
       if (session instanceof DataFailed) return session;

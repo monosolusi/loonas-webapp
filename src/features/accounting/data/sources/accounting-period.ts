@@ -1,7 +1,8 @@
 import { HttpRequest } from "@/core/helpers/http-request";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { AccountingPeriodModel } from "@/features/accounting/data/models/accounting-period";
-import { AccountingPeriodService, ListPeriodsServiceResult } from "@/features/accounting/domain/sources/accounting-period";
+import { CloseWarningModel } from "@/features/accounting/data/models/close-warning";
+import { AccountingPeriodService, ClosePeriodServiceResult, ListPeriodsServiceResult } from "@/features/accounting/domain/sources/accounting-period";
 import { ClosePeriodParams, ListPeriodsParams, ReopenPeriodParams } from "@/features/accounting/domain/repositories/accounting-period";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
@@ -35,7 +36,7 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
     }
   }
 
-  public async close(params: ClosePeriodParams, session: SessionEntity): Promise<AccountingPeriodModel> {
+  public async close(params: ClosePeriodParams, session: SessionEntity): Promise<ClosePeriodServiceResult> {
     try {
       const body: Record<string, any> = params.reason ? { reason: params.reason } : {};
 
@@ -44,7 +45,10 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
         { headers: { "Idempotency-Key": params.idempotencyKey } },
       );
 
-      return AccountingPeriodModel.fromJson(result);
+      return {
+        period: AccountingPeriodModel.fromJson(result),
+        warnings: Array.isArray(result?.warnings) ? result.warnings.map(CloseWarningModel.fromJson) : [],
+      };
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
