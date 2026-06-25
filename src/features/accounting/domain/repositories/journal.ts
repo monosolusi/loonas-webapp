@@ -39,6 +39,7 @@ export type ReverseJournalParams = {
   changeReasonDetail: string;
   postingDate?: string;
   acknowledgedWarningCodes?: string[];
+  idempotencyKey?: string;
 };
 
 export type JournalWriteResult = {

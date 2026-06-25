@@ -21,6 +21,7 @@ type ReverseJournalTriggerParams = {
   changeReasonDetail: string;
   postingDate?: string;
   acknowledgedWarningCodes?: string[];
+  idempotencyKey?: string;
 };
 type ReverseJournalFetcherParams = ReverseJournalTriggerParams & { clerk: ReturnType<typeof useClerk> };
 
@@ -38,6 +39,7 @@ async function ReverseJournalFetcher(
       arg.changeReasonDetail,
       arg.postingDate,
       arg.acknowledgedWarningCodes,
+      arg.idempotencyKey,
     ),
   );
   if (result instanceof DataFailed) throw result.error;
