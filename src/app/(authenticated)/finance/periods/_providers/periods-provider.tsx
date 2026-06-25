@@ -6,6 +6,7 @@ import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
+import { CloseWarning } from "@/features/accounting/domain/entities/close-warning";
 import { useListPeriods } from "@/features/accounting/presentations/hooks/use-list-periods";
 import { useClosePeriod } from "@/features/accounting/presentations/hooks/use-close-period";
 import { useReopenPeriod } from "@/features/accounting/presentations/hooks/use-reopen-period";
@@ -36,6 +37,9 @@ type PeriodsContextValue = {
   reopenPeriodError: string | null;
   isReopening: boolean;
   handleReopenPeriod: (reason: string) => Promise<boolean>;
+  // Advisory state
+  pendingAdvisories: Record<string, CloseWarning[]>;
+  dismissAdvisory: (periodId: string) => void;
 };
 
 const PeriodsContext = createContext<PeriodsContextValue | null>(null);
@@ -65,6 +69,9 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
   const [closingPeriod, setClosingPeriod] = useState<AccountingPeriodEntity | null>(null);
   const [closePeriodError, setClosePeriodError] = useState<string | null>(null);
 
+  // Advisory state
+  const [pendingAdvisories, setPendingAdvisories] = useState<Record<string, CloseWarning[]>>({});
+
   // Reopen dialog state
   const [reopeningPeriod, setReopeningPeriod] = useState<AccountingPeriodEntity | null>(null);
   const [reopenPeriodError, setReopenPeriodError] = useState<string | null>(null);
@@ -89,14 +96,25 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
     setReopenPeriodError(null);
   }, []);
 
+  const dismissAdvisory = useCallback((id: string) => {
+    setPendingAdvisories((prev) => {
+      const n = { ...prev };
+      delete n[id];
+      return n;
+    });
+  }, []);
+
   const handleClosePeriod = useCallback(
     async (reason: string): Promise<boolean> => {
       if (!closingPeriod) return false;
       setClosePeriodError(null);
       const idempotencyKey = crypto.randomUUID();
       try {
-        await triggerClose({ id: closingPeriod.id, idempotencyKey, reason: reason || undefined });
+        const res = await triggerClose({ id: closingPeriod.id, idempotencyKey, reason: reason || undefined });
         await revalidateSWRKey(ACCOUNTING_SWR_KEYS.LIST_ACCOUNTING_PERIODS);
+        if (res.warnings.length > 0) {
+          setPendingAdvisories((prev) => ({ ...prev, [closingPeriod.id]: res.warnings }));
+        }
         setClosingPeriod(null);
         showToast("Periode berhasil ditutup.", "success");
         return true;
@@ -112,7 +130,11 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
             showToast(ErrorCodes.PERIOD_ALREADY_CLOSED.message, "error");
           } else if (err.httpCode === 422) {
             // AC-5: inline warning inside the dialog — set error message, do NOT close dialog
-            setClosePeriodError(ErrorCodes.PERIOD_NOT_DRAINED.message);
+            if (err.code === ErrorCodes.PPH_FINAL_NOT_POSTED.code) {
+              setClosePeriodError(ErrorCodes.PPH_FINAL_NOT_POSTED.message);
+            } else {
+              setClosePeriodError(ErrorCodes.PERIOD_NOT_DRAINED.message);
+            }
           } else {
             showToast("Terjadi kesalahan. Silakan coba lagi.", "error");
           }
@@ -188,6 +210,8 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
         reopenPeriodError,
         isReopening,
         handleReopenPeriod,
+        pendingAdvisories,
+        dismissAdvisory,
       }}
     >
       {children}
