@@ -10,7 +10,8 @@
 - [KYC rejected escape hatch LNS-387](project_kyc_rejected_escape_hatch.md) — RejectedNextAction sibling pattern, div→button a11y upgrade, text-link weight for secondary escape actions
 - [Trial Balance + General Ledger viewers LNS-375](project_tb_gl_report_viewers.md) — inline drill-down decision, GL SummaryCard reuse, copy strings, tab routing architecture
 - [Laba Rugi + Arus Kas viewers LNS-374](project_laba_rugi_arus_kas_spec.md) — comparison column dash convention, non-cash disclosure placement, range default, empty body copy, tab-strip enablement needed
-- [Mark shape-dependent layout provisional](feedback_provisional_shape_dependent_layout.md) — when section structure depends on an unconfirmed schema, mark it PROVISIONAL and minimize speculative detail (additive to flagging the BE shape) (LNS-374)
+- [Mark shape-dependent layout provisional](feedback_provisional_shape_dependent_layout.md) — when section structure depends on an unconfirmed schema, mark it PROVISIONAL and minimize speculative detail (additive to flagging the BE shape) (LNS-374, recurred LNS-376)
+- [Document-viewer conventions](feedback_document_viewer_conventions.md) — max-w-prose on article not card, leading-7 prose, <dl>-not-<table>, prose-shaped skeleton, neutral-100 divider caveat, "Per {date}" / "Catatan {ref}" SAK-EMKM copy (LNS-376)
 - [Journal-line editor LNS-364](project_journal_line_editor_spec.md) — 4-col grid, coerce money model, column-lock UX, balance indicator placement, add/remove affordances, a11y annotations
 - [Opening Balance copy LNS-344](project_lns344_opening_balance_copy.md) — Item A migration notice callout placement + copy; Item B 422 NORMAL_BALANCE_HINT two-case design, per-line list, accumulated-deficit path + CTA
 - [Tax Posture settings LNS-380](project_tax_posture_lns380.md) — stacked sections, StatusChip for is_pkp, null-triad defaults framing, 403 state, a11y open items for EL

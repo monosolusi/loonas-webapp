@@ -10,3 +10,5 @@ Engineer used `style={{ left: 0, width: 0 }}` on a `<span>` indicator plus `useE
 **Why:** Rule 13 forbids the `style` prop on JSX elements. Dynamic pixel-value positioning should use CSS custom properties set via className or tracked in useState and applied via Tailwind arbitrary values `left-[var(--x)]`.
 
 **How to apply:** When reviewing animated/positional UI components (tab strips, sliders, progress bars), check if `style` props or imperative `element.style.x =` patterns are used for pixel-offset animation. These are always Rule 13 violations unless the positions come from a third-party positioning library (Floating UI, Popper, etc.).
+
+**Sanctioned exception — `reports-tab-strip.tsx`:** The sliding indicator `style={{ left: 0, width: 0 }}` at line 121 was reviewed in LNS-373 and accepted with a comment in the file. In future reviews touching `reports-tab-strip.tsx`, treat this specific instance as pre-existing + sanctioned — do not re-raise it as a new violation. Only flag if the pattern spreads to other components.

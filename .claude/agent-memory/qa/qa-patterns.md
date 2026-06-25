@@ -323,6 +323,12 @@ metadata:
 - **When a shared component is relocated to a new path, grep ALL consumers and confirm they import from the new location.** tsc exit 0 confirms resolution, but grepping first surfaces the full consumer set for the report. Pattern: `grep -rn "ComponentName" src/` — review every import path in results before declaring clean.
 - **Why:** LNS-372 — `JournalWarningItem` was moved from `/new/_components/` to `features/accounting/presentations/components/`. Both the `/[id]` ack-view and the `/new` create-flow warning dialog needed to import from the new path. tsc caught any remaining stale paths, but grepping confirmed the full consumer set explicitly.
 
+## Provider Empty-State Parity Check (LNS-376)
+
+- **When a report provider is added, always verify the shellState useMemo includes a `notes/sections/groups.length === 0 → "empty"` branch.** Every sibling report provider in this codebase gates "empty" explicitly on a data-presence check. Omitting this makes `*EmptyBody` components unreachable — the feature silently renders an empty viewer with no messaging instead.
+- **Pattern to check:** `if (hookResult.data && hookResult.data.{collection}.length === 0) return "empty"` before the `return "success"` branch. LNS-376 calk-provider omitted this; notes array can be empty (0-note response for unseeded tenant periods) and the `CalkEmptyBody` was dead code as a result.
+- **Also verify in the impl:** the `shellState === "empty"` branch is typically present in the impl file but is only reachable if the provider emits it. Both sides must match.
+
 ## Error-Branch refresh: null Pattern (LNS-372, LNS-373)
 
 - **When verifying any get-hook, check BOTH the success branch AND the error branch for `refresh: mutate` vs `refresh: null`.** An error component's retry button is a no-op if the hook returns `refresh: null` in the error branch — the provider's `onRetry` guard (`if (hookResult.refresh)`) silently swallows the click.
