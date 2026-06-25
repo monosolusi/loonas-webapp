@@ -307,3 +307,23 @@ metadata:
 - `AccumulatedDeficitBlock` has `role="alert" aria-live="assertive"` + `tabIndex={-1}` + `useRef` focus-on-mount — all on a SINGLE layout branch (no dual-layout a11y risk).
 - Browser smoke for `/finance/reports` (Laba Rugi tab) requires a live authenticated Clerk session + seeded opening-balance journal with `account_code === "3200"` — not achievable in headless QA. Page is auth-gated. Flag for manual smoke.
 - Build output: `/finance/reports` = 22.3 kB (up from 14.6 kB at LNS-373 baseline — opening-balance read stack added to bundle). 45 pages total. All three gates exit 0.
+
+## Shared Working Tree Race — Mid-Edit Stability (LNS-372)
+
+- **Re-run tsc before asserting a hard FAIL when errors cluster on a single file under active SWE edit.** If tsc errors all point to one file that looks newly created or is being deleted/replaced by SWE, the first run may have captured a mid-edit snapshot. Run tsc a second time before issuing a definitive verdict. If the second run exits 0, note "initial run captured mid-edit tree — stable run exit 0" and report the stable result. Never issue a hard-FAIL off a single unstable run when error localization suggests concurrent edits.
+- **Why:** LNS-372 — first QA report called tsc FAIL exit 2 citing errors in `journal-reverse-warning-dialog.tsx`, which SWE was deleting at that exact moment. EL verified ground truth, found tsc was exit 0, and the cited file no longer existed. The hard-FAIL caused a detour round-trip.
+
+## Dialog-Split Refactor Focus-Trap Check (LNS-372)
+
+- **When a dialog is refactored into chrome + sub-view components, always read the chrome file to count `LoonasDialog` instances.** Sub-view files (`journal-reverse-form.tsx`, `journal-reverse-ack-view.tsx`) are rendered inside the chrome and do not contain a `LoonasDialog` — only the chrome file (`journal-reverse-dialog.tsx`) is load-bearing for focus-trap count. Grepping sub-views alone cannot prove single-dialog conformance.
+- **Why:** LNS-372 — the dialog was split into chrome + two sub-views. Correct verification required reading `journal-reverse-dialog.tsx` first to confirm one `LoonasDialog`, then the sub-views to confirm body-mode branching. The chrome is the only source of truth for focus-trap count.
+
+## Shared Component Move — Consumer Grep (LNS-372)
+
+- **When a shared component is relocated to a new path, grep ALL consumers and confirm they import from the new location.** tsc exit 0 confirms resolution, but grepping first surfaces the full consumer set for the report. Pattern: `grep -rn "ComponentName" src/` — review every import path in results before declaring clean.
+- **Why:** LNS-372 — `JournalWarningItem` was moved from `/new/_components/` to `features/accounting/presentations/components/`. Both the `/[id]` ack-view and the `/new` create-flow warning dialog needed to import from the new path. tsc caught any remaining stale paths, but grepping confirmed the full consumer set explicitly.
+
+## Error-Branch refresh: null Pattern (LNS-372, LNS-373)
+
+- **When verifying any get-hook, check BOTH the success branch AND the error branch for `refresh: mutate` vs `refresh: null`.** An error component's retry button is a no-op if the hook returns `refresh: null` in the error branch — the provider's `onRetry` guard (`if (hookResult.refresh)`) silently swallows the click.
+- **Recurring pattern:** LNS-373 `use-get-neraca-report.ts` error branch returned `refresh: null` (AC-7 FAIL). LNS-372 `use-get-journal.ts` initially had the same gap (AC-8 PARTIAL → fixed to `refresh: mutate`). Check both branches on every get-hook review.

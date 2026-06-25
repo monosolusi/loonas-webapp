@@ -113,7 +113,10 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   self-contained handler in `_payment-methods/{type}/`.
 - **Chrome page title**: when adding a new route under `(authenticated)/`, also add an entry to `ROUTE_MAP` in
   `src/app/(authenticated)/_components/header-title.tsx` — otherwise the chrome header silently falls back to
-  "Dashboard".
+  "Dashboard". `ROUTE_MAP` is keyed by **literal pathnames only** — it does NOT match `[param]` bracket keys
+  (`usePathname()` returns real ids, e.g. `/finance/journals/abc-123`, so a `"/finance/journals/[id]"` key never
+  matches and the title falls back). For a dynamic route, add a `segments[]`-based `if` block in the `useMemo`
+  (mirror `/accounts/:id`), not a bracket key.
 
 ### HTTP Requests
 

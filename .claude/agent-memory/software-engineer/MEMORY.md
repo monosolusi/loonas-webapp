@@ -15,7 +15,12 @@
 - [Use case owns business decisions](feedback_use_case_owns_business_decisions.md) — idempotency-key gen / retry identity belongs in execute(), not the service; key-in-service mints a fresh key per call and defeats idempotency (LNS-117 M2)
 - [Move means delete the source](feedback_move_means_delete_source.md) — "move/relocate" = delete the old files; verify the old dir is empty + nothing imports the old path (LNS-117)
 - [Grid child count walkthrough](feedback_grid_child_count_walkthrough.md) — a conditional bare child of grid-cols-N displaces siblings when shown; count children in both states, wrap conditional+sibling in a column div (LNS-117)
+- [Single dialog warn→ack](feedback_single_dialog_warn_ack.md) — warn→ack flow = inline body-mode switch in ONE LoonasDialog; second sibling dialog = second focus trap (LNS-372)
+- [Route map dynamic segment](feedback_route_map_dynamic_segment.md) — dynamic route header titles use if-block in useMemo, NOT bracket key in ROUTE_MAP (usePathname returns real UUIDs)
+- [Table row nested interactive](feedback_table_row_nested_interactive.md) — expand + ActionMenu: outer div grid, button col-span for expand, ActionMenu sibling in last col — never nest ActionMenu inside button
+- [Provider Rule 7 exception](feedback_provider_rule7_exception.md) — page-level orchestrator provider may import _components/ directly; Rule 7 bars feature-level providers, not co-located page providers
 
 ## Project
 
 - [LNS-379 opening balance wizard](project_lns379_opening_balance_wizard.md) — key decisions: 3200 FE-computed residual, tri-state GET hook, idempotency key pattern, balance gate = hasAnyNonZeroInput
+- [LNS-372 journal detail + reverse action](project_lns372_journal_detail_reverse.md) — shipped 2026-06-25, PR #98; warn→ack single-dialog pattern, page-level provider Rule 7 exception, dynamic ROUTE_MAP if-block
