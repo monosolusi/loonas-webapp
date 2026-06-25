@@ -2,6 +2,7 @@ import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state"
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
+import { ClosePeriodResult } from "@/features/accounting/domain/entities/close-warning";
 import {
   AccountingPeriodRepository,
   ClosePeriodParams,
@@ -24,10 +25,10 @@ export class AccountingPeriodRepositoryImpl implements AccountingPeriodRepositor
     }
   }
 
-  public async close(params: ClosePeriodParams, session: SessionEntity): Promise<DataState<AccountingPeriodEntity>> {
+  public async close(params: ClosePeriodParams, session: SessionEntity): Promise<DataState<ClosePeriodResult>> {
     try {
-      const model = await this.service.close(params, session);
-      return new DataSuccess(model.toEntity());
+      const r = await this.service.close(params, session);
+      return new DataSuccess({ period: r.period.toEntity(), warnings: r.warnings });
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

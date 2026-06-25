@@ -10,7 +10,7 @@ import { ClerkSessionService } from "@/features/authentication/data/sources/cler
 import { AccountingPeriodRepositoryImpl } from "@/features/accounting/data/repositories/accounting-period";
 import { AccountingPeriodServiceImpl } from "@/features/accounting/data/sources/accounting-period";
 import { ClosePeriodUseCase, ClosePeriodUseCaseParams } from "@/features/accounting/domain/usecases/close-period.usecases";
-import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
+import { ClosePeriodResult } from "@/features/accounting/domain/entities/close-warning";
 
 type ClosePeriodTriggerParams = {
   id: string;
@@ -22,7 +22,7 @@ type ClosePeriodFetcherParams = ClosePeriodTriggerParams & { clerk: ReturnType<t
 async function ClosePeriodFetcher(
   _: string,
   { arg }: { arg: ClosePeriodFetcherParams },
-): Promise<AccountingPeriodEntity> {
+): Promise<ClosePeriodResult> {
   const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: arg.clerk }));
   const repo = new AccountingPeriodRepositoryImpl(new AccountingPeriodServiceImpl(new HttpRequest()));
   const uc = new ClosePeriodUseCase(repo, sessionRepo);
@@ -33,5 +33,5 @@ async function ClosePeriodFetcher(
 }
 
 export function useClosePeriod() {
-  return useSWRMutationClerk<AccountingPeriodEntity, ClosePeriodTriggerParams>("close-period", ClosePeriodFetcher);
+  return useSWRMutationClerk<ClosePeriodResult, ClosePeriodTriggerParams>("close-period", ClosePeriodFetcher);
 }

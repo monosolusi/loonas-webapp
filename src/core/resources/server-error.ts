@@ -419,6 +419,13 @@ export class ErrorCodes {
       "Periode belum bisa dikunci. Pastikan semua proses pencatatan sudah selesai, dan untuk wajib pajak PPh Final, entri PPh Final (akun 8110) sudah diposting sebelum batas setor.",
   };
 
+  public static readonly PPH_FINAL_NOT_POSTED: ErrorStructureType = {
+    code: "PPH_FINAL_NOT_POSTED",
+    httpCode: 422,
+    message:
+      "Periode belum bisa dikunci. Jurnal PPh Final UMKM (akun 8110) belum diposting dan batas setor sudah lewat. Posting jurnal PPh Final lalu coba lagi.",
+  };
+
   public static readonly IDEMPOTENCY_KEY_REQUIRED: ErrorStructureType = {
     code: "IDEMPOTENCY_KEY_REQUIRED",
     httpCode: 400,
