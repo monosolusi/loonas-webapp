@@ -4,6 +4,7 @@ import { useClerk } from "@clerk/nextjs";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { DataFailed } from "@/core/resources/data-state";
 import { useSWRMutationClerk } from "@/core/helpers/use-swr-mutation-clerk";
+import { ACCOUNTING_MUTATION_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { LedgerAccountRepositoryImpl } from "@/features/accounting/data/repositories/ledger-account";
@@ -29,5 +30,5 @@ async function DeleteLedgerAccountFetcher(
 }
 
 export function useDeleteLedgerAccount() {
-  return useSWRMutationClerk("delete-ledger-account", DeleteLedgerAccountFetcher);
+  return useSWRMutationClerk(ACCOUNTING_MUTATION_KEYS.DELETE_LEDGER_ACCOUNT, DeleteLedgerAccountFetcher);
 }

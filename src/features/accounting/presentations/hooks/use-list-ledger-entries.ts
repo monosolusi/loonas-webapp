@@ -13,6 +13,7 @@ import { LedgerAccountServiceImpl } from "@/features/accounting/data/sources/led
 import { ListLedgerEntriesUseCase, ListLedgerEntriesUseCaseParams } from "@/features/accounting/domain/usecases/list-ledger-entries.usecases";
 import { LedgerEntryEntity } from "@/features/accounting/domain/entities/ledger-entry";
 import { ListLedgerEntriesParams } from "@/features/accounting/domain/repositories/ledger-account";
+import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 
 type FetcherParams = { clerk: ReturnType<typeof useClerk>; accountId: string; params: ListLedgerEntriesParams };
 
@@ -31,7 +32,7 @@ type ReturnType_ = { entries: LedgerEntryEntity[]; meta: PaginationMeta | null; 
 export function useListLedgerEntries(accountId: string | null, params: ListLedgerEntriesParams = {}): ReturnType_ {
   const clerk = useClerk();
   const { data, isLoading, error } = useSWR(
-    accountId ? ["list-ledger-entries", { clerk, accountId, params }] : null,
+    accountId ? [ACCOUNTING_SWR_KEYS.LIST_LEDGER_ENTRIES, { clerk, accountId, params }] : null,
     Fetcher,
   );
   return { entries: data?.entries ?? [], meta: data?.meta ?? null, loading: isLoading, error: error instanceof ServerError ? error : null };

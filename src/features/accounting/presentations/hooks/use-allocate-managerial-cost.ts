@@ -5,6 +5,7 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useSWRMutationClerk } from "@/core/helpers/use-swr-mutation-clerk";
+import { ACCOUNTING_MUTATION_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { ManagerialCostRepositoryImpl } from "@/features/accounting/data/repositories/managerial-cost";
@@ -29,7 +30,7 @@ async function AllocateManagerialCostFetcher(
 
 export function useAllocateManagerialCost() {
   return useSWRMutationClerk<AllocateManagerialCostUseCaseResult, AllocateManagerialCostTriggerParams>(
-    "allocate-managerial-cost",
+    ACCOUNTING_MUTATION_KEYS.ALLOCATE_MANAGERIAL_COST,
     AllocateManagerialCostFetcher,
   );
 }

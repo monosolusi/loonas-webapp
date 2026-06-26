@@ -5,6 +5,7 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useSWRMutationClerk } from "@/core/helpers/use-swr-mutation-clerk";
+import { ACCOUNTING_MUTATION_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { JournalRepositoryImpl } from "@/features/accounting/data/repositories/journal";
@@ -41,5 +42,5 @@ async function CreateJournalFetcher(
 }
 
 export function useCreateJournal() {
-  return useSWRMutationClerk("create-journal", CreateJournalFetcher);
+  return useSWRMutationClerk(ACCOUNTING_MUTATION_KEYS.CREATE_JOURNAL, CreateJournalFetcher);
 }

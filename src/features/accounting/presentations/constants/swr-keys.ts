@@ -18,4 +18,25 @@ export const ACCOUNTING_SWR_KEYS = {
   GET_ACCOUNTING_PERIOD: "get-accounting-period",
   GET_ACCOUNTING_YEAR_SUMMARY: "get-accounting-year-summary",
   GET_MANAGERIAL_COST: "get-managerial-cost",
+  LIST_LEDGER_ENTRIES: "list-ledger-entries",
+  GET_ACCOUNT_BALANCE: "get-account-balance",
+} as const;
+
+export const ACCOUNTING_MUTATION_KEYS = {
+  CREATE_JOURNAL: "create-journal",
+  REVERSE_JOURNAL: "reverse-journal",
+  CREATE_COA_MAPPING: "create-coa-mapping",
+  UPDATE_COA_MAPPING: "update-coa-mapping",
+  DELETE_COA_MAPPING: "delete-coa-mapping",
+  CREATE_LEDGER_ACCOUNT: "create-ledger-account",
+  UPDATE_LEDGER_ACCOUNT: "update-ledger-account",
+  DELETE_LEDGER_ACCOUNT: "delete-ledger-account",
+  CLOSE_PERIOD: "close-period",
+  REOPEN_PERIOD: "reopen-period",
+  CLOSE_YEAR: "close-year",
+  REOPEN_YEAR: "reopen-year",
+  POST_OPENING_BALANCE: "post-opening-balance",
+  UPDATE_ACCOUNT_SETTING: "update-account-setting",
+  ALLOCATE_MANAGERIAL_COST: "allocate-managerial-cost",
+  SETTLE_PPH_FINAL: "settle-pph-final",
 } as const;
