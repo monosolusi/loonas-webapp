@@ -7,7 +7,7 @@ export type ListAccountFetcherParams = {
   clerk: ReturnType<typeof useClerk>;
 };
 
-type InitalState = {
+type InitialState = {
   accounts: null;
   loading: true;
   error: null;
@@ -28,4 +28,4 @@ type ErrorState = {
   refresh: null;
 };
 
-export type UseListAccountReturnType = InitalState | LoadedState | ErrorState;
+export type UseListAccountReturnType = InitialState | LoadedState | ErrorState;
