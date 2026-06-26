@@ -3,7 +3,10 @@ import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { ReportRepository, TrialBalanceReportData } from "@/features/accounting/domain/repositories/report";
+import { ReportRepository } from "@/features/accounting/domain/repositories/report";
+import { TrialBalanceReportEntity } from "@/features/accounting/domain/entities/trial-balance";
+
+export type GetTrialBalanceReportUseCaseResult = TrialBalanceReportEntity;
 
 export type GetTrialBalanceReportUseCaseParams = {
   readonly asOf: string;
@@ -11,14 +14,14 @@ export type GetTrialBalanceReportUseCaseParams = {
 };
 
 export class GetTrialBalanceReportUseCase
-  implements UseCase<DataState<TrialBalanceReportData>, GetTrialBalanceReportUseCaseParams>
+  implements UseCase<DataState<GetTrialBalanceReportUseCaseResult>, GetTrialBalanceReportUseCaseParams>
 {
   constructor(
     private readonly repo: ReportRepository,
     private readonly sessionRepo: SessionRepository,
   ) {}
 
-  public async execute(params: GetTrialBalanceReportUseCaseParams): Promise<DataState<TrialBalanceReportData>> {
+  public async execute(params: GetTrialBalanceReportUseCaseParams): Promise<DataState<GetTrialBalanceReportUseCaseResult>> {
     try {
       const session = await this.resolveSession();
       return await this.fetchReport(params, session);
@@ -38,7 +41,7 @@ export class GetTrialBalanceReportUseCase
   private async fetchReport(
     params: GetTrialBalanceReportUseCaseParams,
     session: SessionEntity,
-  ): Promise<DataState<TrialBalanceReportData>> {
+  ): Promise<DataState<GetTrialBalanceReportUseCaseResult>> {
     return this.repo.getTrialBalance({ asOf: params.asOf, includeZero: params.includeZero }, session);
   }
 }

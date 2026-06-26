@@ -3,19 +3,22 @@ import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { ReportRepository, CalkReportData } from "@/features/accounting/domain/repositories/report";
+import { ReportRepository } from "@/features/accounting/domain/repositories/report";
+import { CalkReportEntity } from "@/features/accounting/domain/entities/calk";
+
+export type GetCalkReportUseCaseResult = CalkReportEntity;
 
 export type GetCalkReportUseCaseParams = {
   readonly asOf: string;
 };
 
-export class GetCalkReportUseCase implements UseCase<DataState<CalkReportData>, GetCalkReportUseCaseParams> {
+export class GetCalkReportUseCase implements UseCase<DataState<GetCalkReportUseCaseResult>, GetCalkReportUseCaseParams> {
   constructor(
     private readonly repo: ReportRepository,
     private readonly sessionRepo: SessionRepository,
   ) {}
 
-  public async execute(params: GetCalkReportUseCaseParams): Promise<DataState<CalkReportData>> {
+  public async execute(params: GetCalkReportUseCaseParams): Promise<DataState<GetCalkReportUseCaseResult>> {
     try {
       const session = await this.resolveSession();
       return await this.fetchReport(params, session);
@@ -35,7 +38,7 @@ export class GetCalkReportUseCase implements UseCase<DataState<CalkReportData>, 
   private async fetchReport(
     params: GetCalkReportUseCaseParams,
     session: SessionEntity,
-  ): Promise<DataState<CalkReportData>> {
+  ): Promise<DataState<GetCalkReportUseCaseResult>> {
     return this.repo.getCalk({ asOf: params.asOf }, session);
   }
 }

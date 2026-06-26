@@ -3,20 +3,23 @@ import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { ReportRepository, NeracaReportData } from "@/features/accounting/domain/repositories/report";
+import { ReportRepository } from "@/features/accounting/domain/repositories/report";
+import { NeracaReportEntity } from "@/features/accounting/domain/entities/neraca";
+
+export type GetNeracaReportUseCaseResult = NeracaReportEntity;
 
 export type GetNeracaReportUseCaseParams = {
   readonly asOf: string;
   readonly compareTo?: string;
 };
 
-export class GetNeracaReportUseCase implements UseCase<DataState<NeracaReportData>, GetNeracaReportUseCaseParams> {
+export class GetNeracaReportUseCase implements UseCase<DataState<GetNeracaReportUseCaseResult>, GetNeracaReportUseCaseParams> {
   constructor(
     private readonly repo: ReportRepository,
     private readonly sessionRepo: SessionRepository,
   ) {}
 
-  public async execute(params: GetNeracaReportUseCaseParams): Promise<DataState<NeracaReportData>> {
+  public async execute(params: GetNeracaReportUseCaseParams): Promise<DataState<GetNeracaReportUseCaseResult>> {
     try {
       const session = await this.resolveSession();
       return await this.fetchReport(params, session);
@@ -36,7 +39,7 @@ export class GetNeracaReportUseCase implements UseCase<DataState<NeracaReportDat
   private async fetchReport(
     params: GetNeracaReportUseCaseParams,
     session: SessionEntity,
-  ): Promise<DataState<NeracaReportData>> {
+  ): Promise<DataState<GetNeracaReportUseCaseResult>> {
     return this.repo.getNeraca({ asOf: params.asOf, compareTo: params.compareTo }, session);
   }
 }

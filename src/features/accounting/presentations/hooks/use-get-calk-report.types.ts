@@ -1,7 +1,7 @@
 import { KeyedMutator } from "swr";
 import { ServerError } from "@/core/resources/server-error";
 import { useClerk } from "@clerk/nextjs";
-import { CalkReportData } from "@/features/accounting/domain/repositories/report";
+import { GetCalkReportUseCaseResult } from "@/features/accounting/domain/usecases/get-calk-report.usecases";
 
 export type UseGetCalkReportParams = {
   readonly asOf: string;
@@ -19,10 +19,10 @@ type InitialState = {
 };
 
 type LoadedState = {
-  readonly data: CalkReportData;
+  readonly data: GetCalkReportUseCaseResult;
   readonly loading: false;
   readonly error: null;
-  readonly refresh: KeyedMutator<CalkReportData>;
+  readonly refresh: KeyedMutator<GetCalkReportUseCaseResult>;
 };
 
 type ErrorState = {

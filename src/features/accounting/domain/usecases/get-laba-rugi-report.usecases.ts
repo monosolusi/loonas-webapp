@@ -3,7 +3,10 @@ import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { ReportRepository, LabaRugiReportData } from "@/features/accounting/domain/repositories/report";
+import { ReportRepository } from "@/features/accounting/domain/repositories/report";
+import { LabaRugiReportEntity } from "@/features/accounting/domain/entities/laba-rugi";
+
+export type GetLabaRugiReportUseCaseResult = LabaRugiReportEntity;
 
 export type GetLabaRugiReportUseCaseParams = {
   readonly from: string;
@@ -12,13 +15,13 @@ export type GetLabaRugiReportUseCaseParams = {
   readonly compareTo?: string;
 };
 
-export class GetLabaRugiReportUseCase implements UseCase<DataState<LabaRugiReportData>, GetLabaRugiReportUseCaseParams> {
+export class GetLabaRugiReportUseCase implements UseCase<DataState<GetLabaRugiReportUseCaseResult>, GetLabaRugiReportUseCaseParams> {
   constructor(
     private readonly repo: ReportRepository,
     private readonly sessionRepo: SessionRepository,
   ) {}
 
-  public async execute(params: GetLabaRugiReportUseCaseParams): Promise<DataState<LabaRugiReportData>> {
+  public async execute(params: GetLabaRugiReportUseCaseParams): Promise<DataState<GetLabaRugiReportUseCaseResult>> {
     try {
       const session = await this.resolveSession();
       return await this.fetchReport(params, session);
@@ -38,7 +41,7 @@ export class GetLabaRugiReportUseCase implements UseCase<DataState<LabaRugiRepor
   private async fetchReport(
     params: GetLabaRugiReportUseCaseParams,
     session: SessionEntity,
-  ): Promise<DataState<LabaRugiReportData>> {
+  ): Promise<DataState<GetLabaRugiReportUseCaseResult>> {
     return this.repo.getLabaRugi(
       { from: params.from, to: params.to, compareFrom: params.compareFrom, compareTo: params.compareTo },
       session,
