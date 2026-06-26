@@ -14,7 +14,6 @@ import {
 } from "@/features/profitability/domain/usecases/get-variant-recommended-price.usecases";
 import { PROFITABILITY_SWR_KEYS } from "@/features/profitability/presentations/constants/swr-keys";
 import {
-  GetVariantRecommendedPriceFetcherParams,
   UseGetVariantRecommendedPriceParams,
   UseGetVariantRecommendedPriceReturnType,
 } from "@/features/profitability/presentations/hooks/use-get-variant-recommended-price.types";
@@ -27,8 +26,11 @@ const INITIAL_STATE: UseGetVariantRecommendedPriceReturnType = {
   refresh: null,
 };
 
-async function GetVariantRecommendedPriceFetcher([_, params]: [string, GetVariantRecommendedPriceFetcherParams]) {
-  const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
+async function GetVariantRecommendedPriceFetcher(
+  [_, params]: [string, UseGetVariantRecommendedPriceParams],
+  clerk: ReturnType<typeof useClerk>,
+) {
+  const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk }));
   const repo = new ProfitabilityRepositoryImpl(new ProfitabilityServiceImpl());
   const uc = new GetVariantRecommendedPriceUseCase(repo, sessionRepo);
   const result = await uc.execute(
@@ -45,8 +47,18 @@ export function useGetVariantRecommendedPrice(
   const clerk = useClerk();
   const { productId, variantId, margin } = params;
   const { data, isLoading, error, mutate } = useSWR(
-    [PROFITABILITY_SWR_KEYS.GET_VARIANT_RECOMMENDED_PRICE, { productId, variantId, margin, clerk }],
-    GetVariantRecommendedPriceFetcher,
+    [PROFITABILITY_SWR_KEYS.GET_VARIANT_RECOMMENDED_PRICE, { productId, variantId, margin }],
+    (key) => GetVariantRecommendedPriceFetcher(key, clerk),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      shouldRetryOnError: (err) => {
+        const serverError = err instanceof ServerError ? err : null;
+        // 422 = incomplete recipe; retrying will never succeed and only flashes skeletons.
+        if (serverError?.httpCode === 422) return false;
+        return true;
+      },
+    },
   );
 
   if (isLoading) return INITIAL_STATE;
