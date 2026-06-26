@@ -28,7 +28,7 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
 
   // Fetch all accounts to find this one — limit 100 covers default COA
   const { accounts } = useListLedgerAccounts({ limit: 100 });
-  const account = useMemo(() => accounts.find((a) => a.id === accountId), [accounts, accountId]);
+  const account = useMemo(() => (accounts ?? []).find((a) => a.id === accountId), [accounts, accountId]);
 
   const { balance, loading: balanceLoading } = useGetAccountBalance({ accountId, startDate, endDate });
   const { entries, meta, loading, error } = useListLedgerEntries({ accountId, page, limit: 25, startDate, endDate });
@@ -61,8 +61,8 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
         <SummaryCard label="Total Kredit" value={balance?.displayCredit ?? "—"} variant="neutral" loading={balanceLoading} />
       </div>
 
-      <InvoiceTableShell toolbar={toolbar} header={header} loading={loading} error={!!error} empty={entries.length === 0 && !loading} emptyMessage="Tidak ada transaksi pada periode ini.">
-        {entries.map((entry) => (
+      <InvoiceTableShell toolbar={toolbar} header={header} loading={loading} error={!!error} empty={(entries ?? []).length === 0 && !loading} emptyMessage="Tidak ada transaksi pada periode ini.">
+        {(entries ?? []).map((entry) => (
           <div key={entry.id} className="grid grid-cols-[1.5fr_3fr_1fr_1fr] items-center border-b border-neutral-100 px-6 py-4 last:border-b-0">
             <span className="text-sm text-neutral-400">{entry.displayDate}</span>
             <span className="text-sm text-neutral-500">{entry.memo || "—"}</span>
@@ -71,7 +71,7 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
           </div>
         ))}
         {meta && meta.totalPages > 1 && (
-          <TablePagination displayedCount={entries.length} meta={meta} currentPage={page} onPageChange={setPage} />
+          <TablePagination displayedCount={(entries ?? []).length} meta={meta} currentPage={page} onPageChange={setPage} />
         )}
       </InvoiceTableShell>
     </div>

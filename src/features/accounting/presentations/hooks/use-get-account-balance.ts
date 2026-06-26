@@ -10,12 +10,16 @@ import { ClerkSessionService } from "@/features/authentication/data/sources/cler
 import { LedgerAccountRepositoryImpl } from "@/features/accounting/data/repositories/ledger-account";
 import { LedgerAccountServiceImpl } from "@/features/accounting/data/sources/ledger-account";
 import { GetAccountBalanceUseCase } from "@/features/accounting/domain/usecases/get-account-balance.usecases";
-import { AccountBalanceEntity } from "@/features/accounting/domain/entities/account-balance";
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
+import {
+  GetAccountBalanceFetcherParams,
+  UseGetAccountBalanceParams,
+  UseGetAccountBalanceReturnType,
+} from "@/features/accounting/presentations/hooks/use-get-account-balance.types";
 
-type FetcherParams = { clerk: ReturnType<typeof useClerk>; accountId: string; startDate?: string; endDate?: string };
+const INITIAL_STATE: UseGetAccountBalanceReturnType = { balance: null, loading: true, error: null };
 
-async function Fetcher([_, fp]: [string, FetcherParams]) {
+async function GetAccountBalanceFetcher([_, fp]: [string, GetAccountBalanceFetcherParams]) {
   const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: fp.clerk }));
   const repo = new LedgerAccountRepositoryImpl(new LedgerAccountServiceImpl(new HttpRequest()));
   const uc = new GetAccountBalanceUseCase(repo, sessionRepo);
@@ -25,15 +29,20 @@ async function Fetcher([_, fp]: [string, FetcherParams]) {
   return result.data;
 }
 
-type ReturnType_ = { balance: AccountBalanceEntity | null; loading: boolean; error: ServerError | null };
-
-export function useGetAccountBalance(params: { accountId: string | null; startDate?: string; endDate?: string }): ReturnType_ {
+export function useGetAccountBalance(params: UseGetAccountBalanceParams): UseGetAccountBalanceReturnType {
   const clerk = useClerk();
   const { data, isLoading, error } = useSWR(
     params.accountId
       ? [ACCOUNTING_SWR_KEYS.GET_ACCOUNT_BALANCE, { clerk, accountId: params.accountId, startDate: params.startDate, endDate: params.endDate }]
       : null,
-    Fetcher,
+    GetAccountBalanceFetcher,
   );
-  return { balance: data ?? null, loading: isLoading, error: error instanceof ServerError ? error : null };
+
+  if (isLoading) return INITIAL_STATE;
+  if (error) {
+    return { balance: null, loading: false, error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN) };
+  }
+  if (!data) return INITIAL_STATE;
+
+  return { balance: data, loading: false, error: null };
 }

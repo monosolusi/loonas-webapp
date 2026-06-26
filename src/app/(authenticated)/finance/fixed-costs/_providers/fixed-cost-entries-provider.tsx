@@ -120,7 +120,7 @@ export function FixedCostEntriesProvider({ children }: FixedCostEntriesProviderP
   // Period matching: match viewed year+month against period startDate (calendar year+month)
   const matchedPeriod = useMemo(
     () =>
-      periods.find((p) => {
+      (periods ?? []).find((p) => {
         const dt = DateTime.fromISO(p.startDate);
         return dt.year === year && dt.month === month;
       }) ?? null,

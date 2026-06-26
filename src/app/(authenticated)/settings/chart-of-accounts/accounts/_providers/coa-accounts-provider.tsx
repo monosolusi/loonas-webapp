@@ -56,15 +56,15 @@ export function CoaAccountsProvider({ children }: CoaAccountsProviderProps) {
 
   // Tenant-only filter: exclude system accounts when toggle is off
   const accounts = useMemo<LedgerAccountEntity[]>(() => {
-    if (showSeeded) return rawAccounts;
-    return rawAccounts.filter((a) => !a.isSystem);
+    if (showSeeded) return rawAccounts ?? [];
+    return (rawAccounts ?? []).filter((a) => !a.isSystem);
   }, [rawAccounts, showSeeded]);
 
   return (
     <CoaAccountsContext.Provider
       value={{
         accounts,
-        allAccounts: rawAccounts,
+        allAccounts: rawAccounts ?? [],
         meta,
         loading,
         error,

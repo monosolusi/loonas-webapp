@@ -32,7 +32,7 @@ export function JournalLineAccountCombobox({
   const { accounts, loading } = useListLedgerAccounts({ limit: LEDGER_ACCOUNT_FETCH_LIMIT });
 
   const options = useMemo<LedgerAccountOption[]>(() => {
-    const filtered = accountFilter ? accounts.filter(accountFilter) : accounts;
+    const filtered = accountFilter ? (accounts ?? []).filter(accountFilter) : (accounts ?? []);
     return filtered.map((a) => ({
       id: a.id,
       label: `${a.code} — ${a.name}`,
@@ -47,7 +47,7 @@ export function JournalLineAccountCombobox({
     const found = options.find((o) => o.id === value);
     if (found) return found;
     // Fall back to full unfiltered list to keep stale selection visible
-    const unfiltered = accounts.find((a) => a.id === value);
+    const unfiltered = (accounts ?? []).find((a) => a.id === value);
     if (unfiltered) {
       return {
         id: unfiltered.id,

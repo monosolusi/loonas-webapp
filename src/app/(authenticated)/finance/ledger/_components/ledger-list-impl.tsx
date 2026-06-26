@@ -87,8 +87,8 @@ export function LedgerListImpl() {
         <p className="leading-6 text-neutral-300">{meta ? `${meta.total} akun` : "Memuat..."}</p>
       </div>
 
-      <InvoiceTableShell toolbar={toolbar} header={header} loading={loading} error={!!error} empty={accounts.length === 0 && !loading} emptyMessage="Belum ada akun.">
-        {accounts.map((account) => (
+      <InvoiceTableShell toolbar={toolbar} header={header} loading={loading} error={!!error} empty={(accounts ?? []).length === 0 && !loading} emptyMessage="Belum ada akun.">
+        {(accounts ?? []).map((account) => (
           <Link
             key={account.id}
             href={`/finance/ledger/${account.id}`}
@@ -105,7 +105,7 @@ export function LedgerListImpl() {
           </Link>
         ))}
         {meta && meta.totalPages > 1 && (
-          <TablePagination displayedCount={accounts.length} meta={meta} currentPage={page} onPageChange={setPage} />
+          <TablePagination displayedCount={(accounts ?? []).length} meta={meta} currentPage={page} onPageChange={setPage} />
         )}
       </InvoiceTableShell>
     </div>

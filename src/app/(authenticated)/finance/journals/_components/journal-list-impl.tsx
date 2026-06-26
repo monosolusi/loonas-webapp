@@ -76,12 +76,12 @@ export function JournalListImpl() {
         />
       </div>
 
-      <InvoiceTableShell toolbar={toolbar} header={header} loading={loading} error={!!error} empty={journals.length === 0 && !loading} emptyMessage="Belum ada jurnal.">
-        {journals.map((journal) => (
+      <InvoiceTableShell toolbar={toolbar} header={header} loading={loading} error={!!error} empty={(journals ?? []).length === 0 && !loading} emptyMessage="Belum ada jurnal.">
+        {(journals ?? []).map((journal) => (
           <JournalRow key={journal.id} journal={journal} />
         ))}
         {meta && meta.totalPages > 1 && (
-          <TablePagination displayedCount={journals.length} meta={meta} currentPage={page} onPageChange={setPage} />
+          <TablePagination displayedCount={(journals ?? []).length} meta={meta} currentPage={page} onPageChange={setPage} />
         )}
       </InvoiceTableShell>
     </div>

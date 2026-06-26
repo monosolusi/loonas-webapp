@@ -6,5 +6,5 @@ import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledge
 
 export function useRetainedEarningsAccount(): LedgerAccountEntity | null {
   const { accounts } = useListLedgerAccounts({ limit: 500 });
-  return useMemo(() => accounts.find((a) => a.code === "3200") ?? null, [accounts]);
+  return useMemo(() => (accounts ?? []).find((a) => a.code === "3200") ?? null, [accounts]);
 }
