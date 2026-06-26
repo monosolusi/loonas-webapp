@@ -12,6 +12,7 @@ import { LedgerAccountServiceImpl } from "@/features/accounting/data/sources/led
 import { GetAccountBalanceUseCase, GetAccountBalanceUseCaseParams } from "@/features/accounting/domain/usecases/get-account-balance.usecases";
 import { AccountBalanceEntity } from "@/features/accounting/domain/entities/account-balance";
 import { GetAccountBalanceParams } from "@/features/accounting/domain/repositories/ledger-account";
+import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 
 type FetcherParams = { clerk: ReturnType<typeof useClerk>; accountId: string; params: GetAccountBalanceParams };
 
@@ -30,7 +31,7 @@ type ReturnType_ = { balance: AccountBalanceEntity | null; loading: boolean; err
 export function useGetAccountBalance(accountId: string | null, params: GetAccountBalanceParams = {}): ReturnType_ {
   const clerk = useClerk();
   const { data, isLoading, error } = useSWR(
-    accountId ? ["get-account-balance", { clerk, accountId, params }] : null,
+    accountId ? [ACCOUNTING_SWR_KEYS.GET_ACCOUNT_BALANCE, { clerk, accountId, params }] : null,
     Fetcher,
   );
   return { balance: data ?? null, loading: isLoading, error: error instanceof ServerError ? error : null };

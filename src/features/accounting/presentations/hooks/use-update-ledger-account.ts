@@ -5,6 +5,7 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useSWRMutationClerk } from "@/core/helpers/use-swr-mutation-clerk";
+import { ACCOUNTING_MUTATION_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { LedgerAccountRepositoryImpl } from "@/features/accounting/data/repositories/ledger-account";
@@ -35,5 +36,5 @@ async function UpdateLedgerAccountFetcher(
 }
 
 export function useUpdateLedgerAccount() {
-  return useSWRMutationClerk("update-ledger-account", UpdateLedgerAccountFetcher);
+  return useSWRMutationClerk(ACCOUNTING_MUTATION_KEYS.UPDATE_LEDGER_ACCOUNT, UpdateLedgerAccountFetcher);
 }

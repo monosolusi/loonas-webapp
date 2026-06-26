@@ -5,6 +5,7 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useSWRMutationClerk } from "@/core/helpers/use-swr-mutation-clerk";
+import { ACCOUNTING_MUTATION_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { AccountingPeriodRepositoryImpl } from "@/features/accounting/data/repositories/accounting-period";
@@ -33,5 +34,5 @@ async function ReopenPeriodFetcher(
 }
 
 export function useReopenPeriod() {
-  return useSWRMutationClerk<AccountingPeriodEntity, ReopenPeriodTriggerParams>("reopen-period", ReopenPeriodFetcher);
+  return useSWRMutationClerk<AccountingPeriodEntity, ReopenPeriodTriggerParams>(ACCOUNTING_MUTATION_KEYS.REOPEN_PERIOD, ReopenPeriodFetcher);
 }
