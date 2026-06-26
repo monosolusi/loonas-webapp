@@ -27,7 +27,7 @@ export function LedgerAccountCombobox(props: LedgerAccountComboboxProps) {
 
   const options = useMemo<LedgerAccountOption[]>(() => {
     const excluded = new Set(props.excludeIds ?? []);
-    return accounts
+    return (accounts ?? [])
       .filter((a) => !excluded.has(a.id))
       .filter((a) => (props.filter ? props.filter(a) : true))
       .map((a) => ({

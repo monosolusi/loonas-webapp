@@ -22,7 +22,7 @@ import { OpeningBalanceServiceImpl } from "@/features/accounting/data/sources/op
 import { LedgerAccountRepositoryImpl } from "@/features/accounting/data/repositories/ledger-account";
 import { LedgerAccountServiceImpl } from "@/features/accounting/data/sources/ledger-account";
 import { GetOpeningBalanceUseCase } from "@/features/accounting/domain/usecases/get-opening-balance.usecases";
-import { ListLedgerAccountsUseCase, ListLedgerAccountsUseCaseParams } from "@/features/accounting/domain/usecases/list-ledger-accounts.usecases";
+import { ListLedgerAccountsUseCase } from "@/features/accounting/domain/usecases/list-ledger-accounts.usecases";
 import { OpeningBalanceEntity } from "@/features/accounting/domain/entities/opening-balance";
 import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledger-account";
 import { AccountType } from "@/features/accounting/domain/enums/account-type";
@@ -128,7 +128,7 @@ async function ListAllLedgerAccountsFetcher([_, params]: [string, ListFetcherPar
   const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const repo = new LedgerAccountRepositoryImpl(new LedgerAccountServiceImpl(new HttpRequest()));
   const uc = new ListLedgerAccountsUseCase(repo, sessionRepo);
-  const result = await uc.execute(new ListLedgerAccountsUseCaseParams({ limit: 500 }));
+  const result = await uc.execute({ limit: 500 });
   if (result instanceof DataFailed) throw result.error;
   if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
   return result.data.accounts;

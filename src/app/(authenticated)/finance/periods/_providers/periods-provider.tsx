@@ -415,7 +415,7 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
   return (
     <PeriodsContext.Provider
       value={{
-        periods,
+        periods: periods ?? [],
         meta,
         loading,
         listError,

@@ -7,11 +7,11 @@ import { PaginatedData } from "@/core/resources/paginated";
 import { CoaMappingEntity } from "@/features/accounting/domain/entities/coa-mapping";
 import { CoaMappingRepository } from "@/features/accounting/domain/repositories/coa-mapping";
 
-type ListCoaMappingsUseCaseInput = { page?: number; limit?: number; entityType?: string };
-
-export class ListCoaMappingsUseCaseParams {
-  constructor(public readonly params: ListCoaMappingsUseCaseInput) {}
-}
+export type ListCoaMappingsUseCaseParams = {
+  readonly page?: number;
+  readonly limit?: number;
+  readonly entityType?: string;
+};
 
 export class ListCoaMappingsUseCase
   implements UseCase<DataState<PaginatedData<CoaMappingEntity>>, ListCoaMappingsUseCaseParams>
@@ -24,7 +24,7 @@ export class ListCoaMappingsUseCase
   public async execute(params: ListCoaMappingsUseCaseParams): Promise<DataState<PaginatedData<CoaMappingEntity>>> {
     try {
       const session = await this.resolveSession();
-      return new DataSuccess(await this.fetchMappings(params.params, session));
+      return new DataSuccess(await this.fetchMappings(params, session));
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
@@ -39,10 +39,10 @@ export class ListCoaMappingsUseCase
   }
 
   private async fetchMappings(
-    params: ListCoaMappingsUseCaseInput,
+    params: ListCoaMappingsUseCaseParams,
     session: SessionEntity,
   ): Promise<PaginatedData<CoaMappingEntity>> {
-    const result = await this.repo.list(params, session);
+    const result = await this.repo.list({ page: params.page, limit: params.limit, entityType: params.entityType }, session);
     if (result instanceof DataFailed) throw result.error;
     if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
     return result.data;

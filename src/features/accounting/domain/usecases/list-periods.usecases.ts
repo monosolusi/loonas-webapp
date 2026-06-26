@@ -1,18 +1,19 @@
 import { UseCase } from "@/core/resources/use-case";
-import { DataFailed, DataState } from "@/core/resources/data-state";
+import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { AccountingPeriodRepository } from "@/features/accounting/domain/repositories/accounting-period";
 import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
 import { PaginationMeta } from "@/core/resources/paginated";
 
-type ListPeriodsUseCaseInput = { page?: number; limit?: number; status?: "open" | "closed" };
-
 export type ListPeriodsUseCaseResult = { data: AccountingPeriodEntity[]; meta: PaginationMeta };
 
-export class ListPeriodsUseCaseParams {
-  constructor(public readonly params: ListPeriodsUseCaseInput) {}
-}
+export type ListPeriodsUseCaseParams = {
+  readonly page?: number;
+  readonly limit?: number;
+  readonly status?: "open" | "closed";
+};
 
 export class ListPeriodsUseCase implements UseCase<DataState<ListPeriodsUseCaseResult>, ListPeriodsUseCaseParams> {
   constructor(
@@ -22,13 +23,25 @@ export class ListPeriodsUseCase implements UseCase<DataState<ListPeriodsUseCaseR
 
   public async execute(params: ListPeriodsUseCaseParams): Promise<DataState<ListPeriodsUseCaseResult>> {
     try {
-      const session = await this.sessionRepo.retrieve();
-      if (session instanceof DataFailed) return session;
-      if (!session.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return this.repo.list(params.params, session.data);
+      const session = await this.resolveSession();
+      return new DataSuccess(await this.fetchPeriods(params, session));
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
     }
+  }
+
+  private async resolveSession(): Promise<SessionEntity> {
+    const session = await this.sessionRepo.retrieve();
+    if (session instanceof DataFailed) throw session.error;
+    if (!session.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    return session.data;
+  }
+
+  private async fetchPeriods(params: ListPeriodsUseCaseParams, session: SessionEntity): Promise<ListPeriodsUseCaseResult> {
+    const result = await this.repo.list({ page: params.page, limit: params.limit, status: params.status }, session);
+    if (result instanceof DataFailed) throw result.error;
+    if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    return result.data;
   }
 }

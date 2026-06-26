@@ -62,7 +62,7 @@ export function TrialBalanceDrillPanel({
   });
 
   const resolvedId = useMemo(
-    () => resolvedAccounts.find((a) => a.code === accountCode)?.id ?? null,
+    () => (resolvedAccounts ?? []).find((a) => a.code === accountCode)?.id ?? null,
     [resolvedAccounts, accountCode],
   );
 
