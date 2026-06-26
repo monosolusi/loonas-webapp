@@ -1,8 +1,7 @@
 "use client";
 
-import clsx from "clsx";
 import { StatusChip } from "@/core/presentations/components/status-chip";
-import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
+import { CurrencyDisplay } from "@/core/presentations/components/currency-display";
 import { VariantHppEntity } from "@/features/profitability/domain/entities/variant-hpp";
 import { VariantGrossProfitEntity } from "@/features/profitability/domain/entities/variant-gross-profit";
 import { VariantRecommendedPriceEntity } from "@/features/profitability/domain/entities/variant-recommended-price";
@@ -43,25 +42,34 @@ export function ProfitabilityTableRowData({
   recommendedPrice,
   variantPrice,
 }: ProfitabilityTableRowDataProps) {
-  const hppValue = hpp ? IDRFormatter.toCurrency(hpp.hppPerUnit) : "—";
-  const hargaJualValue = IDRFormatter.toCurrency(variantPrice);
-  const recPriceValue = recommendedPrice ? IDRFormatter.toCurrency(recommendedPrice.recommendedPrice) : "—";
-
-  const grossProfitValue = (() => {
-    if (grossProfitIncomplete) return "—";
-    if (!grossProfit) return "—";
-    if (grossProfit.needsData) return "—";
-    if (grossProfit.estimasiLabaKotor === null) return "—";
-    const sign = grossProfit.estimasiLabaKotor >= 0 ? "+" : "−";
-    const absVal = IDRFormatter.toCurrency(Math.abs(grossProfit.estimasiLabaKotor));
-    return `${sign} ${absVal}`;
-  })();
+  const hppCell = hpp ? <CurrencyDisplay value={hpp.hppPerUnit} /> : "—";
+  const hargaJualCell = <CurrencyDisplay value={variantPrice} />;
+  const recPriceCell = recommendedPrice ? <CurrencyDisplay value={recommendedPrice.recommendedPrice} /> : "—";
 
   const grossProfitPositive =
     grossProfit?.estimasiLabaKotor !== undefined &&
     grossProfit?.estimasiLabaKotor !== null &&
     grossProfit.estimasiLabaKotor >= 0 &&
     !grossProfit.needsData;
+
+  const grossProfitNegative =
+    grossProfit?.estimasiLabaKotor !== undefined &&
+    grossProfit?.estimasiLabaKotor !== null &&
+    grossProfit.estimasiLabaKotor < 0 &&
+    !grossProfit.needsData;
+
+  const grossProfitCell = (() => {
+    if (grossProfitIncomplete) return "—";
+    if (!grossProfit) return "—";
+    if (grossProfit.needsData) return "—";
+    if (grossProfit.estimasiLabaKotor === null) return "—";
+    const sign = grossProfit.estimasiLabaKotor >= 0 ? "+" : "−";
+    return (
+      <span className={grossProfitPositive ? "text-success-500" : grossProfitNegative ? "text-error-500" : undefined}>
+        {sign} <CurrencyDisplay value={Math.abs(grossProfit.estimasiLabaKotor)} />
+      </span>
+    );
+  })();
 
   const marginValue = (() => {
     if (grossProfitIncomplete) return "—";
@@ -75,18 +83,11 @@ export function ProfitabilityTableRowData({
 
   return (
     <>
-      <div className="text-right text-sm text-neutral-500">{hppValue}</div>
-      <div className="text-right text-sm text-neutral-500">{hargaJualValue}</div>
-      <div className="text-right text-sm text-neutral-500">{recPriceValue}</div>
-      <div
-        className={clsx(
-          "text-right text-sm",
-          grossProfitPositive ? "text-success-500" : grossProfit?.estimasiLabaKotor !== null && !grossProfit?.needsData ? "text-error-500" : "text-neutral-300",
-        )}
-      >
-        {grossProfitValue}
-      </div>
-      <div className="text-right text-sm text-neutral-500">{marginValue}</div>
+      <div className="text-right text-sm tabular-nums text-neutral-500">{hppCell}</div>
+      <div className="text-right text-sm tabular-nums text-neutral-500">{hargaJualCell}</div>
+      <div className="text-right text-sm tabular-nums text-neutral-500">{recPriceCell}</div>
+      <div className="text-right text-sm tabular-nums">{grossProfitCell}</div>
+      <div className="text-right text-sm tabular-nums text-neutral-500">{marginValue}</div>
       <div className="flex justify-center">{statusNode}</div>
     </>
   );

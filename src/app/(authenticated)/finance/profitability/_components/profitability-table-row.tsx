@@ -46,7 +46,7 @@ export function ProfitabilityTableRow({ product, variant }: ProfitabilityTableRo
       tabIndex={0}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      className="grid cursor-pointer items-center border-b border-neutral-100 px-6 py-4 hover:bg-neutral-50/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 [grid-template-columns:var(--grid-profitability-cols)]"
+      className="grid cursor-pointer items-center border-b border-neutral-100 px-6 py-3 hover:bg-neutral-50/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 [grid-template-columns:var(--grid-profitability-cols)]"
       aria-label={`Lihat detail profitabilitas ${product.name} — ${variant.name}`}
     >
       <div className="flex flex-col gap-y-0.5 pr-4">
