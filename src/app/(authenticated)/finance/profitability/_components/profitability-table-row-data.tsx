@@ -21,7 +21,7 @@ function deriveStatusChip(
   grossProfitIncomplete: boolean,
 ): React.ReactNode {
   if (hppIncomplete || grossProfitIncomplete) {
-    return <StatusChip variant="neutral" label="Data Kurang" compact />;
+    return <StatusChip variant="warning" label="Data Kurang" compact />;
   }
   if (!grossProfit) return null;
   if (grossProfit.needsData) {
@@ -83,11 +83,26 @@ export function ProfitabilityTableRowData({
 
   return (
     <>
-      <div className="text-right text-sm tabular-nums text-neutral-500">{hppCell}</div>
-      <div className="text-right text-sm tabular-nums text-neutral-500">{hargaJualCell}</div>
+      <div className="flex flex-col items-end gap-y-0.5">
+        <div className="text-right text-xs tabular-nums text-neutral-300">
+          HPP <span className="text-sm text-neutral-500">{hppCell}</span>
+        </div>
+        <div className="text-right text-xs tabular-nums text-neutral-300">
+          JUAL <span className="text-sm font-medium text-neutral-500">{hargaJualCell}</span>
+        </div>
+      </div>
+
       <div className="text-right text-sm tabular-nums text-neutral-500">{recPriceCell}</div>
-      <div className="text-right text-sm tabular-nums">{grossProfitCell}</div>
-      <div className="text-right text-sm tabular-nums text-neutral-500">{marginValue}</div>
+
+      <div className="flex flex-col items-end gap-y-0.5">
+        <div className="text-right text-xs tabular-nums text-neutral-300">
+          LABA {grossProfitCell}
+        </div>
+        <div className="text-right text-xs tabular-nums text-neutral-300">
+          MARGIN <span className="text-sm text-neutral-500">{marginValue}</span>
+        </div>
+      </div>
+
       <div className="flex justify-center">{statusNode}</div>
     </>
   );
