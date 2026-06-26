@@ -5,10 +5,12 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { PaginatedData } from "@/core/resources/paginated";
 import { CoaMappingEntity } from "@/features/accounting/domain/entities/coa-mapping";
-import { CoaMappingRepository, ListCoaMappingsParams } from "@/features/accounting/domain/repositories/coa-mapping";
+import { CoaMappingRepository } from "@/features/accounting/domain/repositories/coa-mapping";
+
+type ListCoaMappingsUseCaseInput = { page?: number; limit?: number; entityType?: string };
 
 export class ListCoaMappingsUseCaseParams {
-  constructor(public readonly params: ListCoaMappingsParams) {}
+  constructor(public readonly params: ListCoaMappingsUseCaseInput) {}
 }
 
 export class ListCoaMappingsUseCase
@@ -37,7 +39,7 @@ export class ListCoaMappingsUseCase
   }
 
   private async fetchMappings(
-    params: ListCoaMappingsParams,
+    params: ListCoaMappingsUseCaseInput,
     session: SessionEntity,
   ): Promise<DataState<PaginatedData<CoaMappingEntity>>> {
     return this.repo.list(params, session);

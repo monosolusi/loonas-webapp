@@ -2,14 +2,21 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { JournalModel } from "@/features/accounting/data/models/journal";
 import { JournalWriteResultModel } from "@/features/accounting/data/models/journal-write-result";
-import { JournalService, JournalWriteServiceResult, ListJournalsServiceResult } from "@/features/accounting/domain/sources/journal";
-import { CreateJournalParams, GetJournalParams, ListJournalsParams, ReverseJournalParams } from "@/features/accounting/domain/repositories/journal";
+import {
+  JournalService,
+  JournalWriteServiceResult,
+  ListJournalsServiceResult,
+  ListJournalsServiceParams,
+  CreateJournalServiceParams,
+  GetJournalServiceParams,
+  ReverseJournalServiceParams,
+} from "@/features/accounting/domain/sources/journal";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 export class JournalServiceImpl implements JournalService {
   constructor(private readonly http: HttpRequest) {}
 
-  public async list(params: ListJournalsParams, session: SessionEntity): Promise<ListJournalsServiceResult> {
+  public async list(params: ListJournalsServiceParams, session: SessionEntity): Promise<ListJournalsServiceResult> {
     try {
       const searchParams: Record<string, any> = {};
       if (params.page && params.limit) searchParams["offset"] = String((params.page - 1) * params.limit);
@@ -36,7 +43,7 @@ export class JournalServiceImpl implements JournalService {
     }
   }
 
-  public async create(params: CreateJournalParams, session: SessionEntity): Promise<JournalWriteServiceResult> {
+  public async create(params: CreateJournalServiceParams, session: SessionEntity): Promise<JournalWriteServiceResult> {
     try {
       const body: Record<string, any> = {
         posting_date: params.postingDate,
@@ -59,7 +66,7 @@ export class JournalServiceImpl implements JournalService {
     }
   }
 
-  public async get(params: GetJournalParams, session: SessionEntity): Promise<JournalModel> {
+  public async get(params: GetJournalServiceParams, session: SessionEntity): Promise<JournalModel> {
     try {
       const result = await this.http.request({
         path: `/accounting/journals/${params.id}`,
@@ -74,7 +81,7 @@ export class JournalServiceImpl implements JournalService {
     }
   }
 
-  public async reverse(params: ReverseJournalParams, session: SessionEntity): Promise<JournalWriteServiceResult> {
+  public async reverse(params: ReverseJournalServiceParams, session: SessionEntity): Promise<JournalWriteServiceResult> {
     try {
       const body: Record<string, any> = {
         change_reason_category: params.changeReasonCategory,

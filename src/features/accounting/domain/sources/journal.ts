@@ -2,7 +2,39 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { JournalModel } from "@/features/accounting/data/models/journal";
 import { WarningEntryModel } from "@/features/accounting/data/models/warning-entry";
 import { PaginationMeta } from "@/core/resources/paginated";
-import { ListJournalsParams, CreateJournalParams, GetJournalParams, ReverseJournalParams } from "@/features/accounting/domain/repositories/journal";
+
+export type ListJournalsServiceParams = {
+  page?: number;
+  limit?: number;
+  search?: string;
+};
+
+export type CreateJournalLineServiceInput = {
+  accountId: string;
+  debit: number;
+  credit: number;
+};
+
+export type CreateJournalServiceParams = {
+  postingDate: string;
+  memo: string;
+  lines: CreateJournalLineServiceInput[];
+  acknowledgedWarningCodes?: string[];
+  idempotencyKey?: string;
+};
+
+export type GetJournalServiceParams = {
+  id: string;
+};
+
+export type ReverseJournalServiceParams = {
+  id: string;
+  changeReasonCategory: string;
+  changeReasonDetail: string;
+  postingDate?: string;
+  acknowledgedWarningCodes?: string[];
+  idempotencyKey?: string;
+};
 
 export type ListJournalsServiceResult = {
   data: JournalModel[];
@@ -15,8 +47,8 @@ export type JournalWriteServiceResult = {
 };
 
 export interface JournalService {
-  list(params: ListJournalsParams, session: SessionEntity): Promise<ListJournalsServiceResult>;
-  create(params: CreateJournalParams, session: SessionEntity): Promise<JournalWriteServiceResult>;
-  get(params: GetJournalParams, session: SessionEntity): Promise<JournalModel>;
-  reverse(params: ReverseJournalParams, session: SessionEntity): Promise<JournalWriteServiceResult>;
+  list(params: ListJournalsServiceParams, session: SessionEntity): Promise<ListJournalsServiceResult>;
+  create(params: CreateJournalServiceParams, session: SessionEntity): Promise<JournalWriteServiceResult>;
+  get(params: GetJournalServiceParams, session: SessionEntity): Promise<JournalModel>;
+  reverse(params: ReverseJournalServiceParams, session: SessionEntity): Promise<JournalWriteServiceResult>;
 }

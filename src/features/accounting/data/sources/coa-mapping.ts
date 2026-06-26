@@ -2,16 +2,17 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { CoaMappingModel } from "@/features/accounting/data/models/coa-mapping";
-import { CoaMappingService, ListCoaMappingsServiceResult } from "@/features/accounting/domain/sources/coa-mapping";
 import {
-  ListCoaMappingsParams,
-  CreateCoaMappingParams,
-  UpdateCoaMappingParams,
-  DeleteCoaMappingParams,
-  CoaMappingLineInput,
-} from "@/features/accounting/domain/repositories/coa-mapping";
+  CoaMappingService,
+  ListCoaMappingsServiceResult,
+  ListCoaMappingsServiceParams,
+  CreateCoaMappingServiceParams,
+  UpdateCoaMappingServiceParams,
+  DeleteCoaMappingServiceParams,
+  CoaMappingLineServiceInput,
+} from "@/features/accounting/domain/sources/coa-mapping";
 
-function serializeLine(line: CoaMappingLineInput, index: number): Record<string, any> {
+function serializeLine(line: CoaMappingLineServiceInput, index: number): Record<string, any> {
   const body: Record<string, any> = {
     account_id: line.accountId,
     position: line.position,
@@ -26,7 +27,7 @@ function serializeLine(line: CoaMappingLineInput, index: number): Record<string,
 export class CoaMappingServiceImpl implements CoaMappingService {
   constructor(private readonly http: HttpRequest) {}
 
-  public async list(params: ListCoaMappingsParams, session: SessionEntity): Promise<ListCoaMappingsServiceResult> {
+  public async list(params: ListCoaMappingsServiceParams, session: SessionEntity): Promise<ListCoaMappingsServiceResult> {
     try {
       const searchParams: Record<string, any> = {};
       if (params.page) searchParams["page"] = String(params.page);
@@ -58,7 +59,7 @@ export class CoaMappingServiceImpl implements CoaMappingService {
     }
   }
 
-  public async create(params: CreateCoaMappingParams, session: SessionEntity): Promise<CoaMappingModel> {
+  public async create(params: CreateCoaMappingServiceParams, session: SessionEntity): Promise<CoaMappingModel> {
     try {
       const body: Record<string, any> = {
         entity_type: params.entityType,
@@ -82,7 +83,7 @@ export class CoaMappingServiceImpl implements CoaMappingService {
     }
   }
 
-  public async update(params: UpdateCoaMappingParams, session: SessionEntity): Promise<CoaMappingModel> {
+  public async update(params: UpdateCoaMappingServiceParams, session: SessionEntity): Promise<CoaMappingModel> {
     try {
       const body: Record<string, any> = {
         lines: params.lines.map(serializeLine),
@@ -102,7 +103,7 @@ export class CoaMappingServiceImpl implements CoaMappingService {
     }
   }
 
-  public async delete(params: DeleteCoaMappingParams, session: SessionEntity): Promise<void> {
+  public async delete(params: DeleteCoaMappingServiceParams, session: SessionEntity): Promise<void> {
     try {
       await this.http.request({
         path: `/accounting/coa-mappings/${params.id}`,

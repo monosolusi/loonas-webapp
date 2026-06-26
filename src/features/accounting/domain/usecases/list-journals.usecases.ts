@@ -2,10 +2,12 @@ import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { JournalRepository, ListJournalsParams, ListJournalsResult } from "@/features/accounting/domain/repositories/journal";
+import { JournalRepository, ListJournalsResult } from "@/features/accounting/domain/repositories/journal";
+
+type ListJournalsUseCaseInput = { page?: number; limit?: number; search?: string };
 
 export class ListJournalsUseCaseParams {
-  constructor(public readonly params: ListJournalsParams) {}
+  constructor(public readonly params: ListJournalsUseCaseInput) {}
 }
 
 export class ListJournalsUseCase implements UseCase<DataState<ListJournalsResult>, ListJournalsUseCaseParams> {

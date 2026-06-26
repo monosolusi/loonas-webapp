@@ -2,10 +2,12 @@ import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { AccountingPeriodRepository, ListPeriodsParams, ListPeriodsResult } from "@/features/accounting/domain/repositories/accounting-period";
+import { AccountingPeriodRepository, ListPeriodsResult } from "@/features/accounting/domain/repositories/accounting-period";
+
+type ListPeriodsUseCaseInput = { page?: number; limit?: number; status?: "open" | "closed" };
 
 export class ListPeriodsUseCaseParams {
-  constructor(public readonly params: ListPeriodsParams) {}
+  constructor(public readonly params: ListPeriodsUseCaseInput) {}
 }
 
 export class ListPeriodsUseCase implements UseCase<DataState<ListPeriodsResult>, ListPeriodsUseCaseParams> {
