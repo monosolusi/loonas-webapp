@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { ProductEntity } from "@/features/product/domain/entities/product";
@@ -9,6 +10,7 @@ import { useGetVariantGrossProfit } from "@/features/profitability/presentations
 import { useGetVariantRecommendedPrice } from "@/features/profitability/presentations/hooks/use-get-variant-recommended-price";
 import { ProfitabilityTableRowLoading } from "@/app/(authenticated)/finance/profitability/_components/profitability-table-row-loading";
 import { ProfitabilityTableRowData } from "@/app/(authenticated)/finance/profitability/_components/profitability-table-row-data";
+import { useProfitabilityDashboard } from "@/app/(authenticated)/finance/profitability/_providers/profitability-dashboard-provider";
 
 const DEFAULT_MARGIN = 30;
 
@@ -19,6 +21,7 @@ type ProfitabilityTableRowProps = {
 
 export function ProfitabilityTableRow({ product, variant }: ProfitabilityTableRowProps) {
   const router = useRouter();
+  const { registerVariantGrossProfitState, unregisterVariantGrossProfitState } = useProfitabilityDashboard();
 
   const hppState = useGetVariantHpp({ productId: product.id, variantId: variant.id });
   const grossProfitState = useGetVariantGrossProfit({ productId: product.id, variantId: variant.id });
@@ -27,6 +30,18 @@ export function ProfitabilityTableRow({ product, variant }: ProfitabilityTableRo
     variantId: variant.id,
     margin: DEFAULT_MARGIN,
   });
+
+  const variantKey = useMemo(
+    () => `${product.id}::${variant.id}`,
+    [product.id, variant.id],
+  );
+
+  useEffect(() => {
+    registerVariantGrossProfitState(variantKey, grossProfitState);
+    return () => {
+      unregisterVariantGrossProfitState(variantKey);
+    };
+  }, [variantKey, grossProfitState, registerVariantGrossProfitState, unregisterVariantGrossProfitState]);
 
   const isLoading = hppState.loading || grossProfitState.loading || recPriceState.loading;
 
