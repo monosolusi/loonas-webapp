@@ -3,20 +3,23 @@ import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { ReportRepository, ArusKasReportData } from "@/features/accounting/domain/repositories/report";
+import { ReportRepository } from "@/features/accounting/domain/repositories/report";
+import { ArusKasReportEntity } from "@/features/accounting/domain/entities/arus-kas";
+
+export type GetArusKasReportUseCaseResult = ArusKasReportEntity;
 
 export type GetArusKasReportUseCaseParams = {
   readonly from: string;
   readonly to: string;
 };
 
-export class GetArusKasReportUseCase implements UseCase<DataState<ArusKasReportData>, GetArusKasReportUseCaseParams> {
+export class GetArusKasReportUseCase implements UseCase<DataState<GetArusKasReportUseCaseResult>, GetArusKasReportUseCaseParams> {
   constructor(
     private readonly repo: ReportRepository,
     private readonly sessionRepo: SessionRepository,
   ) {}
 
-  public async execute(params: GetArusKasReportUseCaseParams): Promise<DataState<ArusKasReportData>> {
+  public async execute(params: GetArusKasReportUseCaseParams): Promise<DataState<GetArusKasReportUseCaseResult>> {
     try {
       const session = await this.resolveSession();
       return await this.fetchReport(params, session);
@@ -36,7 +39,7 @@ export class GetArusKasReportUseCase implements UseCase<DataState<ArusKasReportD
   private async fetchReport(
     params: GetArusKasReportUseCaseParams,
     session: SessionEntity,
-  ): Promise<DataState<ArusKasReportData>> {
+  ): Promise<DataState<GetArusKasReportUseCaseResult>> {
     return this.repo.getArusKas({ from: params.from, to: params.to }, session);
   }
 }

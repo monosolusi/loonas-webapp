@@ -3,7 +3,14 @@ import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { ReportRepository, GeneralLedgerReportData } from "@/features/accounting/domain/repositories/report";
+import { ReportRepository } from "@/features/accounting/domain/repositories/report";
+import { GeneralLedgerReportEntity } from "@/features/accounting/domain/entities/general-ledger";
+import { PaginationMeta } from "@/core/resources/paginated";
+
+export type GetGeneralLedgerReportUseCaseResult = {
+  readonly data: GeneralLedgerReportEntity;
+  readonly meta: PaginationMeta;
+};
 
 export type GetGeneralLedgerReportUseCaseParams = {
   readonly accountId: string;
@@ -14,14 +21,14 @@ export type GetGeneralLedgerReportUseCaseParams = {
 };
 
 export class GetGeneralLedgerReportUseCase
-  implements UseCase<DataState<GeneralLedgerReportData>, GetGeneralLedgerReportUseCaseParams>
+  implements UseCase<DataState<GetGeneralLedgerReportUseCaseResult>, GetGeneralLedgerReportUseCaseParams>
 {
   constructor(
     private readonly repo: ReportRepository,
     private readonly sessionRepo: SessionRepository,
   ) {}
 
-  public async execute(params: GetGeneralLedgerReportUseCaseParams): Promise<DataState<GeneralLedgerReportData>> {
+  public async execute(params: GetGeneralLedgerReportUseCaseParams): Promise<DataState<GetGeneralLedgerReportUseCaseResult>> {
     try {
       const session = await this.resolveSession();
       return await this.fetchReport(params, session);
@@ -41,7 +48,7 @@ export class GetGeneralLedgerReportUseCase
   private async fetchReport(
     params: GetGeneralLedgerReportUseCaseParams,
     session: SessionEntity,
-  ): Promise<DataState<GeneralLedgerReportData>> {
+  ): Promise<DataState<GetGeneralLedgerReportUseCaseResult>> {
     return this.repo.getGeneralLedger(
       {
         accountId: params.accountId,

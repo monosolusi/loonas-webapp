@@ -3,7 +3,15 @@ import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { ReportRepository, TrialBalanceLinesData } from "@/features/accounting/domain/repositories/report";
+import { ReportRepository } from "@/features/accounting/domain/repositories/report";
+import { TrialBalanceLineEntity } from "@/features/accounting/domain/entities/trial-balance-line";
+import { PaginationMeta } from "@/core/resources/paginated";
+
+export type ListTrialBalanceLinesUseCaseResult = {
+  readonly lines: TrialBalanceLineEntity[];
+  readonly counterparts: TrialBalanceLineEntity[];
+  readonly meta: PaginationMeta;
+};
 
 export type ListTrialBalanceLinesUseCaseParams = {
   readonly accountId: string;
@@ -14,7 +22,7 @@ export type ListTrialBalanceLinesUseCaseParams = {
 };
 
 export class ListTrialBalanceLinesUseCase
-  implements UseCase<DataState<TrialBalanceLinesData>, ListTrialBalanceLinesUseCaseParams>
+  implements UseCase<DataState<ListTrialBalanceLinesUseCaseResult>, ListTrialBalanceLinesUseCaseParams>
 {
   constructor(
     private readonly repo: ReportRepository,
@@ -23,7 +31,7 @@ export class ListTrialBalanceLinesUseCase
 
   public async execute(
     params: ListTrialBalanceLinesUseCaseParams,
-  ): Promise<DataState<TrialBalanceLinesData>> {
+  ): Promise<DataState<ListTrialBalanceLinesUseCaseResult>> {
     try {
       const session = await this.resolveSession();
       return await this.fetchLines(params, session);
@@ -43,7 +51,7 @@ export class ListTrialBalanceLinesUseCase
   private async fetchLines(
     params: ListTrialBalanceLinesUseCaseParams,
     session: SessionEntity,
-  ): Promise<DataState<TrialBalanceLinesData>> {
+  ): Promise<DataState<ListTrialBalanceLinesUseCaseResult>> {
     return this.repo.listTrialBalanceLines(
       {
         accountId: params.accountId,
