@@ -113,7 +113,7 @@ const SelectedAccountContext = createContext<SelectedAccountContextProps>({});
 export function SelectedAccountProvider(props: SelectedAccountProviderProps) {
   const { accounts, error, loading } = useListAccount();
   const { account, error: currentAccountError, loading: currentAccountLoading } = useGetCurrentAccount();
-  const { verificationWork } = useGetAccountVerificationWork({ accountId: account?.id ?? null });
+  const { verificationWork } = useGetAccountVerificationWork({ enabled: account?.id ?? null });
   const router = useRouter();
   const pathname = usePathname();
 

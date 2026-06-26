@@ -11,7 +11,7 @@ type ReviewingTimelineItemProps = {
 };
 
 export function ReviewingTimelineItem(props: ReviewingTimelineItemProps) {
-  const { loading, verificationWork } = useGetAccountVerificationWork({ accountId: props.account.id });
+  const { loading, verificationWork } = useGetAccountVerificationWork({ enabled: props.account.id });
 
   const backgroundColor = useMemo(() => {
     if (loading || !verificationWork) return "bg-neutral-200";

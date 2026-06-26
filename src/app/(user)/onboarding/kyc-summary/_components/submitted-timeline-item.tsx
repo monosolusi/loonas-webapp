@@ -11,7 +11,7 @@ type SubmittedTimelineItemProps = {
 };
 
 export function SubmittedTimelineItem(props: SubmittedTimelineItemProps) {
-  const { verificationWork, loading } = useGetAccountVerificationWork({ accountId: props.account.id });
+  const { verificationWork, loading } = useGetAccountVerificationWork({ enabled: props.account.id });
 
   const backgroundColor = useMemo(() => {
     if (loading || !verificationWork) return "bg-neutral-200";

@@ -15,12 +15,13 @@ import { VerificationOutcome } from "@/features/account/domain/enums/verificatio
 import { MembershipStatus } from "@/features/account/domain/enums/membership-status";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 import { UseListApprovedAccountsReturnType } from "@/features/account/presentation/hooks/use-list-approved-accounts.types";
+import { ACCOUNT_SWR_KEYS } from "@/features/account/presentation/constants/swr-keys";
 
 type FetcherParams = {
   clerk: ReturnType<typeof useClerk>;
 };
 
-async function listApprovedAccountsFetcher([_, params]: [string, FetcherParams]): Promise<AccountTypeEntity[]> {
+async function ListApprovedAccountFetcher([_, params]: [string, FetcherParams]): Promise<AccountTypeEntity[]> {
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const accountRepository = new AccountRepositoryImpl(new AccountServiceImpl(new HttpRequest()));
 
@@ -52,7 +53,7 @@ const INITIAL_STATE: UseListApprovedAccountsReturnType = {
 
 export function useListApprovedAccounts(): UseListApprovedAccountsReturnType {
   const clerk = useClerk();
-  const { data, isLoading, error } = useSWR(["list-approved-accounts", { clerk }], listApprovedAccountsFetcher);
+  const { data, isLoading, error } = useSWR([ACCOUNT_SWR_KEYS.LIST_APPROVED_ACCOUNTS, { clerk }], ListApprovedAccountFetcher);
 
   if (isLoading) return INITIAL_STATE;
   if (error) {
