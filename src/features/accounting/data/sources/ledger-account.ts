@@ -7,21 +7,19 @@ import {
   LedgerAccountService,
   ListLedgerAccountsServiceResult,
   ListLedgerEntriesServiceResult,
+  ListLedgerAccountsServiceParams,
+  GetAccountBalanceServiceParams,
+  ListLedgerEntriesServiceParams,
+  CreateLedgerAccountServiceParams,
+  UpdateLedgerAccountServiceParams,
+  DeleteLedgerAccountServiceParams,
 } from "@/features/accounting/domain/sources/ledger-account";
-import {
-  ListLedgerAccountsParams,
-  GetAccountBalanceParams,
-  ListLedgerEntriesParams,
-  CreateLedgerAccountParams,
-  UpdateLedgerAccountParams,
-  DeleteLedgerAccountParams,
-} from "@/features/accounting/domain/repositories/ledger-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 export class LedgerAccountServiceImpl implements LedgerAccountService {
   constructor(private readonly http: HttpRequest) {}
 
-  public async list(params: ListLedgerAccountsParams, session: SessionEntity): Promise<ListLedgerAccountsServiceResult> {
+  public async list(params: ListLedgerAccountsServiceParams, session: SessionEntity): Promise<ListLedgerAccountsServiceResult> {
     try {
       const searchParams: Record<string, any> = {};
       if (params.page) searchParams["page"] = String(params.page);
@@ -49,7 +47,7 @@ export class LedgerAccountServiceImpl implements LedgerAccountService {
     }
   }
 
-  public async getBalance(accountId: string, params: GetAccountBalanceParams, session: SessionEntity): Promise<AccountBalanceModel> {
+  public async getBalance(accountId: string, params: GetAccountBalanceServiceParams, session: SessionEntity): Promise<AccountBalanceModel> {
     try {
       const searchParams: Record<string, any> = {};
       if (params.startDate) searchParams["start_date"] = params.startDate;
@@ -69,7 +67,7 @@ export class LedgerAccountServiceImpl implements LedgerAccountService {
     }
   }
 
-  public async listEntries(accountId: string, params: ListLedgerEntriesParams, session: SessionEntity): Promise<ListLedgerEntriesServiceResult> {
+  public async listEntries(accountId: string, params: ListLedgerEntriesServiceParams, session: SessionEntity): Promise<ListLedgerEntriesServiceResult> {
     try {
       const searchParams: Record<string, any> = {};
       if (params.page) searchParams["page"] = String(params.page);
@@ -102,7 +100,7 @@ export class LedgerAccountServiceImpl implements LedgerAccountService {
     }
   }
 
-  public async create(params: CreateLedgerAccountParams, session: SessionEntity): Promise<LedgerAccountModel> {
+  public async create(params: CreateLedgerAccountServiceParams, session: SessionEntity): Promise<LedgerAccountModel> {
     try {
       const body: Record<string, any> = {
         code: params.code,
@@ -123,7 +121,7 @@ export class LedgerAccountServiceImpl implements LedgerAccountService {
     }
   }
 
-  public async update(params: UpdateLedgerAccountParams, session: SessionEntity): Promise<LedgerAccountModel> {
+  public async update(params: UpdateLedgerAccountServiceParams, session: SessionEntity): Promise<LedgerAccountModel> {
     try {
       const body: Record<string, any> = {};
       if (params.name !== undefined) body["name"] = params.name;
@@ -146,7 +144,7 @@ export class LedgerAccountServiceImpl implements LedgerAccountService {
     }
   }
 
-  public async delete(params: DeleteLedgerAccountParams, session: SessionEntity): Promise<void> {
+  public async delete(params: DeleteLedgerAccountServiceParams, session: SessionEntity): Promise<void> {
     try {
       await this.http.request({
         path: `/accounting/accounts/${params.id}`,
