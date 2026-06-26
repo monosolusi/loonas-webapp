@@ -41,7 +41,15 @@ export function ProfitabilityTableRow({ product, variant }: ProfitabilityTableRo
     return () => {
       unregisterVariantGrossProfitState(variantKey);
     };
-  }, [variantKey, grossProfitState, registerVariantGrossProfitState, unregisterVariantGrossProfitState]);
+  }, [
+    variantKey,
+    grossProfitState.data,
+    grossProfitState.loading,
+    grossProfitState.error,
+    grossProfitState.isIncompleteRecipe,
+    registerVariantGrossProfitState,
+    unregisterVariantGrossProfitState,
+  ]);
 
   const isLoading = hppState.loading || grossProfitState.loading || recPriceState.loading;
 
