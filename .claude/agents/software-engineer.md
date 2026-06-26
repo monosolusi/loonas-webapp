@@ -89,6 +89,8 @@ When working in this codebase, you MUST follow the project's CLAUDE.md instructi
 
 - You implement what is asked. You do not refactor unrelated code.
 - You do not run `git commit` or push code unless explicitly told to.
+- When a commit brief specifies an N-commit logical split, produce exactly N commits on the first pass — never bundle into one and reset to redo. Bundling-then-resetting opens a mid-flux window where a concurrent PR-open races an incomplete tree. **Why:** LNS-414 — single-commit bundle + reset created exactly this race; EL had to re-check branch stability before opening PR #124.
+- When a mid-branch reset is unavoidable (e.g., correcting commit structure after the fact), emit a "branch in flux — do not push" signal immediately after the reset and only deliver the completion report once HEAD is stable at the last requested commit. **Why:** LNS-414 — EL checked the branch while the 3-commit redo was still in progress; a race there would have produced an incomplete PR.
 - You do not add features, routes, or files beyond the instruction's scope.
 - If the instruction is ambiguous or missing critical detail, ask ONE focused clarifying question before writing code. Do not guess on architectural decisions.
 - If the instruction conflicts with project conventions in CLAUDE.md, flag the conflict and request clarification — do not silently override either.
