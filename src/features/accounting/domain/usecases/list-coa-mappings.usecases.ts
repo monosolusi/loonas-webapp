@@ -1,5 +1,5 @@
 import { UseCase } from "@/core/resources/use-case";
-import { DataFailed, DataState } from "@/core/resources/data-state";
+import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
@@ -24,7 +24,7 @@ export class ListCoaMappingsUseCase
   public async execute(params: ListCoaMappingsUseCaseParams): Promise<DataState<PaginatedData<CoaMappingEntity>>> {
     try {
       const session = await this.resolveSession();
-      return await this.fetchMappings(params.params, session);
+      return new DataSuccess(await this.fetchMappings(params.params, session));
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
@@ -41,7 +41,10 @@ export class ListCoaMappingsUseCase
   private async fetchMappings(
     params: ListCoaMappingsUseCaseInput,
     session: SessionEntity,
-  ): Promise<DataState<PaginatedData<CoaMappingEntity>>> {
-    return this.repo.list(params, session);
+  ): Promise<PaginatedData<CoaMappingEntity>> {
+    const result = await this.repo.list(params, session);
+    if (result instanceof DataFailed) throw result.error;
+    if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    return result.data;
   }
 }
