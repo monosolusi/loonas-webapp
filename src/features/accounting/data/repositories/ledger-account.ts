@@ -29,9 +29,9 @@ export class LedgerAccountRepositoryImpl implements LedgerAccountRepository {
     }
   }
 
-  public async getBalance(accountId: string, params: GetAccountBalanceParams, session: SessionEntity): Promise<DataState<AccountBalanceEntity>> {
+  public async getBalance(params: GetAccountBalanceParams, session: SessionEntity): Promise<DataState<AccountBalanceEntity>> {
     try {
-      const model = await this.service.getBalance(accountId, params, session);
+      const model = await this.service.getBalance(params, session);
       return new DataSuccess(model.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
@@ -39,9 +39,9 @@ export class LedgerAccountRepositoryImpl implements LedgerAccountRepository {
     }
   }
 
-  public async listEntries(accountId: string, params: ListLedgerEntriesParams, session: SessionEntity): Promise<DataState<ListLedgerEntriesResult>> {
+  public async listEntries(params: ListLedgerEntriesParams, session: SessionEntity): Promise<DataState<ListLedgerEntriesResult>> {
     try {
-      const result = await this.service.listEntries(accountId, params, session);
+      const result = await this.service.listEntries(params, session);
       return new DataSuccess({ entries: result.data.map((m) => m.toEntity()), meta: result.meta });
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);

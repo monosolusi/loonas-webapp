@@ -5,14 +5,11 @@ import { SessionRepository } from "@/features/authentication/domain/repositories
 import { LedgerAccountRepository } from "@/features/accounting/domain/repositories/ledger-account";
 import { AccountBalanceEntity } from "@/features/accounting/domain/entities/account-balance";
 
-type GetAccountBalanceUseCaseInput = { startDate?: string; endDate?: string };
-
-export class GetAccountBalanceUseCaseParams {
-  constructor(
-    public readonly accountId: string,
-    public readonly params: GetAccountBalanceUseCaseInput,
-  ) {}
-}
+export type GetAccountBalanceUseCaseParams = {
+  readonly accountId: string;
+  readonly startDate?: string;
+  readonly endDate?: string;
+};
 
 export class GetAccountBalanceUseCase implements UseCase<DataState<AccountBalanceEntity>, GetAccountBalanceUseCaseParams> {
   constructor(
@@ -25,7 +22,7 @@ export class GetAccountBalanceUseCase implements UseCase<DataState<AccountBalanc
       const session = await this.sessionRepo.retrieve();
       if (session instanceof DataFailed) return session;
       if (!session.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return this.repo.getBalance(params.accountId, params.params, session.data);
+      return this.repo.getBalance({ accountId: params.accountId, startDate: params.startDate, endDate: params.endDate }, session.data);
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

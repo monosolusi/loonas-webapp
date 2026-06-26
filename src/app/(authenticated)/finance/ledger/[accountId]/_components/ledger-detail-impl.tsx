@@ -30,8 +30,8 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
   const { accounts } = useListLedgerAccounts({ limit: 100 });
   const account = useMemo(() => accounts.find((a) => a.id === accountId), [accounts, accountId]);
 
-  const { balance, loading: balanceLoading } = useGetAccountBalance(accountId, { startDate, endDate });
-  const { entries, meta, loading, error } = useListLedgerEntries(accountId, { page, limit: 25, startDate, endDate });
+  const { balance, loading: balanceLoading } = useGetAccountBalance({ accountId, startDate, endDate });
+  const { entries, meta, loading, error } = useListLedgerEntries({ accountId, page, limit: 25, startDate, endDate });
 
   const accountName = account?.name ?? "Memuat...";
   const accountSubtitle = account ? `${account.code} · ${ACCOUNT_TYPE_LABELS[account.type as AccountType] ?? account.type}` : undefined;

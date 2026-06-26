@@ -47,14 +47,14 @@ export class LedgerAccountServiceImpl implements LedgerAccountService {
     }
   }
 
-  public async getBalance(accountId: string, params: GetAccountBalanceServiceParams, session: SessionEntity): Promise<AccountBalanceModel> {
+  public async getBalance(params: GetAccountBalanceServiceParams, session: SessionEntity): Promise<AccountBalanceModel> {
     try {
       const searchParams: Record<string, any> = {};
       if (params.startDate) searchParams["start_date"] = params.startDate;
       if (params.endDate) searchParams["end_date"] = params.endDate;
 
       const result = await this.http.request({
-        path: `/accounting/accounts/${accountId}/balance`,
+        path: `/accounting/accounts/${params.accountId}/balance`,
         method: "GET",
         searchParams,
         session,
@@ -67,26 +67,28 @@ export class LedgerAccountServiceImpl implements LedgerAccountService {
     }
   }
 
-  public async listEntries(accountId: string, params: ListLedgerEntriesServiceParams, session: SessionEntity): Promise<ListLedgerEntriesServiceResult> {
+  public async listEntries(params: ListLedgerEntriesServiceParams, session: SessionEntity): Promise<ListLedgerEntriesServiceResult> {
     try {
       const searchParams: Record<string, any> = {};
+      if (params.startDate) searchParams["from"] = params.startDate;
+      if (params.endDate) searchParams["to"] = params.endDate;
       if (params.page) searchParams["page"] = String(params.page);
       if (params.limit) searchParams["limit"] = String(params.limit);
-      if (params.startDate) searchParams["start_date"] = params.startDate;
-      if (params.endDate) searchParams["end_date"] = params.endDate;
 
       const result = await this.http.request({
-        path: `/accounting/accounts/${accountId}/ledger`,
+        path: `/accounting/reports/general-ledger/${params.accountId}`,
         method: "GET",
         searchParams,
         session,
       });
 
-      const items = result?.data;
-      if (!Array.isArray(items)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      const data = result?.data;
+      if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      const lines = Array.isArray(data.lines) ? data.lines : [];
+      const accountId = data.meta?.account_id ?? params.accountId;
 
       return {
-        data: items.map(LedgerEntryModel.fromJson),
+        data: lines.map((line: any) => LedgerEntryModel.fromJson({ ...line, account_id: accountId })),
         meta: {
           page: result.meta?.page ?? 1,
           limit: result.meta?.limit ?? 25,
