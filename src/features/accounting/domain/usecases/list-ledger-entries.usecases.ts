@@ -6,16 +6,15 @@ import { LedgerAccountRepository } from "@/features/accounting/domain/repositori
 import { LedgerEntryEntity } from "@/features/accounting/domain/entities/ledger-entry";
 import { PaginationMeta } from "@/core/resources/paginated";
 
-type ListLedgerEntriesUseCaseInput = { page?: number; limit?: number; startDate?: string; endDate?: string };
-
 export type ListLedgerEntriesUseCaseResult = { entries: LedgerEntryEntity[]; meta: PaginationMeta };
 
-export class ListLedgerEntriesUseCaseParams {
-  constructor(
-    public readonly accountId: string,
-    public readonly params: ListLedgerEntriesUseCaseInput,
-  ) {}
-}
+export type ListLedgerEntriesUseCaseParams = {
+  readonly accountId: string;
+  readonly page?: number;
+  readonly limit?: number;
+  readonly startDate?: string;
+  readonly endDate?: string;
+};
 
 export class ListLedgerEntriesUseCase implements UseCase<DataState<ListLedgerEntriesUseCaseResult>, ListLedgerEntriesUseCaseParams> {
   constructor(
@@ -28,7 +27,10 @@ export class ListLedgerEntriesUseCase implements UseCase<DataState<ListLedgerEnt
       const session = await this.sessionRepo.retrieve();
       if (session instanceof DataFailed) return session;
       if (!session.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return this.repo.listEntries(params.accountId, params.params, session.data);
+      return this.repo.listEntries(
+        { accountId: params.accountId, page: params.page, limit: params.limit, startDate: params.startDate, endDate: params.endDate },
+        session.data,
+      );
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

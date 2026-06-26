@@ -13,11 +13,13 @@ export type ListLedgerAccountsServiceParams = {
 };
 
 export type GetAccountBalanceServiceParams = {
+  accountId: string;
   startDate?: string;
   endDate?: string;
 };
 
 export type ListLedgerEntriesServiceParams = {
+  accountId: string;
   page?: number;
   limit?: number;
   startDate?: string;
@@ -57,8 +59,8 @@ export type ListLedgerEntriesServiceResult = {
 
 export interface LedgerAccountService {
   list(params: ListLedgerAccountsServiceParams, session: SessionEntity): Promise<ListLedgerAccountsServiceResult>;
-  getBalance(accountId: string, params: GetAccountBalanceServiceParams, session: SessionEntity): Promise<AccountBalanceModel>;
-  listEntries(accountId: string, params: ListLedgerEntriesServiceParams, session: SessionEntity): Promise<ListLedgerEntriesServiceResult>;
+  getBalance(params: GetAccountBalanceServiceParams, session: SessionEntity): Promise<AccountBalanceModel>;
+  listEntries(params: ListLedgerEntriesServiceParams, session: SessionEntity): Promise<ListLedgerEntriesServiceResult>;
   create(params: CreateLedgerAccountServiceParams, session: SessionEntity): Promise<LedgerAccountModel>;
   update(params: UpdateLedgerAccountServiceParams, session: SessionEntity): Promise<LedgerAccountModel>;
   delete(params: DeleteLedgerAccountServiceParams, session: SessionEntity): Promise<void>;
