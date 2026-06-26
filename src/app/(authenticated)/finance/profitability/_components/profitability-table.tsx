@@ -9,10 +9,10 @@ import { ProfitabilityTableRow } from "@/app/(authenticated)/finance/profitabili
 
 const COLUMNS = [
   { label: "Produk", align: "left" as const },
-  { label: "HPP / Harga Jual", align: "right" as const },
+  { label: "HPP / Harga Jual", align: "center" as const },
   { label: "Rekomendasi Harga", align: "right" as const },
-  { label: "Laba / Margin", align: "right" as const },
-  { label: "Status", align: "center" as const },
+  { label: "Laba / Margin", align: "center" as const },
+  { label: "Status", align: "left" as const },
 ];
 
 export function ProfitabilityTable() {

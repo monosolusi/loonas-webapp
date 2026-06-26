@@ -21,17 +21,17 @@ function deriveStatusChip(
   grossProfitIncomplete: boolean,
 ): React.ReactNode {
   if (hppIncomplete || grossProfitIncomplete) {
-    return <StatusChip variant="warning" label="Data Kurang" compact />;
+    return <StatusChip variant="warning" label="Kurang" compact />;
   }
   if (!grossProfit) return null;
   if (grossProfit.needsData) {
-    return <StatusChip variant="neutral" label="Belum Ada Penjualan" compact />;
+    return <StatusChip variant="neutral" label="Belum Jual" compact />;
   }
   if (grossProfit.estimasiLabaKotor === null) return null;
   if (grossProfit.estimasiLabaKotor < 0) {
     return <StatusChip variant="error" label="Rugi" compact />;
   }
-  return <StatusChip variant="success" label="Menguntungkan" compact />;
+  return <StatusChip variant="success" label="Untung" compact />;
 }
 
 export function ProfitabilityTableRowData({
@@ -63,10 +63,9 @@ export function ProfitabilityTableRowData({
     if (!grossProfit) return "—";
     if (grossProfit.needsData) return "—";
     if (grossProfit.estimasiLabaKotor === null) return "—";
-    const sign = grossProfit.estimasiLabaKotor >= 0 ? "+" : "−";
     return (
       <span className={grossProfitPositive ? "text-success-500" : grossProfitNegative ? "text-error-500" : undefined}>
-        {sign} <CurrencyDisplay value={Math.abs(grossProfit.estimasiLabaKotor)} />
+        <CurrencyDisplay value={Math.abs(grossProfit.estimasiLabaKotor)} />
       </span>
     );
   })();
@@ -83,27 +82,17 @@ export function ProfitabilityTableRowData({
 
   return (
     <>
-      <div className="flex flex-col items-end gap-y-0.5">
-        <div className="text-right text-xs tabular-nums text-neutral-300">
-          HPP <span className="text-sm text-neutral-500">{hppCell}</span>
-        </div>
-        <div className="text-right text-xs tabular-nums text-neutral-300">
-          JUAL <span className="text-sm font-medium text-neutral-500">{hargaJualCell}</span>
-        </div>
+      <div className="text-center text-sm text-neutral-500 tabular-nums">
+        {hppCell} / {hargaJualCell}
       </div>
 
-      <div className="text-right text-sm tabular-nums text-neutral-500">{recPriceCell}</div>
+      <div className="text-right text-sm text-neutral-500 tabular-nums">{recPriceCell}</div>
 
-      <div className="flex flex-col items-end gap-y-0.5">
-        <div className="text-right text-xs tabular-nums text-neutral-300">
-          LABA {grossProfitCell}
-        </div>
-        <div className="text-right text-xs tabular-nums text-neutral-300">
-          MARGIN <span className="text-sm text-neutral-500">{marginValue}</span>
-        </div>
+      <div className="text-center text-sm text-neutral-500 tabular-nums">
+        {grossProfitCell} / {marginValue}
       </div>
 
-      <div className="flex justify-center">{statusNode}</div>
+      <div className="flex justify-start">{statusNode}</div>
     </>
   );
 }
