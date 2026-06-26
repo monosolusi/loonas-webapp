@@ -9,7 +9,6 @@ import { SessionRepositoryImpl } from "@/features/authentication/data/repositori
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { JournalRepositoryImpl } from "@/features/accounting/data/repositories/journal";
 import { JournalServiceImpl } from "@/features/accounting/data/sources/journal";
-import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import {
   CreateJournalUseCase,
   CreateJournalUseCaseParams,
@@ -42,5 +41,5 @@ async function CreateJournalFetcher(
 }
 
 export function useCreateJournal() {
-  return useSWRMutationClerk(ACCOUNTING_SWR_KEYS.CREATE_JOURNAL, CreateJournalFetcher);
+  return useSWRMutationClerk("create-journal", CreateJournalFetcher);
 }
