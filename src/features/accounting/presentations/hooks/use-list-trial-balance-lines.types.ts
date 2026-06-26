@@ -1,7 +1,7 @@
 import { useClerk } from "@clerk/nextjs";
 import { KeyedMutator } from "swr";
 import { ServerError } from "@/core/resources/server-error";
-import { TrialBalanceLinesData } from "@/features/accounting/domain/repositories/report";
+import { ListTrialBalanceLinesUseCaseResult } from "@/features/accounting/domain/usecases/list-trial-balance-lines.usecases";
 
 export type UseListTrialBalanceLinesParams = {
   readonly accountId: string;
@@ -24,10 +24,10 @@ type InitialState = {
 };
 
 type LoadedState = {
-  readonly data: TrialBalanceLinesData;
+  readonly data: ListTrialBalanceLinesUseCaseResult;
   readonly loading: false;
   readonly error: null;
-  readonly refresh: KeyedMutator<TrialBalanceLinesData>;
+  readonly refresh: KeyedMutator<ListTrialBalanceLinesUseCaseResult>;
 };
 
 type ErrorState = {

@@ -1,7 +1,7 @@
 import { KeyedMutator } from "swr";
 import { ServerError } from "@/core/resources/server-error";
 import { useClerk } from "@clerk/nextjs";
-import { LabaRugiReportData } from "@/features/accounting/domain/repositories/report";
+import { GetLabaRugiReportUseCaseResult } from "@/features/accounting/domain/usecases/get-laba-rugi-report.usecases";
 
 export type UseGetLabaRugiReportParams = {
   readonly enabled: boolean;
@@ -23,10 +23,10 @@ type InitialState = {
 };
 
 type LoadedState = {
-  readonly data: LabaRugiReportData;
+  readonly data: GetLabaRugiReportUseCaseResult;
   readonly loading: false;
   readonly error: null;
-  readonly refresh: KeyedMutator<LabaRugiReportData>;
+  readonly refresh: KeyedMutator<GetLabaRugiReportUseCaseResult>;
 };
 
 type ErrorState = {

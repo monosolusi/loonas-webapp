@@ -1,7 +1,7 @@
 import { KeyedMutator } from "swr";
 import { ServerError } from "@/core/resources/server-error";
 import { useClerk } from "@clerk/nextjs";
-import { ArusKasReportData } from "@/features/accounting/domain/repositories/report";
+import { GetArusKasReportUseCaseResult } from "@/features/accounting/domain/usecases/get-arus-kas-report.usecases";
 
 export type UseGetArusKasReportParams = {
   readonly enabled: boolean;
@@ -21,10 +21,10 @@ type InitialState = {
 };
 
 type LoadedState = {
-  readonly data: ArusKasReportData;
+  readonly data: GetArusKasReportUseCaseResult;
   readonly loading: false;
   readonly error: null;
-  readonly refresh: KeyedMutator<ArusKasReportData>;
+  readonly refresh: KeyedMutator<GetArusKasReportUseCaseResult>;
 };
 
 type ErrorState = {

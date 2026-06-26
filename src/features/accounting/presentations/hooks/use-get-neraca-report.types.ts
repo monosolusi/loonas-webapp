@@ -1,7 +1,7 @@
 import { KeyedMutator } from "swr";
 import { ServerError } from "@/core/resources/server-error";
 import { useClerk } from "@clerk/nextjs";
-import { NeracaReportData } from "@/features/accounting/domain/repositories/report";
+import { GetNeracaReportUseCaseResult } from "@/features/accounting/domain/usecases/get-neraca-report.usecases";
 
 export type UseGetNeracaReportParams = {
   readonly asOf: string;
@@ -20,10 +20,10 @@ type InitialState = {
 };
 
 type LoadedState = {
-  readonly data: NeracaReportData;
+  readonly data: GetNeracaReportUseCaseResult;
   readonly loading: false;
   readonly error: null;
-  readonly refresh: KeyedMutator<NeracaReportData>;
+  readonly refresh: KeyedMutator<GetNeracaReportUseCaseResult>;
 };
 
 type ErrorState = {

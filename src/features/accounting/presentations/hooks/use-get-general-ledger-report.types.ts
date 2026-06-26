@@ -1,7 +1,7 @@
 import { KeyedMutator } from "swr";
 import { ServerError } from "@/core/resources/server-error";
 import { useClerk } from "@clerk/nextjs";
-import { GeneralLedgerReportData } from "@/features/accounting/domain/repositories/report";
+import { GetGeneralLedgerReportUseCaseResult } from "@/features/accounting/domain/usecases/get-general-ledger-report.usecases";
 
 export type UseGetGeneralLedgerReportParams = {
   readonly accountId: string;
@@ -25,11 +25,11 @@ type InitialState = {
 };
 
 type LoadedState = {
-  readonly data: GeneralLedgerReportData;
+  readonly data: GetGeneralLedgerReportUseCaseResult;
   readonly loading: false;
   readonly isLoadingPage: boolean;
   readonly error: null;
-  readonly refresh: KeyedMutator<GeneralLedgerReportData>;
+  readonly refresh: KeyedMutator<GetGeneralLedgerReportUseCaseResult>;
 };
 
 type ErrorState = {
