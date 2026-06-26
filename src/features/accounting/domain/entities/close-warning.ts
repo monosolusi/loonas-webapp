@@ -4,7 +4,7 @@ export type PphFinalWarningDetails = {
   period: string;               // "yyyy-MM"
   tenantRegime: string;         // "pph_final_umkm"
   expectedAccountCode: string;  // "8110"
-  periodDpp: number;            // minor units — parsed, NOT rendered in v1
+  periodDpp: number;            // whole rupiah (converted from BE minor units at parse boundary)
   setorDeadline: string;        // "yyyy-MM-dd"
 };
 
