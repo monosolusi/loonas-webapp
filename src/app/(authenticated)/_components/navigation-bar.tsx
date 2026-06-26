@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { LogoImage } from "@/core/presentations/components/logo-image";
 import { NavigationItem } from "@/app/(authenticated)/_components/navigation-item";
 import { NavigationGroup } from "@/app/(authenticated)/_components/navigation-group";
@@ -9,29 +12,51 @@ import { PurchasingNavGroup } from "@/app/(authenticated)/_components/purchasing
 import { SalesNavGroup } from "@/app/(authenticated)/_components/sales-nav-group";
 
 export function NavigationBar() {
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const handleOpenChange = (id: string) => setOpenGroup((current) => (current === id ? null : id));
+
   return (
     <nav className="bg-background flex h-full w-[256px] shrink-0 flex-col gap-y-8 border-r border-r-neutral-200 p-6">
       <LogoImage className="h-auto w-24" />
-      <div className="flex flex-1 flex-col gap-y-1">
+      <div className="flex min-h-0 flex-1 flex-col gap-y-1 overflow-y-auto scrollbar-hide">
         <NavigationItem
           href="/home"
           label="Dashboard"
           iconPath="/assets/images/dashboard-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/dashboard-icon-primary-300-w16-h16.svg"
         />
-        <PurchasingNavGroup />
-        <SalesNavGroup />
+        <PurchasingNavGroup
+          id="purchasing"
+          openGroup={openGroup}
+          onOpenChange={handleOpenChange}
+        />
+        <SalesNavGroup
+          id="sales"
+          openGroup={openGroup}
+          onOpenChange={handleOpenChange}
+        />
         <NavigationGroup
+          id="products"
           label="Produk"
           iconPath="/assets/images/box-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/box-icon-primary-300-w16-h16.svg"
           matchPrefixes={["/products", "/productions"]}
+          openGroup={openGroup}
+          onOpenChange={handleOpenChange}
         >
           <NavigationChildItem href="/products" label="Semua Produk" />
           <NavigationChildItem href="/productions" label="Produksi" />
         </NavigationGroup>
-        <FinanceNavGroup />
-        <ChartOfAccountsNavGroup />
+        <FinanceNavGroup
+          id="finance"
+          openGroup={openGroup}
+          onOpenChange={handleOpenChange}
+        />
+        <ChartOfAccountsNavGroup
+          id="chart-of-accounts"
+          openGroup={openGroup}
+          onOpenChange={handleOpenChange}
+        />
         <NavigationItem
           href="/accounts"
           label="Manajemen Akun"
