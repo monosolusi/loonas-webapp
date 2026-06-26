@@ -2,12 +2,14 @@ import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { LedgerAccountRepository, ListLedgerEntriesParams, ListLedgerEntriesResult } from "@/features/accounting/domain/repositories/ledger-account";
+import { LedgerAccountRepository, ListLedgerEntriesResult } from "@/features/accounting/domain/repositories/ledger-account";
+
+type ListLedgerEntriesUseCaseInput = { page?: number; limit?: number; startDate?: string; endDate?: string };
 
 export class ListLedgerEntriesUseCaseParams {
   constructor(
     public readonly accountId: string,
-    public readonly params: ListLedgerEntriesParams,
+    public readonly params: ListLedgerEntriesUseCaseInput,
   ) {}
 }
 

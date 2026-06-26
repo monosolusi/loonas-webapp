@@ -2,13 +2,15 @@ import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { LedgerAccountRepository, GetAccountBalanceParams } from "@/features/accounting/domain/repositories/ledger-account";
+import { LedgerAccountRepository } from "@/features/accounting/domain/repositories/ledger-account";
 import { AccountBalanceEntity } from "@/features/accounting/domain/entities/account-balance";
+
+type GetAccountBalanceUseCaseInput = { startDate?: string; endDate?: string };
 
 export class GetAccountBalanceUseCaseParams {
   constructor(
     public readonly accountId: string,
-    public readonly params: GetAccountBalanceParams,
+    public readonly params: GetAccountBalanceUseCaseInput,
   ) {}
 }
 
