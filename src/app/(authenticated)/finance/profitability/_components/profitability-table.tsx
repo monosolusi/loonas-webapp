@@ -47,7 +47,12 @@ export function ProfitabilityTable() {
       {meta && (
         <TablePagination
           displayedCount={products.reduce((sum, product) => sum + product.variants.length, 0)}
-          meta={{ page: meta.page, limit: meta.limit, total: meta.total, totalPages: meta.totalPages }}
+          meta={{
+            page: meta.page,
+            limit: meta.limit,
+            total: products.reduce((sum, product) => sum + product.variants.length, 0),
+            totalPages: meta.totalPages,
+          }}
           currentPage={page}
           onPageChange={setPage}
           countLabel="varian"
