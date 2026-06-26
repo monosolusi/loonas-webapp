@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StatusChip } from "@/core/presentations/components/status-chip";
 
 type TabId = "neraca" | "laba-rugi" | "arus-kas" | "trial-balance" | "buku-besar" | "calk";
@@ -29,16 +29,12 @@ type ReportsTabStripProps = {
 
 export function ReportsTabStrip({ activeTab, onTabChange }: ReportsTabStripProps) {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const indicatorRef = useRef<HTMLSpanElement | null>(null);
+  const [indicator, setIndicator] = useState({ left: 0, width: 0 });
 
   useEffect(() => {
     const activeIndex = TABS.findIndex((t) => t.id === activeTab);
     const activeEl = tabRefs.current[activeIndex];
-    const indicator = indicatorRef.current;
-    if (activeEl && indicator) {
-      indicator.style.left = `${activeEl.offsetLeft}px`;
-      indicator.style.width = `${activeEl.offsetWidth}px`;
-    }
+    if (activeEl) setIndicator({ left: activeEl.offsetLeft, width: activeEl.offsetWidth });
   }, [activeTab]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -113,12 +109,16 @@ export function ReportsTabStrip({ activeTab, onTabChange }: ReportsTabStripProps
           );
         })}
 
-        {/* Rule 13 sanctioned exception: pixel offset derived from DOM measurements at runtime — cannot be expressed as static Tailwind classes. See LNS-373 arch review. */}
+        {/* Dynamic measured offset — CSS var carve-out per Rule 13 (mirrors dashboard-range-payment-breakdown). */}
         <span
-          ref={indicatorRef}
           aria-hidden
-          className="absolute bottom-0 h-0.5 bg-primary-300 motion-safe:transition-all motion-safe:duration-150 motion-safe:ease-out"
-          style={{ left: 0, width: 0 }}
+          className="absolute bottom-0 left-[var(--indicator-left)] h-0.5 w-[var(--indicator-width)] bg-primary-300 motion-safe:transition-all motion-safe:duration-150 motion-safe:ease-out"
+          style={
+            {
+              "--indicator-left": `${indicator.left}px`,
+              "--indicator-width": `${indicator.width}px`,
+            } as React.CSSProperties
+          }
         />
       </div>
       <div className="h-px bg-neutral-100" />
