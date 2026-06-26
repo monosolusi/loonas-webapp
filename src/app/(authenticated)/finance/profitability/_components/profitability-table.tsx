@@ -14,11 +14,9 @@ import { ProfitabilitySummaryCard } from "@/app/(authenticated)/finance/profitab
 
 const COLUMNS = [
   { label: "PRODUK", align: "left" as const },
-  { label: "HPP/UNIT", align: "right" as const },
-  { label: "HARGA JUAL", align: "right" as const },
+  { label: "HPP / HARGA JUAL", align: "right" as const },
   { label: "REKOMENDASI HARGA", align: "right" as const },
-  { label: "LABA KOTOR", align: "right" as const },
-  { label: "MARGIN", align: "right" as const },
+  { label: "LABA / MARGIN", align: "right" as const },
   { label: "STATUS", align: "center" as const },
 ];
 
@@ -59,7 +57,7 @@ export function ProfitabilityTable() {
             />
           </TableToolbar>
 
-          <div className="overflow-x-auto rounded-lg border border-neutral-200">
+          <div className="overflow-x-auto rounded-lg">
             <TableContainer
               loading={loading}
               error={error}

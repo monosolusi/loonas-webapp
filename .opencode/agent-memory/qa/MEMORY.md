@@ -1,0 +1,1 @@
+- [Profitability auth wall](profitability-auth-wall.md) — `/finance/profitability` is Clerk-walled; headless QA screenshots redirect to Dashboard.
