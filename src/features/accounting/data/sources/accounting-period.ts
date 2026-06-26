@@ -5,26 +5,24 @@ import { YearEndSummaryModel } from "@/features/accounting/data/models/year-end-
 import { CloseWarningModel } from "@/features/accounting/data/models/close-warning";
 import {
   AccountingPeriodService,
+  ClosePeriodServiceParams,
   ClosePeriodServiceResult,
-  ListPeriodsServiceResult,
-  GetYearSummaryServiceResult,
+  CloseYearServiceParams,
   CloseYearServiceResult,
+  GetYearSummaryServiceParams,
+  GetYearSummaryServiceResult,
+  ListPeriodsServiceParams,
+  ListPeriodsServiceResult,
+  ReopenPeriodServiceParams,
+  ReopenYearServiceParams,
   ReopenYearServiceResult,
 } from "@/features/accounting/domain/sources/accounting-period";
-import {
-  ClosePeriodParams,
-  CloseYearParams,
-  GetYearSummaryParams,
-  ListPeriodsParams,
-  ReopenPeriodParams,
-  ReopenYearParams,
-} from "@/features/accounting/domain/repositories/accounting-period";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 export class AccountingPeriodServiceImpl implements AccountingPeriodService {
   constructor(private readonly http: HttpRequest) {}
 
-  public async list(params: ListPeriodsParams, session: SessionEntity): Promise<ListPeriodsServiceResult> {
+  public async list(params: ListPeriodsServiceParams, session: SessionEntity): Promise<ListPeriodsServiceResult> {
     try {
       const searchParams: Record<string, any> = {};
       if (params.page) searchParams["page"] = String(params.page);
@@ -51,7 +49,7 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
     }
   }
 
-  public async close(params: ClosePeriodParams, session: SessionEntity): Promise<ClosePeriodServiceResult> {
+  public async close(params: ClosePeriodServiceParams, session: SessionEntity): Promise<ClosePeriodServiceResult> {
     try {
       const body: Record<string, any> = params.reason ? { reason: params.reason } : {};
 
@@ -70,7 +68,7 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
     }
   }
 
-  public async reopen(params: ReopenPeriodParams, session: SessionEntity): Promise<AccountingPeriodModel> {
+  public async reopen(params: ReopenPeriodServiceParams, session: SessionEntity): Promise<AccountingPeriodModel> {
     try {
       const body: Record<string, any> = { reason: params.reason };
 
@@ -86,7 +84,7 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
     }
   }
 
-  public async getYearSummary(params: GetYearSummaryParams, session: SessionEntity): Promise<GetYearSummaryServiceResult> {
+  public async getYearSummary(params: GetYearSummaryServiceParams, session: SessionEntity): Promise<GetYearSummaryServiceResult> {
     try {
       const result = await this.http.request({ path: `/accounting/periods/year/${params.year}`, method: "GET", session });
       return YearEndSummaryModel.fromJson(result);
@@ -96,7 +94,7 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
     }
   }
 
-  public async closeYear(params: CloseYearParams, session: SessionEntity): Promise<CloseYearServiceResult> {
+  public async closeYear(params: CloseYearServiceParams, session: SessionEntity): Promise<CloseYearServiceResult> {
     try {
       const body: Record<string, any> = {
         year: params.year,
@@ -118,7 +116,7 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
     }
   }
 
-  public async reopenYear(params: ReopenYearParams, session: SessionEntity): Promise<ReopenYearServiceResult> {
+  public async reopenYear(params: ReopenYearServiceParams, session: SessionEntity): Promise<ReopenYearServiceResult> {
     try {
       const body: Record<string, any> = {
         year: params.year,

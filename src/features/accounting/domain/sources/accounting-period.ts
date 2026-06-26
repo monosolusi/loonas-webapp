@@ -2,15 +2,42 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { AccountingPeriodModel } from "@/features/accounting/data/models/accounting-period";
 import { YearEndSummaryModel } from "@/features/accounting/data/models/year-end-summary";
 import { PaginationMeta } from "@/core/resources/paginated";
-import {
-  ListPeriodsParams,
-  ClosePeriodParams,
-  ReopenPeriodParams,
-  GetYearSummaryParams,
-  CloseYearParams,
-  ReopenYearParams,
-} from "@/features/accounting/domain/repositories/accounting-period";
 import { CloseWarning } from "@/features/accounting/domain/entities/close-warning";
+
+export type ListPeriodsServiceParams = {
+  page?: number;
+  limit?: number;
+  status?: "open" | "closed";
+};
+
+export type ClosePeriodServiceParams = {
+  id: string;
+  reason?: string;
+  idempotencyKey: string;
+};
+
+export type ReopenPeriodServiceParams = {
+  id: string;
+  reason: string;
+  idempotencyKey: string;
+};
+
+export type GetYearSummaryServiceParams = {
+  year: number;
+};
+
+export type CloseYearServiceParams = {
+  year: number;
+  retainedEarningsAccountId?: string;
+  idempotencyKey: string;
+};
+
+export type ReopenYearServiceParams = {
+  year: number;
+  confirmationToken: string;
+  reason: string;
+  idempotencyKey: string;
+};
 
 export type ListPeriodsServiceResult = {
   data: AccountingPeriodModel[];
@@ -35,10 +62,10 @@ export type ReopenYearServiceResult = {
 };
 
 export interface AccountingPeriodService {
-  list(params: ListPeriodsParams, session: SessionEntity): Promise<ListPeriodsServiceResult>;
-  close(params: ClosePeriodParams, session: SessionEntity): Promise<ClosePeriodServiceResult>;
-  reopen(params: ReopenPeriodParams, session: SessionEntity): Promise<AccountingPeriodModel>;
-  getYearSummary(params: GetYearSummaryParams, session: SessionEntity): Promise<GetYearSummaryServiceResult>;
-  closeYear(params: CloseYearParams, session: SessionEntity): Promise<CloseYearServiceResult>;
-  reopenYear(params: ReopenYearParams, session: SessionEntity): Promise<ReopenYearServiceResult>;
+  list(params: ListPeriodsServiceParams, session: SessionEntity): Promise<ListPeriodsServiceResult>;
+  close(params: ClosePeriodServiceParams, session: SessionEntity): Promise<ClosePeriodServiceResult>;
+  reopen(params: ReopenPeriodServiceParams, session: SessionEntity): Promise<AccountingPeriodModel>;
+  getYearSummary(params: GetYearSummaryServiceParams, session: SessionEntity): Promise<GetYearSummaryServiceResult>;
+  closeYear(params: CloseYearServiceParams, session: SessionEntity): Promise<CloseYearServiceResult>;
+  reopenYear(params: ReopenYearServiceParams, session: SessionEntity): Promise<ReopenYearServiceResult>;
 }
