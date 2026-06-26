@@ -9,7 +9,7 @@ export class CloseWarningModel {
         period: d["period"] ?? "",
         tenantRegime: d["tenant_regime"] ?? "",
         expectedAccountCode: d["expected_account_code"] ?? "",
-        periodDpp: d["period_dpp"] ?? 0,
+        periodDpp: Math.round((d["period_dpp"] ?? 0) / 100),
         setorDeadline: d["setor_deadline"] ?? "",
       };
     }
