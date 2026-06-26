@@ -11,11 +11,13 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: 'node "${OPENCODE_PROJECT_DIR:-.}/.opencode/hooks/planner-write-guard.mjs"'
+          command: 'node "${OPENCODE_PROJECT_DIR:-.}/.opencode/hooks/claude-protect-write-guard.mjs"'
+        - type: command
+          command: 'node "${OPENCODE_PROJECT_DIR:-.}/.opencode/hooks/write-guard.mjs" planner'
     - matcher: "Bash"
       hooks:
         - type: command
-          command: 'node "${OPENCODE_PROJECT_DIR:-.}/.opencode/hooks/planner-bash-guard.mjs"'
+          command: 'node "${OPENCODE_PROJECT_DIR:-.}/.opencode/hooks/bash-guard.mjs" planner'
 
 # Planner — In-Context Planning Agent
 
