@@ -2,21 +2,25 @@ import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
-import { AccountingPeriodRepository, ListPeriodsResult } from "@/features/accounting/domain/repositories/accounting-period";
+import { AccountingPeriodRepository } from "@/features/accounting/domain/repositories/accounting-period";
+import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
+import { PaginationMeta } from "@/core/resources/paginated";
 
 type ListPeriodsUseCaseInput = { page?: number; limit?: number; status?: "open" | "closed" };
+
+export type ListPeriodsUseCaseResult = { data: AccountingPeriodEntity[]; meta: PaginationMeta };
 
 export class ListPeriodsUseCaseParams {
   constructor(public readonly params: ListPeriodsUseCaseInput) {}
 }
 
-export class ListPeriodsUseCase implements UseCase<DataState<ListPeriodsResult>, ListPeriodsUseCaseParams> {
+export class ListPeriodsUseCase implements UseCase<DataState<ListPeriodsUseCaseResult>, ListPeriodsUseCaseParams> {
   constructor(
     private readonly repo: AccountingPeriodRepository,
     private readonly sessionRepo: SessionRepository,
   ) {}
 
-  public async execute(params: ListPeriodsUseCaseParams): Promise<DataState<ListPeriodsResult>> {
+  public async execute(params: ListPeriodsUseCaseParams): Promise<DataState<ListPeriodsUseCaseResult>> {
     try {
       const session = await this.sessionRepo.retrieve();
       if (session instanceof DataFailed) return session;
