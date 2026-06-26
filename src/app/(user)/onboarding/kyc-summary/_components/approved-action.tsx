@@ -10,7 +10,7 @@ type ApprovedActionProps = {
 };
 
 export function ApprovedAction(props: ApprovedActionProps) {
-  const { verificationWork } = useGetAccountVerificationWork({ accountId: props.account.id });
+  const { verificationWork } = useGetAccountVerificationWork({ enabled: props.account.id });
   const router = useRouter();
 
   const onClick = () => router.replace("/home");
