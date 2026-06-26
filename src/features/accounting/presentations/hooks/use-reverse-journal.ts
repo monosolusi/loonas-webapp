@@ -9,7 +9,6 @@ import { SessionRepositoryImpl } from "@/features/authentication/data/repositori
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { JournalRepositoryImpl } from "@/features/accounting/data/repositories/journal";
 import { JournalServiceImpl } from "@/features/accounting/data/sources/journal";
-import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import {
   ReverseJournalUseCase,
   ReverseJournalUseCaseParams,
@@ -49,5 +48,5 @@ async function ReverseJournalFetcher(
 }
 
 export function useReverseJournal() {
-  return useSWRMutationClerk(ACCOUNTING_SWR_KEYS.REVERSE_JOURNAL, ReverseJournalFetcher);
+  return useSWRMutationClerk("reverse-journal", ReverseJournalFetcher);
 }
