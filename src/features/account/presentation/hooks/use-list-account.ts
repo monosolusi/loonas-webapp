@@ -15,6 +15,7 @@ import {
   UseListAccountReturnType,
 } from "@/features/account/presentation/hooks/use-list-account.types";
 import { useClerk } from "@clerk/nextjs";
+import { ACCOUNT_SWR_KEYS } from "@/features/account/presentation/constants/swr-keys";
 
 const INITIAL_STATE: UseListAccountReturnType = {
   accounts: null,
@@ -43,7 +44,7 @@ async function ListAccountFetcher([_, params]: [string, ListAccountFetcherParams
 export function useListAccount(): UseListAccountReturnType {
   const clerk = useClerk();
   const swrParams = useMemo(() => ({ clerk }), [clerk]);
-  const { data, isLoading, error, mutate } = useSWR(["list-account", swrParams], ListAccountFetcher);
+  const { data, isLoading, error, mutate } = useSWR([ACCOUNT_SWR_KEYS.LIST_ACCOUNT, swrParams], ListAccountFetcher);
 
   if (isLoading) return INITIAL_STATE;
   if (error) {

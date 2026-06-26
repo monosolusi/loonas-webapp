@@ -17,6 +17,7 @@ import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { useClerk } from "@clerk/nextjs";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
+import { ACCOUNT_SWR_KEYS } from "@/features/account/presentation/constants/swr-keys";
 
 type CreatePersonalAccountFetcherParams = {
   clerk: ReturnType<typeof useClerk>;
@@ -71,7 +72,7 @@ async function CreatePersonalAccountFetcher(_: string, params: { arg: CreatePers
 
 export function useCreatePersonalAccount() {
   const clerk = useClerk();
-  const { trigger, ...rest } = useSWRMutation("create-personal-account", CreatePersonalAccountFetcher);
+  const { trigger, ...rest } = useSWRMutation(ACCOUNT_SWR_KEYS.CREATE_PERSONAL_ACCOUNT, CreatePersonalAccountFetcher);
 
   // Wrapper trigger yang otomatis inject getToken dari Clerk
   const wrappedTrigger = (data: TriggerInput) => trigger({ ...data, clerk });
