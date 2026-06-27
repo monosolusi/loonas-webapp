@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronRightIcon } from "@heroicons/react/16/solid";
+import clsx from "clsx";
 import { ProductEntity } from "@/features/product/domain/entities/product";
 import { VariantEntity } from "@/features/product/domain/entities/variant";
 import { useGetVariantHpp } from "@/features/profitability/presentations/hooks/use-get-variant-hpp";
@@ -41,7 +41,15 @@ export function ProfitabilityTableRow({ product, variant }: ProfitabilityTableRo
     return () => {
       unregisterVariantGrossProfitState(variantKey);
     };
-  }, [variantKey, grossProfitState, registerVariantGrossProfitState, unregisterVariantGrossProfitState]);
+  }, [
+    variantKey,
+    grossProfitState.data,
+    grossProfitState.loading,
+    grossProfitState.error,
+    grossProfitState.isIncompleteRecipe,
+    registerVariantGrossProfitState,
+    unregisterVariantGrossProfitState,
+  ]);
 
   const isLoading = hppState.loading || grossProfitState.loading || recPriceState.loading;
 
@@ -62,25 +70,22 @@ export function ProfitabilityTableRow({ product, variant }: ProfitabilityTableRo
       tabIndex={0}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      className="group grid cursor-pointer items-center border-b border-neutral-100 px-6 py-3 transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 [grid-template-columns:var(--grid-profitability-cols)]"
+      className={clsx(
+        "group grid cursor-pointer items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-3 transition-colors hover:border-l-primary-300 hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300",
+        "[grid-template-columns:var(--grid-profitability-cols)]",
+      )}
       aria-label={`Lihat detail profitabilitas ${product.name} — ${variant.name}`}
     >
-      <div className="flex items-center gap-x-2 pr-4">
-        <div className="flex min-w-0 flex-col gap-y-0.5">
-          <span
-            className="truncate text-sm font-medium text-neutral-500 transition-colors group-hover:text-primary-400"
-            title={product.name}
-          >
-            {product.name}
-          </span>
-          <span className="truncate text-xs text-neutral-300" title={variant.name}>
-            {variant.name}
-          </span>
-        </div>
-        <ChevronRightIcon
-          className="size-4 shrink-0 text-primary-300 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
-          aria-hidden="true"
-        />
+      <div className="flex min-w-0 flex-col gap-y-0.5 pr-4">
+        <span
+          className="truncate text-sm font-medium text-neutral-500 transition-colors group-hover:text-primary-400"
+          title={product.name}
+        >
+          {product.name}
+        </span>
+        <span className="truncate text-xs text-neutral-300" title={variant.name}>
+          {variant.name}
+        </span>
       </div>
 
       {isLoading ? (
