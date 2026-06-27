@@ -13,10 +13,6 @@ export function RecommendedPriceValueDisplay({ state }: RecommendedPriceValueDis
     return <div className="h-8 w-40 animate-pulse rounded bg-neutral-100" />;
   }
 
-  if (state.isIncompleteRecipe) {
-    return <span className="text-sm text-neutral-300">—</span>;
-  }
-
   if (state.error) {
     return (
       <div className="flex items-center gap-x-1.5">
@@ -25,6 +21,10 @@ export function RecommendedPriceValueDisplay({ state }: RecommendedPriceValueDis
         <span className="text-xs text-error-500">Gagal memuat rekomendasi harga. Coba ubah margin kembali.</span>
       </div>
     );
+  }
+
+  if (!state.data) {
+    return null;
   }
 
   return (

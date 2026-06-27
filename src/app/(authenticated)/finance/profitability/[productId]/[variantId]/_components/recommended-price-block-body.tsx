@@ -6,6 +6,7 @@ import { MarginControl } from "@/features/profitability/presentations/components
 import { RecommendedPriceValueDisplay } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/recommended-price-value-display";
 import { useProfitabilityDetail } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_providers/profitability-detail-provider";
 import { useGetVariantRecommendedPrice } from "@/features/profitability/presentations/hooks/use-get-variant-recommended-price";
+import { DataKurangCard } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/data-kurang-card";
 
 const DEFAULT_MARGIN = 30;
 
@@ -14,6 +15,16 @@ export function RecommendedPriceBlockBody() {
   const [margin, setMargin] = useState(DEFAULT_MARGIN);
 
   const state = useGetVariantRecommendedPrice({ productId, variantId, margin });
+
+  if (state.isIncompleteRecipe) {
+    return (
+      <DataKurangCard
+        title="Rekomendasi Harga Jual"
+        description="Rekomendasi harga jual tidak bisa dihitung karena HPP belum tersedia. Lengkapi resep dan harga bahan baku produk ini."
+        productId={productId}
+      />
+    );
+  }
 
   return (
     <SectionCard title="Rekomendasi Harga Jual">
