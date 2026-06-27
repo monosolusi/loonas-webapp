@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { PurchaseRangeProvider } from "@/app/(authenticated)/purchasing/_providers/purchase-range-provider";
 import { PurchaseListProvider } from "@/app/(authenticated)/purchasing/_providers/purchase-list-provider";
 import { PurchaseListHeader } from "@/app/(authenticated)/purchasing/_components/purchase-list-header";
 import { PurchaseListToolbar } from "@/app/(authenticated)/purchasing/_components/purchase-list-toolbar";
@@ -6,13 +8,17 @@ import { PurchaseDeleteDialog } from "@/app/(authenticated)/purchasing/_componen
 
 export default function PurchasingPage() {
   return (
-    <PurchaseListProvider>
-      <div className="flex flex-col gap-y-6">
-        <PurchaseListHeader />
-        <PurchaseListToolbar />
-        <PurchaseListTable />
-      </div>
-      <PurchaseDeleteDialog />
-    </PurchaseListProvider>
+    <Suspense>
+      <PurchaseRangeProvider>
+        <PurchaseListProvider>
+          <div className="flex flex-col gap-y-6">
+            <PurchaseListHeader />
+            <PurchaseListToolbar />
+            <PurchaseListTable />
+          </div>
+          <PurchaseDeleteDialog />
+        </PurchaseListProvider>
+      </PurchaseRangeProvider>
+    </Suspense>
   );
 }
