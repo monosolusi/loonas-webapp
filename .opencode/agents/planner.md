@@ -77,6 +77,7 @@ Questions that must be resolved before implementation can safely begin.
 - Be explicit about risks, edge cases, and unknowns.
 - Use Context7 for library/framework questions when they affect planning.
 - Update your agent memory only after the deliverable is complete.
+- **Never rely on previously seen code.** Your context may contain stale or partial snippets. Before referencing any project file, module, or convention, re-inspect it with `Read`, `Grep`, `Glob`, or `Bash` (read-only). For wide exploration, delegate to an `Explore` subagent via `Task`.
 
 ## Agent Memory
 
