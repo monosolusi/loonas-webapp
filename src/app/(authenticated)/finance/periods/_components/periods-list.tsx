@@ -17,13 +17,14 @@ export function PeriodsList() {
   const hasData = !isLoading && !hasError && periods.length > 0;
 
   return (
-    <SectionCard title="Periode Akuntansi" headerAction={<PeriodsFilterToolbar />}>
-      <div className="flex flex-col gap-y-4">
+    <div className="flex flex-col items-start gap-y-4">
+      <PeriodsFilterToolbar />
+      <SectionCard title="Periode Akuntansi" className="w-full">
         {isLoading ? <PeriodsLoadingContent /> : null}
         {hasError ? <PeriodsErrorContent /> : null}
         {isEmpty ? <PeriodsEmptyContent /> : null}
         {hasData ? <PeriodsTable /> : null}
-      </div>
-    </SectionCard>
+      </SectionCard>
+    </div>
   );
 }

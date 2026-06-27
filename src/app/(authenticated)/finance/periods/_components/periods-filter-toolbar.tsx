@@ -1,42 +1,19 @@
 "use client";
 
-import clsx from "clsx";
-import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
+import { TabFilter } from "@/core/presentations/components/tab-filter";
 import { usePeriods } from "@/app/(authenticated)/finance/periods/_providers/periods-provider";
 
-type StatusFilterOption = {
-  label: string;
-  value: "open" | "closed" | undefined;
-};
-
-const STATUS_FILTER_OPTIONS: StatusFilterOption[] = [
-  { label: "Semua", value: undefined },
-  { label: "Terbuka", value: "open" },
-  { label: "Terkunci", value: "closed" },
-];
+const FILTER_TABS = ["Semua", "Terbuka", "Terkunci"] as const;
+const FILTER_VALUES = [undefined, "open", "closed"] as const;
 
 export function PeriodsFilterToolbar() {
   const { statusFilter, setStatusFilter } = usePeriods();
 
-  return (
-    <TableToolbar>
-      <div className="flex flex-row gap-x-2">
-        {STATUS_FILTER_OPTIONS.map((opt) => (
-          <button
-            key={String(opt.value)}
-            type="button"
-            onClick={() => setStatusFilter(opt.value)}
-            className={clsx(
-              "rounded-lg border px-3 py-1.5 text-sm transition-colors",
-              statusFilter === opt.value
-                ? "border-primary-300 bg-primary-50 text-primary-300"
-                : "border-neutral-100 text-neutral-400 hover:border-neutral-200",
-            )}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
-    </TableToolbar>
-  );
+  const selectedIndex = FILTER_VALUES.findIndex((value) => value === statusFilter);
+
+  const handleChange = (index: number) => {
+    setStatusFilter(FILTER_VALUES[index]);
+  };
+
+  return <TabFilter tabs={FILTER_TABS} selectedIndex={selectedIndex} onChange={handleChange} />;
 }
