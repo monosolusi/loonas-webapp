@@ -21,6 +21,7 @@ type SearchComboboxBaseProps<T extends SearchComboboxOption> = {
   createNewLabel?: string;
   required?: boolean;
   autoFocus?: boolean;
+  emptyMessage?: string;
 };
 
 type SearchComboboxWithLabel<T extends SearchComboboxOption> = SearchComboboxBaseProps<T> & {
@@ -102,7 +103,9 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
             </ComboboxOption>
           ))}
 
-          {filtered.length === 0 && <div className="px-3 py-2 text-sm text-neutral-200">Tidak ditemukan</div>}
+          {filtered.length === 0 && (
+            <div className="px-3 py-2 text-sm text-neutral-200">{props.emptyMessage ?? "Tidak ditemukan"}</div>
+          )}
 
           {props.onCreateNew && (
             <button
