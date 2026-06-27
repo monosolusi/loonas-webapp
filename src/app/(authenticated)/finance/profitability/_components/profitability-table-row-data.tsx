@@ -70,14 +70,6 @@ export function ProfitabilityTableRowData({
     );
   })();
 
-  const marginValue = (() => {
-    if (grossProfitIncomplete) return "—";
-    if (!grossProfit) return "—";
-    if (grossProfit.needsData) return "—";
-    if (recommendedPrice) return `${recommendedPrice.marginPersen.toLocaleString("id-ID")}%`;
-    return "—";
-  })();
-
   const statusNode = deriveStatusChip(hppIncomplete, grossProfit, grossProfitIncomplete);
 
   return (
@@ -89,7 +81,7 @@ export function ProfitabilityTableRowData({
       <div className="text-right text-sm text-neutral-500 tabular-nums">{recPriceCell}</div>
 
       <div className="text-center text-sm text-neutral-500 tabular-nums">
-        {grossProfitCell} / {marginValue}
+        {grossProfitCell}
       </div>
 
       <div className="flex justify-start">{statusNode}</div>

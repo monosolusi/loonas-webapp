@@ -19,8 +19,9 @@ export function RecommendedPriceBlockBody() {
     <SectionCard title="Rekomendasi Harga Jual">
       <div className="flex flex-col gap-y-2">
         <span className="text-xs font-medium uppercase tracking-wider text-neutral-300">REKOMENDASI HARGA</span>
-        <div aria-live="polite" className="min-h-10">
+        <div aria-live="polite" className="flex min-h-10 flex-col gap-y-0.5">
           <RecommendedPriceValueDisplay state={state} />
+          <span className="text-xs text-neutral-300">untuk target margin {margin}%</span>
         </div>
       </div>
 
