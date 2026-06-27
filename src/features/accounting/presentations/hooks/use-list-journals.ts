@@ -30,7 +30,13 @@ async function ListJournalFetcher([_, fp]: [string, ListJournalsFetcherParams]) 
   const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: fp.clerk }));
   const repo = new JournalRepositoryImpl(new JournalServiceImpl(new HttpRequest()));
   const uc = new ListJournalsUseCase(repo, sessionRepo);
-  const result = await uc.execute({ page: fp.params.page, limit: fp.params.limit, search: fp.params.search });
+  const result = await uc.execute({
+    page: fp.params.page,
+    limit: fp.params.limit,
+    search: fp.params.search,
+    dateFrom: fp.params.dateFrom,
+    dateTo: fp.params.dateTo,
+  });
   if (result instanceof DataFailed) throw result.error;
   if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
   return result.data;
