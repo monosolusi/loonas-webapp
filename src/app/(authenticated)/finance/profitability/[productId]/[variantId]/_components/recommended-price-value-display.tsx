@@ -5,16 +5,12 @@ import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-fo
 import { UseGetVariantRecommendedPriceReturnType } from "@/features/profitability/presentations/hooks/use-get-variant-recommended-price.types";
 
 type RecommendedPriceValueDisplayProps = {
-  state: UseGetVariantRecommendedPriceReturnType;
+  state: Exclude<UseGetVariantRecommendedPriceReturnType, { isIncompleteRecipe: true }>;
 };
 
 export function RecommendedPriceValueDisplay({ state }: RecommendedPriceValueDisplayProps) {
   if (state.loading) {
     return <div className="h-8 w-40 animate-pulse rounded bg-neutral-100" />;
-  }
-
-  if (state.isIncompleteRecipe) {
-    return <span className="text-sm text-neutral-300">—</span>;
   }
 
   if (state.error) {

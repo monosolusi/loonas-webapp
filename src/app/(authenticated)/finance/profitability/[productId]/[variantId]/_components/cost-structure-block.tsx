@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useProfitabilityDetail } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_providers/profitability-detail-provider";
 import { useGetVariantProductionCost } from "@/features/profitability/presentations/hooks/use-get-variant-production-cost";
 import { CostStructureBlockLoading } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/cost-structure-block-loading";
-import { CostStructureBlockIncomplete } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/cost-structure-block-incomplete";
+import { DataKurangCard } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/data-kurang-card";
 import { CostStructureBlockError } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/cost-structure-block-error";
 import { CostStructureBlockBody } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/cost-structure-block-body";
 
@@ -18,6 +18,16 @@ export function CostStructureBlock() {
   function handleQuantityChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = parseInt(e.target.value, 10);
     if (!isNaN(val) && val >= 1) setQuantity(val);
+  }
+
+  if (state.isIncompleteRecipe) {
+    return (
+      <DataKurangCard
+        title="Struktur Biaya"
+        description="Struktur biaya tidak bisa ditampilkan karena resep atau harga bahan baku produk ini belum diisi."
+        productId={productId}
+      />
+    );
   }
 
   return (
@@ -41,8 +51,6 @@ export function CostStructureBlock() {
 
       {state.loading ? (
         <CostStructureBlockLoading />
-      ) : state.isIncompleteRecipe ? (
-        <CostStructureBlockIncomplete />
       ) : state.error ? (
         <CostStructureBlockError onRetry={() => { if (refresh) refresh(); }} />
       ) : (
