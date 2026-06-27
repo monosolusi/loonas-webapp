@@ -20,6 +20,16 @@ export function CostStructureBlock() {
     if (!isNaN(val) && val >= 1) setQuantity(val);
   }
 
+  if (state.isIncompleteRecipe) {
+    return (
+      <DataKurangCard
+        title="Struktur Biaya"
+        description="Struktur biaya tidak bisa ditampilkan karena resep atau harga bahan baku produk ini belum diisi."
+        productId={productId}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col gap-y-3">
       <div className="flex flex-row items-center gap-x-3 rounded-lg border border-neutral-100 px-4 py-3">
@@ -41,12 +51,6 @@ export function CostStructureBlock() {
 
       {state.loading ? (
         <CostStructureBlockLoading />
-      ) : state.isIncompleteRecipe ? (
-        <DataKurangCard
-          title="Struktur Biaya"
-          description="Struktur biaya tidak bisa ditampilkan karena resep atau harga bahan baku produk ini belum diisi."
-          productId={productId}
-        />
       ) : state.error ? (
         <CostStructureBlockError onRetry={() => { if (refresh) refresh(); }} />
       ) : (
