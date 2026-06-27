@@ -31,8 +31,6 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
   const startDate = useMemo(() => DateTime.fromISO(from, { zone: "Asia/Jakarta" }).toISODate() ?? undefined, [from]);
   const endDate = useMemo(() => DateTime.fromISO(to, { zone: "Asia/Jakarta" }).toISODate() ?? undefined, [to]);
 
-  useEffect(() => setPage(1), [startDate, endDate]);
-
   // Fetch all accounts to find this one — limit 100 covers default COA
   const { accounts } = useListLedgerAccounts({ limit: 100 });
   const account = useMemo(() => (accounts ?? []).find((a) => a.id === accountId), [accounts, accountId]);
@@ -64,7 +62,7 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
       setRange({ from: nextFrom, to: nextTo });
       setPage(1);
     },
-    [setRange],
+    [setRange, setPage],
   );
 
   const header = (
