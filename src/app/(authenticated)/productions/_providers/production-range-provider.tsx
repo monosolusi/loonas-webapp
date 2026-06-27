@@ -2,24 +2,24 @@
 
 import { DateRangeProvider, useDateRange, type DateRange } from "@/core/presentations/providers/date-range-provider";
 
-type DashboardRangeContextValue = {
+type ProductionRangeContextValue = {
   from: string;
   to: string;
   setRange: (next: DateRange) => void;
   isRangeInvalid: boolean;
 };
 
-export function useDashboardRange(): DashboardRangeContextValue {
+export function useProductionRange(): ProductionRangeContextValue {
   return useDateRange();
 }
 
-type DashboardRangeProviderProps = {
+type ProductionRangeProviderProps = {
   children: React.ReactNode;
 };
 
-export function DashboardRangeProvider({ children }: DashboardRangeProviderProps) {
+export function ProductionRangeProvider({ children }: ProductionRangeProviderProps) {
   return (
-    <DateRangeProvider localStorageKey="lns_dashboard_range" maxSpanDays={31}>
+    <DateRangeProvider localStorageKey="lns_productions_range" maxSpanDays={365}>
       {children}
     </DateRangeProvider>
   );
