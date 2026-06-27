@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
+import { useGetProduct } from "@/features/product/presentations/hooks/use-get-product";
 
 type RouteConfig = {
   title: string;
@@ -39,6 +40,10 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
 
 export function HeaderTitle() {
   const pathname = usePathname();
+  const segments = pathname.split("/").filter(Boolean);
+
+  const productId = segments[0] === "finance" && segments[1] === "profitability" && segments[2] ? segments[2] : "";
+  const { product } = useGetProduct(productId);
 
   const { title, description } = useMemo((): RouteConfig => {
     // Check for exact match first
@@ -47,43 +52,43 @@ export function HeaderTitle() {
     }
 
     // Check for dynamic routes
-    const segments = pathname.split("/").filter(Boolean);
+    const segs = pathname.split("/").filter(Boolean);
 
     // /accounts/:id
-    if (segments[0] === "accounts" && segments[1]) {
-      return { title: "Manajemen Akun", description: segments[1] };
+    if (segs[0] === "accounts" && segs[1]) {
+      return { title: "Manajemen Akun", description: segs[1] };
     }
 
     // /invoices/incoming/:id
-    if (segments[0] === "invoices" && segments[1] === "incoming" && segments[2]) {
-      return { title: "Faktur Masukan", description: segments[2] };
+    if (segs[0] === "invoices" && segs[1] === "incoming" && segs[2]) {
+      return { title: "Faktur Masukan", description: segs[2] };
     }
 
     // /invoices/outgoing/:id
-    if (segments[0] === "invoices" && segments[1] === "outgoing" && segments[2]) {
-      return { title: "Faktur Keluaran", description: segments[2] };
+    if (segs[0] === "invoices" && segs[1] === "outgoing" && segs[2]) {
+      return { title: "Faktur Keluaran", description: segs[2] };
     }
 
     // /finance/journals/:id
-    if (segments[0] === "finance" && segments[1] === "journals" && segments[2] && segments[2] !== "new") {
+    if (segs[0] === "finance" && segs[1] === "journals" && segs[2] && segs[2] !== "new") {
       return { title: "Detail Jurnal" };
     }
 
     // /finance/profitability/:productId/:variantId
-    if (segments[0] === "finance" && segments[1] === "profitability" && segments[2] && segments[3]) {
-      return { title: "Profitabilitas Varian" };
+    if (segs[0] === "finance" && segs[1] === "profitability" && segs[2] && segs[3]) {
+      return { title: "Profitabilitas Varian", description: product?.name ?? "-" };
     }
 
     // Fallback: find closest parent route
-    for (let i = segments.length; i > 0; i--) {
-      const parentPath = "/" + segments.slice(0, i).join("/");
+    for (let i = segs.length; i > 0; i--) {
+      const parentPath = "/" + segs.slice(0, i).join("/");
       if (ROUTE_MAP[parentPath]) {
         return ROUTE_MAP[parentPath];
       }
     }
 
     return { title: "Dashboard" };
-  }, [pathname]);
+  }, [pathname, product]);
 
   return (
     <div className="flex flex-col">
