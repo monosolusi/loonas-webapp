@@ -1,19 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { PlusIcon } from "@heroicons/react/24/outline";
+import { DateTime } from "luxon";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
+import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { SummaryCard } from "@/core/presentations/components/summary-card";
 import { JournalRow } from "@/app/(authenticated)/finance/journals/_components/journal-row";
+import { useJournalRange } from "@/app/(authenticated)/finance/journals/_providers/journal-range-provider";
 import { useListJournals } from "@/features/accounting/presentations/hooks/use-list-journals";
+
+function isoToDate(iso: string): Date {
+  return DateTime.fromISO(iso, { zone: "Asia/Jakarta" }).toJSDate();
+}
+
+function dateToIso(date: Date): string {
+  return DateTime.fromJSDate(date).setZone("Asia/Jakarta").toFormat("yyyy-MM-dd");
+}
 
 export function JournalListImpl() {
   const [page, setPage] = useState(1);
@@ -21,7 +32,26 @@ export function JournalListImpl() {
   const debouncedSearch = useDebounce(search.trim(), 500);
   const searchQuery = debouncedSearch.length >= 2 ? debouncedSearch : undefined;
 
-  const { journals, meta, totalDebit, totalCredit, loading, error } = useListJournals({ page, limit: 25, search: searchQuery });
+  const { from, to, setRange } = useJournalRange();
+
+  const pickerValue = useMemo(() => ({ from: isoToDate(from), to: isoToDate(to) }), [from, to]);
+
+  const handlePickerChange = useCallback(
+    (range: { from: Date | undefined; to: Date | undefined }) => {
+      if (!range.from || !range.to) return;
+      setRange({ from: dateToIso(range.from), to: dateToIso(range.to) });
+      setPage(1);
+    },
+    [setRange, setPage],
+  );
+
+  const { journals, meta, totalDebit, totalCredit, loading, error } = useListJournals({
+    page,
+    limit: 25,
+    search: searchQuery,
+    dateFrom: from,
+    dateTo: to,
+  });
 
   const selisih = totalDebit - totalCredit;
   const isBalanced = selisih === 0;
@@ -31,19 +61,22 @@ export function JournalListImpl() {
       <Link href="/finance/journals/new">
         <PrimaryButton label="Jurnal Baru" leftIcon={<PlusIcon className="size-4" />} />
       </Link>
-      <div className="w-[280px]">
-        <TextInput
-          label=""
-          placeholder="Cari memo..."
-          value={search}
-          onChange={setSearch}
-          leftIcon={<Image src="/assets/images/search-icon-neutral-400-w20-h20.svg" alt="" width={20} height={20} />}
-          rightIcon={search ? (
-            <button type="button" onClick={() => setSearch("")} className="flex items-center justify-center text-neutral-200 hover:text-neutral-400">
-              <XMarkIcon className="size-4" />
-            </button>
-          ) : undefined}
-        />
+      <div className="flex flex-row items-center gap-x-3">
+        <DateRangePicker value={pickerValue} onChange={handlePickerChange} maxSpanDays={365} disableFutureDates={false} />
+        <div className="w-[280px]">
+          <TextInput
+            label=""
+            placeholder="Cari memo..."
+            value={search}
+            onChange={setSearch}
+            leftIcon={<Image src="/assets/images/search-icon-neutral-400-w20-h20.svg" alt="" width={20} height={20} />}
+            rightIcon={search ? (
+              <button type="button" onClick={() => setSearch("")} className="flex items-center justify-center text-neutral-200 hover:text-neutral-400">
+                <XMarkIcon className="size-4" />
+              </button>
+            ) : undefined}
+          />
+        </div>
       </div>
     </div>
   );
