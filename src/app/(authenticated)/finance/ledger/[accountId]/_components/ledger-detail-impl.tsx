@@ -1,28 +1,35 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DateTime } from "luxon";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { SummaryCard } from "@/core/presentations/components/summary-card";
-import { DateRangePicker } from "@/app/(authenticated)/finance/_components/date-range-picker";
+import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
 import { useGetAccountBalance } from "@/features/accounting/presentations/hooks/use-get-account-balance";
 import { useListLedgerEntries } from "@/features/accounting/presentations/hooks/use-list-ledger-entries";
 import { useListLedgerAccounts } from "@/features/accounting/presentations/hooks/use-list-ledger-accounts";
 import { ACCOUNT_TYPE_LABELS, AccountType } from "@/features/accounting/domain/enums/account-type";
+import { useLedgerDetailRange } from "@/app/(authenticated)/finance/ledger/[accountId]/_providers/ledger-detail-range-provider";
+
+function isoToDate(iso: string): Date {
+  return DateTime.fromISO(iso, { zone: "Asia/Jakarta" }).toJSDate();
+}
+
+function dateToIso(date: Date): string {
+  return DateTime.fromJSDate(date).setZone("Asia/Jakarta").toFormat("yyyy-MM-dd");
+}
 
 type LedgerDetailImplProps = { accountId: string };
 
 export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
-  const [page, setPage] = useState(1);
-  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
-    from: DateTime.now().startOf("month").toJSDate(),
-    to: DateTime.now().toJSDate(),
-  });
+  const { from, to, setRange } = useLedgerDetailRange();
 
-  const startDate = dateRange.from ? DateTime.fromJSDate(dateRange.from).toISODate() ?? undefined : undefined;
-  const endDate = dateRange.to ? DateTime.fromJSDate(dateRange.to).toISODate() ?? undefined : undefined;
+  const [page, setPage] = useState(1);
+
+  const startDate = useMemo(() => DateTime.fromISO(from, { zone: "Asia/Jakarta" }).toISODate() ?? undefined, [from]);
+  const endDate = useMemo(() => DateTime.fromISO(to, { zone: "Asia/Jakarta" }).toISODate() ?? undefined, [to]);
 
   useEffect(() => setPage(1), [startDate, endDate]);
 
@@ -36,6 +43,30 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
   const accountName = account?.name ?? "Memuat...";
   const accountSubtitle = account ? `${account.code} · ${ACCOUNT_TYPE_LABELS[account.type as AccountType] ?? account.type}` : undefined;
 
+  const [pickerValue, setPickerValue] = useState({
+    from: isoToDate(from),
+    to: isoToDate(to),
+  });
+
+  useEffect(() => {
+    setPickerValue({ from: isoToDate(from), to: isoToDate(to) });
+  }, [from, to]);
+
+  const committedRef = useRef<{ from: string; to: string }>({ from, to });
+
+  const handlePickerChange = useCallback(
+    (range: { from: Date | undefined; to: Date | undefined }) => {
+      if (!range.from || !range.to) return;
+      const nextFrom = dateToIso(range.from);
+      const nextTo = dateToIso(range.to);
+      if (nextFrom === committedRef.current.from && nextTo === committedRef.current.to) return;
+      committedRef.current = { from: nextFrom, to: nextTo };
+      setRange({ from: nextFrom, to: nextTo });
+      setPage(1);
+    },
+    [setRange],
+  );
+
   const header = (
     <div className="grid grid-cols-[1.5fr_3fr_1fr_1fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
       <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tanggal</span>
@@ -47,7 +78,12 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
 
   const toolbar = (
     <div className="flex flex-row items-center justify-between">
-      <DateRangePicker value={dateRange} onChange={setDateRange} />
+      <DateRangePicker
+        value={pickerValue}
+        onChange={handlePickerChange}
+        maxSpanDays={365}
+        disableFutureDates={false}
+      />
     </div>
   );
 
