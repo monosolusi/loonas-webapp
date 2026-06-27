@@ -5,7 +5,7 @@ import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-fo
 import { UseGetVariantRecommendedPriceReturnType } from "@/features/profitability/presentations/hooks/use-get-variant-recommended-price.types";
 
 type RecommendedPriceValueDisplayProps = {
-  state: UseGetVariantRecommendedPriceReturnType;
+  state: Exclude<UseGetVariantRecommendedPriceReturnType, { isIncompleteRecipe: true }>;
 };
 
 export function RecommendedPriceValueDisplay({ state }: RecommendedPriceValueDisplayProps) {
@@ -21,10 +21,6 @@ export function RecommendedPriceValueDisplay({ state }: RecommendedPriceValueDis
         <span className="text-xs text-error-500">Gagal memuat rekomendasi harga. Coba ubah margin kembali.</span>
       </div>
     );
-  }
-
-  if (!state.data) {
-    return null;
   }
 
   return (
