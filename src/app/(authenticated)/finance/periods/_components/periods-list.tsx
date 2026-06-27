@@ -1,9 +1,11 @@
 "use client";
 
+import { SectionCard } from "@/core/presentations/components/section-card";
 import { usePeriods } from "@/app/(authenticated)/finance/periods/_providers/periods-provider";
-import { PeriodsLoading } from "@/app/(authenticated)/finance/periods/_components/periods-loading";
-import { PeriodsEmpty } from "@/app/(authenticated)/finance/periods/_components/periods-empty";
-import { PeriodsError } from "@/app/(authenticated)/finance/periods/_components/periods-error";
+import { PeriodsFilterToolbar } from "@/app/(authenticated)/finance/periods/_components/periods-filter-toolbar";
+import { PeriodsLoadingContent } from "@/app/(authenticated)/finance/periods/_components/periods-loading";
+import { PeriodsEmptyContent } from "@/app/(authenticated)/finance/periods/_components/periods-empty";
+import { PeriodsErrorContent } from "@/app/(authenticated)/finance/periods/_components/periods-error";
 import { PeriodsTable } from "@/app/(authenticated)/finance/periods/_components/periods-table";
 
 export function PeriodsList() {
@@ -14,9 +16,14 @@ export function PeriodsList() {
   const isEmpty = !isLoading && !hasError && periods.length === 0;
   const hasData = !isLoading && !hasError && periods.length > 0;
 
-  if (isLoading) return <PeriodsLoading />;
-  if (hasError) return <PeriodsError />;
-  if (isEmpty) return <PeriodsEmpty />;
-  if (hasData) return <PeriodsTable />;
-  return null;
+  return (
+    <SectionCard title="Periode Akuntansi" headerAction={<PeriodsFilterToolbar />}>
+      <div className="flex flex-col gap-y-4">
+        {isLoading ? <PeriodsLoadingContent /> : null}
+        {hasError ? <PeriodsErrorContent /> : null}
+        {isEmpty ? <PeriodsEmptyContent /> : null}
+        {hasData ? <PeriodsTable /> : null}
+      </div>
+    </SectionCard>
+  );
 }
