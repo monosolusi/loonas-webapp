@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import clsx from "clsx";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { StatusChip } from "@/core/presentations/components/status-chip";
@@ -15,6 +16,11 @@ export function GrossProfitBlockBody({ grossProfit }: GrossProfitBlockBodyProps)
   const isPositive = estimasiLabaKotor !== null && estimasiLabaKotor >= 0;
   const sign = estimasiLabaKotor !== null ? (estimasiLabaKotor >= 0 ? "+" : "−") : "";
   const absValue = estimasiLabaKotor !== null ? Math.abs(estimasiLabaKotor) : 0;
+
+  const realizedMargin = useMemo(() => {
+    if (!inputs || inputs.posRevenue <= 0 || estimasiLabaKotor === null) return null;
+    return (estimasiLabaKotor / inputs.posRevenue) * 100;
+  }, [inputs, estimasiLabaKotor]);
 
   return (
     <SectionCard title="Laba Kotor">
@@ -51,6 +57,15 @@ export function GrossProfitBlockBody({ grossProfit }: GrossProfitBlockBodyProps)
               compact
             />
           )}
+        </div>
+
+        <div className="flex flex-row justify-between">
+          <dt className="text-sm text-neutral-500">Margin Realisasi</dt>
+          <dd className="text-sm tabular-nums text-neutral-500">
+            {realizedMargin !== null
+              ? `${realizedMargin.toLocaleString("id-ID", { maximumFractionDigits: 1 })}%`
+              : "—"}
+          </dd>
         </div>
       </dl>
 

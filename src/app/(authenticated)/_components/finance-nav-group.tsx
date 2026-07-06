@@ -4,16 +4,25 @@ import { NavigationGroup } from "@/app/(authenticated)/_components/navigation-gr
 import { NavigationChildItem } from "@/app/(authenticated)/_components/navigation-child-item";
 import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
 
-export function FinanceNavGroup() {
+type FinanceNavGroupProps = {
+  id: string;
+  openGroup: string | null;
+  onOpenChange: (id: string) => void;
+};
+
+export function FinanceNavGroup({ id, openGroup, onOpenChange }: FinanceNavGroupProps) {
   const { account } = useGetCurrentAccount();
   if (!account?.hasFeature("accounting")) return null;
 
   return (
     <NavigationGroup
+      id={id}
       label="Keuangan"
       iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
       selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
       matchPrefixes={["/finance/ledger", "/finance/journals", "/finance/fixed-costs", "/finance/reports", "/finance/periods", "/finance/pph-final", "/finance/profitability"]}
+      openGroup={openGroup}
+      onOpenChange={onOpenChange}
     >
       <NavigationChildItem href="/finance/profitability" label="Profitabilitas" />
       <NavigationChildItem href="/finance/ledger" label="Buku Besar" />

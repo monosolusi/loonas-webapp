@@ -1,11 +1,11 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import { DateTime } from "luxon";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { ProductionRecordEntity } from "@/features/production/domain/entities/production-record";
 import { useListProductionRecords } from "@/features/production/presentations/hooks/use-list-production-records";
+import { useProductionRange } from "@/app/(authenticated)/productions/_providers/production-range-provider";
 
 type ProductionListContextValue = {
   records: ProductionRecordEntity[];
@@ -13,13 +13,11 @@ type ProductionListContextValue = {
   loading: boolean;
   page: number;
   search: string;
-  dateFrom: DateTime | undefined;
-  dateTo: DateTime | undefined;
+  dateFrom: string;
+  dateTo: string;
   deletingItem: ProductionRecordEntity | null;
   setPage: (page: number) => void;
   setSearch: (value: string) => void;
-  setDateFrom: (value: DateTime | undefined) => void;
-  setDateTo: (value: DateTime | undefined) => void;
   setDeletingItem: (item: ProductionRecordEntity | null) => void;
 };
 
@@ -36,10 +34,10 @@ type ProductionListProviderProps = {
 };
 
 export function ProductionListProvider({ children }: ProductionListProviderProps) {
+  const { from, to } = useProductionRange();
+
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [dateFrom, setDateFrom] = useState<DateTime | undefined>(undefined);
-  const [dateTo, setDateTo] = useState<DateTime | undefined>(undefined);
   const [deletingItem, setDeletingItem] = useState<ProductionRecordEntity | null>(null);
 
   const debouncedSearch = useDebounce(search.trim(), 500);
@@ -47,8 +45,8 @@ export function ProductionListProvider({ children }: ProductionListProviderProps
 
   const result = useListProductionRecords({
     search: searchQuery,
-    dateFrom: dateFrom?.toISODate() ?? undefined,
-    dateTo: dateTo?.toISODate() ?? undefined,
+    dateFrom: from,
+    dateTo: to,
     page,
     limit: 10,
   });
@@ -64,13 +62,11 @@ export function ProductionListProvider({ children }: ProductionListProviderProps
         loading: result.loading,
         page,
         search,
-        dateFrom,
-        dateTo,
+        dateFrom: from,
+        dateTo: to,
         deletingItem,
         setPage,
         setSearch,
-        setDateFrom,
-        setDateTo,
         setDeletingItem,
       }}
     >

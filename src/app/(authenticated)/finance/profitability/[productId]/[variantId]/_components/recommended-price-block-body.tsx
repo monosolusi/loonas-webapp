@@ -6,6 +6,7 @@ import { MarginControl } from "@/features/profitability/presentations/components
 import { RecommendedPriceValueDisplay } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/recommended-price-value-display";
 import { useProfitabilityDetail } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_providers/profitability-detail-provider";
 import { useGetVariantRecommendedPrice } from "@/features/profitability/presentations/hooks/use-get-variant-recommended-price";
+import { DataKurangCard } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/data-kurang-card";
 
 const DEFAULT_MARGIN = 30;
 
@@ -15,12 +16,23 @@ export function RecommendedPriceBlockBody() {
 
   const state = useGetVariantRecommendedPrice({ productId, variantId, margin });
 
+  if (state.isIncompleteRecipe) {
+    return (
+      <DataKurangCard
+        title="Rekomendasi Harga Jual"
+        description="Rekomendasi harga jual tidak bisa dihitung karena HPP belum tersedia. Lengkapi resep dan harga bahan baku produk ini."
+        productId={productId}
+      />
+    );
+  }
+
   return (
     <SectionCard title="Rekomendasi Harga Jual">
       <div className="flex flex-col gap-y-2">
         <span className="text-xs font-medium uppercase tracking-wider text-neutral-300">REKOMENDASI HARGA</span>
-        <div aria-live="polite" className="min-h-10">
+        <div aria-live="polite" className="flex min-h-10 flex-col gap-y-0.5">
           <RecommendedPriceValueDisplay state={state} />
+          <span className="text-xs text-neutral-300">untuk target margin {margin}%</span>
         </div>
       </div>
 

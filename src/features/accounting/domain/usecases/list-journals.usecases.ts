@@ -13,6 +13,8 @@ export type ListJournalsUseCaseParams = {
   readonly page?: number;
   readonly limit?: number;
   readonly search?: string;
+  readonly dateFrom?: string;
+  readonly dateTo?: string;
 };
 
 export class ListJournalsUseCase implements UseCase<DataState<ListJournalsUseCaseResult>, ListJournalsUseCaseParams> {
@@ -39,7 +41,10 @@ export class ListJournalsUseCase implements UseCase<DataState<ListJournalsUseCas
   }
 
   private async fetchJournals(params: ListJournalsUseCaseParams, session: SessionEntity): Promise<ListJournalsUseCaseResult> {
-    const result = await this.repo.list({ page: params.page, limit: params.limit, search: params.search }, session);
+    const result = await this.repo.list(
+      { page: params.page, limit: params.limit, search: params.search, dateFrom: params.dateFrom, dateTo: params.dateTo },
+      session,
+    );
     if (result instanceof DataFailed) throw result.error;
     if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
     return result.data;

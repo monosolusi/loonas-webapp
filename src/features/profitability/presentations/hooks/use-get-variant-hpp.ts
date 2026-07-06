@@ -11,7 +11,6 @@ import { ProfitabilityServiceImpl } from "@/features/profitability/data/sources/
 import { GetVariantHppUseCase, GetVariantHppUseCaseParams } from "@/features/profitability/domain/usecases/get-variant-hpp.usecases";
 import { PROFITABILITY_SWR_KEYS } from "@/features/profitability/presentations/constants/swr-keys";
 import {
-  GetVariantHppFetcherParams,
   UseGetVariantHppParams,
   UseGetVariantHppReturnType,
 } from "@/features/profitability/presentations/hooks/use-get-variant-hpp.types";
@@ -24,8 +23,11 @@ const INITIAL_STATE: UseGetVariantHppReturnType = {
   refresh: null,
 };
 
-async function GetVariantHppFetcher([_, params]: [string, GetVariantHppFetcherParams]) {
-  const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
+async function GetVariantHppFetcher(
+  [_, params]: [string, UseGetVariantHppParams],
+  clerk: ReturnType<typeof useClerk>,
+) {
+  const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk }));
   const repo = new ProfitabilityRepositoryImpl(new ProfitabilityServiceImpl());
   const uc = new GetVariantHppUseCase(repo, sessionRepo);
   const result = await uc.execute(new GetVariantHppUseCaseParams(params.productId, params.variantId));
@@ -38,8 +40,18 @@ export function useGetVariantHpp(params: UseGetVariantHppParams): UseGetVariantH
   const clerk = useClerk();
   const { productId, variantId } = params;
   const { data, isLoading, error, mutate } = useSWR(
-    [PROFITABILITY_SWR_KEYS.GET_VARIANT_HPP, { productId, variantId, clerk }],
-    GetVariantHppFetcher,
+    [PROFITABILITY_SWR_KEYS.GET_VARIANT_HPP, { productId, variantId }],
+    (key) => GetVariantHppFetcher(key, clerk),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      shouldRetryOnError: (err) => {
+        const serverError = err instanceof ServerError ? err : null;
+        // 422 = incomplete recipe; retrying will never succeed and only flashes skeletons.
+        if (serverError?.httpCode === 422) return false;
+        return true;
+      },
+    },
   );
 
   if (isLoading) return INITIAL_STATE;

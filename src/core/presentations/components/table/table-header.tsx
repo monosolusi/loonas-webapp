@@ -2,7 +2,7 @@ import clsx from "clsx";
 
 type TableHeaderColumn = {
   label: string;
-  align?: "left" | "right";
+  align?: "left" | "right" | "center";
 };
 
 type TableHeaderProps = {
@@ -19,6 +19,7 @@ export function TableHeader({ columns, className }: TableHeaderProps) {
           className={clsx(
             "text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase",
             col.align === "right" && "text-right",
+            col.align === "center" && "text-center",
           )}
         >
           {col.label}

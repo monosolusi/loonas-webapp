@@ -8,7 +8,7 @@ import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoi
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceSearchInput } from "@/app/(authenticated)/invoices/_components/invoice-search-input";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
-import { InvoiceTabFilter } from "@/app/(authenticated)/invoices/_components/invoice-tab-filter";
+import { TabFilter } from "@/core/presentations/components/tab-filter";
 import { OutgoingInvoiceRow, OutgoingInvoiceTable } from "@/app/(authenticated)/invoices/outgoing/_components/outgoing-invoice-table";
 
 interface OutgoingInvoiceTableImplProps {
@@ -20,6 +20,7 @@ export function OutgoingInvoiceTableImpl({ filter }: OutgoingInvoiceTableImplPro
   const [activeTab, setActiveTab] = useState(0);
   const [search, setSearch] = useState("");
 
+  const FILTER_TABS = ["Semua", "Belum Lunas", "Menunggu Settlement", "Lunas"] as const;
   const filterMap = [undefined, "unpaid", "waiting_settlement", "paid"] as const;
   const resolvedFilter = filter ?? filterMap[activeTab];
 
@@ -48,7 +49,7 @@ export function OutgoingInvoiceTableImpl({ filter }: OutgoingInvoiceTableImplPro
 
   const toolbar = (
     <div className={clsx("flex flex-row items-center", filter ? "justify-end" : "justify-between")}>
-      {!filter && <InvoiceTabFilter selectedIndex={activeTab} onChange={handleTabChange} />}
+      {!filter && <TabFilter tabs={FILTER_TABS} selectedIndex={activeTab} onChange={handleTabChange} />}
 
       <InvoiceSearchInput value={search} onChange={handleSearchChange} placeholder="Filter halaman ini..." />
     </div>

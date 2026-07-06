@@ -19,9 +19,11 @@ export class JournalServiceImpl implements JournalService {
   public async list(params: ListJournalsServiceParams, session: SessionEntity): Promise<ListJournalsServiceResult> {
     try {
       const searchParams: Record<string, any> = {};
-      if (params.page && params.limit) searchParams["offset"] = String((params.page - 1) * params.limit);
+      if (params.page) searchParams["page"] = String(params.page);
       if (params.limit) searchParams["limit"] = String(params.limit);
       if (params.search) searchParams["search"] = params.search;
+      if (params.dateFrom) searchParams["date_from"] = params.dateFrom;
+      if (params.dateTo) searchParams["date_to"] = params.dateTo;
 
       const result = await this.http.request({ path: "/accounting/journals", method: "GET", searchParams, session });
 
