@@ -70,8 +70,10 @@ export class LedgerAccountServiceImpl implements LedgerAccountService {
   public async listEntries(params: ListLedgerEntriesServiceParams, session: SessionEntity): Promise<ListLedgerEntriesServiceResult> {
     try {
       const searchParams: Record<string, any> = {};
-      if (params.startDate) searchParams["from"] = params.startDate;
-      if (params.endDate) searchParams["to"] = params.endDate;
+      if (params.startDate && params.endDate) {
+        searchParams["start_date"] = params.startDate;
+        searchParams["end_date"] = params.endDate;
+      }
       if (params.page) searchParams["page"] = String(params.page);
       if (params.limit) searchParams["limit"] = String(params.limit);
 

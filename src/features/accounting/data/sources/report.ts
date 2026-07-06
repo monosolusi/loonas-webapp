@@ -44,9 +44,11 @@ export class ReportServiceImpl implements ReportService {
 
   public async getLabaRugi(params: GetLabaRugiParams, session: SessionEntity): Promise<GetLabaRugiServiceResult> {
     try {
-      const body: Record<string, any> = { from: params.from, to: params.to };
-      if (params.compareFrom !== undefined) body["compare_from"] = params.compareFrom;
-      if (params.compareTo !== undefined) body["compare_to"] = params.compareTo;
+      const body: Record<string, any> = { start_date: params.from, end_date: params.to };
+      if (params.compareFrom && params.compareTo) {
+        body["compare_start_date"] = params.compareFrom;
+        body["compare_end_date"] = params.compareTo;
+      }
 
       const result = await this.http.request({
         path: "/accounting/reports/laba-rugi",
@@ -65,7 +67,7 @@ export class ReportServiceImpl implements ReportService {
 
   public async getArusKas(params: GetArusKasParams, session: SessionEntity): Promise<GetArusKasServiceResult> {
     try {
-      const searchParams: Record<string, any> = { from: params.from, to: params.to };
+      const searchParams: Record<string, any> = { start_date: params.from, end_date: params.to };
 
       const result = await this.http.request({
         path: "/accounting/reports/arus-kas",
@@ -110,7 +112,7 @@ export class ReportServiceImpl implements ReportService {
     session: SessionEntity,
   ): Promise<GetGeneralLedgerServiceResult> {
     try {
-      const searchParams: Record<string, any> = { from: params.from, to: params.to };
+      const searchParams: Record<string, any> = { start_date: params.from, end_date: params.to };
       if (params.page !== undefined) searchParams["page"] = String(params.page);
       if (params.limit !== undefined) searchParams["limit"] = String(params.limit);
 
@@ -162,8 +164,10 @@ export class ReportServiceImpl implements ReportService {
   ): Promise<ListTrialBalanceLinesServiceResult> {
     try {
       const searchParams: Record<string, any> = {};
-      if (params.from !== undefined) searchParams["from"] = params.from;
-      if (params.to !== undefined) searchParams["to"] = params.to;
+      if (params.from !== undefined && params.to !== undefined) {
+        searchParams["start_date"] = params.from;
+        searchParams["end_date"] = params.to;
+      }
       if (params.page !== undefined) searchParams["page"] = String(params.page);
       if (params.limit !== undefined) searchParams["limit"] = String(params.limit);
 
