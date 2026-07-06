@@ -43,7 +43,7 @@ export class BankServiceImpl implements BankService {
       const data = await response.json();
       if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      return AccountBankAccountModel.fromJson(data);
+      return AccountBankAccountModel.fromJson(data.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -77,7 +77,7 @@ export class BankServiceImpl implements BankService {
       const data = await response.json();
       if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      return BankAccountModel.fromJson(data);
+      return BankAccountModel.fromJson(data.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -108,11 +108,11 @@ export class BankServiceImpl implements BankService {
       }
 
       const data = await response.json();
-      if (!data || !Array.isArray(data)) {
+      if (!data || !Array.isArray(data.data)) {
         throw new ServerError(ErrorCodes.INVALID_INSTANCE);
       }
 
-      return data.map(item => BankModel.fromJson(item));
+      return data.data.map((item: any) => BankModel.fromJson(item));
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -142,8 +142,8 @@ export class BankServiceImpl implements BankService {
       }
 
       const data = await response.json();
-      if (!data || !Array.isArray(data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return data.map(item => BankAccountModel.fromJson(item));
+      if (!data || !Array.isArray(data.data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      return data.data.map((item: any) => BankAccountModel.fromJson(item));
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -180,7 +180,7 @@ export class BankServiceImpl implements BankService {
       }
 
       const data = await response.json();
-      return AccountInquiryResultModel.fromJson(data);
+      return AccountInquiryResultModel.fromJson(data.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -218,7 +218,7 @@ export class BankServiceImpl implements BankService {
       const data = await response.json();
       if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      return BankAccountModel.fromJson(data);
+      return BankAccountModel.fromJson(data.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

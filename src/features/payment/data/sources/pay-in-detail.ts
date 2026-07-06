@@ -15,7 +15,7 @@ export class PayInDetailServiceImpl implements PayInDetailService {
       const result = await this.http.request({ path, method }, config);
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      return PublicPayInDetailModel.fromJson(result);
+      return PublicPayInDetailModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -51,6 +51,6 @@ export class PayInDetailServiceImpl implements PayInDetailService {
 
     const data = await response.json();
     if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-    return data;
+    return data.data;
   }
 }

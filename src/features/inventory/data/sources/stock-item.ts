@@ -82,7 +82,7 @@ export class StockItemServiceImpl implements StockItemService {
         session,
       });
 
-      return StockItemModel.fromJson(result);
+      return StockItemModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -98,7 +98,7 @@ export class StockItemServiceImpl implements StockItemService {
         session,
       });
 
-      return StockItemModel.fromJson(result);
+      return StockItemModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

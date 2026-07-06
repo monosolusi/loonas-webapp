@@ -21,7 +21,7 @@ export class ProvinceServiceImpl implements ProvinceService {
       }
 
       const data = await response.json();
-      return data.map((p: any) => new ProvinceModel(p));
+      return data.data.map((p: any) => new ProvinceModel(p));
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

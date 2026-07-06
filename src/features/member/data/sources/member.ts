@@ -51,7 +51,7 @@ export class MemberServiceImpl implements MemberService {
         session,
       });
 
-      return MemberModel.fromJson(result);
+      return MemberModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

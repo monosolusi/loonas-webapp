@@ -91,7 +91,7 @@ export class FixedCostEntryServiceImpl implements FixedCostEntryService {
         },
         session,
       });
-      return FixedCostEntryModel.fromJson(result);
+      return FixedCostEntryModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -111,7 +111,7 @@ export class FixedCostEntryServiceImpl implements FixedCostEntryService {
         body,
         session,
       });
-      return FixedCostEntryModel.fromJson(result);
+      return FixedCostEntryModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

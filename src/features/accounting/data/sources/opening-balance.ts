@@ -11,7 +11,7 @@ export class OpeningBalanceServiceImpl implements OpeningBalanceService {
   public async get(session: SessionEntity): Promise<OpeningBalanceModel | null> {
     try {
       const result = await this.http.request({ path: "/accounting/opening-balance", method: "GET", session });
-      return OpeningBalanceModel.fromJson(result);
+      return OpeningBalanceModel.fromJson(result.data);
     } catch (err) {
       // 404 means no opening balance was ever posted — treat as empty result, not an error.
       if (err instanceof ServerError && (err.code === ErrorCodes.NOT_FOUND.code || err.httpCode === 404)) {
@@ -32,7 +32,7 @@ export class OpeningBalanceServiceImpl implements OpeningBalanceService {
         { path: "/accounting/opening-balance", method: "POST", body, session },
         { headers: { "Idempotency-Key": params.idempotencyKey } },
       );
-      return JournalModel.fromJson(result);
+      return JournalModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

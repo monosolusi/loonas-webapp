@@ -58,9 +58,10 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
         { headers: { "Idempotency-Key": params.idempotencyKey } },
       );
 
+      const data = result.data;
       return {
-        period: AccountingPeriodModel.fromJson(result),
-        warnings: Array.isArray(result?.warnings) ? result.warnings.map(CloseWarningModel.fromJson) : [],
+        period: AccountingPeriodModel.fromJson(data),
+        warnings: Array.isArray(data?.warnings) ? data.warnings.map(CloseWarningModel.fromJson) : [],
       };
     } catch (err) {
       if (err instanceof ServerError) throw err;
@@ -77,7 +78,7 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
         { headers: { "Idempotency-Key": params.idempotencyKey } },
       );
 
-      return AccountingPeriodModel.fromJson(result);
+      return AccountingPeriodModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -87,7 +88,7 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
   public async getYearSummary(params: GetYearSummaryServiceParams, session: SessionEntity): Promise<GetYearSummaryServiceResult> {
     try {
       const result = await this.http.request({ path: `/accounting/periods/year/${params.year}`, method: "GET", session });
-      return YearEndSummaryModel.fromJson(result);
+      return YearEndSummaryModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -106,9 +107,10 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
         { headers: { "Idempotency-Key": params.idempotencyKey } },
       );
 
+      const data = result.data;
       return {
-        closingJournalId: result.closing_journal_id,
-        periods: (result.periods ?? []).map(AccountingPeriodModel.fromJson),
+        closingJournalId: data.closing_journal_id,
+        periods: (data.periods ?? []).map(AccountingPeriodModel.fromJson),
       };
     } catch (err) {
       if (err instanceof ServerError) throw err;
@@ -129,9 +131,10 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
         { headers: { "Idempotency-Key": params.idempotencyKey } },
       );
 
+      const data = result.data;
       return {
-        reversalJournalId: result.reversal_journal_id,
-        periods: (result.periods ?? []).map(AccountingPeriodModel.fromJson),
+        reversalJournalId: data.reversal_journal_id,
+        periods: (data.periods ?? []).map(AccountingPeriodModel.fromJson),
       };
     } catch (err) {
       if (err instanceof ServerError) throw err;

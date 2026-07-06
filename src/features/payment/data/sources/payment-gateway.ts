@@ -46,7 +46,7 @@ export class PaymentGatewayServiceImpl implements PaymentGatewayService {
 
       const data = await response.json();
       if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return PaymentSchemeModel.fromJson(data);
+      return PaymentSchemeModel.fromJson(data.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -81,7 +81,7 @@ export class PaymentGatewayServiceImpl implements PaymentGatewayService {
         throw new ServerError(ErrorCodes.INVALID_INSTANCE);
       }
 
-      return PaymentGatewayModel.fromJson(data);
+      return PaymentGatewayModel.fromJson(data.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -112,11 +112,11 @@ export class PaymentGatewayServiceImpl implements PaymentGatewayService {
       }
 
       const data = await response.json();
-      if (!data || !Array.isArray(data)) {
+      if (!data || !Array.isArray(data.data)) {
         throw new ServerError(ErrorCodes.INVALID_INSTANCE);
       }
 
-      return data.map(item => PaymentGatewayModel.fromJson(item));
+      return data.data.map((item: any) => PaymentGatewayModel.fromJson(item));
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

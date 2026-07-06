@@ -24,7 +24,7 @@ export class DashboardServiceImpl implements DashboardService {
         searchParams: Object.keys(searchParams).length > 0 ? searchParams : undefined,
       });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return DashboardStatisticsModel.fromJson(result);
+      return DashboardStatisticsModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -43,7 +43,9 @@ export class DashboardServiceImpl implements DashboardService {
         searchParams: { from: params.from, to: params.to },
       });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      const series: Record<string, any>[] = Array.isArray(result["revenue_series"]) ? result["revenue_series"] : [];
+      const series: Record<string, any>[] = Array.isArray(result.data["revenue_series"])
+        ? result.data["revenue_series"]
+        : [];
       return series.map((item) => DailyRevenuePointModel.fromJson(item));
     } catch (err) {
       if (err instanceof ServerError) throw err;

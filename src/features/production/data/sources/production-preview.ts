@@ -17,7 +17,7 @@ export class ProductionPreviewServiceImpl implements ProductionPreviewService {
         session,
       });
 
-      return ProductionPreviewModel.fromJson(result);
+      return ProductionPreviewModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

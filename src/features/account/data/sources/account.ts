@@ -25,8 +25,8 @@ export class AccountServiceImpl implements AccountService {
 
       // It doesn't require an account because we use the token directly from clerk token.
       const result = await this.http.request({ path, method, session });
-      if (result.type === AccountType.PERSONAL) return PersonalAccountModel.fromJson(result);
-      else if (result.type === AccountType.BUSINESS) return BusinessAccountModel.fromJson(result);
+      if (result.data.type === AccountType.PERSONAL) return PersonalAccountModel.fromJson(result.data);
+      else if (result.data.type === AccountType.BUSINESS) return BusinessAccountModel.fromJson(result.data);
       else throw new ServerError(ErrorCodes.INVALID_INSTANCE);
     } catch (err) {
       if (err instanceof ServerError) throw err;
@@ -74,7 +74,7 @@ export class AccountServiceImpl implements AccountService {
       );
 
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return BusinessAccountModel.fromJson(result);
+      return BusinessAccountModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -103,7 +103,7 @@ export class AccountServiceImpl implements AccountService {
       }
 
       const data = await response.json();
-      return data.map(AccountBankAccountModel.fromJson);
+      return data.data.map(AccountBankAccountModel.fromJson);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -117,8 +117,8 @@ export class AccountServiceImpl implements AccountService {
       const result = await this.http.request({ path, method, session });
 
       // The result will be an array, therefore, we need to check if it is a personal or business account
-      if (!Array.isArray(result)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return result.map((data): AccountTypeModel => {
+      if (!Array.isArray(result.data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      return result.data.map((data): AccountTypeModel => {
         if (data.type === AccountType.PERSONAL) return PersonalAccountModel.fromJson(data);
         else if (data.type === AccountType.BUSINESS) return BusinessAccountModel.fromJson(data);
         else throw new ServerError(ErrorCodes.INVALID_INSTANCE);
@@ -145,7 +145,7 @@ export class AccountServiceImpl implements AccountService {
       }
 
       const data = await response.json();
-      return AccountVerificationWorkModel.fromJson(data);
+      return AccountVerificationWorkModel.fromJson(data.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -211,7 +211,7 @@ export class AccountServiceImpl implements AccountService {
       }
 
       const data = await response.json();
-      return PersonalAccountModel.fromJson(data);
+      return PersonalAccountModel.fromJson(data.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
