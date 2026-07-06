@@ -21,7 +21,7 @@ export class OccupationServiceImpl implements OccupationService {
       }
 
       const data = await response.json();
-      return data.map((o: any) => new OccupationModel(o));
+      return data.data.map((o: any) => new OccupationModel(o));
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

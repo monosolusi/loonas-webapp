@@ -60,7 +60,7 @@ export class LedgerAccountServiceImpl implements LedgerAccountService {
         session,
       });
 
-      return AccountBalanceModel.fromJson(result);
+      return AccountBalanceModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -116,7 +116,7 @@ export class LedgerAccountServiceImpl implements LedgerAccountService {
         { headers: { "Idempotency-Key": params.idempotencyKey } },
       );
 
-      return LedgerAccountModel.fromJson(result);
+      return LedgerAccountModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -139,7 +139,7 @@ export class LedgerAccountServiceImpl implements LedgerAccountService {
         session,
       });
 
-      return LedgerAccountModel.fromJson(result);
+      return LedgerAccountModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

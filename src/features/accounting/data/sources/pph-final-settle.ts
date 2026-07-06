@@ -23,8 +23,8 @@ export class PphFinalSettleServiceImpl implements PphFinalSettleService {
         { headers: { "Idempotency-Key": params.idempotencyKey } },
       );
 
-      // Response is a BARE JournalEntry — deserialize top-level directly (no {data} wrapper).
-      return JournalModel.fromJson(result);
+      // Response is wrapped in { data: ... } — deserialize from result.data.
+      return JournalModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

@@ -48,7 +48,7 @@ export class FixedCostServiceImpl implements FixedCostService {
         body: { name: params.name, category: params.category },
         session,
       });
-      return FixedCostModel.fromJson(result);
+      return FixedCostModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -63,7 +63,7 @@ export class FixedCostServiceImpl implements FixedCostService {
         body: { name: params.name, category: params.category },
         session,
       });
-      return FixedCostModel.fromJson(result);
+      return FixedCostModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

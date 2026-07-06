@@ -20,7 +20,7 @@ export class TaxServiceImpl implements TaxService {
 
       const result = await this.http.request({ path, method, body, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return CalculateTaxResultModel.fromJson(result);
+      return CalculateTaxResultModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

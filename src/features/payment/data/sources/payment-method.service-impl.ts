@@ -13,7 +13,7 @@ export class PaymentMethodServiceImpl implements PaymentMethodService {
       const method = "GET";
       const result = await this.http.request({ path, method, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return result.map((method: Record<string, any>) => PaymentMethodCategoryModel.fromJson(method));
+      return result.data.map((method: Record<string, any>) => PaymentMethodCategoryModel.fromJson(method));
     } catch (err) {
       if (!(err instanceof ServerError)) throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
       else throw err;

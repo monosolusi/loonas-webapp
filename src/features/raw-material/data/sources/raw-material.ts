@@ -55,7 +55,7 @@ export class RawMaterialServiceImpl implements RawMaterialService {
         session,
       });
 
-      return RawMaterialModel.fromJson(result);
+      return RawMaterialModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -71,7 +71,7 @@ export class RawMaterialServiceImpl implements RawMaterialService {
         session,
       });
 
-      return RawMaterialModel.fromJson(result);
+      return RawMaterialModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -91,7 +91,7 @@ export class RawMaterialServiceImpl implements RawMaterialService {
         session,
       });
 
-      return RawMaterialModel.fromJson(result);
+      return RawMaterialModel.fromJson(result.data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
