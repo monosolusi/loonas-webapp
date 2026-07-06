@@ -7,6 +7,8 @@ export type ListJournalsServiceParams = {
   page?: number;
   limit?: number;
   search?: string;
+  dateFrom?: string;
+  dateTo?: string;
 };
 
 export type CreateJournalLineServiceInput = {
