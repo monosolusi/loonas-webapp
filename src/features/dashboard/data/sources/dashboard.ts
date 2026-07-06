@@ -14,8 +14,10 @@ export class DashboardServiceImpl implements DashboardService {
   ): Promise<DashboardStatisticsModel> {
     try {
       const searchParams: Record<string, string> = {};
-      if (params.from) searchParams["from"] = params.from;
-      if (params.to) searchParams["to"] = params.to;
+      if (params.from && params.to) {
+        searchParams["start_date"] = params.from;
+        searchParams["end_date"] = params.to;
+      }
 
       const result = await this.http.request({
         path: "/dashboard",
@@ -40,7 +42,7 @@ export class DashboardServiceImpl implements DashboardService {
         path: "/dashboard/revenue-series",
         method: "GET",
         session,
-        searchParams: { from: params.from, to: params.to },
+        searchParams: { start_date: params.from, end_date: params.to },
       });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
       const series: Record<string, any>[] = Array.isArray(result.data["revenue_series"])

@@ -50,8 +50,8 @@ export class InvoiceServiceImpl implements InvoiceService {
       if (filter.includes) searchParams.include = filter.includes;
       if (filter.filter) searchParams.filter = filter.filter;
       if (filter.from && filter.to) {
-        searchParams.from = filter.from;
-        searchParams.to = filter.to;
+        searchParams.start_date = filter.from;
+        searchParams.end_date = filter.to;
       }
 
       const result = await this.http.request({ path, method, searchParams, session });
