@@ -52,7 +52,7 @@ export class PurchaseServiceImpl implements PurchaseService {
         session,
       });
 
-      return PurchaseModel.fromJson(result.data);
+      return PurchaseModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -82,7 +82,7 @@ export class PurchaseServiceImpl implements PurchaseService {
         session,
       });
 
-      return PurchaseModel.fromJson(result.data);
+      return PurchaseModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

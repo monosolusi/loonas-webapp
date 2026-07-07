@@ -116,7 +116,7 @@ export class InvoiceServiceImpl implements InvoiceService {
         { headers: { "Idempotency-Key": params.idempotencyKey } },
       );
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return this.parseOutgoingInvoiceFromListItem(result.data);
+      return this.parseOutgoingInvoiceFromListItem(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -158,7 +158,7 @@ export class InvoiceServiceImpl implements InvoiceService {
 
     const config = { requireAuth: false };
     const result = await this.http.request({ path, method }, config);
-    return PublicOutgoingInvoiceModel.fromJson(result.data);
+    return PublicOutgoingInvoiceModel.fromJson(result);
   }
 
   public async getOutgoing(filter: OutgoingInvoiceFilter, session: SessionEntity): Promise<OutgoingInvoiceModel> {
@@ -169,7 +169,7 @@ export class InvoiceServiceImpl implements InvoiceService {
     const result = await this.http.request({ path, method, session });
     if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-    const data = result.data;
+    const data = result;
     if (!data.items) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
     if (!data.recipient) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
     if (!data.summary) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
@@ -224,7 +224,7 @@ export class InvoiceServiceImpl implements InvoiceService {
 
       const result = await this.http.request({ path, method, body, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      const data = result.data;
+      const data = result;
       if (!data.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       // Now we will upload the signature
@@ -235,7 +235,8 @@ export class InvoiceServiceImpl implements InvoiceService {
         const signatureBody = new FormData();
         signatureBody.append("signature", params.signature);
 
-        const signatureResult = await this.http.request(
+        // Signature upload returns no response body — fire-and-forget; the invoice detail re-fetch carries the signature.
+        await this.http.request(
           {
             path: signaturePath,
             method: signatureMethod,
@@ -244,9 +245,6 @@ export class InvoiceServiceImpl implements InvoiceService {
           },
           { contentType: undefined },
         );
-
-        if (!signatureResult) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-        signature = FileModel.fromJson(signatureResult.data);
       }
 
       const finaliseResult = await this.finaliseOutgoing(data.id, session);
@@ -289,7 +287,7 @@ export class InvoiceServiceImpl implements InvoiceService {
       const method = "GET";
       const result = await this.http.request({ path, method, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return InvoiceTimelineModel.fromJson(result.data);
+      return InvoiceTimelineModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -304,7 +302,7 @@ export class InvoiceServiceImpl implements InvoiceService {
 
       const result = await this.http.request({ path, method, searchParams, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return InvoiceSummaryModel.fromJson(result.data);
+      return InvoiceSummaryModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -321,7 +319,7 @@ export class InvoiceServiceImpl implements InvoiceService {
 
       const result = await this.http.request({ path, method, searchParams, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return CashFlowModel.fromJson(result.data);
+      return CashFlowModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -334,7 +332,7 @@ export class InvoiceServiceImpl implements InvoiceService {
 
     const config = { requireAuth: false };
     const result = await this.http.request({ path, method }, config);
-    return PublicIncomingInvoiceModel.fromJson(result.data);
+    return PublicIncomingInvoiceModel.fromJson(result);
   }
 
   public async get(
@@ -350,12 +348,12 @@ export class InvoiceServiceImpl implements InvoiceService {
       const result = await this.http.request({ path, method, searchParams, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      switch (result.data.type) {
+      switch (result.type) {
         case InvoiceType.OUTGOING:
-          return this.parseOutgoingInvoiceFromListItem(result.data);
+          return this.parseOutgoingInvoiceFromListItem(result);
         case InvoiceType.INCOMING:
         default:
-          return IncomingInvoiceModel.fromJson(result.data);
+          return IncomingInvoiceModel.fromJson(result);
       }
     } catch (err) {
       if (err instanceof ServerError) throw err;

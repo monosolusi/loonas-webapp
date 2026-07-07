@@ -70,7 +70,7 @@ export class ProfitabilityServiceImpl implements ProfitabilityService {
       `${getBaseUrl()}/products/${params.productId}/variants/${params.variantId}/hpp`,
     );
     const data = await profitabilityFetch(url, session);
-    return { data: VariantHppModel.fromJson(data.data) };
+    return { data: VariantHppModel.fromJson(data) };
   }
 
   public async getVariantProductionCost(
@@ -82,7 +82,7 @@ export class ProfitabilityServiceImpl implements ProfitabilityService {
     );
     url.searchParams.set("quantity", String(params.quantity));
     const data = await profitabilityFetch(url, session);
-    return { data: VariantProductionCostModel.fromJson(data.data) };
+    return { data: VariantProductionCostModel.fromJson(data) };
   }
 
   public async getVariantGrossProfit(
@@ -93,7 +93,7 @@ export class ProfitabilityServiceImpl implements ProfitabilityService {
       `${getBaseUrl()}/products/${params.productId}/variants/${params.variantId}/gross-profit`,
     );
     const data = await profitabilityFetch(url, session);
-    return { data: VariantGrossProfitModel.fromJson(data.data) };
+    return { data: VariantGrossProfitModel.fromJson(data) };
   }
 
   public async getVariantRecommendedPrice(
@@ -105,6 +105,6 @@ export class ProfitabilityServiceImpl implements ProfitabilityService {
     );
     url.searchParams.set("margin", String(params.margin));
     const data = await profitabilityFetch(url, session);
-    return { data: VariantRecommendedPriceModel.fromJson(data.data) };
+    return { data: VariantRecommendedPriceModel.fromJson(data) };
   }
 }

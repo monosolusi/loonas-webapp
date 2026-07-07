@@ -66,7 +66,7 @@ export class ProductionRecordServiceImpl implements ProductionRecordService {
         session,
       });
 
-      return ProductionRecordModel.fromJson(result.data);
+      return ProductionRecordModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -88,7 +88,7 @@ export class ProductionRecordServiceImpl implements ProductionRecordService {
         session,
       });
 
-      return ProductionRecordModel.fromJson(result.data);
+      return ProductionRecordModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

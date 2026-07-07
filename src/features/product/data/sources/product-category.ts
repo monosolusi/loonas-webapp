@@ -69,7 +69,7 @@ export class ProductCategoryServiceImpl implements ProductCategoryService {
         session,
       });
 
-      return ProductCategoryModel.fromJson(result.data);
+      return ProductCategoryModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -85,7 +85,7 @@ export class ProductCategoryServiceImpl implements ProductCategoryService {
         session,
       });
 
-      return ProductCategoryModel.fromJson(result.data);
+      return ProductCategoryModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

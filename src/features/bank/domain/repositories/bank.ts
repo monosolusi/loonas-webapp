@@ -3,7 +3,6 @@ import { DataState } from "@/core/resources/data-state";
 import { AccountInquiryResultEntity } from "@/features/bank/domain/entities/account-inquiry-result";
 import { BankEntity } from "@/features/bank/domain/entities/bank";
 import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
-import { AccountBankAccountEntity } from "@/features/account/domain/entities/account-bank-account";
 
 export interface BankRepository {
   listBanks(session: SessionEntity): Promise<DataState<BankEntity[]>>;
@@ -30,5 +29,5 @@ export interface BankRepository {
       accountNumber: string;
     },
     session: SessionEntity,
-  ): Promise<DataState<AccountBankAccountEntity>>;
+  ): Promise<DataState<void>>;
 }

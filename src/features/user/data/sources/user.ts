@@ -11,7 +11,7 @@ export class UserServiceImpl implements UserService {
     const path = "/users/me/status";
     const method = "GET";
     const response = await this.http.request({ path, method, session });
-    return UserStatusModel.fromJson(response.data);
+    return UserStatusModel.fromJson(response);
   }
 
   public async create(email: string, password: string): Promise<void> {
@@ -31,6 +31,6 @@ export class UserServiceImpl implements UserService {
     const path = "/users/me";
     const method = "GET";
     const response = await this.http.request({ path, method, session });
-    return UserModel.fromJson(response.data);
+    return UserModel.fromJson(response);
   }
 }
