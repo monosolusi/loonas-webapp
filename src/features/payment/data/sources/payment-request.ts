@@ -75,7 +75,7 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
         throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
       }
 
-      const data = (await response.json()).data;
+      const data = await response.json();
       const receiver = await this.getPartnerOrFetch({ id: data.receiver_id, data: data.receiver }, session);
       const bankAccount = await this.getBankAccountOrFetch(
         {
@@ -186,7 +186,7 @@ export class PaymentRequestServiceImpl implements PaymentRequestService {
         throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
       }
 
-      const data = (await response.json()).data;
+      const data = await response.json();
       // Looking for the PartnerModel, BankAccountModel, PaymentGatewayModel, PaymentSchemeModel from others
       const bankAccount = await this.bankService.getBankAccount(
         {

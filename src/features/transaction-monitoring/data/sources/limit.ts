@@ -14,7 +14,7 @@ export class LimitServiceImpl implements LimitService {
       const result = await this.http.request({ path, method, session });
       if (!result) throw new Error("Invalid response from server");
 
-      return PaymentMethodLimitModel.fromJson(result.data);
+      return PaymentMethodLimitModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

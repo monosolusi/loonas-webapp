@@ -52,7 +52,7 @@ export class PartnerServiceImpl implements PartnerService {
 
       const data = await response.json();
       if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return PartnerModel.fromJson(data.data);
+      return PartnerModel.fromJson(data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -69,8 +69,8 @@ export class PartnerServiceImpl implements PartnerService {
       const method = "GET";
       const data = await this.http.request({ path, method, session, searchParams: params });
 
-      if (!data || !Array.isArray(data.data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return data.data.map(IncomingInvoiceModel.fromJson);
+      if (!data || !Array.isArray(data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      return data.map(IncomingInvoiceModel.fromJson);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -103,7 +103,7 @@ export class PartnerServiceImpl implements PartnerService {
       const data = await response.json();
       if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      return PartnerModel.fromJson(data.data);
+      return PartnerModel.fromJson(data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -168,9 +168,9 @@ export class PartnerServiceImpl implements PartnerService {
       }
 
       const data = await response.json();
-      if (!data || !Array.isArray(data.data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      if (!data || !Array.isArray(data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      return data.data.map((item: any) => PartnerModel.fromJson(item));
+      return data.map((item: any) => PartnerModel.fromJson(item));
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

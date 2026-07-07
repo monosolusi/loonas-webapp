@@ -21,7 +21,7 @@ export class DistrictServiceImpl implements DistrictService {
       }
 
       const data = await response.json();
-      return data.data.map((p: any) => new DistrictModel(p));
+      return data.map((p: any) => new DistrictModel(p));
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

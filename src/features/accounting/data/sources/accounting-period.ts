@@ -58,7 +58,7 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
         { headers: { "Idempotency-Key": params.idempotencyKey } },
       );
 
-      const data = result.data;
+      const data = result;
       return {
         period: AccountingPeriodModel.fromJson(data),
         warnings: Array.isArray(data?.warnings) ? data.warnings.map(CloseWarningModel.fromJson) : [],
@@ -78,7 +78,7 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
         { headers: { "Idempotency-Key": params.idempotencyKey } },
       );
 
-      return AccountingPeriodModel.fromJson(result.data);
+      return AccountingPeriodModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -88,7 +88,7 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
   public async getYearSummary(params: GetYearSummaryServiceParams, session: SessionEntity): Promise<GetYearSummaryServiceResult> {
     try {
       const result = await this.http.request({ path: `/accounting/periods/year/${params.year}`, method: "GET", session });
-      return YearEndSummaryModel.fromJson(result.data);
+      return YearEndSummaryModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -107,7 +107,7 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
         { headers: { "Idempotency-Key": params.idempotencyKey } },
       );
 
-      const data = result.data;
+      const data = result;
       return {
         closingJournalId: data.closing_journal_id,
         periods: (data.periods ?? []).map(AccountingPeriodModel.fromJson),
@@ -131,7 +131,7 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
         { headers: { "Idempotency-Key": params.idempotencyKey } },
       );
 
-      const data = result.data;
+      const data = result;
       return {
         reversalJournalId: data.reversal_journal_id,
         periods: (data.periods ?? []).map(AccountingPeriodModel.fromJson),

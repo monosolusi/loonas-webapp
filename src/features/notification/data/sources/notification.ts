@@ -12,6 +12,6 @@ export class NotificationServiceImpl implements NotificationService {
     const method = "GET";
     const result = await this.http.request({ path, method, session });
     if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-    return NotificationConfigModel.fromJson(result.data);
+    return NotificationConfigModel.fromJson(result);
   }
 }

@@ -101,7 +101,7 @@ export class ProductServiceImpl implements ProductService {
         session,
       });
 
-      return ProductModel.fromJson(result.data);
+      return ProductModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -134,7 +134,7 @@ export class ProductServiceImpl implements ProductService {
         session,
       });
 
-      return ProductModel.fromJson(result.data);
+      return ProductModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -160,7 +160,7 @@ export class ProductServiceImpl implements ProductService {
         session,
       });
 
-      return ProductModel.fromJson(result.data);
+      return ProductModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -202,7 +202,7 @@ export class ProductServiceImpl implements ProductService {
       }
 
       const result = await response.json();
-      return ProductPhotoModel.fromJson(result.data);
+      return ProductPhotoModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

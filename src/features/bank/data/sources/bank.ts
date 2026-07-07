@@ -4,13 +4,12 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { AccountInquiryResultModel } from "@/features/bank/data/models/account-inquiry-result";
 import { BankAccountModel } from "@/features/bank/data/models/bank-account";
 import { BankService } from "@/features/bank/domain/sources/bank";
-import { AccountBankAccountModel } from "@/features/account/data/models/account-bank-account";
 
 export class BankServiceImpl implements BankService {
   public async createBankAccountForAccount(params: {
     bankId: string;
     accountNumber: string;
-  }, session: SessionEntity): Promise<AccountBankAccountModel> {
+  }, session: SessionEntity): Promise<void> {
     try {
       if (!session.accessToken) throw new ServerError(ErrorCodes.NO_VALID_SESSION);
 
@@ -40,10 +39,7 @@ export class BankServiceImpl implements BankService {
         throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message });
       }
 
-      const data = await response.json();
-      if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
-      return AccountBankAccountModel.fromJson(data.data);
+      // Endpoint returns 201 with no response body — nothing to parse.
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -77,7 +73,7 @@ export class BankServiceImpl implements BankService {
       const data = await response.json();
       if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      return BankAccountModel.fromJson(data.data);
+      return BankAccountModel.fromJson(data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -108,11 +104,11 @@ export class BankServiceImpl implements BankService {
       }
 
       const data = await response.json();
-      if (!data || !Array.isArray(data.data)) {
+      if (!data || !Array.isArray(data)) {
         throw new ServerError(ErrorCodes.INVALID_INSTANCE);
       }
 
-      return data.data.map((item: any) => BankModel.fromJson(item));
+      return data.map((item: any) => BankModel.fromJson(item));
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -142,8 +138,8 @@ export class BankServiceImpl implements BankService {
       }
 
       const data = await response.json();
-      if (!data || !Array.isArray(data.data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return data.data.map((item: any) => BankAccountModel.fromJson(item));
+      if (!data || !Array.isArray(data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      return data.map((item: any) => BankAccountModel.fromJson(item));
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -180,7 +176,7 @@ export class BankServiceImpl implements BankService {
       }
 
       const data = await response.json();
-      return AccountInquiryResultModel.fromJson(data.data);
+      return AccountInquiryResultModel.fromJson(data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -218,7 +214,7 @@ export class BankServiceImpl implements BankService {
       const data = await response.json();
       if (!data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      return BankAccountModel.fromJson(data.data);
+      return BankAccountModel.fromJson(data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

@@ -27,8 +27,8 @@ export class ManagerialCostServiceImpl implements ManagerialCostService {
         session,
       });
 
-      if (!Array.isArray(result.data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return result.data.map(ManagerialCostProjectionModel.fromJson);
+      if (!Array.isArray(result)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      return result.map(ManagerialCostProjectionModel.fromJson);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -47,7 +47,7 @@ export class ManagerialCostServiceImpl implements ManagerialCostService {
         body: {},
         session,
       });
-      return ManagerialCostAllocationResultModel.fromJson(result.data);
+      return ManagerialCostAllocationResultModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
