@@ -18,7 +18,7 @@ import { QrisCreationFailed } from "@/app/(pos)/pos/_payment-methods/qris/qris-c
 import { QrisCountdownRow } from "@/app/(pos)/pos/_payment-methods/qris/qris-countdown-row";
 import { QrisExpiredPanel } from "@/app/(pos)/pos/_payment-methods/qris/qris-expired-panel";
 import { QrisPaidSplash } from "@/app/(pos)/pos/_payment-methods/qris/qris-paid-splash";
-import { QrisPaymentBox } from "@/app/(pos)/pos/_payment-methods/qris/qris-payment-box";
+import { QrisCard } from "@/core/presentations/components/qris-card";
 import { QrisPollingIndicator } from "@/app/(pos)/pos/_payment-methods/qris/qris-polling-indicator";
 import { QrisTotalRow } from "@/app/(pos)/pos/_payment-methods/qris/qris-total-row";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
@@ -206,11 +206,7 @@ export function QrisConfirmStep() {
             <QrisCountdownRow expirationTime={expirationTime} status={status} />
           )}
           <div className="relative">
-            <QrisPaymentBox
-              qrString={qrString}
-              merchantName={merchantName}
-              payInDetailId={payInDetailId}
-            />
+            <QrisCard qrString={qrString} merchantName={merchantName} serialCode={payInDetailId} />
             {isFrozen && (
               <div className="absolute inset-0 z-20 flex items-center justify-center gap-x-2 rounded-lg bg-white/70">
                 <Spinner />

@@ -2,7 +2,7 @@
 
 import { CreateIncomingSteppers } from "@/features/invoice/presentations/components/create-incoming-steppers";
 import { RemainingPaymentTime } from "@/core/presentations/components/remaining-payment-time";
-import { QrisPayInDetailBox } from "@/app/(authenticated)/invoices/incoming/[id]/qris-pay-in-detail/_components/qris-pay-in-detail-box";
+import { QrisCard } from "@/core/presentations/components/qris-card";
 import { PaymentDetail } from "@/app/(authenticated)/invoices/_components/payment-detail";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
@@ -74,10 +74,10 @@ export default function QrisPayInDetailPage() {
                 )}
 
                 {/* QRIS Detail */}
-                <QrisPayInDetailBox
-                  payInDetail={{ id: payInDetail.id }}
-                  merchant={{ name: payInDetail.providerName }}
+                <QrisCard
                   qrString={payInDetail.qrString}
+                  merchantName={payInDetail.providerName}
+                  serialCode={payInDetail.id}
                 />
 
                 {/* Payment Detail */}
