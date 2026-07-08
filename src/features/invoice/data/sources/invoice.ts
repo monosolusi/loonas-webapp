@@ -147,7 +147,7 @@ export class InvoiceServiceImpl implements InvoiceService {
     const result = await this.http.request({ path, method, body }, config);
 
     if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-    const data = result.data;
+    const data = result;
     if (!data?.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
     return PayInModel.fromJson(data);
   }
@@ -273,7 +273,7 @@ export class InvoiceServiceImpl implements InvoiceService {
       try {
         const result = await this.http.request({ path, method, session });
         if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-        return result.data;
+        return result;
       } catch (err) {
         if (attempt === maxRetries) throw err;
         await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));

@@ -74,7 +74,7 @@ export class AccountServiceImpl implements AccountService {
       );
 
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      return BusinessAccountModel.fromJson(result.data);
+      return BusinessAccountModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
@@ -211,7 +211,7 @@ export class AccountServiceImpl implements AccountService {
       }
 
       const data = await response.json();
-      return PersonalAccountModel.fromJson(data.data);
+      return PersonalAccountModel.fromJson(data);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
