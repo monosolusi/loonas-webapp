@@ -154,7 +154,6 @@ export function QrisConfirmStep() {
   const status = detail?.status ?? null;
   const qrString = qrisDetail?.qrString ?? null;
   const expirationTime = qrisDetail?.expirationTime ?? null;
-  const payInDetailId = invoice?.payInDetail?.id ?? null;
   const payInId = qrisDetail?.id ?? null;
 
   // Warn once per payInId when PENDING_PAYMENT detail has no expirationTime.
@@ -197,7 +196,7 @@ export function QrisConfirmStep() {
     );
   }
 
-  if (status === PayInStatus.PENDING_PAYMENT && qrString && payInDetailId) {
+  if (status === PayInStatus.PENDING_PAYMENT && qrString && payInId) {
     return (
       <div className="scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto">
         <QrisTotalRow total={total} />
@@ -206,7 +205,7 @@ export function QrisConfirmStep() {
             <QrisCountdownRow expirationTime={expirationTime} status={status} />
           )}
           <div className="relative">
-            <QrisCard qrString={qrString} merchantName={merchantName} serialCode={payInDetailId} />
+            <QrisCard qrString={qrString} merchantName={merchantName} serialCode={payInId} />
             {isFrozen && (
               <div className="absolute inset-0 z-20 flex items-center justify-center gap-x-2 rounded-lg bg-white/70">
                 <Spinner />
