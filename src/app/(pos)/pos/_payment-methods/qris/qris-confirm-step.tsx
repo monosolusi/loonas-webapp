@@ -112,23 +112,31 @@ export function QrisConfirmStep() {
     prevQrisDetailIdRef.current = null;
   }, [isRegenerating, qrisDetail]);
 
+  // Latest guard values for the unmount-only abandonment toast, held in a ref so the
+  // effect depends only on the stable showToast: its cleanup runs on real unmount,
+  // never on detail-status transitions (the old [createFailed, detail?.status] deps
+  // re-ran the cleanup mid-flow and fired the toast twice).
+  const abandonStateRef = useRef({ pendingSaleId, createFailed, status: detail?.status ?? null });
+  abandonStateRef.current = { pendingSaleId, createFailed, status: detail?.status ?? null };
+
   // Abandonment toast on unmount when sale was still pending (cashier hit ✕).
   useEffect(() => {
     return () => {
+      const { pendingSaleId, createFailed, status } = abandonStateRef.current;
       if (wasPaidRef.current) return;
-      if (!createTriggeredRef.current) return;
+      if (pendingSaleId === null) return; // no sale created yet → nothing to abandon
       if (createFailed) return;
-      if (detail?.status === PayInStatus.EXPIRED) return;
+      if (status === PayInStatus.EXPIRED) return;
       showToast(
         {
-          title: "Pembayaran QRIS dibatalkan dari sisi kasir",
-          description: "Kode QR berlaku 15 menit dan akan hangus otomatis.",
+          title: "Transaksi QRIS masih menunggu pembayaran",
+          description: "Kode QR tetap aktif dan akan kedaluwarsa otomatis jika belum dibayar.",
           type: "warning",
         },
         "warning",
       );
     };
-  }, [createFailed, detail?.status, showToast]);
+  }, [showToast]);
 
   const handleRetry = useCallback(() => {
     createTriggeredRef.current = false;
