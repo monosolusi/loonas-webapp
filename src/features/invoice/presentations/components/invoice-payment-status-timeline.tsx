@@ -24,7 +24,7 @@ export function InvoicePaymentStatusTimeline({ invoice }: InvoicePaymentStatusTi
   const events = buildEvents(invoice);
 
   return (
-    <div className="flex flex-col gap-y-1 rounded-lg border border-neutral-200 bg-white p-5">
+    <div className="flex flex-col gap-y-1 rounded-lg border border-neutral-200 bg-white p-6">
       <div className="text-sm font-semibold text-neutral-500">Riwayat status</div>
       <div className="flex flex-col pt-3">
         {events.map((event, idx) => (
