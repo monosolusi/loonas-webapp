@@ -1,14 +1,17 @@
-"use client";
-
 import { QRCodeSVG } from "qrcode.react";
 
-type QrisPaymentBoxProps = {
+const QRIS_LOGO_URL =
+  "https://res.cloudinary.com/monosolusi/image/upload/v1760171194/loonas/web-assets/quick-response-code-indonesia-standard-qris-seeklogo_lxox7l.png";
+const GPN_LOGO_URL =
+  "https://res.cloudinary.com/monosolusi/image/upload/v1760188238/loonas/web-assets/Gerbang_Pembayaran_Nasional_logo_baa0h3.svg";
+
+type QrisCardProps = {
   qrString: string;
   merchantName: string;
-  payInDetailId: string;
+  serialCode: string;
 };
 
-export function QrisPaymentBox({ qrString, merchantName, payInDetailId }: QrisPaymentBoxProps) {
+export function QrisCard({ qrString, merchantName, serialCode }: QrisCardProps) {
   return (
     <div className="relative overflow-hidden rounded-lg border border-neutral-200 bg-white p-6">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-0">
@@ -18,16 +21,8 @@ export function QrisPaymentBox({ qrString, merchantName, payInDetailId }: QrisPa
 
       <div className="relative z-10 flex flex-col gap-y-8">
         <div className="flex flex-1 flex-row items-center justify-between">
-          <img
-            src="https://res.cloudinary.com/monosolusi/image/upload/v1760171194/loonas/web-assets/quick-response-code-indonesia-standard-qris-seeklogo_lxox7l.png"
-            alt="QRIS"
-            className="h-10"
-          />
-          <img
-            src="https://res.cloudinary.com/monosolusi/image/upload/v1760188238/loonas/web-assets/Gerbang_Pembayaran_Nasional_logo_baa0h3.svg"
-            alt="GPN"
-            className="h-12"
-          />
+          <img src={QRIS_LOGO_URL} alt="QRIS" className="h-10" />
+          <img src={GPN_LOGO_URL} alt="GPN" className="h-12" />
         </div>
         <div className="text-center text-xl font-semibold">{merchantName}</div>
         <div className="flex flex-col items-center gap-y-4">
@@ -42,7 +37,7 @@ export function QrisPaymentBox({ qrString, merchantName, payInDetailId }: QrisPa
         </div>
         <div className="flex flex-col gap-y-1">
           <div className="text-sm text-neutral-300">Kode Serial:</div>
-          <div className="text-sm text-neutral-300">{payInDetailId}</div>
+          <div className="text-sm text-neutral-300">{serialCode}</div>
         </div>
       </div>
     </div>
