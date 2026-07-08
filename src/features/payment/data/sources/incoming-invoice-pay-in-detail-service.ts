@@ -24,11 +24,11 @@ export class IncomingInvoicePayInDetailService implements IPayInDetailService {
       const method = "GET";
       const result = await this.http.request({ path, method, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      if (!Object.values(PayInType).includes(result.data.type)) throw new ServerError(ErrorCodes.INVALID_PAY_IN_TYPE);
+      if (!Object.values(PayInType).includes(result.type)) throw new ServerError(ErrorCodes.INVALID_PAY_IN_TYPE);
 
-      const Model = this.payInDetailFactory.getModel({ type: result.data.type as PayInType });
+      const Model = this.payInDetailFactory.getModel({ type: result.type as PayInType });
 
-      return Model.fromJson(result.data);
+      return Model.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
