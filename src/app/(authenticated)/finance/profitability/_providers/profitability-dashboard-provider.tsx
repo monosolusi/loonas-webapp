@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { useListProducts } from "@/features/product/presentations/hooks/use-list-products";
 import { ProductEntity } from "@/features/product/domain/entities/product";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { UseGetVariantGrossProfitReturnType } from "@/features/profitability/presentations/hooks/use-get-variant-gross-profit.types";
 
 type ProductsMeta = { page: number; limit: number; total: number; totalPages: number };
@@ -51,7 +52,7 @@ export function ProfitabilityDashboardProvider({ children }: ProfitabilityDashbo
   const [search, setSearch] = useState("");
   const [grossProfitStates, setGrossProfitStates] = useState<Record<string, VariantGrossProfitState>>({});
 
-  const { products, meta, loading, error } = useListProducts({ page, limit: 20, search: search || undefined });
+  const { products, meta, loading, error } = useListProducts({ page, limit: DEFAULT_PAGE_SIZE, search: search || undefined });
 
   const totalVariants = useMemo(() => {
     return products.reduce((sum, product) => sum + product.variants.length, 0);

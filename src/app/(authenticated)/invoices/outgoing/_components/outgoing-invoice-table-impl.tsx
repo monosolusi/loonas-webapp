@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
@@ -32,7 +33,7 @@ export function OutgoingInvoiceTableImpl({ filter }: OutgoingInvoiceTableImplPro
   const { invoices, meta, loading, error } = useListInvoices({
     type: InvoiceType.OUTGOING,
     page,
-    limit: 5,
+    limit: DEFAULT_PAGE_SIZE,
     filter: resolvedFilter,
   });
 

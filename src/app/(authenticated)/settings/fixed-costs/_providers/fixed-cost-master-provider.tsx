@@ -5,6 +5,7 @@ import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { FixedCostEntity } from "@/features/fixed-cost/domain/entities/fixed-cost";
 import { useListFixedCosts } from "@/features/fixed-cost/presentations/hooks/use-list-fixed-costs";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 
 type FixedCostMasterContextValue = {
   fixedCosts: FixedCostEntity[];
@@ -41,7 +42,7 @@ export function FixedCostMasterProvider({ children }: FixedCostMasterProviderPro
   const debouncedSearch = useDebounce(search.trim(), 500);
   const searchQuery = debouncedSearch.length >= 2 ? debouncedSearch : undefined;
 
-  const { fixedCosts, meta, loading } = useListFixedCosts({ page, limit: 10, search: searchQuery });
+  const { fixedCosts, meta, loading } = useListFixedCosts({ page, limit: DEFAULT_PAGE_SIZE, search: searchQuery });
 
   return (
     <FixedCostMasterContext.Provider

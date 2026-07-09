@@ -6,6 +6,7 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { PaginationMeta } from "@/core/resources/paginated";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
 import { YearEndSummaryEntity } from "@/features/accounting/domain/entities/year-end-summary";
 import { CloseWarning } from "@/features/accounting/domain/entities/close-warning";
@@ -104,7 +105,7 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
   const [statusFilter, setStatusFilter] = useState<PeriodStatusFilter>(undefined);
   const [page, setPage] = useState(1);
 
-  const { periods, meta, loading, error: listError } = useListPeriods({ page, limit: 25, status: statusFilter });
+  const { periods, meta, loading, error: listError } = useListPeriods({ page, limit: DEFAULT_PAGE_SIZE, status: statusFilter });
 
   const { trigger: triggerClose, isMutating: isClosing } = useClosePeriod();
   const { trigger: triggerReopen, isMutating: isReopening } = useReopenPeriod();

@@ -6,6 +6,7 @@ import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { PurchaseEntity } from "@/features/purchasing/domain/entities/purchase";
 import { useListPurchases } from "@/features/purchasing/presentations/hooks/use-list-purchases";
 import { usePurchaseRange } from "@/app/(authenticated)/purchasing/_providers/purchase-range-provider";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 
 type PurchaseListContextValue = {
   purchases: PurchaseEntity[];
@@ -46,7 +47,7 @@ export function PurchaseListProvider({ children }: PurchaseListProviderProps) {
     dateFrom: from,
     dateTo: to,
     page,
-    limit: 10,
+    limit: DEFAULT_PAGE_SIZE,
   });
 
   const purchases = result.purchases ?? [];

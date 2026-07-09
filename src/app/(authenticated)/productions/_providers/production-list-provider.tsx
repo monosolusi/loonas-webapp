@@ -6,6 +6,7 @@ import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { ProductionRecordEntity } from "@/features/production/domain/entities/production-record";
 import { useListProductionRecords } from "@/features/production/presentations/hooks/use-list-production-records";
 import { useProductionRange } from "@/app/(authenticated)/productions/_providers/production-range-provider";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 
 type ProductionListContextValue = {
   records: ProductionRecordEntity[];
@@ -48,7 +49,7 @@ export function ProductionListProvider({ children }: ProductionListProviderProps
     dateFrom: from,
     dateTo: to,
     page,
-    limit: 10,
+    limit: DEFAULT_PAGE_SIZE,
   });
 
   const records = result.records ?? [];

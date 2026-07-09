@@ -17,6 +17,7 @@ import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/in
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useListProductCategoriesPaginated } from "@/features/product/presentations/hooks/use-list-product-categories-paginated";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { useCreateProductCategory } from "@/features/product/presentations/hooks/use-create-product-category";
 import { useUpdateProductCategory } from "@/features/product/presentations/hooks/use-update-product-category";
 import { useDeleteProductCategory } from "@/features/product/presentations/hooks/use-delete-product-category";
@@ -29,7 +30,7 @@ export function CategoryListImpl() {
   const searchQuery = debouncedSearch.length >= 2 ? debouncedSearch : undefined;
   const { categories, meta, loading } = useListProductCategoriesPaginated({
     page,
-    limit: 10,
+    limit: DEFAULT_PAGE_SIZE,
     search: searchQuery,
   });
 
