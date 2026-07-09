@@ -11,6 +11,7 @@ const PENDING_POLL_INTERVAL_MS = 5000;
 
 type PosReceiptContextValue = {
   invoice: OutgoingInvoiceEntity;
+  refresh: () => Promise<void>;
 };
 
 const PosReceiptContext = createContext<PosReceiptContextValue | null>(null);
@@ -50,5 +51,9 @@ export function PosReceiptProvider({ id, loading, error, children }: PosReceiptP
   // a half-broken B2B invoice.
   if (state.invoice.channel !== InvoiceChannel.POS) return <>{error(new ServerError(ErrorCodes.NOT_FOUND))}</>;
 
-  return <PosReceiptContext.Provider value={{ invoice: state.invoice }}>{children}</PosReceiptContext.Provider>;
+  return (
+    <PosReceiptContext.Provider value={{ invoice: state.invoice, refresh: state.refresh }}>
+      {children}
+    </PosReceiptContext.Provider>
+  );
 }
