@@ -6,7 +6,6 @@ import { Spinner } from "@/core/presentations/components/spinner";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { useDocumentVisible } from "@/core/presentations/hooks/use-document-visible";
 import { useCountdown } from "@/core/presentations/hooks/use-countdown";
-import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
 import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { QrisPayInDetailEntity } from "@/features/invoice/domain/entities/pay-in-detail/qris-pay-in-detail";
@@ -21,16 +20,10 @@ import { QrisPaidSplash } from "@/app/(pos)/pos/_payment-methods/qris/qris-paid-
 import { QrisCard } from "@/core/presentations/components/qris-card";
 import { QrisPollingIndicator } from "@/app/(pos)/pos/_payment-methods/qris/qris-polling-indicator";
 import { QrisTotalRow } from "@/app/(pos)/pos/_payment-methods/qris/qris-total-row";
+import { resolveMerchantName } from "@/app/(pos)/pos/_payment-methods/qris/resolve-merchant-name";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 
 const POLL_INTERVAL_MS = 5000;
-
-function resolveMerchantName(account: ReturnType<typeof useGetCurrentAccount>["account"]): string {
-  if (!account) return "";
-  if (account instanceof BusinessAccountEntity) return account.company.name;
-  if ("fullName" in account && typeof account.fullName === "string") return account.fullName;
-  return "";
-}
 
 export function QrisConfirmStep() {
   const router = useRouter();
