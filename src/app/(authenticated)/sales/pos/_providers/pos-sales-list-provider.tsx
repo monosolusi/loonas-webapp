@@ -7,8 +7,7 @@ import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel"
 import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-list-item";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { usePosSalesRange } from "@/app/(authenticated)/sales/pos/_providers/pos-sales-range-provider";
-
-const PAGE_SIZE = 25;
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 
 type PosSalesListContextValue = {
   invoices: InvoiceListItemEntity[];
@@ -36,7 +35,7 @@ export function PosSalesListProvider({ children }: PosSalesListProviderProps) {
 
   const [page, setPage] = useState(1);
 
-  const state = useListInvoices({ channel: InvoiceChannel.POS, page, limit: PAGE_SIZE, from, to });
+  const state = useListInvoices({ channel: InvoiceChannel.POS, page, limit: DEFAULT_PAGE_SIZE, from, to });
 
   const invoices = state.invoices ?? [];
   const meta = state.meta ?? null;

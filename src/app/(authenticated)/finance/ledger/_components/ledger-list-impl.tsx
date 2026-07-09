@@ -10,6 +10,7 @@ import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { FilterDropdown, FilterPill } from "@/app/(authenticated)/products/_components/filter-dropdown";
 import { AccountTypeBadge } from "@/app/(authenticated)/finance/ledger/_components/account-type-badge";
 import { useListLedgerAccounts } from "@/features/accounting/presentations/hooks/use-list-ledger-accounts";
@@ -26,7 +27,7 @@ export function LedgerListImpl() {
 
   const { accounts, meta, loading, error } = useListLedgerAccounts({
     page,
-    limit: 25,
+    limit: DEFAULT_PAGE_SIZE,
     search: searchQuery,
     types: selectedTypes.length > 0 ? (selectedTypes as AccountType[]) : undefined,
   });

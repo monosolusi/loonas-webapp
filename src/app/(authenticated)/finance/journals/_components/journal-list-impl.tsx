@@ -13,6 +13,7 @@ import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { SummaryCard } from "@/core/presentations/components/summary-card";
 import { JournalRow } from "@/app/(authenticated)/finance/journals/_components/journal-row";
 import { useJournalRange } from "@/app/(authenticated)/finance/journals/_providers/journal-range-provider";
@@ -47,7 +48,7 @@ export function JournalListImpl() {
 
   const { journals, meta, totalDebit, totalCredit, loading, error } = useListJournals({
     page,
-    limit: 25,
+    limit: DEFAULT_PAGE_SIZE,
     search: searchQuery,
     dateFrom: from,
     dateTo: to,

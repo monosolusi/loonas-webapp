@@ -5,6 +5,7 @@ import { DateTime } from "luxon";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { SummaryCard } from "@/core/presentations/components/summary-card";
 import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
 import { useGetAccountBalance } from "@/features/accounting/presentations/hooks/use-get-account-balance";
@@ -36,7 +37,7 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
   const account = useMemo(() => (accounts ?? []).find((a) => a.id === accountId), [accounts, accountId]);
 
   const { balance, loading: balanceLoading } = useGetAccountBalance({ accountId, startDate, endDate });
-  const { entries, meta, loading, error } = useListLedgerEntries({ accountId, page, limit: 25, startDate, endDate });
+  const { entries, meta, loading, error } = useListLedgerEntries({ accountId, page, limit: DEFAULT_PAGE_SIZE, startDate, endDate });
 
   const accountName = account?.name ?? "Memuat...";
   const accountSubtitle = account ? `${account.code} · ${ACCOUNT_TYPE_LABELS[account.type as AccountType] ?? account.type}` : undefined;

@@ -4,6 +4,7 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { InvoiceRepository } from "@/features/invoice/domain/repositories/invoice";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { PaginatedData } from "@/core/resources/paginated";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
 import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-list-item";
@@ -31,7 +32,7 @@ export class ListInvoicesUseCaseParams {
     this.type = args.type;
     this.channel = args.channel;
     this.page = args.page ?? 1;
-    this.limit = args.limit ?? 10;
+    this.limit = args.limit ?? DEFAULT_PAGE_SIZE;
     this.includes = args.includes;
     this.filter = args.filter;
     this.from = args.from;

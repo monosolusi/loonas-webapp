@@ -6,12 +6,11 @@ import { TableContainer } from "@/core/presentations/components/table/table-cont
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { useListAccountSettingAudit } from "@/features/accounting/presentations/hooks/use-list-account-setting-audit";
 import { TaxPostureHistoryRow } from "@/app/(authenticated)/settings/tax-posture/_components/tax-posture-history-row";
-
-const LIMIT = 10;
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 
 export function TaxPostureHistoryCard() {
   const [page, setPage] = useState(1);
-  const result = useListAccountSettingAudit({ page, limit: LIMIT });
+  const result = useListAccountSettingAudit({ page, limit: DEFAULT_PAGE_SIZE });
 
   const isLoading = result.loading;
   const isError = !isLoading && result.error !== null;
