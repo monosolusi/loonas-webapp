@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import clsx from "clsx";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
@@ -16,19 +17,35 @@ interface IncomingInvoiceTableImplProps {
   filter?: string;
 }
 
-export function IncomingInvoiceTableImpl({ filter }: IncomingInvoiceTableImplProps) {
-  const [page, setPage] = useState(1);
-  const [activeTab, setActiveTab] = useState(0);
-  const [search, setSearch] = useState("");
+const FILTER_TABS = ["Semua", "Belum Lunas", "Menunggu Settlement", "Lunas"] as const;
+const filterMap = [undefined, "unpaid", "waiting_settlement", "paid"] as const;
 
-  const FILTER_TABS = ["Semua", "Belum Lunas", "Menunggu Settlement", "Lunas"] as const;
-  const filterMap = [undefined, "unpaid", "waiting_settlement", "paid"] as const;
+function tabForStatus(status: string | null): number {
+  const index = filterMap.indexOf(status as (typeof filterMap)[number]);
+  return index > 0 ? index : 0;
+}
+
+export function IncomingInvoiceTableImpl({ filter }: IncomingInvoiceTableImplProps) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const showsTabs = !filter;
+  const statusParam = searchParams.get("status");
+
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState(() => (showsTabs ? tabForStatus(statusParam) : 0));
+
   const resolvedFilter = filter ?? filterMap[activeTab];
 
+  // Keep the active tab in sync with the URL: a card clicked while already on the page, or browser back/forward.
   useEffect(() => {
+    if (!showsTabs) return;
+    setActiveTab(tabForStatus(statusParam));
     setSearch("");
     setPage(1);
-  }, [filter]);
+  }, [statusParam, showsTabs]);
 
   const { invoices, meta, loading, error } = useListInvoices({
     type: InvoiceType.INCOMING,
@@ -39,9 +56,12 @@ export function IncomingInvoiceTableImpl({ filter }: IncomingInvoiceTableImplPro
   });
 
   const handleTabChange = (index: number) => {
-    setActiveTab(index);
-    setSearch("");
-    setPage(1);
+    const status = filterMap[index];
+    const params = new URLSearchParams(searchParams.toString());
+    if (status) params.set("status", status);
+    else params.delete("status");
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };
 
   const handleSearchChange = (value: string) => {
@@ -50,8 +70,8 @@ export function IncomingInvoiceTableImpl({ filter }: IncomingInvoiceTableImplPro
   };
 
   const toolbar = (
-    <div className={clsx("flex flex-row items-center", filter ? "justify-end" : "justify-between")}>
-      {!filter && <TabFilter tabs={FILTER_TABS} selectedIndex={activeTab} onChange={handleTabChange} />}
+    <div className={clsx("flex flex-row items-center", showsTabs ? "justify-between" : "justify-end")}>
+      {showsTabs && <TabFilter tabs={FILTER_TABS} selectedIndex={activeTab} onChange={handleTabChange} />}
 
       <InvoiceSearchInput
         value={search}
