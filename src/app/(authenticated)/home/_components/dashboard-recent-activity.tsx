@@ -160,7 +160,7 @@ export function DashboardRecentActivity() {
             {`Periode: ${periodLabel}`}
           </div>
           <DashboardRecentActivityColumnHeader />
-          <div role="tabpanel" aria-labelledby={`activity-tab-${activeTab}`}>
+          <div role="tabpanel" aria-label="Daftar aktivitas terbaru">
             {derivedState.rows.map((inv, index) => (
               <DashboardRecentActivityRow key={inv.id} invoice={inv} tab={activeTab} position={index} />
             ))}
