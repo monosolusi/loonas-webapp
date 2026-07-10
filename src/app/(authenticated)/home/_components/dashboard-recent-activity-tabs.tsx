@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import { TabFilter } from "@/core/presentations/components/tab-filter";
 
 export type ActivityTab = "all" | "pos" | "incoming" | "outgoing";
 
@@ -11,30 +11,20 @@ const tabs: { label: string; value: ActivityTab }[] = [
   { label: "Faktur Keluar", value: "outgoing" },
 ];
 
+const TAB_LABELS = tabs.map((t) => t.label);
+
 interface DashboardRecentActivityTabsProps {
   active: ActivityTab;
   onChange: (t: ActivityTab) => void;
 }
 
 export function DashboardRecentActivityTabs({ active, onChange }: DashboardRecentActivityTabsProps) {
+  const selectedIndex = Math.max(
+    tabs.findIndex((t) => t.value === active),
+    0,
+  );
+
   return (
-    <div role="tablist" className="flex items-center gap-1">
-      {tabs.map((tab) => (
-        <button
-          key={tab.value}
-          id={`activity-tab-${tab.value}`}
-          type="button"
-          role="tab"
-          aria-selected={active === tab.value}
-          onClick={() => onChange(tab.value)}
-          className={clsx(
-            "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
-            active === tab.value ? "bg-neutral-800 text-white" : "bg-neutral-100 text-neutral-400 hover:bg-neutral-200",
-          )}
-        >
-          {tab.label}
-        </button>
-      ))}
-    </div>
+    <TabFilter tabs={TAB_LABELS} selectedIndex={selectedIndex} onChange={(index) => onChange(tabs[index].value)} />
   );
 }
