@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
+import { InfoTooltip } from "@/core/presentations/components/info-tooltip";
 
 export type SearchComboboxOption = {
   id: string;
@@ -22,6 +23,7 @@ type SearchComboboxBaseProps<T extends SearchComboboxOption> = {
   required?: boolean;
   autoFocus?: boolean;
   emptyMessage?: string;
+  tooltip?: React.ReactNode;
 };
 
 type SearchComboboxWithLabel<T extends SearchComboboxOption> = SearchComboboxBaseProps<T> & {
@@ -58,9 +60,10 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
       className={clsx("flex flex-col gap-2", props.disabled && "opacity-50")}
     >
       {!props.noLabel && (
-        <span className="text-base">
+        <span className="flex items-center gap-x-1.5 text-base">
           {props.label}
           {props.required && <span className="text-red-500"> *</span>}
+          {props.tooltip && <InfoTooltip text={props.tooltip} />}
         </span>
       )}
       <div className="relative">
