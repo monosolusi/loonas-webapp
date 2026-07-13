@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { useGetOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-outgoing-invoice";
+import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { useParams } from "next/navigation";
 import { ErrorDisplay } from "@/core/presentations/components/error-display";
 
 export function ErrorDisplayImpl() {
   const { id } = useParams<{ id: string }>();
-  const { error } = useGetOutgoingInvoice({ id });
+  const { error } = useGetInvoice({ id });
 
   useEffect(() => {
     if (error) console.error(error);

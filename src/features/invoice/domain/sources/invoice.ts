@@ -62,10 +62,6 @@ export interface CreateOutgoingParams {
 }
 
 
-export interface OutgoingInvoiceFilter {
-  id?: string;
-}
-
 export interface InvoiceSummaryFilter {
   type: InvoiceType;
 }
@@ -118,8 +114,6 @@ export interface InvoiceService {
   createOutgoing(params: CreateOutgoingParams, session: SessionEntity): Promise<OutgoingInvoiceModel>;
 
   createPosSale(params: CreatePosSaleServiceParams, session: SessionEntity): Promise<OutgoingInvoiceModel>;
-
-  getOutgoing(filter: OutgoingInvoiceFilter, session: SessionEntity): Promise<OutgoingInvoiceModel>;
 
   getPublicOutgoing(filter: { invoiceId: string }): Promise<PublicOutgoingInvoiceModel>;
 
