@@ -1,5 +1,6 @@
 export const ACCOUNTING_SWR_KEYS = {
   LIST_LEDGER_ACCOUNTS: "list-ledger-accounts",
+  LIST_ALL_LEDGER_ACCOUNTS: "list-all-ledger-accounts",
   LIST_COA_MAPPING_ENTITY_TYPES: "list-coa-mapping-entity-types",
   LIST_COA_MAPPINGS: "list-coa-mappings",
   GET_NERACA_REPORT: "get-neraca-report",
