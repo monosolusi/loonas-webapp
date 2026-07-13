@@ -97,8 +97,16 @@ export function DashboardRecentActivity() {
         ...(incomingResult.invoices ?? []),
         ...(outgoingResult.invoices ?? []),
       ];
+      // The three source lists can overlap (e.g. the same invoice surfacing in more than one query),
+      // which would collide on the React key and duplicate/omit rows. Dedupe by id after sorting.
+      const seenIds = new Set<string>();
       const rows = merged
         .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis())
+        .filter((inv) => {
+          if (seenIds.has(inv.id)) return false;
+          seenIds.add(inv.id);
+          return true;
+        })
         .slice(0, 10);
       return { loading: false, error: null, rows } as const;
     }
