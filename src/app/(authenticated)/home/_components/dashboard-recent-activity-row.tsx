@@ -11,6 +11,7 @@ import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-re
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import {
   deriveInvoicePaymentStatusKind,
+  formatPayInMethodLabel,
   InvoicePaymentStatusKind,
 } from "@/features/invoice/presentations/components/invoice-payment-helpers";
 import { DashboardRecentActivityIcon } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-icon";
@@ -33,6 +34,7 @@ const DESTINATION_TEMPLATE: Record<ActivityKind, string> = {
 type ActivityRowView = {
   kind: ActivityKind;
   partyName: string;
+  paymentMethod: string;
   total: number;
   status: InvoiceStatusType;
   href: string;
@@ -84,6 +86,7 @@ function toActivityView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): Act
     return {
       kind: "incoming",
       partyName: inv.receiver.name,
+      paymentMethod: inv.paymentMethod.title,
       total: inv.total,
       status: mapStatus(inv.status),
       href: `/invoices/incoming/${inv.id}`,
@@ -94,6 +97,7 @@ function toActivityView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): Act
     return {
       kind: "pos",
       partyName: inv.invoiceNumber,
+      paymentMethod: formatPayInMethodLabel(inv.payInDetail?.detail?.type),
       total: inv.summary.total,
       status: mapPosPaymentKind(deriveInvoicePaymentStatusKind(inv)),
       href: `/sales/pos/${inv.id}`,
@@ -103,6 +107,7 @@ function toActivityView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): Act
   return {
     kind: "outgoing",
     partyName: inv.recipient.fullName,
+    paymentMethod: formatPayInMethodLabel(inv.payInDetail?.detail?.type),
     total: inv.summary.total,
     status: mapStatus(inv.status),
     href: `/invoices/outgoing/${inv.id}`,
@@ -141,7 +146,7 @@ export function DashboardRecentActivityRow({ invoice, tab, position }: Dashboard
         }
       }}
       className={clsx(
-        "grid cursor-pointer grid-cols-[2fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0",
+        "grid cursor-pointer grid-cols-[2fr_1fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0",
         "hover:border-l-primary-300 hover:bg-primary-50",
         "focus-visible:border-l-primary-300 focus-visible:bg-primary-50 focus:outline-none",
       )}
@@ -153,6 +158,8 @@ export function DashboardRecentActivityRow({ invoice, tab, position }: Dashboard
           <span className="text-xs leading-4 text-neutral-300">{view.createdAt.setLocale("id").toRelative()}</span>
         </div>
       </div>
+
+      <span className="truncate text-sm leading-5 text-neutral-400">{view.paymentMethod}</span>
 
       <span className="text-sm leading-5 font-semibold text-neutral-500">{IDRFormatter.toCurrency(view.total)}</span>
 
