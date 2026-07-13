@@ -135,7 +135,10 @@ export interface InvoiceService {
     paymentSchemeId?: string | null;
   }): Promise<PayInModel>;
 
-  send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void>;
+  send(
+    params: { id: string; sendChannel: NotificationChannel[]; idempotencyKey: string },
+    session: SessionEntity,
+  ): Promise<void>;
 
   finalise(params: { id: string }, session: SessionEntity): Promise<OutgoingInvoiceModel>;
 
