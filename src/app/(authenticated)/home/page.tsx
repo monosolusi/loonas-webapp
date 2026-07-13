@@ -6,6 +6,7 @@ import { DashboardRangeSection } from "@/app/(authenticated)/home/_components/da
 import { DashboardRangeDailyRevenueChart } from "@/app/(authenticated)/home/_components/dashboard-range-daily-revenue-chart";
 import { DashboardRangePaymentBreakdown } from "@/app/(authenticated)/home/_components/dashboard-range-payment-breakdown";
 import { DashboardRangePosSalesTile } from "@/app/(authenticated)/home/_components/dashboard-range-pos-sales-tile";
+import { DashboardRangeReceivablesPayables } from "@/app/(authenticated)/home/_components/dashboard-range-receivables-payables";
 import { DashboardTotalProductsCard } from "@/app/(authenticated)/home/_components/dashboard-total-products-card";
 import { DashboardLowStockCard } from "@/app/(authenticated)/home/_components/dashboard-low-stock-card";
 
@@ -23,6 +24,7 @@ export default function InvoiceHomePage() {
               <DashboardRangePosSalesTile />
               <DashboardRangeDailyRevenueChart />
               <DashboardRangePaymentBreakdown />
+              <DashboardRangeReceivablesPayables />
             </div>
 
             {/* Shoulder column — always-on point-in-time */}
