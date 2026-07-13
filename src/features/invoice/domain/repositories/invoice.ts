@@ -122,7 +122,10 @@ export interface InvoiceRepository {
     paymentSchemeId?: string | null;
   }): Promise<DataState<PayInEntity>>;
 
-  send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<DataState<boolean>>;
+  send(
+    params: { id: string; sendChannel: NotificationChannel[]; idempotencyKey: string },
+    session: SessionEntity,
+  ): Promise<DataState<boolean>>;
 
   getPayInDetail(
     params: { invoice: { id: string } },

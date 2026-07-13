@@ -93,11 +93,15 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
     params: {
       id: string;
       sendChannel: NotificationChannel[];
+      idempotencyKey: string;
     },
     session: SessionEntity,
   ): Promise<DataState<boolean>> {
     try {
-      await this.invoiceService.send({ id: params.id, sendChannel: params.sendChannel }, session);
+      await this.invoiceService.send(
+        { id: params.id, sendChannel: params.sendChannel, idempotencyKey: params.idempotencyKey },
+        session,
+      );
       return new DataSuccess(true);
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);

@@ -122,12 +122,18 @@ export class InvoiceServiceImpl implements InvoiceService {
     }
   }
 
-  public async send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void> {
+  public async send(
+    params: { id: string; sendChannel: NotificationChannel[]; idempotencyKey: string },
+    session: SessionEntity,
+  ): Promise<void> {
     const path = `/invoices/outgoing/${params.id}/send`;
     const body = { channels: params.sendChannel };
     const method = "POST";
 
-    await this.http.request({ path, method, body, session });
+    await this.http.request(
+      { path, method, body, session },
+      { headers: { "Idempotency-Key": params.idempotencyKey } },
+    );
   }
 
   public async createPayInForOutgoingInvoice(params: {
