@@ -4,7 +4,7 @@ import { SectionCard } from "@/core/presentations/components/section-card";
 
 export function JournalDetailSkeleton() {
   return (
-    <div className="flex flex-col gap-y-6 p-6">
+    <div className="flex flex-col gap-y-6">
       {/* Header skeleton */}
       <div className="flex flex-row items-center gap-x-4">
         <div className="size-9 animate-pulse rounded-lg bg-neutral-100" />
