@@ -143,7 +143,7 @@ Custom `HttpRequest` class injects Clerk session headers:
 | `requireAccount` in `HttpRequest` config               | Removed — account resolution is implicit via JWT                                                                                                       |
 | `SelectedAccountProvider` context value                | Deprecated — provider only handles redirects; use `useGetCurrentAccount()` for account data                                                            |
 | `*-impl.tsx` monolith pattern (new code)               | Provider + split components pattern. Page composes provider + components, each component consumes context. Existing pages will be migrated gradually.  |
-| `InvoiceTableShell` (new code)                         | `TableToolbar`, `TableSearch`, `TableHeader`, `TableContainer` from `core/presentations/components/table/`. Existing pages will be migrated gradually. |
+| `InvoiceTableShell` (removed)                          | `TableContainer` + `TableHeader` + `TablePagination` from `core/presentations/components/table/`. Toolbar is a sibling above the container; header is the first child; pagination is the last child, gated `meta && meta.totalPages > 1`. |
 | Inline edit/delete icon buttons in tables (new code)   | `ActionMenu` from `core/presentations/components/action-menu.tsx` — consistent 3-dot action menu                                                       |
 | `ProductPhotoCard` standalone                          | Split into `ProductPhotoGrid` + `ProductPhotoDropzone` + `ProductPhotoUploadArea`                                                                      |
 

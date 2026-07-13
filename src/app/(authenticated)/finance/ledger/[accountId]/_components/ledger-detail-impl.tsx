@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DateTime } from "luxon";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
-import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
+import { TableContainer } from "@/core/presentations/components/table/table-container";
+import { TableHeader } from "@/core/presentations/components/table/table-header";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { SummaryCard } from "@/core/presentations/components/summary-card";
@@ -67,12 +68,15 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
   );
 
   const header = (
-    <div className="grid grid-cols-[1.5fr_3fr_1fr_1fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
-      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tanggal</span>
-      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Memo</span>
-      <span className="text-right text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Debit</span>
-      <span className="text-right text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Kredit</span>
-    </div>
+    <TableHeader
+      columns={[
+        { label: "Tanggal" },
+        { label: "Memo" },
+        { label: "Debit", align: "right" },
+        { label: "Kredit", align: "right" },
+      ]}
+      className="grid-cols-[1.5fr_3fr_1fr_1fr]"
+    />
   );
 
   const toolbar = (
@@ -96,7 +100,10 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
         <SummaryCard label="Total Kredit" value={balance?.displayCredit ?? "—"} variant="neutral" loading={balanceLoading} />
       </div>
 
-      <InvoiceTableShell toolbar={toolbar} header={header} loading={loading} error={!!error} empty={(entries ?? []).length === 0 && !loading} emptyMessage="Tidak ada transaksi pada periode ini.">
+      {toolbar}
+
+      <TableContainer loading={loading} error={!!error} empty={(entries ?? []).length === 0 && !loading} emptyMessage="Tidak ada transaksi pada periode ini.">
+        {header}
         {(entries ?? []).map((entry) => (
           <div key={entry.id} className="grid grid-cols-[1.5fr_3fr_1fr_1fr] items-center border-b border-neutral-100 px-6 py-4 last:border-b-0">
             <span className="text-sm text-neutral-400">{entry.displayDate}</span>
@@ -108,7 +115,7 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
         {meta && meta.totalPages > 1 && (
           <TablePagination displayedCount={(entries ?? []).length} meta={meta} currentPage={page} onPageChange={setPage} />
         )}
-      </InvoiceTableShell>
+      </TableContainer>
     </div>
   );
 }

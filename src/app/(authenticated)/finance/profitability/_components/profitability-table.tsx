@@ -23,15 +23,15 @@ export function ProfitabilityTable() {
 
   return (
     <div className="flex flex-col gap-y-4">
-      <div className="overflow-x-auto rounded-lg">
-        <TableContainer
-          loading={loading}
-          error={error}
-          empty={isEmpty}
-          emptyMessage="Belum ada produk."
-          filteredEmpty={isFilteredEmpty}
-          filteredEmptyMessage="Tidak ada produk yang cocok dengan pencarian."
-        >
+      <TableContainer
+        loading={loading}
+        error={error}
+        empty={isEmpty}
+        emptyMessage="Belum ada produk."
+        filteredEmpty={isFilteredEmpty}
+        filteredEmptyMessage="Tidak ada produk yang cocok dengan pencarian."
+      >
+        <div className="overflow-x-auto">
           <TableHeader columns={COLUMNS} className="[grid-template-columns:var(--grid-profitability-cols)]" />
 
           <div>
@@ -41,23 +41,18 @@ export function ProfitabilityTable() {
               )),
             )}
           </div>
-        </TableContainer>
-      </div>
+        </div>
 
-      {meta && (
-        <TablePagination
-          displayedCount={products.reduce((sum, product) => sum + product.variants.length, 0)}
-          meta={{
-            page: meta.page,
-            limit: meta.limit,
-            total: products.reduce((sum, product) => sum + product.variants.length, 0),
-            totalPages: meta.totalPages,
-          }}
-          currentPage={page}
-          onPageChange={setPage}
-          countLabel="varian"
-        />
-      )}
+        {meta && meta.totalPages > 1 && (
+          <TablePagination
+            displayedCount={products.length}
+            meta={meta}
+            currentPage={page}
+            onPageChange={setPage}
+            countLabel="produk"
+          />
+        )}
+      </TableContainer>
 
       {error && (
         <div className="flex justify-center">

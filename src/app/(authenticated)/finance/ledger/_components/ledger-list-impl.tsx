@@ -8,7 +8,8 @@ import { XMarkIcon } from "@heroicons/react/16/solid";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
+import { TableContainer } from "@/core/presentations/components/table/table-container";
+import { TableHeader } from "@/core/presentations/components/table/table-header";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { FilterDropdown, FilterPill } from "@/app/(authenticated)/products/_components/filter-dropdown";
@@ -73,12 +74,15 @@ export function LedgerListImpl() {
   );
 
   const header = (
-    <div className="grid grid-cols-[0.5fr_2fr_1.2fr_1fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
-      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Kode</span>
-      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Nama Akun</span>
-      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tipe</span>
-      <span className="text-right text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Saldo</span>
-    </div>
+    <TableHeader
+      columns={[
+        { label: "Kode" },
+        { label: "Nama Akun" },
+        { label: "Tipe" },
+        { label: "Saldo", align: "right" },
+      ]}
+      className="grid-cols-[0.5fr_2fr_1.2fr_1fr]"
+    />
   );
 
   return (
@@ -88,7 +92,10 @@ export function LedgerListImpl() {
         <p className="leading-6 text-neutral-300">{meta ? `${meta.total} akun` : "Memuat..."}</p>
       </div>
 
-      <InvoiceTableShell toolbar={toolbar} header={header} loading={loading} error={!!error} empty={(accounts ?? []).length === 0 && !loading} emptyMessage="Belum ada akun.">
+      {toolbar}
+
+      <TableContainer loading={loading} error={!!error} empty={(accounts ?? []).length === 0 && !loading} emptyMessage="Belum ada akun.">
+        {header}
         {(accounts ?? []).map((account) => (
           <Link
             key={account.id}
@@ -108,7 +115,7 @@ export function LedgerListImpl() {
         {meta && meta.totalPages > 1 && (
           <TablePagination displayedCount={(accounts ?? []).length} meta={meta} currentPage={page} onPageChange={setPage} />
         )}
-      </InvoiceTableShell>
+      </TableContainer>
     </div>
   );
 }

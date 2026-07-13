@@ -13,7 +13,8 @@ import { ConfirmationDialog } from "@/core/presentations/components/confirmation
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
-import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
+import { TableContainer } from "@/core/presentations/components/table/table-container";
+import { TableHeader } from "@/core/presentations/components/table/table-header";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useListProductCategoriesPaginated } from "@/features/product/presentations/hooks/use-list-product-categories-paginated";
@@ -128,24 +129,28 @@ export function CategoryListImpl() {
   );
 
   const header = (
-    <div className="grid grid-cols-[1fr_120px] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
-      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Nama Kategori</span>
-      <span className="text-right text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Aksi</span>
-    </div>
+    <TableHeader
+      columns={[
+        { label: "Nama Kategori" },
+        { label: "Aksi", align: "right" },
+      ]}
+      className="grid-cols-[1fr_120px]"
+    />
   );
 
   return (
     <div className="flex flex-col gap-y-6">
       <DetailPageHeader backHref="/settings" title="Kategori Produk" subtitle={meta ? `${meta.total} kategori` : "Memuat..."} />
 
-      <InvoiceTableShell
-        toolbar={toolbar}
-        header={header}
+      {toolbar}
+
+      <TableContainer
         loading={loading}
         error={false}
         empty={categories.length === 0 && !loading}
         emptyMessage="Belum ada kategori. Tambahkan kategori pertama Anda."
       >
+        {header}
         {categories.map((category) => (
           <div
             key={category.id}
@@ -173,7 +178,7 @@ export function CategoryListImpl() {
         {meta && meta.totalPages > 1 && (
           <TablePagination displayedCount={categories.length} meta={meta} currentPage={page} onPageChange={setPage} />
         )}
-      </InvoiceTableShell>
+      </TableContainer>
 
       {/* Create Dialog */}
       <LoonasDialog

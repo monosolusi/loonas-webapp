@@ -11,7 +11,8 @@ import { PrimaryButton } from "@/core/presentations/components/buttons/primary-b
 import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
+import { TableContainer } from "@/core/presentations/components/table/table-container";
+import { TableHeader } from "@/core/presentations/components/table/table-header";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { SummaryCard } from "@/core/presentations/components/summary-card";
@@ -83,12 +84,15 @@ export function JournalListImpl() {
   );
 
   const header = (
-    <div className="grid grid-cols-[1.5fr_3fr_1fr_1fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
-      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tanggal</span>
-      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Memo</span>
-      <span className="text-right text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Total Debit</span>
-      <span className="text-right text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Total Kredit</span>
-    </div>
+    <TableHeader
+      columns={[
+        { label: "Tanggal" },
+        { label: "Memo" },
+        { label: "Total Debit", align: "right" },
+        { label: "Total Kredit", align: "right" },
+      ]}
+      className="grid-cols-[1.5fr_3fr_1fr_1fr]"
+    />
   );
 
   return (
@@ -110,14 +114,17 @@ export function JournalListImpl() {
         />
       </div>
 
-      <InvoiceTableShell toolbar={toolbar} header={header} loading={loading} error={!!error} empty={(journals ?? []).length === 0 && !loading} emptyMessage="Belum ada jurnal.">
+      {toolbar}
+
+      <TableContainer loading={loading} error={!!error} empty={(journals ?? []).length === 0 && !loading} emptyMessage="Belum ada jurnal.">
+        {header}
         {(journals ?? []).map((journal) => (
           <JournalRow key={journal.id} journal={journal} />
         ))}
         {meta && meta.totalPages > 1 && (
           <TablePagination displayedCount={(journals ?? []).length} meta={meta} currentPage={page} onPageChange={setPage} />
         )}
-      </InvoiceTableShell>
+      </TableContainer>
     </div>
   );
 }
