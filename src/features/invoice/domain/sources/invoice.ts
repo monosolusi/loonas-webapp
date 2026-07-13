@@ -125,6 +125,8 @@ export interface InvoiceService {
 
   send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void>;
 
+  finalise(params: { id: string }, session: SessionEntity): Promise<OutgoingInvoiceModel>;
+
   getTimeline(filter: { id: string }, session: SessionEntity): Promise<InvoiceTimelineModel>;
 
   getSummary(filter: InvoiceSummaryFilter, session: SessionEntity): Promise<InvoiceSummaryModel>;

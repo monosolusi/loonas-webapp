@@ -196,15 +196,13 @@ export class InvoiceServiceImpl implements InvoiceService {
       const data = result;
       if (!data.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      // Now we will upload the signature
-      let signature: FileModel | undefined;
+      // Upload the signature (fire-and-forget — the finalise response / detail re-fetch carries it).
       if (params.signature) {
         const signaturePath = `/invoices/outgoing/${data.id}/signature`;
         const signatureMethod = "POST";
         const signatureBody = new FormData();
         signatureBody.append("signature", params.signature);
 
-        // Signature upload returns no response body — fire-and-forget; the invoice detail re-fetch carries the signature.
         await this.http.request(
           {
             path: signaturePath,
@@ -216,22 +214,28 @@ export class InvoiceServiceImpl implements InvoiceService {
         );
       }
 
-      const finaliseResult = await this.finaliseOutgoing(data.id, session);
-
-      // Generate InvoiceItemModel[] from result.items
-      const items = finaliseResult.items.map(InvoiceItemModel.fromJson);
-      const recipient = InvoiceRecipientModel.fromJson(finaliseResult.recipient);
-      const summary = InvoiceItemSummaryModel.fromJson(finaliseResult.summary);
-      const sender = InvoiceSenderModel.fromJson(finaliseResult.sender);
-
-      let pdf: FileModel | undefined;
-      if (finaliseResult.pdf) pdf = FileModel.fromJson(finaliseResult.pdf);
-
-      return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature, summary, sender, pdf });
+      return await this.finalise({ id: data.id }, session);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
     }
+  }
+
+  public async finalise(params: { id: string }, session: SessionEntity): Promise<OutgoingInvoiceModel> {
+    const finaliseResult = await this.finaliseOutgoing(params.id, session);
+
+    const items = finaliseResult.items.map(InvoiceItemModel.fromJson);
+    const recipient = InvoiceRecipientModel.fromJson(finaliseResult.recipient);
+    const summary = InvoiceItemSummaryModel.fromJson(finaliseResult.summary);
+    const sender = InvoiceSenderModel.fromJson(finaliseResult.sender);
+
+    // Signature (if present) is carried by the invoice detail re-fetch, matching createOutgoing's original behavior.
+    let signature: FileModel | undefined;
+
+    let pdf: FileModel | undefined;
+    if (finaliseResult.pdf) pdf = FileModel.fromJson(finaliseResult.pdf);
+
+    return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature, summary, sender, pdf });
   }
 
   private async finaliseOutgoing(invoiceId: string, session: SessionEntity, maxRetries = 3): Promise<any> {

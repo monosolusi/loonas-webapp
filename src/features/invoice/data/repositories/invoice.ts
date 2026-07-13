@@ -186,6 +186,19 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
     }
   }
 
+  public async finalise(
+    params: { id: string },
+    session: SessionEntity,
+  ): Promise<DataState<OutgoingInvoiceEntity>> {
+    try {
+      const invoice = await this.invoiceService.finalise({ id: params.id }, session);
+      return new DataSuccess(invoice.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
   public async getSummary(
     filter: InvoiceSummaryRepoFilter,
     session: SessionEntity,

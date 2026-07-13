@@ -9,6 +9,7 @@ import { ErrorDisplayImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_
 import { SendInvoiceButton } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/send-invoice-button";
 import { DownloadPdfButton } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/download-pdf-button";
 import { OutgoingInvoiceSummaryImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/outgoing-invoice-summary-impl";
+import { DraftActionCardImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/draft-action-card-impl";
 import { OutgoingRecipientInfoImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/outgoing-recipient-info-impl";
 import { PaymentLinkImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/payment-link-impl";
 import { FilteredInvoicePageShell } from "@/app/(authenticated)/invoices/_components/filtered-invoice-page-shell";
@@ -60,6 +61,7 @@ function OutgoingInvoiceDetail({ id }: { id: string }) {
           {/* Right column */}
           <div className="flex flex-1 flex-col gap-y-6">
             <OutgoingInvoiceSummaryImpl />
+            <DraftActionCardImpl />
             <OutgoingRecipientInfoImpl />
             <div className="flex flex-col gap-y-2">
               <SendInvoiceButton />

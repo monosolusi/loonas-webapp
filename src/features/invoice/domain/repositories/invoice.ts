@@ -124,6 +124,8 @@ export interface InvoiceRepository {
 
   send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<DataState<boolean>>;
 
+  finalise(params: { id: string }, session: SessionEntity): Promise<DataState<OutgoingInvoiceEntity>>;
+
   getPayInDetail(
     params: { invoice: { id: string } },
     session: SessionEntity,
