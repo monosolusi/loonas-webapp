@@ -6,36 +6,39 @@ import { DashboardRangeSection } from "@/app/(authenticated)/home/_components/da
 import { DashboardRangeDailyRevenueChart } from "@/app/(authenticated)/home/_components/dashboard-range-daily-revenue-chart";
 import { DashboardRangePaymentBreakdown } from "@/app/(authenticated)/home/_components/dashboard-range-payment-breakdown";
 import { DashboardRangePosSalesTile } from "@/app/(authenticated)/home/_components/dashboard-range-pos-sales-tile";
-import { DashboardTotalProductsCard } from "@/app/(authenticated)/home/_components/dashboard-total-products-card";
+import { DashboardRangeReceivablesPayables } from "@/app/(authenticated)/home/_components/dashboard-range-receivables-payables";
 import { DashboardLowStockCard } from "@/app/(authenticated)/home/_components/dashboard-low-stock-card";
 
 export default function InvoiceHomePage() {
   return (
-    <div className="space-y-6">
-      <Suspense>
-        <DashboardRangeProvider>
+    <Suspense>
+      <DashboardRangeProvider>
+        {/* Single top-to-bottom flow of balanced rows — scrolls as one clean column. Small cards pair
+            into equal 2-ups by visual weight; the wide chart spans full width. */}
+        <div className="flex flex-col gap-6">
           <DashboardWelcomeHeader />
 
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-            {/* Main column — period-controlled widgets */}
-            <div className="flex flex-col gap-6 xl:col-span-2">
-              <DashboardRangeSection />
-              <DashboardRangePosSalesTile />
-              <DashboardRangeDailyRevenueChart />
-              <DashboardRangePaymentBreakdown />
-            </div>
+          <DashboardRangeSection />
 
-            {/* Shoulder column — always-on point-in-time */}
-            <div className="flex flex-col gap-4 xl:col-span-1">
-              <DashboardTotalProductsCard />
-              <DashboardLowStockCard />
-            </div>
+          {/* Period financial headline */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <DashboardRangePosSalesTile />
+            <DashboardRangeReceivablesPayables />
           </div>
 
-          {/* Full-width activity band — below the 2-col grid */}
+          {/* Period revenue over time — full width for legibility across long ranges */}
+          <DashboardRangeDailyRevenueChart />
+
+          {/* Revenue by method + inventory restock alert — two list cards, balanced */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <DashboardRangePaymentBreakdown />
+            <DashboardLowStockCard />
+          </div>
+
+          {/* Full-width activity band */}
           <DashboardRecentActivity />
-        </DashboardRangeProvider>
-      </Suspense>
-    </div>
+        </div>
+      </DashboardRangeProvider>
+    </Suspense>
   );
 }
