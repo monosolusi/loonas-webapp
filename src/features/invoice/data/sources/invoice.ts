@@ -130,6 +130,13 @@ export class InvoiceServiceImpl implements InvoiceService {
     await this.http.request({ path, method, body, session });
   }
 
+  public async deleteOutgoing(params: { id: string }, session: SessionEntity): Promise<void> {
+    const path = `/invoices/outgoing/${params.id}`;
+    const method = "DELETE";
+
+    await this.http.request({ path, method, session });
+  }
+
   public async createPayInForOutgoingInvoice(params: {
     invoiceId: string;
     paymentMethodId: string;

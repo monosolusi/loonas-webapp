@@ -126,6 +126,8 @@ export interface InvoiceRepository {
 
   finalise(params: { id: string }, session: SessionEntity): Promise<DataState<OutgoingInvoiceEntity>>;
 
+  deleteOutgoing(params: { id: string }, session: SessionEntity): Promise<DataState<boolean>>;
+
   getPayInDetail(
     params: { invoice: { id: string } },
     session: SessionEntity,

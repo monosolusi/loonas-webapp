@@ -12,4 +12,5 @@ export const INVOICE_SWR_KEYS = {
   CREATE_POS_SALE: "create-pos-sale",
   SEND_INVOICE: "send-invoice",
   FINALISE_INVOICE: "finalise-invoice",
+  DELETE_INVOICE: "delete-invoice",
 } as const;

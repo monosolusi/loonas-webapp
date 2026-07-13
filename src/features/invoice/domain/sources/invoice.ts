@@ -127,6 +127,8 @@ export interface InvoiceService {
 
   finalise(params: { id: string }, session: SessionEntity): Promise<OutgoingInvoiceModel>;
 
+  deleteOutgoing(params: { id: string }, session: SessionEntity): Promise<void>;
+
   getTimeline(filter: { id: string }, session: SessionEntity): Promise<InvoiceTimelineModel>;
 
   getSummary(filter: InvoiceSummaryFilter, session: SessionEntity): Promise<InvoiceSummaryModel>;

@@ -5,10 +5,11 @@ import { SectionCard } from "@/core/presentations/components/section-card";
 
 interface DraftActionCardProps {
   onContinue: () => void;
+  onDiscard: () => void;
   errorMessage?: string;
 }
 
-export function DraftActionCard({ onContinue, errorMessage }: DraftActionCardProps) {
+export function DraftActionCard({ onContinue, onDiscard, errorMessage }: DraftActionCardProps) {
   return (
     <SectionCard title="Selesaikan Draf" iconSrc="/assets/images/document-icon-primary-300-w16-h16.svg">
       <div className="flex flex-col gap-y-4">
@@ -22,7 +23,16 @@ export function DraftActionCard({ onContinue, errorMessage }: DraftActionCardPro
           </div>
         )}
 
-        <PrimaryButton label="Lanjutkan & Kirim" onClick={onContinue} />
+        <div className="flex flex-col gap-y-2">
+          <PrimaryButton label="Lanjutkan & Kirim" onClick={onContinue} />
+          <button
+            type="button"
+            onClick={onDiscard}
+            className="h-11 text-sm font-semibold text-error-500 transition-colors hover:text-error-500/80"
+          >
+            Hapus Draf
+          </button>
+        </div>
       </div>
     </SectionCard>
   );

@@ -199,6 +199,16 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
     }
   }
 
+  public async deleteOutgoing(params: { id: string }, session: SessionEntity): Promise<DataState<boolean>> {
+    try {
+      await this.invoiceService.deleteOutgoing({ id: params.id }, session);
+      return new DataSuccess(true);
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
   public async getSummary(
     filter: InvoiceSummaryRepoFilter,
     session: SessionEntity,
