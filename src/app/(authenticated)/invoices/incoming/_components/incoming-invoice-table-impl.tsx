@@ -9,7 +9,8 @@ import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { IncomingInvoiceEntity } from "@/features/invoice/domain/entities/incoming-invoice";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceSearchInput } from "@/app/(authenticated)/invoices/_components/invoice-search-input";
-import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
+import { TableContainer } from "@/core/presentations/components/table/table-container";
+import { TableHeader } from "@/core/presentations/components/table/table-header";
 import { TabFilter } from "@/core/presentations/components/tab-filter";
 import { IncomingInvoiceRow, IncomingInvoiceTable } from "@/app/(authenticated)/invoices/incoming/_components/incoming-invoice-table";
 
@@ -82,15 +83,16 @@ export function IncomingInvoiceTableImpl({ filter }: IncomingInvoiceTableImplPro
   );
 
   const header = (
-    <div className="grid grid-cols-[2fr_1.5fr_1fr_1.5fr_1fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
-      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Client</span>
-      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">No. Faktur</span>
-      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tgl. Terima</span>
-      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Status</span>
-      <span className="text-right text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">
-        Total Tagihan
-      </span>
-    </div>
+    <TableHeader
+      columns={[
+        { label: "Client" },
+        { label: "No. Faktur" },
+        { label: "Tgl. Terima" },
+        { label: "Status" },
+        { label: "Total Tagihan", align: "right" },
+      ]}
+      className="grid-cols-[2fr_1.5fr_1fr_1.5fr_1fr]"
+    />
   );
 
   const hasData = !loading && !error && invoices && meta;
@@ -123,16 +125,19 @@ export function IncomingInvoiceTableImpl({ filter }: IncomingInvoiceTableImplPro
   });
 
   return (
-    <InvoiceTableShell
-      toolbar={toolbar}
-      header={header}
-      loading={loading}
-      error={!!error}
-      empty={invoices?.length === 0}
-      emptyMessage="Belum ada faktur masuk."
-      filteredEmpty={!!search && rows.length === 0}
-    >
-      {hasData && <IncomingInvoiceTable rows={rows} meta={meta} currentPage={page} onPageChange={setPage} />}
-    </InvoiceTableShell>
+    <>
+      {toolbar}
+
+      <TableContainer
+        loading={loading}
+        error={!!error}
+        empty={invoices?.length === 0}
+        emptyMessage="Belum ada faktur masuk."
+        filteredEmpty={!!search && rows.length === 0}
+      >
+        {header}
+        {hasData && <IncomingInvoiceTable rows={rows} meta={meta} currentPage={page} onPageChange={setPage} />}
+      </TableContainer>
+    </>
   );
 }
