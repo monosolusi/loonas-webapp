@@ -1,15 +1,17 @@
 "use client";
 
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
+import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { SectionCard } from "@/core/presentations/components/section-card";
 
 interface DraftActionCardProps {
   onContinue: () => void;
+  onEdit: () => void;
   onDiscard: () => void;
   errorMessage?: string;
 }
 
-export function DraftActionCard({ onContinue, onDiscard, errorMessage }: DraftActionCardProps) {
+export function DraftActionCard({ onContinue, onEdit, onDiscard, errorMessage }: DraftActionCardProps) {
   return (
     <SectionCard title="Selesaikan Draf" iconSrc="/assets/images/document-icon-primary-300-w16-h16.svg">
       <div className="flex flex-col gap-y-4">
@@ -25,6 +27,7 @@ export function DraftActionCard({ onContinue, onDiscard, errorMessage }: DraftAc
 
         <div className="flex flex-col gap-y-2">
           <PrimaryButton label="Lanjutkan & Kirim" onClick={onContinue} />
+          <SecondaryButton outlined label="Edit Faktur" onClick={onEdit} />
           <button
             type="button"
             onClick={onDiscard}

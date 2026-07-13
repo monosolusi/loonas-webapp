@@ -42,6 +42,10 @@ export function DraftActionCardImpl() {
     }
   };
 
+  const handleEdit = () => {
+    router.push(`/invoices/outgoing/create?draftId=${id}`);
+  };
+
   const handleDelete = async () => {
     try {
       await remove({ invoice: { id } });
@@ -60,6 +64,7 @@ export function DraftActionCardImpl() {
     <>
       <DraftActionCard
         onContinue={() => setSendConfirmOpen(true)}
+        onEdit={handleEdit}
         onDiscard={() => setDeleteConfirmOpen(true)}
         errorMessage={errorMessage}
       />

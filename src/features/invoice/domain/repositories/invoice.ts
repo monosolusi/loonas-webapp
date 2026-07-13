@@ -50,6 +50,18 @@ export interface InvoiceRepositoryFilterParams {
   includes?: string;
 }
 
+export interface UpdateOutgoingParams {
+  id: string;
+  recipient: PartnerEntity;
+  invoiceDate: DateTime;
+  dueDate: DateTime;
+  items: InvoiceItem[];
+  note?: string;
+  tnc?: string;
+  signature?: File;
+  paymentConfiguration: PaymentConfiguration[];
+}
+
 export interface CreateOutgoingParams {
   recipient: PartnerEntity;
   invoiceNumber: string;
@@ -127,6 +139,8 @@ export interface InvoiceRepository {
   finalise(params: { id: string }, session: SessionEntity): Promise<DataState<OutgoingInvoiceEntity>>;
 
   deleteOutgoing(params: { id: string }, session: SessionEntity): Promise<DataState<boolean>>;
+
+  updateOutgoing(params: UpdateOutgoingParams, session: SessionEntity): Promise<DataState<boolean>>;
 
   getPayInDetail(
     params: { invoice: { id: string } },

@@ -3,6 +3,7 @@ import { AbstractEntity } from "@/core/resources/entity";
 
 interface InvoiceRecipientEntityConstructor {
   id: string;
+  originalId?: string;
   nationality?: string;
   fullName: string;
   occupation?: string;
@@ -19,6 +20,7 @@ interface InvoiceRecipientEntityConstructor {
 
 export class InvoiceRecipientEntity implements AbstractEntity {
   public id: string;
+  public originalId?: string;
   public nationality?: string;
   public fullName: string;
   public occupation?: string;
@@ -34,6 +36,7 @@ export class InvoiceRecipientEntity implements AbstractEntity {
 
   constructor(args: InvoiceRecipientEntityConstructor) {
     this.id = args.id;
+    this.originalId = args.originalId;
     this.nationality = args.nationality;
     this.fullName = args.fullName;
     this.occupation = args.occupation;

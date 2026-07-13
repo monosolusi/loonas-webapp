@@ -5,6 +5,7 @@ import { InvoiceDetailModel } from "@/features/invoice/data/types/invoice-detail
 import {
   CashFlowFilter,
   CreateOutgoingParams,
+  UpdateOutgoingParams,
   CreatePosSaleServiceParams,
   InvoiceService,
   InvoiceServiceFilter,
@@ -135,6 +136,48 @@ export class InvoiceServiceImpl implements InvoiceService {
     const method = "DELETE";
 
     await this.http.request({ path, method, session });
+  }
+
+  public async updateOutgoing(params: UpdateOutgoingParams, session: SessionEntity): Promise<void> {
+    const path = `/invoices/outgoing/${params.id}`;
+    const method = "PUT";
+    // `invoice_number` and `send_channel` are not editable and must NOT be sent — the API rejects them.
+    const body = {
+      recipient_id: params.recipient.id,
+      invoice_date: params.invoiceDate.toISO(),
+      due_date: params.dueDate.toISO(),
+      items: params.items.map((item) => ({
+        name: item.name,
+        description: item.description,
+        qty: item.qty,
+        price: item.price,
+        tax_type: item.taxType,
+        tax_base: item.taxBase,
+        tax: item.tax,
+        discount_type: item.discountType,
+        discount: item.discount,
+        total: item.total,
+      })),
+      note: params.note,
+      tnc: params.tnc,
+      payment_configuration: params.paymentConfiguration.map((config) => ({
+        payment_method_id: config.paymentMethod.id,
+        is_enabled: config.isEnabled,
+        charge_fee_on: config.chargeFeeOn,
+      })),
+    };
+
+    await this.http.request({ path, method, body, session });
+
+    if (params.signature) {
+      const signaturePath = `/invoices/outgoing/${params.id}/signature`;
+      const signatureBody = new FormData();
+      signatureBody.append("signature", params.signature);
+      await this.http.request(
+        { path: signaturePath, method: "POST", body: signatureBody, session },
+        { contentType: undefined },
+      );
+    }
   }
 
   public async createPayInForOutgoingInvoice(params: {

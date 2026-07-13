@@ -13,4 +13,5 @@ export const INVOICE_SWR_KEYS = {
   SEND_INVOICE: "send-invoice",
   FINALISE_INVOICE: "finalise-invoice",
   DELETE_INVOICE: "delete-invoice",
+  UPDATE_INVOICE: "update-invoice",
 } as const;
