@@ -6,7 +6,7 @@ import {
   SearchComboboxOption,
 } from "@/core/presentations/components/search-combobox";
 import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledger-account";
-import { useListLedgerAccounts } from "@/features/accounting/presentations/hooks/use-list-ledger-accounts";
+import { useListAllLedgerAccounts } from "@/features/accounting/presentations/hooks/use-list-all-ledger-accounts";
 
 type LedgerAccountOption = SearchComboboxOption & { entity: LedgerAccountEntity };
 
@@ -23,7 +23,7 @@ type LedgerAccountComboboxProps = {
 };
 
 export function LedgerAccountCombobox(props: LedgerAccountComboboxProps) {
-  const { accounts, loading } = useListLedgerAccounts({ limit: 500 });
+  const { accounts, loading } = useListAllLedgerAccounts();
 
   const options = useMemo<LedgerAccountOption[]>(() => {
     const excluded = new Set(props.excludeIds ?? []);

@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { SearchCombobox, SearchComboboxOption } from "@/core/presentations/components/search-combobox";
 import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledger-account";
-import { useListLedgerAccounts } from "@/features/accounting/presentations/hooks/use-list-ledger-accounts";
+import { useListAllLedgerAccounts } from "@/features/accounting/presentations/hooks/use-list-all-ledger-accounts";
 import { AccountFilter } from "@/features/accounting/presentations/components/journal-line-editor/journal-line-editor.types";
 
 type LedgerAccountOption = SearchComboboxOption & { entity: LedgerAccountEntity };
@@ -18,9 +18,6 @@ type JournalLineAccountComboboxProps = {
   autoFocus?: boolean;
 };
 
-// CoA is small; load the full list so the combobox can filter client-side without pagination.
-const LEDGER_ACCOUNT_FETCH_LIMIT = 500;
-
 export function JournalLineAccountCombobox({
   value,
   onChange,
@@ -29,7 +26,7 @@ export function JournalLineAccountCombobox({
   ariaLabel,
   autoFocus,
 }: JournalLineAccountComboboxProps) {
-  const { accounts, loading } = useListLedgerAccounts({ limit: LEDGER_ACCOUNT_FETCH_LIMIT });
+  const { accounts, loading } = useListAllLedgerAccounts();
 
   const options = useMemo<LedgerAccountOption[]>(() => {
     const filtered = accountFilter ? (accounts ?? []).filter(accountFilter) : (accounts ?? []);
