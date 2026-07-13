@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
+import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { InvoiceSearchInput } from "@/app/(authenticated)/invoices/_components/invoice-search-input";
@@ -49,6 +50,7 @@ export function OutgoingInvoiceTableImpl({ filter }: OutgoingInvoiceTableImplPro
 
   const { invoices, meta, loading, error } = useListInvoices({
     type: InvoiceType.OUTGOING,
+    channel: InvoiceChannel.INVOICE,
     page,
     limit: DEFAULT_PAGE_SIZE,
     filter: resolvedFilter,

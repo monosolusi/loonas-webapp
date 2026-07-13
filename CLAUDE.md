@@ -214,7 +214,7 @@ SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockI
 
 ### Git
 
-- Branch naming: `features/{description}` for new features
+- Branch naming: prefix with `feat/`, `fix/`, `refactor/`, or `hotfix/` + `{description}` (e.g. `fix/exclude-pos-from-outgoing-invoices`). Do NOT use the legacy `features/` prefix.
 - Always create branches from `dev`
 - Commit style: Conventional Commits — `feat(scope):`, `fix(scope):`, `refactor(scope):`, `chore(scope):`
 
