@@ -12,32 +12,37 @@ import { DashboardLowStockCard } from "@/app/(authenticated)/home/_components/da
 
 export default function InvoiceHomePage() {
   return (
-    <div className="space-y-6">
-      <Suspense>
-        <DashboardRangeProvider>
+    <Suspense>
+      <DashboardRangeProvider>
+        {/* Single top-to-bottom flow of balanced rows — scrolls as one clean column instead of a
+            tall/short two-column split. Small cards pair into equal 2-ups; wide content spans full width. */}
+        <div className="flex flex-col gap-6">
           <DashboardWelcomeHeader />
 
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-            {/* Main column — period-controlled widgets */}
-            <div className="flex flex-col gap-6 xl:col-span-2">
-              <DashboardRangeSection />
-              <DashboardRangePosSalesTile />
-              <DashboardRangeDailyRevenueChart />
-              <DashboardRangePaymentBreakdown />
-              <DashboardRangeReceivablesPayables />
-            </div>
+          <DashboardRangeSection />
 
-            {/* Shoulder column — always-on point-in-time */}
-            <div className="flex flex-col gap-4 xl:col-span-1">
-              <DashboardTotalProductsCard />
-              <DashboardLowStockCard />
-            </div>
+          {/* Period financial headline */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <DashboardRangePosSalesTile />
+            <DashboardRangeReceivablesPayables />
           </div>
 
-          {/* Full-width activity band — below the 2-col grid */}
+          {/* Period revenue detail — trend over time + composition by method */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <DashboardRangeDailyRevenueChart />
+            <DashboardRangePaymentBreakdown />
+          </div>
+
+          {/* Inventory snapshot (point-in-time, not period-controlled) */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <DashboardTotalProductsCard />
+            <DashboardLowStockCard />
+          </div>
+
+          {/* Full-width activity band */}
           <DashboardRecentActivity />
-        </DashboardRangeProvider>
-      </Suspense>
-    </div>
+        </div>
+      </DashboardRangeProvider>
+    </Suspense>
   );
 }
