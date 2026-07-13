@@ -18,7 +18,7 @@ export default function JournalDetailPage(props: JournalDetailPageProps) {
 
   return (
     <JournalDetailProvider id={id} loading={<JournalDetailSkeleton />}>
-      <div className="flex flex-col gap-y-6 p-6">
+      <div className="flex flex-col gap-y-6">
         <JournalDetailHeader />
         <JournalDetailInfoCard />
         <JournalDetailLinesCard />
