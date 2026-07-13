@@ -2,7 +2,7 @@ import { TextInput } from "@/core/presentations/components/text-inputs/text-inpu
 import { useCreateOutgoingInvoice } from "@/app/(authenticated)/invoices/outgoing/create/_providers/create-outgoing-invoice";
 
 export function InvoiceNumberInput() {
-  const { invoiceNumber, setInvoiceNumber } = useCreateOutgoingInvoice();
+  const { invoiceNumber, setInvoiceNumber, isEditMode } = useCreateOutgoingInvoice();
 
   return (
     <TextInput
@@ -10,6 +10,8 @@ export function InvoiceNumberInput() {
       label="No. Faktur"
       value={invoiceNumber}
       onChange={setInvoiceNumber}
+      disabled={isEditMode}
+      description={isEditMode ? "Nomor faktur tidak dapat diubah." : undefined}
     />
   );
 }

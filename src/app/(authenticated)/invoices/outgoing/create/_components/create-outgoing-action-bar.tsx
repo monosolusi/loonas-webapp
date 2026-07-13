@@ -11,6 +11,7 @@ import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@item
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { CreateInvoiceSendOptionsDialogImpl } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/send-options-dialog-impl";
+import { EditInvoiceSaveButtonImpl } from "@/app/(authenticated)/invoices/outgoing/create/_components/edit-invoice-save-button-impl";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 
 const OUTGOING_STEP_MAP: OutgoingStep[] = [
@@ -34,6 +35,7 @@ export function CreateOutgoingActionBar() {
     updateInvoiceItem,
     editingItemIndex,
     setEditingItemIndex,
+    isEditMode,
   } = useCreateOutgoingInvoice();
   const { create, loading: createPartnerLoading } = useCreateNewPartnerProvider();
   const addItemCtx = useAddItem();
@@ -135,6 +137,7 @@ export function CreateOutgoingActionBar() {
       case "payment-configuration":
         return <PrimaryButton label="Selanjutnya" disabled={!isPaymentConfigStepClean} onClick={goToNextStep} />;
       case "review-and-send":
+        if (isEditMode) return <EditInvoiceSaveButtonImpl />;
         return (
           <>
             <PrimaryButton label="Kirim Faktur" disabled={isSendDisabled} onClick={() => setDialogOpen(true)} />

@@ -5,6 +5,7 @@ import { InvoiceDetailModel } from "@/features/invoice/data/types/invoice-detail
 import {
   CashFlowFilter,
   CreateOutgoingParams,
+  UpdateOutgoingParams,
   CreatePosSaleServiceParams,
   InvoiceService,
   InvoiceServiceFilter,
@@ -130,6 +131,55 @@ export class InvoiceServiceImpl implements InvoiceService {
     await this.http.request({ path, method, body, session });
   }
 
+  public async deleteOutgoing(params: { id: string }, session: SessionEntity): Promise<void> {
+    const path = `/invoices/outgoing/${params.id}`;
+    const method = "DELETE";
+
+    await this.http.request({ path, method, session });
+  }
+
+  public async updateOutgoing(params: UpdateOutgoingParams, session: SessionEntity): Promise<void> {
+    const path = `/invoices/outgoing/${params.id}`;
+    const method = "PUT";
+    // `invoice_number` and `send_channel` are not editable and must NOT be sent — the API rejects them.
+    const body = {
+      recipient_id: params.recipient.id,
+      invoice_date: params.invoiceDate.toISO(),
+      due_date: params.dueDate.toISO(),
+      items: params.items.map((item) => ({
+        name: item.name,
+        description: item.description,
+        qty: item.qty,
+        price: item.price,
+        tax_type: item.taxType,
+        tax_base: item.taxBase,
+        tax: item.tax,
+        discount_type: item.discountType,
+        discount: item.discount,
+        total: item.total,
+      })),
+      note: params.note,
+      tnc: params.tnc,
+      payment_configuration: params.paymentConfiguration.map((config) => ({
+        payment_method_id: config.paymentMethod.id,
+        is_enabled: config.isEnabled,
+        charge_fee_on: config.chargeFeeOn,
+      })),
+    };
+
+    await this.http.request({ path, method, body, session });
+
+    if (params.signature) {
+      const signaturePath = `/invoices/outgoing/${params.id}/signature`;
+      const signatureBody = new FormData();
+      signatureBody.append("signature", params.signature);
+      await this.http.request(
+        { path: signaturePath, method: "POST", body: signatureBody, session },
+        { contentType: undefined },
+      );
+    }
+  }
+
   public async createPayInForOutgoingInvoice(params: {
     invoiceId: string;
     paymentMethodId: string;
@@ -196,15 +246,13 @@ export class InvoiceServiceImpl implements InvoiceService {
       const data = result;
       if (!data.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      // Now we will upload the signature
-      let signature: FileModel | undefined;
+      // Upload the signature (fire-and-forget — the finalise response / detail re-fetch carries it).
       if (params.signature) {
         const signaturePath = `/invoices/outgoing/${data.id}/signature`;
         const signatureMethod = "POST";
         const signatureBody = new FormData();
         signatureBody.append("signature", params.signature);
 
-        // Signature upload returns no response body — fire-and-forget; the invoice detail re-fetch carries the signature.
         await this.http.request(
           {
             path: signaturePath,
@@ -216,22 +264,28 @@ export class InvoiceServiceImpl implements InvoiceService {
         );
       }
 
-      const finaliseResult = await this.finaliseOutgoing(data.id, session);
-
-      // Generate InvoiceItemModel[] from result.items
-      const items = finaliseResult.items.map(InvoiceItemModel.fromJson);
-      const recipient = InvoiceRecipientModel.fromJson(finaliseResult.recipient);
-      const summary = InvoiceItemSummaryModel.fromJson(finaliseResult.summary);
-      const sender = InvoiceSenderModel.fromJson(finaliseResult.sender);
-
-      let pdf: FileModel | undefined;
-      if (finaliseResult.pdf) pdf = FileModel.fromJson(finaliseResult.pdf);
-
-      return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature, summary, sender, pdf });
+      return await this.finalise({ id: data.id }, session);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
     }
+  }
+
+  public async finalise(params: { id: string }, session: SessionEntity): Promise<OutgoingInvoiceModel> {
+    const finaliseResult = await this.finaliseOutgoing(params.id, session);
+
+    const items = finaliseResult.items.map(InvoiceItemModel.fromJson);
+    const recipient = InvoiceRecipientModel.fromJson(finaliseResult.recipient);
+    const summary = InvoiceItemSummaryModel.fromJson(finaliseResult.summary);
+    const sender = InvoiceSenderModel.fromJson(finaliseResult.sender);
+
+    // Signature (if present) is carried by the invoice detail re-fetch, matching createOutgoing's original behavior.
+    let signature: FileModel | undefined;
+
+    let pdf: FileModel | undefined;
+    if (finaliseResult.pdf) pdf = FileModel.fromJson(finaliseResult.pdf);
+
+    return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature, summary, sender, pdf });
   }
 
   private async finaliseOutgoing(invoiceId: string, session: SessionEntity, maxRetries = 3): Promise<any> {

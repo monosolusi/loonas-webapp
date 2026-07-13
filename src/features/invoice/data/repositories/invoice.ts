@@ -3,6 +3,7 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import {
   CashFlowRepoFilter,
   CreateOutgoingParams,
+  UpdateOutgoingParams,
   CreatePosSaleRepoParams,
   InvoiceRepository,
   InvoiceRepositoryFilter,
@@ -180,6 +181,67 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
         session,
       );
       return new DataSuccess(invoice.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async finalise(
+    params: { id: string },
+    session: SessionEntity,
+  ): Promise<DataState<OutgoingInvoiceEntity>> {
+    try {
+      const invoice = await this.invoiceService.finalise({ id: params.id }, session);
+      return new DataSuccess(invoice.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async deleteOutgoing(params: { id: string }, session: SessionEntity): Promise<DataState<boolean>> {
+    try {
+      await this.invoiceService.deleteOutgoing({ id: params.id }, session);
+      return new DataSuccess(true);
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async updateOutgoing(params: UpdateOutgoingParams, session: SessionEntity): Promise<DataState<boolean>> {
+    try {
+      await this.invoiceService.updateOutgoing(
+        {
+          id: params.id,
+          recipient: params.recipient,
+          invoiceDate: params.invoiceDate,
+          dueDate: params.dueDate,
+          items: params.items.map((item) => ({
+            name: item.name,
+            description: item.description,
+            qty: item.qty,
+            price: item.price,
+            taxType: item.taxType,
+            taxBase: item.taxBase,
+            tax: item.tax,
+            discountType: item.discountType,
+            discount: item.discount,
+            total: item.total,
+          })),
+          note: params.note,
+          tnc: params.tnc,
+          signature: params.signature,
+          paymentConfiguration: params.paymentConfiguration.map((config) => ({
+            paymentMethod: config.paymentMethod,
+            isEnabled: config.isEnabled,
+            chargeFeeOn: config.chargeFeeOn,
+          })),
+        },
+        session,
+      );
+      return new DataSuccess(true);
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

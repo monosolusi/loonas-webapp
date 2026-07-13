@@ -3,6 +3,7 @@ import { CreateNewPartnerProvider } from "@/features/partner/presentation/provid
 import { AddItemProvider } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 import { CreateOutgoingSteppers } from "@/app/(authenticated)/invoices/outgoing/create/_components/create-outgoing-steppers";
 import { CreateOutgoingActionBar } from "@/app/(authenticated)/invoices/outgoing/create/_components/create-outgoing-action-bar";
+import { WizardHeader } from "@/app/(authenticated)/invoices/outgoing/create/_components/wizard-header";
 import { CreateOutgoingInvoiceLayoutProps } from "@/app/(authenticated)/invoices/outgoing/create/layout.types";
 import { RequireAccountBankAccount } from "@/features/bank/presentation/components/require-account-bank-account";
 
@@ -13,12 +14,7 @@ export default function CreateOutgoingInvoiceLayout(props: CreateOutgoingInvoice
         <CreateNewPartnerProvider>
           <AddItemProvider>
             <div className="flex flex-col gap-y-8">
-              <div className="flex flex-col">
-                <div className="text-2xl leading-8 font-bold tracking-tighter">Buat Faktur Keluaran</div>
-                <div className="text-base leading-6 font-normal text-neutral-300">
-                  Kirim faktur ke Client kamu disini. Ikuti langkah-langkah dibawah ini untuk membuat faktur keluaran baru
-                </div>
-              </div>
+              <WizardHeader />
 
               <div className="rounded-lg border border-neutral-200">
                 <div className="flex flex-row">

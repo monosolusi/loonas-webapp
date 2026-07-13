@@ -48,6 +48,18 @@ export interface PaymentConfiguration {
   chargeFeeOn: ChargeFeeOn;
 }
 
+export interface UpdateOutgoingParams {
+  id: string;
+  recipient: PartnerEntity;
+  invoiceDate: DateTime;
+  dueDate: DateTime;
+  items: InvoiceItem[];
+  note?: string;
+  tnc?: string;
+  signature?: File;
+  paymentConfiguration: PaymentConfiguration[];
+}
+
 export interface CreateOutgoingParams {
   recipient: PartnerEntity;
   invoiceNumber: string;
@@ -124,6 +136,12 @@ export interface InvoiceService {
   }): Promise<PayInModel>;
 
   send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void>;
+
+  finalise(params: { id: string }, session: SessionEntity): Promise<OutgoingInvoiceModel>;
+
+  deleteOutgoing(params: { id: string }, session: SessionEntity): Promise<void>;
+
+  updateOutgoing(params: UpdateOutgoingParams, session: SessionEntity): Promise<void>;
 
   getTimeline(filter: { id: string }, session: SessionEntity): Promise<InvoiceTimelineModel>;
 

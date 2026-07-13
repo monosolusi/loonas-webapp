@@ -4,6 +4,7 @@ import { InvoiceRecipientEntity } from "@/features/invoice/domain/entities/invoi
 
 interface InvoiceRecipientModelConstructor {
   id: string;
+  originalId?: string;
   nationality?: string;
   fullName: string;
   occupation?: string;
@@ -20,6 +21,7 @@ interface InvoiceRecipientModelConstructor {
 
 export class InvoiceRecipientModel implements AbstractModel {
   public id: string;
+  public originalId?: string;
   public nationality?: string;
   public fullName: string;
   public occupation?: string;
@@ -35,6 +37,7 @@ export class InvoiceRecipientModel implements AbstractModel {
 
   constructor(args: InvoiceRecipientModelConstructor) {
     this.id = args.id;
+    this.originalId = args.originalId;
     this.nationality = args.nationality;
     this.fullName = args.fullName;
     this.occupation = args.occupation;
@@ -52,6 +55,7 @@ export class InvoiceRecipientModel implements AbstractModel {
   public static fromJson(json: Record<string, any>): InvoiceRecipientModel {
     return new InvoiceRecipientModel({
       id: json.id,
+      originalId: json.original_id,
       nationality: json.nationality,
       fullName: json.full_name,
       occupation: json.occupation,
@@ -70,6 +74,7 @@ export class InvoiceRecipientModel implements AbstractModel {
   public toEntity(): InvoiceRecipientEntity {
     return new InvoiceRecipientEntity({
       id: this.id,
+      originalId: this.originalId,
       nationality: this.nationality,
       fullName: this.fullName,
       occupation: this.occupation,

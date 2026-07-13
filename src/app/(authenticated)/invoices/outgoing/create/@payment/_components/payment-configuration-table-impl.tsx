@@ -6,22 +6,29 @@ import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { useListPaymentMethod } from "@/features/payment/presentations/hooks/use-list-payment-method";
 
 export function PaymentConfigurationTableImpl() {
-  const { paymentConfiguration, setPaymentConfiguration } = useCreateOutgoingInvoice();
+  const { paymentConfiguration, setPaymentConfiguration, isEditMode, editInitialPaymentConfig } =
+    useCreateOutgoingInvoice();
   const { paymentMethods, loading, error } = useListPaymentMethod();
   const hasInitialized = useRef(false);
 
   useEffect(() => {
     if (!paymentMethods || !setPaymentConfiguration || hasInitialized.current) return;
+    // When editing, wait for the draft's saved config so the toggles reflect the draft. The saved
+    // snapshot lacks the original gateway id, so match back to the live gateway list by title.
+    if (isEditMode && editInitialPaymentConfig.length === 0) return;
     hasInitialized.current = true;
 
     setPaymentConfiguration(
-      paymentMethods.map((gateway) => ({
-        paymentMethod: gateway,
-        isEnabled: gateway.isActive,
-        chargeFeeOn: ChargeFeeOn.INVOICE_RECEIVER,
-      })),
+      paymentMethods.map((gateway) => {
+        const seed = isEditMode ? editInitialPaymentConfig.find((s) => s.title === gateway.title) : undefined;
+        return {
+          paymentMethod: gateway,
+          isEnabled: seed ? seed.isEnabled : gateway.isActive,
+          chargeFeeOn: seed ? seed.chargeFeeOn : ChargeFeeOn.INVOICE_RECEIVER,
+        };
+      }),
     );
-  }, [paymentMethods, setPaymentConfiguration]);
+  }, [paymentMethods, setPaymentConfiguration, isEditMode, editInitialPaymentConfig]);
 
   const formattedData = useMemo(() => {
     const generateFeeInText = (variableFee: number, fixedFee: number) => {
