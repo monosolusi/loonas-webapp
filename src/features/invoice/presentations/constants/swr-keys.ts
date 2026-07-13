@@ -1,7 +1,6 @@
 export const INVOICE_SWR_KEYS = {
   LIST_INVOICES: "list-invoices",
   GET_INVOICE: "get-invoice",
-  GET_OUTGOING_INVOICE: "get-outgoing-invoice",
   GET_PUBLIC_OUTGOING_INVOICE: "get-public-outgoing-invoice",
   GET_PUBLIC_PAY_IN_DETAIL_FOR_OUTGOING_INVOICE: "get-public-pay-in-detail-for-outgoing-invoice",
   GET_CASH_FLOW: "get-cash-flow",

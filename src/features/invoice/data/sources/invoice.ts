@@ -11,7 +11,6 @@ import {
   InvoiceServiceFilterParams,
   InvoiceSummaryFilter,
   ListInvoicesServiceFilter,
-  OutgoingInvoiceFilter,
 } from "@/features/invoice/domain/sources/invoice";
 import { InvoiceSummaryModel } from "@/features/invoice/data/models/invoice-summary";
 import { CashFlowModel } from "@/features/invoice/data/models/cash-flow";
@@ -159,36 +158,6 @@ export class InvoiceServiceImpl implements InvoiceService {
     const config = { requireAuth: false };
     const result = await this.http.request({ path, method }, config);
     return PublicOutgoingInvoiceModel.fromJson(result);
-  }
-
-  public async getOutgoing(filter: OutgoingInvoiceFilter, session: SessionEntity): Promise<OutgoingInvoiceModel> {
-    if (!filter.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
-    const path = `/invoices/outgoing/${filter.id}`;
-    const method = "GET";
-    const result = await this.http.request({ path, method, session });
-    if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
-    const data = result;
-    if (!data.items) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-    if (!data.recipient) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-    if (!data.summary) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
-    if (data.signature) data.signature = FileModel.fromJson(data.signature);
-    if (data.pdf) data.pdf = FileModel.fromJson(data.pdf);
-    data.items = data.items.map(InvoiceItemModel.fromJson);
-    data.recipient = InvoiceRecipientModel.fromJson(data.recipient);
-    data.summary = InvoiceItemSummaryModel.fromJson(data.summary);
-    data.sender = InvoiceSenderModel.fromJson(data.sender);
-
-    return OutgoingInvoiceModel.fromJson(data, {
-      items: data.items,
-      recipient: data.recipient,
-      signature: data.signature,
-      summary: data.summary,
-      sender: data.sender,
-      pdf: data.pdf,
-    });
   }
 
   public async createOutgoing(params: CreateOutgoingParams, session: SessionEntity): Promise<OutgoingInvoiceModel> {

@@ -9,7 +9,6 @@ import {
   InvoiceRepositoryFilterParams,
   InvoiceSummaryRepoFilter,
   ListInvoicesFilter,
-  OutgoingInvoiceFilter,
 } from "@/features/invoice/domain/repositories/invoice";
 import { PaginatedData } from "@/core/resources/paginated";
 import { InvoiceDetailEntity } from "@/features/invoice/domain/types/invoice-detail";
@@ -138,19 +137,6 @@ export class InvoiceRepositoryImpl implements InvoiceRepository {
   public async getPublicIncoming(filter: { invoiceId: string }): Promise<DataState<PublicIncomingInvoiceEntity>> {
     try {
       const invoice = await this.invoiceService.getPublicIncoming(filter);
-      return new DataSuccess(invoice.toEntity());
-    } catch (err) {
-      if (err instanceof ServerError) return new DataFailed(err);
-      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
-    }
-  }
-
-  public async getOutgoing(
-    filter: OutgoingInvoiceFilter,
-    session: SessionEntity,
-  ): Promise<DataState<OutgoingInvoiceEntity>> {
-    try {
-      const invoice = await this.invoiceService.getOutgoing(filter, session);
       return new DataSuccess(invoice.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
