@@ -12,7 +12,7 @@ type TableSearchProps = {
 
 export function TableSearch({ value, onChange, placeholder = "Cari..." }: TableSearchProps) {
   return (
-    <div className="w-[280px]">
+    <div className="w-full sm:w-[280px]">
       <TextInput
         label=""
         placeholder={placeholder}
