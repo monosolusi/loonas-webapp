@@ -19,7 +19,7 @@ type DashboardRangeProviderProps = {
 
 export function DashboardRangeProvider({ children }: DashboardRangeProviderProps) {
   return (
-    <DateRangeProvider localStorageKey="lns_dashboard_range" maxSpanDays={31}>
+    <DateRangeProvider maxSpanDays={31}>
       {children}
     </DateRangeProvider>
   );

@@ -48,35 +48,12 @@ function validateRange(range: DateRange, maxSpanDays: number): boolean {
   return spanDays <= maxSpanDays;
 }
 
-function parseStorageValue(raw: string | null, maxSpanDays: number): DateRange | null {
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw);
-    if (parsed && typeof parsed.from === "string" && typeof parsed.to === "string") {
-      const range: DateRange = { from: parsed.from, to: parsed.to };
-      if (validateRange(range, maxSpanDays)) return range;
-    }
-  } catch {
-    // ignore
-  }
-  return null;
-}
-
-function writeToLocalStorage(key: string, range: DateRange) {
-  try {
-    localStorage.setItem(key, JSON.stringify(range));
-  } catch {
-    // ignore
-  }
-}
-
 type DateRangeProviderProps = {
   children: React.ReactNode;
-  localStorageKey: string;
   maxSpanDays: number;
 };
 
-export function DateRangeProvider({ children, localStorageKey, maxSpanDays }: DateRangeProviderProps) {
+export function DateRangeProvider({ children, maxSpanDays }: DateRangeProviderProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -88,11 +65,8 @@ export function DateRangeProvider({ children, localStorageKey, maxSpanDays }: Da
       if (validateRange(candidate, maxSpanDays)) return candidate;
     }
 
-    const stored = parseStorageValue(localStorage.getItem(localStorageKey), maxSpanDays);
-    if (stored) return stored;
-
     return resolveDefaultRange(DateTime.now().setZone(TZ));
-  }, [searchParams, localStorageKey, maxSpanDays]);
+  }, [searchParams, maxSpanDays]);
 
   const [range, setRangeState] = useState<DateRange>(resolveInitialRange);
 
@@ -100,14 +74,13 @@ export function DateRangeProvider({ children, localStorageKey, maxSpanDays }: Da
     (next: DateRange) => {
       if (!validateRange(next, maxSpanDays)) return;
       setRangeState(next);
-      writeToLocalStorage(localStorageKey, next);
 
       const params = new URLSearchParams(searchParams.toString());
       params.set("from", next.from);
       params.set("to", next.to);
       router.replace(`?${params.toString()}`, { scroll: false });
     },
-    [router, searchParams, localStorageKey, maxSpanDays],
+    [router, searchParams, maxSpanDays],
   );
 
   const didInitRef = useRef(false);

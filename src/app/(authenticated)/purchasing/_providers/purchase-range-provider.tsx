@@ -19,7 +19,7 @@ type PurchaseRangeProviderProps = {
 
 export function PurchaseRangeProvider({ children }: PurchaseRangeProviderProps) {
   return (
-    <DateRangeProvider localStorageKey="lns_purchasing_range" maxSpanDays={365}>
+    <DateRangeProvider maxSpanDays={365}>
       {children}
     </DateRangeProvider>
   );

@@ -19,7 +19,7 @@ type ProductionRangeProviderProps = {
 
 export function ProductionRangeProvider({ children }: ProductionRangeProviderProps) {
   return (
-    <DateRangeProvider localStorageKey="lns_productions_range" maxSpanDays={365}>
+    <DateRangeProvider maxSpanDays={365}>
       {children}
     </DateRangeProvider>
   );

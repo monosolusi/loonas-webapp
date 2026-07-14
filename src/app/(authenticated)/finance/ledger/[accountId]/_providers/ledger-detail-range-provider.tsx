@@ -19,7 +19,7 @@ type LedgerDetailRangeProviderProps = {
 
 export function LedgerDetailRangeProvider({ children }: LedgerDetailRangeProviderProps) {
   return (
-    <DateRangeProvider localStorageKey="lns_ledger_detail_range" maxSpanDays={365}>
+    <DateRangeProvider maxSpanDays={365}>
       {children}
     </DateRangeProvider>
   );
