@@ -58,13 +58,13 @@ export function ReceiptQrisModal({ open, onClose }: ReceiptQrisModalProps) {
   }, [open, status, onClose]);
 
   return (
-    <Dialog open={open} onClose={onClose} className="relative z-10">
+    <Dialog open={open} onClose={onClose} className="relative z-50">
       <DialogBackdrop
         transition
         className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
       />
       {/* Full-viewport flex → panel is dead-center both axes on every breakpoint. */}
-      <div className="fixed inset-0 z-10 flex min-h-full w-screen items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 flex min-h-full w-screen items-center justify-center p-4">
         <DialogPanel
           transition
           className="relative aspect-square w-[min(90vw,90vh)] max-w-[560px] transform overflow-hidden rounded-lg bg-white shadow-xl transition-all data-closed:scale-95 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"

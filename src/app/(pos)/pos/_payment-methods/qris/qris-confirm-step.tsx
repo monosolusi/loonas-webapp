@@ -201,12 +201,20 @@ export function QrisConfirmStep() {
     return (
       <div className="scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto">
         <QrisTotalRow total={total} />
-        <div className="flex flex-col gap-y-4 px-6 py-6">
+        <div className="flex flex-col gap-y-4 px-4 py-6 sm:px-6">
           {expirationTime !== null && (
             <QrisCountdownRow expirationTime={expirationTime} status={status} />
           )}
           <div className="relative">
-            <QrisCard qrString={qrString} merchantName={merchantName} serialCode={payInId} />
+            {/* QRCodeSVG renders at a fixed pixel size — it doesn't shrink with its container, so the
+                desktop size (256) overflows the panel's available width below `sm`. Render two sizes and
+                toggle visibility by breakpoint instead of scaling the SVG down on every screen. */}
+            <div className="hidden sm:block">
+              <QrisCard qrString={qrString} merchantName={merchantName} serialCode={payInId} size={256} />
+            </div>
+            <div className="sm:hidden">
+              <QrisCard qrString={qrString} merchantName={merchantName} serialCode={payInId} size={160} />
+            </div>
             {isFrozen && (
               <div className="absolute inset-0 z-20 flex items-center justify-center gap-x-2 rounded-lg bg-white/70">
                 <Spinner />
@@ -214,14 +222,14 @@ export function QrisConfirmStep() {
               </div>
             )}
           </div>
-          <div className="flex flex-row items-center justify-between gap-x-4">
+          <div className="flex flex-col items-stretch gap-y-3 sm:flex-row sm:items-center sm:justify-between sm:gap-x-4">
             <QrisPollingIndicator />
             <SecondaryButton
               outlined
               label="Cek status sekarang"
               onClick={handleManualRefresh}
               loading={manualRefreshing}
-              className="w-auto"
+              className="w-full sm:w-auto"
             />
           </div>
         </div>

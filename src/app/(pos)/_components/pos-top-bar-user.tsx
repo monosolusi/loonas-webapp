@@ -7,5 +7,6 @@ export function PosTopBarUser() {
   const userName = user?.fullName ?? user?.firstName ?? user?.primaryEmailAddress?.emailAddress ?? "";
 
   if (!userName) return null;
-  return <span className="text-sm leading-5 text-neutral-400">{userName}</span>;
+  // Dropped below `sm` — the top bar has no room for it alongside nav + exit at phone widths.
+  return <span className="hidden text-sm leading-5 text-neutral-400 sm:inline">{userName}</span>;
 }
