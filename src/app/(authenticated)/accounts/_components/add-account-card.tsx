@@ -13,7 +13,7 @@ export function AddAccountCard() {
 
   return (
     <div
-      className="group hover:bg-primary-300/10 hover:border-primary-300/20 flex w-[256px] cursor-pointer flex-col items-center justify-center gap-y-4 rounded-lg border border-neutral-200 bg-white p-6 transition-all ease-out"
+      className="group hover:bg-primary-300/10 hover:border-primary-300/20 flex w-full cursor-pointer flex-col items-center justify-center gap-y-4 rounded-lg border border-neutral-200 bg-white p-6 transition-all ease-out sm:w-[256px]"
       onClick={onClick}
     >
       <div className="group-hover:border-primary-300/20 flex size-14 flex-col items-center justify-center rounded-full border border-neutral-200 bg-white shadow-md transition-all ease-out group-hover:size-15">

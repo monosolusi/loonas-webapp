@@ -10,6 +10,7 @@ import { useListStockItems } from "@/features/inventory/presentations/hooks/use-
 import { MinStockDialog } from "@/features/inventory/presentations/components/min-stock-dialog";
 import { useRawMaterialMaster } from "@/app/(authenticated)/settings/raw-materials/_providers/raw-material-master-provider";
 import { RawMaterialMasterRow } from "@/app/(authenticated)/settings/raw-materials/_components/raw-material-master-row";
+import { RawMaterialMasterCard } from "@/app/(authenticated)/settings/raw-materials/_components/raw-material-master-card";
 import { RawMaterialEditDialog } from "@/app/(authenticated)/settings/raw-materials/_components/raw-material-edit-dialog";
 import { RawMaterialDeleteDialog } from "@/app/(authenticated)/settings/raw-materials/_components/raw-material-delete-dialog";
 
@@ -45,18 +46,37 @@ export function RawMaterialMasterTable() {
         empty={rawMaterials.length === 0 && !loading}
         emptyMessage="Belum ada bahan baku. Tambahkan bahan baku pertama Anda."
       >
-        <TableHeader className="grid-cols-[2fr_0.8fr_0.6fr_0.6fr_48px] gap-x-4" columns={COLUMNS} />
-        {rawMaterials.map((item) => {
-          const stockItem = stockMap.get(item.id) ?? null;
-          return (
-            <RawMaterialMasterRow
-              key={item.id}
-              item={item}
-              stockItem={stockItem}
-              onEditMinStock={stockItem ? () => setEditingStockItem(stockItem) : undefined}
-            />
-          );
-        })}
+        <TableHeader className="grid-cols-[2fr_0.8fr_0.6fr_0.6fr_48px] gap-x-4" columns={COLUMNS} hideOnMobile />
+
+        {/* Desktop: grid rows (lg and up) */}
+        <div className="hidden lg:block">
+          {rawMaterials.map((item) => {
+            const stockItem = stockMap.get(item.id) ?? null;
+            return (
+              <RawMaterialMasterRow
+                key={item.id}
+                item={item}
+                stockItem={stockItem}
+                onEditMinStock={stockItem ? () => setEditingStockItem(stockItem) : undefined}
+              />
+            );
+          })}
+        </div>
+
+        {/* Mobile: stacked cards (below lg) */}
+        <div className="lg:hidden">
+          {rawMaterials.map((item) => {
+            const stockItem = stockMap.get(item.id) ?? null;
+            return (
+              <RawMaterialMasterCard
+                key={item.id}
+                item={item}
+                stockItem={stockItem}
+                onEditMinStock={stockItem ? () => setEditingStockItem(stockItem) : undefined}
+              />
+            );
+          })}
+        </div>
         {meta && meta.totalPages > 1 && (
           <TablePagination displayedCount={rawMaterials.length} meta={meta} currentPage={page} onPageChange={setPage} />
         )}

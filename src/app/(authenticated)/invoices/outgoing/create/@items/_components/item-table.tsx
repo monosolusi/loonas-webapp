@@ -98,23 +98,23 @@ export function ItemTable(props: ItemTableProps) {
 
       {/* Summary footer */}
       <div className="divide-y divide-neutral-200 bg-neutral-50 text-sm">
-        <div className="flex items-baseline justify-end gap-x-4 px-4 pt-4 pb-2">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 px-4 pt-4 pb-2 sm:flex-nowrap sm:justify-end">
           <span>Dasar Pengenaan Pajak (DPP)</span>
-          <span className="w-36 text-right">{totalTaxBase === 0 ? "-" : IDRFormatter.toCurrency(totalTaxBase)}</span>
+          <span className="text-right sm:w-36">{totalTaxBase === 0 ? "-" : IDRFormatter.toCurrency(totalTaxBase)}</span>
         </div>
-        <div className="flex items-baseline justify-end gap-x-4 px-4 py-2">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 px-4 py-2 sm:flex-nowrap sm:justify-end">
           <span>Total Pajak</span>
-          <span className="w-36 text-right">{totalTax === 0 ? "-" : IDRFormatter.toCurrency(totalTax)}</span>
+          <span className="text-right sm:w-36">{totalTax === 0 ? "-" : IDRFormatter.toCurrency(totalTax)}</span>
         </div>
-        <div className="flex items-baseline justify-end gap-x-4 px-4 py-2">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 px-4 py-2 sm:flex-nowrap sm:justify-end">
           <span>Total Non-Pajak</span>
-          <span className="w-36 text-right">
+          <span className="text-right sm:w-36">
             {nonTaxableAmount === 0 ? "-" : IDRFormatter.toCurrency(nonTaxableAmount)}
           </span>
         </div>
-        <div className="flex items-baseline justify-end gap-x-4 px-4 pt-2 pb-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 px-4 pt-2 pb-4 sm:flex-nowrap sm:justify-end">
           <span>Grand Total Faktur</span>
-          <span className="w-36 text-right font-bold underline">
+          <span className="text-right font-bold underline sm:w-36">
             {totalAmount === 0 ? "-" : IDRFormatter.toCurrency(totalAmount)}
           </span>
         </div>

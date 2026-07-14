@@ -15,6 +15,7 @@ import { TablePagination } from "@/core/presentations/components/table/table-pag
 import { DashboardRecentActivityColumnHeader } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-column-header";
 import { DashboardRecentActivityTabs, ActivityTab } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-tabs";
 import { DashboardRecentActivityRow } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-row";
+import { DashboardRecentActivityCard } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-card";
 import { DashboardRecentActivityLoading } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-loading";
 import { DashboardRecentActivityError } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-error";
 import { DashboardRecentActivityEmpty } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-empty";
@@ -144,9 +145,19 @@ export function DashboardRecentActivity() {
           </div>
           <DashboardRecentActivityColumnHeader />
           <div role="tabpanel" aria-label="Daftar aktivitas terbaru">
-            {rows.map((inv, index) => (
-              <DashboardRecentActivityRow key={inv.id} invoice={inv} tab={activeTab} position={index} />
-            ))}
+            {/* Desktop: grid rows (lg and up) */}
+            <div className="hidden lg:block">
+              {rows.map((inv, index) => (
+                <DashboardRecentActivityRow key={inv.id} invoice={inv} tab={activeTab} position={index} />
+              ))}
+            </div>
+
+            {/* Mobile: stacked cards (below lg) */}
+            <div className="lg:hidden">
+              {rows.map((inv, index) => (
+                <DashboardRecentActivityCard key={inv.id} invoice={inv} tab={activeTab} position={index} />
+              ))}
+            </div>
           </div>
           {meta && meta.totalPages > 1 && (
             <TablePagination

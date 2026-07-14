@@ -27,7 +27,7 @@ export function MonthNavigator({ year, month, onChange }: MonthNavigatorProps) {
   };
 
   return (
-    <div className="flex flex-row items-center gap-x-3">
+    <div className="flex flex-row flex-wrap items-center gap-3">
       <button
         type="button"
         onClick={goBack}

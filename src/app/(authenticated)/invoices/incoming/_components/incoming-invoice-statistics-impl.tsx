@@ -10,7 +10,7 @@ export function IncomingInvoiceStatisticsImpl() {
 
   if (loading || !summary) {
     return (
-      <div className="flex flex-row gap-x-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatisticCardSkeleton />
         <StatisticCardSkeleton />
         <StatisticCardSkeleton />
@@ -20,7 +20,7 @@ export function IncomingInvoiceStatisticsImpl() {
   }
 
   return (
-    <div className="flex flex-row gap-x-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <StatisticCard
         label="Belum Dibayar"
         value={IDRFormatter.toCurrency(summary.unpaidAmount)}

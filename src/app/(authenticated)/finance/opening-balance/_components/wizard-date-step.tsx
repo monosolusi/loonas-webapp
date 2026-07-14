@@ -70,18 +70,18 @@ export function WizardDateStep() {
             <LabaRugiMigrationNotice />
           </div>
 
-          <div className="mt-6 flex justify-between border-t border-neutral-100 pt-6">
+          <div className="mt-6 flex flex-col-reverse gap-2 border-t border-neutral-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
             <SecondaryButton
               outlined
               label="Kembali"
               onClick={() => goToStep("intro")}
-              className="w-auto px-6"
+              className="w-full sm:w-auto sm:px-6"
             />
             <PrimaryButton
               label="Lanjut"
               disabled={!canProceed}
               onClick={() => goToStep("balances")}
-              className="w-auto px-8"
+              className="w-full sm:w-auto sm:px-8"
             />
           </div>
         </div>

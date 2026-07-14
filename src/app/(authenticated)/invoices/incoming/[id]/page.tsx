@@ -47,12 +47,12 @@ function IncomingInvoiceDetail({ id }: { id: string }) {
       />
 
       {!loading && invoice instanceof IncomingInvoiceEntity && (
-        <div className="flex flex-row gap-x-6">
-          <div className="flex flex-2 flex-col gap-y-6">
+        <div className="flex flex-col gap-6 lg:flex-row lg:gap-x-6">
+          <div className="flex flex-col gap-y-6 lg:flex-2">
             <TransactionTimelineImpl id={id} />
             <InvoiceDocumentListImpl id={id} />
           </div>
-          <div className="flex flex-1 flex-col gap-y-6">
+          <div className="flex flex-col gap-y-6 lg:flex-1">
             <PaymentSummaryImpl id={id} />
             <RecipientInfoImpl id={id} />
           </div>

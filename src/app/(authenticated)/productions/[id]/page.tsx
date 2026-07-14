@@ -19,7 +19,7 @@ export default function ProductionDetailPage(props: ProductionDetailPageProps) {
     <ProductionDetailProvider id={id} loading={<ProductionDetailLoading />}>
       <div className="flex flex-col gap-y-6">
         <ProductionDetailHeader />
-        <div className="grid grid-cols-2 gap-x-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-x-6">
           <ProductionDetailInfoCard />
           <ProductionDetailCostCard />
         </div>

@@ -11,7 +11,7 @@ export function CheckoutPanel() {
   const { checkoutStep, currentHandler } = usePos();
 
   return (
-    <div className="flex h-full flex-col rounded-lg border border-neutral-200 bg-white">
+    <div className="flex h-full flex-col border-neutral-200 bg-white lg:rounded-lg lg:border">
       <CheckoutHeader />
       <CheckoutSelectedMethodStrip />
       {checkoutStep === "method" && <CheckoutStepMethod />}

@@ -3,5 +3,5 @@ type TableToolbarProps = {
 };
 
 export function TableToolbar({ children }: TableToolbarProps) {
-  return <div className="flex flex-row items-center justify-between">{children}</div>;
+  return <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">{children}</div>;
 }

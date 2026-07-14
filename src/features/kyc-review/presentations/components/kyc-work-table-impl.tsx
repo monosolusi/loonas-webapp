@@ -12,27 +12,43 @@ interface KycWorkTableImplProps {
 function TableSkeleton() {
   return (
     <div className="overflow-hidden rounded-xl border border-neutral-100">
-      <div className="grid grid-cols-[1.5fr_1.5fr_1fr_1fr_1.5fr_1.5fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Nama Akun</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Email</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tipe</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Status</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Peninjau</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tanggal</span>
-      </div>
-      {[0, 1, 2].map((i) => (
-        <div
-          key={i}
-          className="grid animate-pulse grid-cols-[1.5fr_1.5fr_1fr_1fr_1.5fr_1.5fr] items-center border-b border-neutral-100 px-6 py-4 last:border-b-0"
-        >
-          <div className="h-4 w-3/4 rounded bg-neutral-100" />
-          <div className="h-4 w-2/3 rounded bg-neutral-100" />
-          <div className="h-4 w-1/2 rounded bg-neutral-100" />
-          <div className="h-5 w-16 rounded-sm bg-neutral-100" />
-          <div className="h-4 w-2/3 rounded bg-neutral-100" />
-          <div className="h-4 w-2/3 rounded bg-neutral-100" />
+      {/* Desktop: grid skeleton (lg and up) */}
+      <div className="hidden lg:block">
+        <div className="grid grid-cols-[1.5fr_1.5fr_1fr_1fr_1.5fr_1.5fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
+          <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Nama Akun</span>
+          <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Email</span>
+          <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tipe</span>
+          <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Status</span>
+          <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Peninjau</span>
+          <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tanggal</span>
         </div>
-      ))}
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className="grid animate-pulse grid-cols-[1.5fr_1.5fr_1fr_1fr_1.5fr_1.5fr] items-center border-b border-neutral-100 px-6 py-4 last:border-b-0"
+          >
+            <div className="h-4 w-3/4 rounded bg-neutral-100" />
+            <div className="h-4 w-2/3 rounded bg-neutral-100" />
+            <div className="h-4 w-1/2 rounded bg-neutral-100" />
+            <div className="h-5 w-16 rounded-sm bg-neutral-100" />
+            <div className="h-4 w-2/3 rounded bg-neutral-100" />
+            <div className="h-4 w-2/3 rounded bg-neutral-100" />
+          </div>
+        ))}
+      </div>
+
+      {/* Mobile: card skeleton (below lg) */}
+      <div className="lg:hidden">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="flex animate-pulse items-center gap-3 border-b border-neutral-100 px-4 py-3.5 last:border-b-0">
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+              <div className="h-4 w-3/4 rounded bg-neutral-100" />
+              <div className="h-3 w-1/2 rounded bg-neutral-100" />
+            </div>
+            <div className="h-5 w-16 shrink-0 rounded-sm bg-neutral-100" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

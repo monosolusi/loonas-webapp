@@ -45,8 +45,13 @@ export function QrisCard({ qrString, merchantName, serialCode, size = 256, varia
         <div className={clsx("text-center font-semibold", bare ? "line-clamp-2 text-lg" : "text-xl")}>
           {merchantName}
         </div>
-        <div className="flex flex-col items-center gap-y-4">
-          <div className="bg-white p-2">
+        <div className="flex w-full flex-col items-center gap-y-4">
+          {/* QR caps at `size`px on wide screens but scales down (via viewBox) so it never
+              overflows a narrow phone. The SVG is forced fluid with the child selector. */}
+          <div
+            className="mx-auto w-full bg-white p-2 [&>svg]:h-auto [&>svg]:w-full"
+            style={{ maxWidth: size + 16 }}
+          >
             <QRCodeSVG value={qrString} size={size} />
           </div>
           {!bare && (

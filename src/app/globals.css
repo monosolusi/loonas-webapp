@@ -119,6 +119,14 @@
     --grid-profitability-cols: minmax(280px,2fr) 200px 160px 200px 100px;
 }
 
+/*
+ * Z-index layer scale (use these Tailwind steps consistently):
+ *   z-0..z-30  in-page/local stacking (sticky headers, hover borders, dropdown menus)
+ *   z-40       persistent bottom chrome — the mobile tab bar
+ *   z-50       overlays that must clear the tab bar — dialogs, bottom sheets, toasts
+ * Modals/sheets must sit at z-50 so they render above the mobile tab bar (z-40).
+ */
+
 body {
     color: var(--foreground);
     background: var(--background);

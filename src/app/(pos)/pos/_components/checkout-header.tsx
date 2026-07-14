@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import clsx from "clsx";
 import { ChevronLeftIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { ConfirmationDialog } from "@/core/presentations/components/confirmation-dialog";
 import { CheckoutStep } from "@/app/(pos)/pos/_providers/pos-provider.types";
@@ -38,38 +39,46 @@ export function CheckoutHeader() {
 
   return (
     <>
-      <div className="flex h-14 flex-row items-center gap-x-2 border-b border-b-neutral-100 px-4">
+      <div className="flex h-14 flex-row items-center gap-x-2 border-b border-b-neutral-100 px-3 sm:px-4">
         {showBack && (
           <>
             <button
               type="button"
               onClick={goBack}
-              className="flex h-9 flex-row items-center gap-x-1 rounded-md px-2 text-sm text-neutral-400 transition-colors hover:bg-neutral-50"
+              className="flex h-9 shrink-0 flex-row items-center gap-x-1 rounded-md px-2 text-sm text-neutral-400 transition-colors hover:bg-neutral-50"
             >
               <ChevronLeftIcon className="size-4" />
-              <span>Kembali</span>
+              <span className="hidden sm:inline">Kembali</span>
             </button>
-            <span className="text-neutral-200">·</span>
+            <span className="shrink-0 text-neutral-200">·</span>
           </>
         )}
 
-        <span className="text-sm leading-5 font-semibold tracking-wide text-neutral-500 uppercase">Pembayaran</span>
+        {/* "Pembayaran" + method name are redundant with page context on mobile (the selected-method
+            strip below already shows the method in full) — dropped below sm to make room for stepLabel. */}
+        <span className="hidden shrink-0 text-sm leading-5 font-semibold tracking-wide text-neutral-500 uppercase sm:inline">
+          Pembayaran
+        </span>
 
         {methodTitle && (
           <>
-            <span className="text-neutral-200">·</span>
-            <span className="text-sm leading-5 font-medium text-neutral-500">{methodTitle}</span>
+            <span className="hidden text-neutral-200 sm:inline">·</span>
+            <span className="hidden min-w-0 truncate text-sm leading-5 font-medium text-neutral-500 sm:inline">
+              {methodTitle}
+            </span>
           </>
         )}
 
-        <span className="text-neutral-200">·</span>
-        <span className="text-sm leading-5 text-neutral-400">{stepLabel}</span>
+        <span className={clsx("shrink-0 text-neutral-200", !showBack && "hidden sm:inline")}>·</span>
+        <span className="text-sm leading-5 font-medium text-neutral-500 sm:font-normal sm:text-neutral-400">
+          {stepLabel}
+        </span>
 
         <button
           type="button"
           onClick={onCancelClick}
           aria-label="Batalkan pembayaran"
-          className="ml-auto flex size-9 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-50"
+          className="ml-auto flex size-9 shrink-0 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-50"
         >
           <XMarkIcon className="size-5" />
         </button>

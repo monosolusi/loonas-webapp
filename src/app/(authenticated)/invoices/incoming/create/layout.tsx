@@ -13,6 +13,7 @@ import { CreatePartnerBankAccountWrapperForIncomingInvoice } from "@/features/in
 import { CreateBankAccountButton } from "@/features/invoice/presentations/components/create-bank-account-button";
 import { CreateIncomingSaveButton } from "@/features/invoice/presentations/components/create-incoming-save-button";
 import { CreateIncomingSteppersWrapperForCreateIncomingPage } from "@/features/invoice/presentations/components/create-incoming-steppers-wrapper-for-create-incoming-page";
+import { CreateIncomingMobileProgress } from "@/app/(authenticated)/invoices/incoming/create/_components/create-incoming-mobile-progress";
 
 export default function CreateIncomingInvoiceLayout(props: CreateIncomingInvoiceLayoutProps) {
   return (
@@ -32,13 +33,16 @@ export default function CreateIncomingInvoiceLayout(props: CreateIncomingInvoice
 
               {/*  Card Section */}
               <div className="rounded-lg border border-neutral-200">
-                <div className="flex flex-row">
+                <div className="flex flex-col lg:flex-row">
                   {/*  Left - Progress */}
-                  <CreateIncomingSteppersWrapperForCreateIncomingPage />
+                  <div className="hidden lg:block">
+                    <CreateIncomingSteppersWrapperForCreateIncomingPage />
+                  </div>
+                  <CreateIncomingMobileProgress />
 
                   {/*  Right - Content */}
                   <div className="flex flex-1 flex-col">
-                    <div className="flex-1 px-12 py-8">
+                    <div className="flex-1 px-4 py-6 lg:px-12 lg:py-8">
                       {props.recipients}
                       {props.addClient}
                       {props.invoices}
@@ -48,7 +52,7 @@ export default function CreateIncomingInvoiceLayout(props: CreateIncomingInvoice
                     </div>
 
                     {/*  Action Buttons */}
-                    <div className="flex flex-row items-center justify-between border-t border-t-neutral-200 p-6">
+                    <div className="sticky bottom-0 z-10 flex flex-row items-center justify-between gap-3 border-t border-t-neutral-200 bg-white px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:static lg:gap-0 lg:px-6 lg:py-6 lg:pb-6">
                       <div className="flex">
                         <CreateIncomingBackButton />
                         <CreateIncomingCancelButton />

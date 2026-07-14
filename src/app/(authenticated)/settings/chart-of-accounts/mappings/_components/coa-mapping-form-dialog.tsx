@@ -37,7 +37,7 @@ export function CoaMappingFormDialog(props: CoaMappingFormDialogProps) {
   return (
     <LoonasDialog title={props.title} width="2xl" open={props.open} onClose={props.onClose}>
       <div className="mt-2 flex flex-col gap-y-5">
-        <div className="grid grid-cols-2 gap-x-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-4">
           <SelectInput
             label="Jenis Transaksi"
             value={props.entityType}
@@ -63,24 +63,28 @@ export function CoaMappingFormDialog(props: CoaMappingFormDialogProps) {
             <span className="text-xs text-neutral-300">Min. 2 baris: 1 debit + 1 kredit</span>
           </div>
 
-          <div className="grid grid-cols-[2fr_1fr_1.5fr_40px] gap-x-3 px-0.5">
-            <span className="text-xs text-neutral-300">Akun</span>
-            <span className="text-xs text-neutral-300">Posisi</span>
-            <span className="text-xs text-neutral-300">Label</span>
-            <span />
-          </div>
+          <div className="overflow-x-auto">
+            <div className="min-w-[560px]">
+              <div className="grid grid-cols-[2fr_1fr_1.5fr_40px] gap-x-3 px-0.5">
+                <span className="text-xs text-neutral-300">Akun</span>
+                <span className="text-xs text-neutral-300">Posisi</span>
+                <span className="text-xs text-neutral-300">Label</span>
+                <span />
+              </div>
 
-          <div className="flex flex-col gap-y-2">
-            {props.lines.map((line) => (
-              <CoaMappingLineRow
-                key={line.key}
-                line={line}
-                onChange={(updates) => props.onLineChange(line.key, updates)}
-                onRemove={() => props.onRemoveLine(line.key)}
-                canRemove={props.lines.length > 2}
-                disabled={props.isSubmitting}
-              />
-            ))}
+              <div className="flex flex-col gap-y-2">
+                {props.lines.map((line) => (
+                  <CoaMappingLineRow
+                    key={line.key}
+                    line={line}
+                    onChange={(updates) => props.onLineChange(line.key, updates)}
+                    onRemove={() => props.onRemoveLine(line.key)}
+                    canRemove={props.lines.length > 2}
+                    disabled={props.isSubmitting}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
           <SecondaryButton

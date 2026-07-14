@@ -9,7 +9,7 @@ export function FixedCostEntryTable() {
 
   return (
     <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
-      <div className="grid grid-cols-[3fr_1.5fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
+      <div className="grid grid-cols-[1fr_1fr] gap-3 border-b border-neutral-100 bg-neutral-50 px-6 py-3 sm:grid-cols-[3fr_1.5fr] sm:gap-0">
         <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Nama Biaya</span>
         <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">
           Jumlah (per bulan)
@@ -40,7 +40,7 @@ export function FixedCostEntryTable() {
         entries.map((entry) => (
           <div
             key={entry.fixedCostId}
-            className="grid grid-cols-[3fr_1.5fr] items-center border-b border-neutral-100 px-6 py-3 last:border-b-0"
+            className="grid grid-cols-[1fr_1fr] items-center gap-3 border-b border-neutral-100 px-6 py-3 last:border-b-0 sm:grid-cols-[3fr_1.5fr] sm:gap-0"
           >
             <span className="text-sm font-medium text-neutral-500">{entry.fixedCostName}</span>
             <CurrencyInput
@@ -59,7 +59,7 @@ export function FixedCostEntryTable() {
       )}
 
       {entries.length > 0 && (
-        <div className="grid grid-cols-[3fr_1.5fr] items-center border-t border-neutral-200 bg-neutral-50 px-6 py-4">
+        <div className="grid grid-cols-[1fr_1fr] items-center gap-3 border-t border-neutral-200 bg-neutral-50 px-6 py-4 sm:grid-cols-[3fr_1.5fr] sm:gap-0">
           <span className="text-sm font-semibold text-neutral-500">Total</span>
           <span className="text-sm font-semibold text-neutral-500">{IDRFormatter.toCurrency(total)}</span>
         </div>

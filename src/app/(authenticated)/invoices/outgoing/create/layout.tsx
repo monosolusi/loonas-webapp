@@ -2,6 +2,7 @@ import { CreateOutgoingInvoiceProvider } from "@/app/(authenticated)/invoices/ou
 import { CreateNewPartnerProvider } from "@/features/partner/presentation/providers/create-new-partner";
 import { AddItemProvider } from "@/app/(authenticated)/invoices/outgoing/create/@items/_providers/add-item";
 import { CreateOutgoingSteppers } from "@/app/(authenticated)/invoices/outgoing/create/_components/create-outgoing-steppers";
+import { CreateOutgoingMobileProgress } from "@/app/(authenticated)/invoices/outgoing/create/_components/create-outgoing-mobile-progress";
 import { CreateOutgoingActionBar } from "@/app/(authenticated)/invoices/outgoing/create/_components/create-outgoing-action-bar";
 import { WizardHeader } from "@/app/(authenticated)/invoices/outgoing/create/_components/wizard-header";
 import { CreateOutgoingInvoiceLayoutProps } from "@/app/(authenticated)/invoices/outgoing/create/layout.types";
@@ -17,11 +18,12 @@ export default function CreateOutgoingInvoiceLayout(props: CreateOutgoingInvoice
               <WizardHeader />
 
               <div className="rounded-lg border border-neutral-200">
-                <div className="flex flex-row">
+                <div className="flex flex-col lg:flex-row">
                   <CreateOutgoingSteppers />
+                  <CreateOutgoingMobileProgress />
 
                   <div className="flex min-w-0 flex-1 flex-col">
-                    <div className="flex-1 px-12 py-8">
+                    <div className="flex-1 px-4 py-6 lg:px-12 lg:py-8">
                       {props.recipient}
                       {props.addClient}
                       {props.items}

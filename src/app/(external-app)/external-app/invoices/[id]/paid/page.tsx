@@ -29,8 +29,8 @@ export default function PaidPage() {
           <InvoiceMetadataImpl />
         </div>
         <div className="flex flex-1 flex-col space-y-4">
-          <div className="flex flex-row space-x-4">
-            <div className="flex-2">
+          <div className="flex flex-col gap-4 lg:flex-row lg:gap-0 lg:space-x-4">
+            <div className="lg:flex-2">
               <SectionCard title="Pembayaran Berhasil">
                 <div className="flex flex-col items-center space-y-4">
                   <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
@@ -53,7 +53,7 @@ export default function PaidPage() {
                 </div>
               </SectionCard>
             </div>
-            <div className="flex-1">
+            <div className="lg:flex-1">
               <PaymentSummaryImpl />
             </div>
           </div>

@@ -37,7 +37,7 @@ export function GrossProfitBlockBody({ grossProfit }: GrossProfitBlockBodyProps)
           </>
         )}
 
-        <div className="flex flex-row items-center justify-between">
+        <div className="flex flex-col items-start gap-y-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-y-0.5">
             <dt className="text-sm font-semibold text-neutral-500">Laba Kotor</dt>
             <dd

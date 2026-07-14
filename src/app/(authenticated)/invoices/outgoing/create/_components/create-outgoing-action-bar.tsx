@@ -154,7 +154,7 @@ export function CreateOutgoingActionBar() {
   })();
 
   return (
-    <div className="flex flex-row items-center justify-between border-t border-t-neutral-200 p-6">
+    <div className="sticky bottom-0 z-10 flex flex-row items-center justify-between gap-3 border-t border-t-neutral-200 bg-white px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:static lg:gap-0 lg:px-6 lg:py-6 lg:pb-6">
       <div className="flex">{leftButton}</div>
       <div className="flex">{rightButton}</div>
     </div>

@@ -27,7 +27,7 @@ export function ProductPhotoGrid({ existingPhotos, newPhotos, onDeleteExisting, 
   if (existingPhotos.length === 0 && newPhotos.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
       {existingPhotos.map((photo, index) => (
         <div key={photo.id} className="group relative aspect-square overflow-hidden rounded-lg border border-neutral-100">
           <img src={photo.url} alt="" className="size-full object-cover" />

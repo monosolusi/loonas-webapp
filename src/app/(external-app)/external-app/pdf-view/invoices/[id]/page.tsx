@@ -25,6 +25,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
 
   return (
     <InvoicePreview
+      forceDesktop
       invoice={{
         id: invoice.id,
         invoiceNumber: invoice.invoiceNumber,

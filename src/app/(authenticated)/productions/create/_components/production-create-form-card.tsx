@@ -69,11 +69,11 @@ export function ProductionCreateFormCard() {
   return (
     <SectionCard title="Detail Produksi" iconSrc="/assets/images/box-icon-primary-300-w16-h16.svg">
       <div className="flex flex-col gap-y-4">
-        <div className="grid grid-cols-2 gap-x-4">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
           <ManufacturedProductCombobox value={product} onChange={handleProductChange} />
           <DatePickerInput label="Tanggal Produksi" value={date} onChange={setDate} required />
         </div>
-        <div className="grid grid-cols-2 gap-x-4">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
           <div className="flex flex-col gap-y-1">
             <SearchCombobox<VariantOption>
               label="Varian"

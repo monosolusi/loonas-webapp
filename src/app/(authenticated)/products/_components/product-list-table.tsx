@@ -42,7 +42,7 @@ export function ProductListTable() {
       empty={products.length === 0 && !loading}
       emptyMessage="Belum ada produk. Tambahkan produk pertama Anda."
     >
-      <TableHeader className="grid-cols-[2fr_1fr_0.7fr_0.6fr_0.8fr_0.8fr] gap-x-4" columns={COLUMNS} />
+      <TableHeader className="grid-cols-[2fr_1fr_0.7fr_0.6fr_0.8fr_0.8fr] gap-x-4" columns={COLUMNS} hideOnMobile />
       {products.map((product) => (
         <ProductListRow key={product.id} product={product} stockMap={stockMap} />
       ))}

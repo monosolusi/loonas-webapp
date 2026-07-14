@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-fo
 import { TableContainer } from "@/core/presentations/components/table/table-container";
 import { TableHeader } from "@/core/presentations/components/table/table-header";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
+import { MobileListCard } from "@/core/presentations/components/table/mobile-list-card";
 import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { FilterDropdown, FilterPill } from "@/app/(authenticated)/products/_components/filter-dropdown";
@@ -79,8 +80,8 @@ export function LedgerListImpl() {
 
   const toolbar = (
     <div className="flex flex-col gap-y-3">
-      <div className="flex flex-row items-center justify-between">
-        <div className="flex flex-row items-center gap-x-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-x-3">
           <FilterDropdown
             label="Tipe Akun"
             options={TYPE_OPTIONS}
@@ -95,7 +96,7 @@ export function LedgerListImpl() {
             disableFutureDates={false}
           />
         </div>
-        <div className="w-[280px]">
+        <div className="w-full sm:w-[280px]">
           <TextInput
             label=""
             placeholder="Cari kode atau nama akun..."
@@ -132,6 +133,7 @@ export function LedgerListImpl() {
         { label: "Saldo", align: "right" },
       ]}
       className="grid-cols-[0.5fr_2fr_1.2fr_1fr]"
+      hideOnMobile
     />
   );
 
@@ -147,20 +149,34 @@ export function LedgerListImpl() {
       <TableContainer loading={loading} error={!!error} empty={(accounts ?? []).length === 0 && !loading} emptyMessage="Belum ada akun.">
         {header}
         {(accounts ?? []).map((account) => (
-          <Link
-            key={account.id}
-            href={`/finance/ledger/${account.id}`}
-            className="hover:border-l-primary-300 hover:bg-primary-50 grid cursor-pointer grid-cols-[0.5fr_2fr_1.2fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0"
-          >
-            <span className="text-sm font-mono text-neutral-400">{account.code}</span>
-            <div className="flex flex-row items-center gap-x-2">
-              <span className="text-sm font-medium text-neutral-500">{account.name}</span>
+          <Fragment key={account.id}>
+            <Link
+              href={`/finance/ledger/${account.id}`}
+              className="hover:border-l-primary-300 hover:bg-primary-50 hidden grid-cols-[0.5fr_2fr_1.2fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0 lg:grid"
+            >
+              <span className="text-sm font-mono text-neutral-400">{account.code}</span>
+              <div className="flex flex-row items-center gap-x-2">
+                <span className="text-sm font-medium text-neutral-500">{account.name}</span>
+              </div>
+              <div className="flex flex-row items-center">
+                <AccountTypeBadge type={account.type} />
+              </div>
+              <span className={clsx("text-right text-sm font-semibold tabular-nums", account.balance < 0 ? "text-warning-500" : "text-neutral-500")}>{IDRFormatter.toCurrency(account.balance)}</span>
+            </Link>
+            <div className="lg:hidden">
+              <MobileListCard
+                href={`/finance/ledger/${account.id}`}
+                title={account.name}
+                subtitle={account.code}
+                trailingTop={
+                  <span className={clsx("tabular-nums", account.balance < 0 ? "text-warning-500" : undefined)}>
+                    {IDRFormatter.toCurrency(account.balance)}
+                  </span>
+                }
+                trailingBottom={<AccountTypeBadge type={account.type} />}
+              />
             </div>
-            <div className="flex flex-row items-center">
-              <AccountTypeBadge type={account.type} />
-            </div>
-            <span className={clsx("text-right text-sm font-semibold tabular-nums", account.balance < 0 ? "text-warning-500" : "text-neutral-500")}>{IDRFormatter.toCurrency(account.balance)}</span>
-          </Link>
+          </Fragment>
         ))}
         {meta && meta.totalPages > 1 && (
           <TablePagination displayedCount={(accounts ?? []).length} meta={meta} currentPage={page} onPageChange={setPage} />

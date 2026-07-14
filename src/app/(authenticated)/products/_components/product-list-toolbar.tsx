@@ -60,7 +60,7 @@ export function ProductListToolbar() {
   return (
     <div className="flex flex-col gap-y-3">
       <TableToolbar>
-        <div className="flex flex-row items-center gap-x-2">
+        <div className="flex flex-row flex-wrap items-center gap-2">
           <FilterDropdown
             label="Tipe"
             options={TYPE_OPTIONS}
@@ -78,8 +78,8 @@ export function ProductListToolbar() {
             searchPlaceholder="Cari kategori..."
           />
         </div>
-        <div className="flex flex-row items-center gap-x-3">
-          <div className="w-[250px]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-x-3">
+          <div className="w-full sm:w-[250px]">
             <TextInput
               label=""
               placeholder="Cari nama atau SKU..."
@@ -101,10 +101,11 @@ export function ProductListToolbar() {
               }
             />
           </div>
-          <Link href="/products/create">
+          <Link href="/products/create" className="w-full sm:w-auto">
             <PrimaryButton
               label="Tambah Produk"
               leftIcon={<Image src="/assets/images/plus-icon-white-w16-h16.svg" alt="" width={16} height={16} />}
+              className="w-full sm:w-auto"
             />
           </Link>
         </div>

@@ -53,7 +53,7 @@ export function ProductionListToolbar() {
           disableFutureDates={false}
         />
       </div>
-      <div className="w-[250px]">
+      <div className="w-full sm:w-[250px]">
         <TextInput
           label=""
           placeholder="Cari produk atau catatan..."

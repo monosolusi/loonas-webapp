@@ -12,7 +12,7 @@ export function CoaAccountsToolbar() {
 
   return (
     <TableToolbar>
-      <div className="flex items-center gap-x-3">
+      <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={() => setShowSeeded(!showSeeded)}

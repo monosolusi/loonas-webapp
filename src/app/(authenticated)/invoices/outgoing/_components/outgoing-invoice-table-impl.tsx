@@ -72,8 +72,17 @@ export function OutgoingInvoiceTableImpl({ filter }: OutgoingInvoiceTableImplPro
   };
 
   const toolbar = (
-    <div className={clsx("flex flex-row items-center", showsTabs ? "justify-between" : "justify-end")}>
-      {showsTabs && <TabFilter tabs={FILTER_TABS} selectedIndex={activeTab} onChange={handleTabChange} />}
+    <div
+      className={clsx(
+        "flex flex-col gap-3 sm:flex-row sm:items-center",
+        showsTabs ? "sm:justify-between" : "sm:justify-end",
+      )}
+    >
+      {showsTabs && (
+        <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:overflow-visible sm:px-0">
+          <TabFilter tabs={FILTER_TABS} selectedIndex={activeTab} onChange={handleTabChange} />
+        </div>
+      )}
 
       <InvoiceSearchInput value={search} onChange={handleSearchChange} placeholder="Filter halaman ini..." />
     </div>
@@ -89,6 +98,7 @@ export function OutgoingInvoiceTableImpl({ filter }: OutgoingInvoiceTableImplPro
         { label: "Total", align: "right" },
       ]}
       className="grid-cols-[2fr_1.5fr_1fr_1fr_1fr]"
+      hideOnMobile
     />
   );
 

@@ -60,15 +60,15 @@ export default function SelectPaymentMethodPage() {
               Pilih metode pembayaran yang ingin kamu gunakan untuk membayar faktur ini.
             </p>
           </div>
-          <div className="flex flex-row space-x-4">
-            <div className="flex-2">
+          <div className="flex flex-col gap-4 lg:flex-row lg:gap-0 lg:space-x-4">
+            <div className="lg:flex-2">
               <SelectPaymentMethodImpl
                 value={selectedPaymentMethod}
                 selectedScheme={selectedScheme}
                 onChange={handleChange}
               />
             </div>
-            <div className="flex-1">
+            <div className="lg:flex-1">
               <PaymentSummaryImpl selectedPaymentMethod={selectedPaymentMethod} selectedScheme={selectedScheme} />
             </div>
           </div>

@@ -31,6 +31,7 @@ export function PeriodsTable() {
         <TableHeader
           columns={TABLE_COLUMNS}
           className="grid-cols-[2fr_1fr_auto_64px]"
+          hideOnMobile
         />
         {periods.map((period) => (
           <Fragment key={period.id}>

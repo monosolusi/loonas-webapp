@@ -6,7 +6,7 @@ import { RegisterButton } from "@/app/(authentication)/sign-in/_components/regis
 export default function ForgetPasswordCompletedPage() {
   return (
     <div className="flex h-full flex-row">
-      <div className="flex w-1/2 flex-col justify-center px-24">
+      <div className="flex w-full flex-col justify-center px-6 lg:w-1/2 lg:px-24">
         <Image src="/assets/images/logo-w165-h48.png" alt="Loonas Logo" width={165} height={48} />
         <div className="mt-10 flex flex-col gap-2">
           <span className="text-base font-medium">Kata Sandi Berhasil Diubah</span>
@@ -23,7 +23,7 @@ export default function ForgetPasswordCompletedPage() {
           </Link>
         </div>
       </div>
-      <div className="hidden w-1/2 flex-col items-center justify-center p-12 md:flex">
+      <div className="hidden w-1/2 flex-col items-center justify-center p-12 lg:flex">
         <div className="relative h-full w-full overflow-hidden rounded-2xl bg-white shadow-2xl">
           <Image
             src="/assets/images/hero-w544-h624.png"
