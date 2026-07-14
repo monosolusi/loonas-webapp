@@ -26,6 +26,11 @@ export class LedgerAccountServiceImpl implements LedgerAccountService {
       if (params.limit) searchParams["limit"] = String(params.limit);
       if (params.search) searchParams["search"] = params.search;
       if (params.types && params.types.length > 0) searchParams["type"] = params.types.join(",");
+      // Date scoping is both-or-neither: only send when both bounds are present.
+      if (params.startDate && params.endDate) {
+        searchParams["start_date"] = params.startDate;
+        searchParams["end_date"] = params.endDate;
+      }
 
       const result = await this.http.request({ path: "/accounting/accounts", method: "GET", searchParams, session });
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { DateTime } from "luxon";
 import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
+import { dateToIso, isoToDate } from "@/core/utilities/datetime/calendar-date";
 import { useDashboardRange } from "@/app/(authenticated)/home/_providers/dashboard-range-provider";
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -17,14 +17,6 @@ function useDebounce<T>(value: T, delay: number): T {
   }, [value, delay]);
 
   return debounced;
-}
-
-function isoToDate(iso: string): Date {
-  return DateTime.fromISO(iso, { zone: "Asia/Jakarta" }).toJSDate();
-}
-
-function dateToIso(date: Date): string {
-  return DateTime.fromJSDate(date).setZone("Asia/Jakarta").toFormat("yyyy-MM-dd");
 }
 
 export function DashboardRangeSection() {

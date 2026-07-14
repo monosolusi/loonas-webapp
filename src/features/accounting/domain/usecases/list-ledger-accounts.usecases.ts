@@ -15,6 +15,8 @@ export type ListLedgerAccountsUseCaseParams = {
   readonly limit?: number;
   readonly search?: string;
   readonly types?: AccountType[];
+  readonly startDate?: string;
+  readonly endDate?: string;
 };
 
 export class ListLedgerAccountsUseCase implements UseCase<DataState<ListLedgerAccountsUseCaseResult>, ListLedgerAccountsUseCaseParams> {
@@ -42,7 +44,14 @@ export class ListLedgerAccountsUseCase implements UseCase<DataState<ListLedgerAc
 
   private async fetchAccounts(params: ListLedgerAccountsUseCaseParams, session: SessionEntity): Promise<ListLedgerAccountsUseCaseResult> {
     const result = await this.repo.list(
-      { page: params.page, limit: params.limit, search: params.search, types: params.types },
+      {
+        page: params.page,
+        limit: params.limit,
+        search: params.search,
+        types: params.types,
+        startDate: params.startDate,
+        endDate: params.endDate,
+      },
       session,
     );
     if (result instanceof DataFailed) throw result.error;

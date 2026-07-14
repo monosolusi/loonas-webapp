@@ -28,6 +28,8 @@ async function ListLedgerAccountFetcher([_, fp]: [string, ListLedgerAccountFetch
     limit: fp.params.limit,
     search: fp.params.search,
     types: fp.params.types,
+    startDate: fp.params.startDate,
+    endDate: fp.params.endDate,
   });
   if (result instanceof DataFailed) throw result.error;
   if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);

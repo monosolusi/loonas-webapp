@@ -11,6 +11,8 @@ export type ListLedgerAccountsParams = {
   limit?: number;
   search?: string;
   types?: AccountType[];
+  startDate?: string;
+  endDate?: string;
 };
 
 export type ListLedgerAccountsResult = {
