@@ -8,13 +8,14 @@ import { useMemo } from "react";
 import { mutate } from "swr";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { NumberDisplay } from "@/core/presentations/components/number-display";
-import { StatusChip } from "@/core/presentations/components/status-chip";
 import { useGetDashboardStatistics } from "@/features/dashboard/presentations/hooks/use-get-dashboard-statistics";
 import { useDashboardRange } from "@/app/(authenticated)/home/_providers/dashboard-range-provider";
 import { DashboardRangePosSalesTileLoading } from "@/app/(authenticated)/home/_components/dashboard-range-pos-sales-tile-loading";
 import { DashboardRangePosSalesTileEmpty } from "@/app/(authenticated)/home/_components/dashboard-range-pos-sales-tile-empty";
 import { DashboardRangePosSalesTileError } from "@/app/(authenticated)/home/_components/dashboard-range-pos-sales-tile-error";
 import { DASHBOARD_SWR_KEYS } from "@/features/dashboard/presentations/constants/swr-keys";
+import { computeMomTrend } from "@/app/(authenticated)/home/_components/dashboard-mom-trend";
+import { DashboardMomTrendChip } from "@/app/(authenticated)/home/_components/dashboard-mom-trend-chip";
 
 export function DashboardRangePosSalesTile() {
   const { from, to } = useDashboardRange();
@@ -30,18 +31,7 @@ export function DashboardRangePosSalesTile() {
   // MoM trend from revenue.changes (percentage vs the prior period; null when there is no baseline).
   const trend = useMemo(() => {
     if (result.loading || result.error || !result.statistics) return null;
-    const changes = result.statistics.revenue.changes;
-    if (changes === null || changes === undefined) return null;
-    const pct = Math.abs(Math.round(changes));
-    if (pct === 0) {
-      return { variant: "neutral" as const, label: "0%", srText: "Pendapatan sama dengan bulan lalu" };
-    }
-    const up = changes > 0;
-    return {
-      variant: up ? ("success" as const) : ("error" as const),
-      label: `${up ? "↑" : "↓"} ${pct}%`,
-      srText: `Pendapatan ${up ? "naik" : "turun"} ${pct}% dibanding bulan lalu`,
-    };
+    return computeMomTrend(result.statistics.revenue.changes, { noun: "Pendapatan" });
   }, [result]);
 
   if (result.loading) return <DashboardRangePosSalesTileLoading />;
@@ -62,15 +52,7 @@ export function DashboardRangePosSalesTile() {
           <span className="text-2xl leading-tight font-bold tracking-tight text-neutral-500">
             <NumberDisplay value={totals.revenue} prefix="Rp" />
           </span>
-          {trend && (
-            <span className="flex items-center gap-x-1.5">
-              <span className="sr-only">{trend.srText}</span>
-              <span aria-hidden="true" className="flex items-center gap-x-1.5">
-                <StatusChip variant={trend.variant} label={trend.label} compact />
-                <span className="text-xs text-neutral-300">vs bulan lalu</span>
-              </span>
-            </span>
-          )}
+          {trend && <DashboardMomTrendChip trend={trend} />}
         </dd>
         <dd className="text-sm text-neutral-300">dari {totals.transactionCount} transaksi · periode ini</dd>
       </dl>
