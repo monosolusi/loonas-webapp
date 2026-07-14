@@ -1,8 +1,5 @@
 "use client";
 
-import clsx from "clsx";
-import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
-
 interface OutgoingInvoiceSummaryProps {
   total: string;
   invoiceNumber: string;
@@ -10,48 +7,7 @@ interface OutgoingInvoiceSummaryProps {
   dueDate: string;
   subtotal: string;
   tax: string;
-  status: OutgoingInvoiceStatus;
-  createdAt: string;
 }
-
-const statusBanners: Record<OutgoingInvoiceStatus, { label: string; bgClass: string; textClass: string; dotClass: string }> = {
-  [OutgoingInvoiceStatus.DRAFT]: {
-    label: "Draft",
-    bgClass: "bg-neutral-50",
-    textClass: "text-neutral-400",
-    dotClass: "bg-neutral-300",
-  },
-  [OutgoingInvoiceStatus.READY_TO_SEND]: {
-    label: "Dalam Antrian Kirim",
-    bgClass: "bg-neutral-50",
-    textClass: "text-neutral-400",
-    dotClass: "bg-neutral-300",
-  },
-  [OutgoingInvoiceStatus.SENT]: {
-    label: "Invoice Terkirim",
-    bgClass: "bg-primary-50",
-    textClass: "text-primary-400",
-    dotClass: "bg-primary-300",
-  },
-  [OutgoingInvoiceStatus.PENDING_BANK_TRANSFER]: {
-    label: "Menunggu Transfer",
-    bgClass: "bg-warning-50",
-    textClass: "text-warning-500",
-    dotClass: "bg-warning-400",
-  },
-  [OutgoingInvoiceStatus.PAID]: {
-    label: "Selesai",
-    bgClass: "bg-success-50",
-    textClass: "text-success-500",
-    dotClass: "bg-success-400",
-  },
-  [OutgoingInvoiceStatus.CANCELLED]: {
-    label: "Dibatalkan",
-    bgClass: "bg-error-50",
-    textClass: "text-error-500",
-    dotClass: "bg-error-400",
-  },
-};
 
 export function OutgoingInvoiceSummary({
   total,
@@ -60,22 +16,9 @@ export function OutgoingInvoiceSummary({
   dueDate,
   subtotal,
   tax,
-  status,
-  createdAt,
 }: OutgoingInvoiceSummaryProps) {
-  const banner = statusBanners[status];
-
   return (
     <div className="flex flex-col gap-y-5">
-      {/* Status Banner */}
-      <div className={clsx("flex flex-col gap-y-1 rounded-lg px-3 py-2.5", banner.bgClass)}>
-        <div className="flex flex-row items-center gap-x-2">
-          <span className={clsx("size-2 rounded-full", banner.dotClass)} />
-          <span className={clsx("text-xs leading-4 font-semibold", banner.textClass)}>{banner.label}</span>
-        </div>
-        <span className={clsx("pl-4 text-xs leading-4", banner.textClass)}>{createdAt}</span>
-      </div>
-
       {/* Total */}
       <div className="flex flex-col gap-y-1">
         <span className="text-xs leading-4 text-neutral-200">Total Faktur</span>

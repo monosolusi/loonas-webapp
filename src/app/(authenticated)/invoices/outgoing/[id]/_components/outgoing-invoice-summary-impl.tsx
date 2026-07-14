@@ -15,9 +15,6 @@ export function OutgoingInvoiceSummaryImpl() {
     return (
       <SectionCard title="Ringkasan Faktur" iconSrc="/assets/images/wallet-icon-primary-300-w16-h16.svg">
         <div className="flex flex-col gap-y-5">
-          {/* Status Banner Skeleton */}
-          <div className="h-14 w-full animate-pulse rounded-lg bg-neutral-100" />
-
           {/* Total Skeleton */}
           <div className="flex flex-col gap-y-1">
             <div className="h-4 w-24 animate-pulse rounded bg-neutral-100" />
@@ -61,8 +58,6 @@ export function OutgoingInvoiceSummaryImpl() {
         dueDate={invoice.dueDate.setLocale("id").toFormat("dd LLLL yyyy")}
         subtotal={IDRFormatter.toCurrency(invoice.summary.amountBeforeTax)}
         tax={IDRFormatter.toCurrency(invoice.summary.totalTax)}
-        status={invoice.status}
-        createdAt={invoice.createdAt.setLocale("id").toFormat("dd LLLL yyyy, HH:mm")}
       />
     </SectionCard>
   );
