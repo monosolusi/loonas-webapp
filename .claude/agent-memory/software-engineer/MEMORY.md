@@ -23,6 +23,10 @@
 - [EL plan overrides earlier UI spec](feedback_el_plan_overrides_ui_spec.md) — when the EL plan and an earlier UID/UI spec conflict, the EL plan is the later authoritative decision; never silently ship the superseded UI-spec detail (LNS-347 "Margin Tipis" reintroduced)
 - [No FE calc for BE-owned money](feedback_no_fe_calc_for_be_owned_money.md) — when BE owns the calc (HPP/profit/COGS/recommended price), render BE values as-is; never FE-multiply money — only a non-monetary % ratio is an allowed FE derivation (LNS-347 "HPP × Unit Terjual" row)
 - [Feature commit staging](feedback_feature_commit_staging.md) — stage only src/** explicitly, never `git add -A`; `.claude/agent-memory/` is excluded from feature commits (separate post-reflection chore) (LNS-347 reset+rebase)
+- [Mobile-adapt dense form grids](feedback_mobile_adapt_dense_form_grids.md) — form-input matrices (variant/pricing, purchase items) get raw overflow-x-auto+min-w, NOT TableContainer scrollable; that's for read-only data tables only
+- [Mobile ActionMenu rows + SectionCard header gap](feedback_mobile_actionmenu_rows_and_sectioncard_header.md) — action-only MobileListCard rows (no href, chevron=false, ActionMenu in trailing slot); SectionCard headerAction overflows on mobile when wide (core gap, cap+scroll locally)
+- [Mobile fixed-px children](feedback_mobile_fixed_px_children.md) — components taking a pixel-number prop (e.g. QrisCard's `size` → QRCodeSVG) don't shrink with a fluid wrapper; dual-render two sizes by breakpoint instead of computing one shrunk value (POS QRIS mobile-adapt)
+- [Mobile-adapt finance periodic scope](feedback_mobile_adapt_finance_periodic_scope.md) — toolbar flex-wrap > col/row toggle; TabFilter needs explicit width under items-start parents; 3+ control rows exceed MobileListCard's 2 slots; UUID reference rows need wrap+truncate
 
 ## Project
 
