@@ -78,8 +78,8 @@ export class TrialBalanceGroupModel implements AbstractModel {
       TrialBalanceRowModel.fromJson(item, idx),
     );
     return new TrialBalanceGroupModel(
-      (raw["group"] ?? "asset") as TrialBalanceGroupType,
-      (raw["group"] ?? "asset") as TrialBalanceGroupType,
+      (raw["type"] ?? "asset") as TrialBalanceGroupType,
+      (raw["type"] ?? "asset") as TrialBalanceGroupType,
       raw["label"] ?? "",
       raw["display_order"] ?? 0,
       accounts,
