@@ -16,6 +16,7 @@ import { TableHeader } from "@/core/presentations/components/table/table-header"
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { SummaryCard } from "@/core/presentations/components/summary-card";
+import { ListPageHeader } from "@/core/presentations/components/list-page-header";
 import { JournalRow } from "@/app/(authenticated)/finance/journals/_components/journal-row";
 import { useJournalRange } from "@/app/(authenticated)/finance/journals/_providers/journal-range-provider";
 import { useListJournals } from "@/features/accounting/presentations/hooks/use-list-journals";
@@ -90,10 +91,7 @@ export function JournalListImpl() {
 
   return (
     <div className="flex flex-col gap-y-6">
-      <div className="flex flex-col gap-y-2">
-        <h1 className="text-3xl leading-9 font-bold tracking-tight">Jurnal Umum</h1>
-        <p className="leading-6 text-neutral-300">{meta ? `${meta.total} entri` : "Memuat..."}</p>
-      </div>
+      <ListPageHeader title="Jurnal Umum" subtitle={meta ? `${meta.total} entri` : "Memuat..."} />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <SummaryCard label="Total Debit" value={IDRFormatter.toCurrency(totalDebit)} variant="primary" loading={loading} subtitle="Halaman ini" />

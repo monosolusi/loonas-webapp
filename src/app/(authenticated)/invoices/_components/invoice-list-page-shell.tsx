@@ -3,6 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
+import { ListPageHeader } from "@/core/presentations/components/list-page-header";
 
 interface InvoiceListPageShellProps {
   title: string;
@@ -17,19 +18,17 @@ export function InvoiceListPageShell({ title, description, createHref, statistic
 
   return (
     <div className="flex flex-col gap-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-y-1">
-          <span className="text-2xl leading-8 font-bold tracking-tight">{title}</span>
-          <span className="text-sm leading-5">{description}</span>
-        </div>
-        <div className="flex">
+      <ListPageHeader
+        title={title}
+        subtitle={description}
+        action={
           <PrimaryButton
             label="Buat Faktur Baru"
             onClick={() => router.push(createHref)}
             className="w-full sm:w-auto"
           />
-        </div>
-      </div>
+        }
+      />
 
       {statistics}
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { ListPageHeader } from "@/core/presentations/components/list-page-header";
 import { PeriodsProvider } from "@/app/(authenticated)/finance/periods/_providers/periods-provider";
 import { PeriodsList } from "@/app/(authenticated)/finance/periods/_components/periods-list";
 import { ClosePeriodDialog } from "@/app/(authenticated)/finance/periods/_components/close-period-dialog";
@@ -11,9 +12,7 @@ import { ReopenYearDialog } from "@/app/(authenticated)/finance/periods/_compone
 export default function PeriodsPage() {
   return (
     <div className="flex flex-col gap-y-6">
-      <div className="flex flex-col gap-y-2">
-        <h1 className="text-3xl leading-9 font-bold tracking-tight">Periode Akuntansi</h1>
-      </div>
+      <ListPageHeader title="Periode Akuntansi" />
       <PeriodsProvider>
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_360px]">
           <div className="flex flex-col gap-y-4">
