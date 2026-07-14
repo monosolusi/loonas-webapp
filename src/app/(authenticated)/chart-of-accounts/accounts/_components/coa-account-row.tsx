@@ -6,7 +6,7 @@ import { ActionMenu, ActionMenuOption } from "@/core/presentations/components/ac
 import { StatusChip } from "@/core/presentations/components/status-chip";
 import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledger-account";
 import { ACCOUNT_TYPE_LABELS } from "@/features/accounting/domain/enums/account-type";
-import { useCoaAccounts } from "@/app/(authenticated)/settings/chart-of-accounts/accounts/_providers/coa-accounts-provider";
+import { useCoaAccounts } from "@/app/(authenticated)/chart-of-accounts/accounts/_providers/coa-accounts-provider";
 
 const ROW_GRID = "grid-cols-[100px_1fr_160px_160px_80px_48px]";
 

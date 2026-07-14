@@ -2,8 +2,8 @@
 
 import clsx from "clsx";
 import { TableContainer } from "@/core/presentations/components/table/table-container";
-import { CoaMappingRow } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_components/coa-mapping-row";
-import { useCoaMappings } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_providers/coa-mappings-provider";
+import { CoaMappingRow } from "@/app/(authenticated)/chart-of-accounts/mappings/_components/coa-mapping-row";
+import { useCoaMappings } from "@/app/(authenticated)/chart-of-accounts/mappings/_providers/coa-mappings-provider";
 
 const ROW_GRID = "grid-cols-[minmax(200px,_1.1fr)_2fr_2fr_48px]";
 

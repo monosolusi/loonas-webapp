@@ -20,12 +20,12 @@ export function ChartOfAccountsNavGroup({ id, openGroup, onOpenChange }: ChartOf
       label="Bagan Akun"
       iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
       selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
-      matchPrefixes={["/settings/chart-of-accounts"]}
+      matchPrefixes={["/chart-of-accounts"]}
       openGroup={openGroup}
       onOpenChange={onOpenChange}
     >
-      <NavigationChildItem href="/settings/chart-of-accounts/accounts" label="Daftar Akun" />
-      <NavigationChildItem href="/settings/chart-of-accounts/mappings" label="Pemetaan Akun" />
+      <NavigationChildItem href="/chart-of-accounts/accounts" label="Daftar Akun" />
+      <NavigationChildItem href="/chart-of-accounts/mappings" label="Pemetaan Akun" />
     </NavigationGroup>
   );
 }

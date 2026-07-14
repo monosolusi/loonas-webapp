@@ -11,12 +11,12 @@ import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import { useDeleteLedgerAccount } from "@/features/accounting/presentations/hooks/use-delete-ledger-account";
 import { ServerError } from "@/core/resources/server-error";
-import { useCoaAccounts } from "@/app/(authenticated)/settings/chart-of-accounts/accounts/_providers/coa-accounts-provider";
-import { CoaAccountDeleteConfirmBody } from "@/app/(authenticated)/settings/chart-of-accounts/accounts/_components/coa-account-delete-confirm-body";
-import { CoaAccountDeleteJournalLinesBody } from "@/app/(authenticated)/settings/chart-of-accounts/accounts/_components/coa-account-delete-journal-lines-body";
-import { CoaAccountDeleteMappingBody } from "@/app/(authenticated)/settings/chart-of-accounts/accounts/_components/coa-account-delete-mapping-body";
-import { CoaAccountDeleteChildrenBody } from "@/app/(authenticated)/settings/chart-of-accounts/accounts/_components/coa-account-delete-children-body";
-import { CoaAccountDeleteSeededBody } from "@/app/(authenticated)/settings/chart-of-accounts/accounts/_components/coa-account-delete-seeded-body";
+import { useCoaAccounts } from "@/app/(authenticated)/chart-of-accounts/accounts/_providers/coa-accounts-provider";
+import { CoaAccountDeleteConfirmBody } from "@/app/(authenticated)/chart-of-accounts/accounts/_components/coa-account-delete-confirm-body";
+import { CoaAccountDeleteJournalLinesBody } from "@/app/(authenticated)/chart-of-accounts/accounts/_components/coa-account-delete-journal-lines-body";
+import { CoaAccountDeleteMappingBody } from "@/app/(authenticated)/chart-of-accounts/accounts/_components/coa-account-delete-mapping-body";
+import { CoaAccountDeleteChildrenBody } from "@/app/(authenticated)/chart-of-accounts/accounts/_components/coa-account-delete-children-body";
+import { CoaAccountDeleteSeededBody } from "@/app/(authenticated)/chart-of-accounts/accounts/_components/coa-account-delete-seeded-body";
 
 type GuardCode =
   | "ACCOUNT_HAS_JOURNAL_LINES"

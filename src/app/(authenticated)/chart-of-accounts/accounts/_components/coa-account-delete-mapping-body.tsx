@@ -16,7 +16,7 @@ export function CoaAccountDeleteMappingBody({ accountName }: CoaAccountDeleteMap
         menghapus akun ini.
       </p>
       <Link
-        href="/settings/chart-of-accounts/mappings"
+        href="/chart-of-accounts/mappings"
         className="text-sm text-primary-300 underline hover:text-primary-500"
       >
         Buka Pemetaan Akun

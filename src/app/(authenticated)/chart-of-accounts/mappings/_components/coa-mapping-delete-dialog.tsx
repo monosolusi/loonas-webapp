@@ -6,7 +6,7 @@ import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import { useDeleteCoaMapping } from "@/features/accounting/presentations/hooks/use-delete-coa-mapping";
-import { useCoaMappings } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_providers/coa-mappings-provider";
+import { useCoaMappings } from "@/app/(authenticated)/chart-of-accounts/mappings/_providers/coa-mappings-provider";
 
 export function CoaMappingDeleteDialog() {
   const { showToast } = useToast();
