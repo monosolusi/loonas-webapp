@@ -19,7 +19,7 @@ type PosSalesRangeProviderProps = {
 
 export function PosSalesRangeProvider({ children }: PosSalesRangeProviderProps) {
   return (
-    <DateRangeProvider localStorageKey="lns_pos_sales_range" maxSpanDays={365}>
+    <DateRangeProvider maxSpanDays={365}>
       {children}
     </DateRangeProvider>
   );

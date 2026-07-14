@@ -19,7 +19,7 @@ type JournalRangeProviderProps = {
 
 export function JournalRangeProvider({ children }: JournalRangeProviderProps) {
   return (
-    <DateRangeProvider localStorageKey="lns_journals_range" maxSpanDays={365}>
+    <DateRangeProvider maxSpanDays={365}>
       {children}
     </DateRangeProvider>
   );
