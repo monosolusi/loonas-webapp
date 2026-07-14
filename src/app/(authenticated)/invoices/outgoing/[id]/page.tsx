@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
+import { TransactionTimelineImpl } from "@/features/invoice/presentations/components/transaction-timeline-impl";
 import { InvoicePreviewImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/invoice-preview-impl";
 import { ErrorDisplayImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/error-display-impl";
 import { SendInvoiceButton } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/send-invoice-button";
@@ -60,6 +61,7 @@ function OutgoingInvoiceDetail({ id }: { id: string }) {
           </div>
           {/* Right column */}
           <div className="flex flex-col gap-y-6 lg:flex-1">
+            <TransactionTimelineImpl id={id} />
             <OutgoingInvoiceSummaryImpl />
             <DraftActionCardImpl />
             <OutgoingRecipientInfoImpl />

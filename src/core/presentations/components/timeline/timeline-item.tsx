@@ -1,7 +1,7 @@
 import Image from "next/image";
 import clsx from "clsx";
 
-type TimelineItemState = "current" | "future" | "past";
+export type TimelineItemState = "current" | "future" | "past";
 
 const PAST_ICON_SRC = "/assets/images/double-check-icon-neutral-500-w18-h18.svg";
 
