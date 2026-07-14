@@ -81,36 +81,38 @@ export function TaxPostureHistoryRow({ audit }: TaxPostureHistoryRowProps) {
 
       {/* Zone 2: changed fields */}
       {fieldEntries.length > 0 && (
-        <div className="flex flex-col gap-y-2 mt-1">
-          {fieldEntries.map((entry) => {
-            const showNpwpChip =
-              entry.fieldKey === "npwp" &&
-              audit.npwpClassification != null &&
-              NPWP_CLASSIFICATION_LABELS[audit.npwpClassification];
-            const chipConfig = showNpwpChip ? NPWP_CLASSIFICATION_LABELS[audit.npwpClassification!] : null;
+        <div className="-mx-6 mt-1 overflow-x-auto px-6">
+          <div className="flex min-w-[420px] flex-col gap-y-2">
+            {fieldEntries.map((entry) => {
+              const showNpwpChip =
+                entry.fieldKey === "npwp" &&
+                audit.npwpClassification != null &&
+                NPWP_CLASSIFICATION_LABELS[audit.npwpClassification];
+              const chipConfig = showNpwpChip ? NPWP_CLASSIFICATION_LABELS[audit.npwpClassification!] : null;
 
-            return (
-              <div
-                key={entry.fieldKey}
-                className="grid grid-cols-[minmax(140px,_1.5fr)_1fr_20px_1fr] items-baseline gap-x-3"
-              >
-                <span className="text-sm font-medium text-neutral-500">{entry.label}</span>
-                <span className="text-sm text-neutral-300">{formatFieldValue(entry.fieldKey, entry.prior)}</span>
-                <span>
-                  <span aria-hidden="true" className="text-xs text-neutral-200">→</span>
-                  <span className="sr-only">diubah menjadi</span>
-                </span>
-                <span className="text-sm font-semibold text-neutral-500">
-                  {formatFieldValue(entry.fieldKey, entry.next)}
-                  {chipConfig && (
-                    <span className="ml-2 inline-flex">
-                      <StatusChip variant={chipConfig.variant} label={chipConfig.label} compact />
-                    </span>
-                  )}
-                </span>
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={entry.fieldKey}
+                  className="grid grid-cols-[minmax(140px,_1.5fr)_1fr_20px_1fr] items-baseline gap-x-3"
+                >
+                  <span className="text-sm font-medium text-neutral-500">{entry.label}</span>
+                  <span className="text-sm text-neutral-300">{formatFieldValue(entry.fieldKey, entry.prior)}</span>
+                  <span>
+                    <span aria-hidden="true" className="text-xs text-neutral-200">→</span>
+                    <span className="sr-only">diubah menjadi</span>
+                  </span>
+                  <span className="text-sm font-semibold text-neutral-500">
+                    {formatFieldValue(entry.fieldKey, entry.next)}
+                    {chipConfig && (
+                      <span className="ml-2 inline-flex">
+                        <StatusChip variant={chipConfig.variant} label={chipConfig.label} compact />
+                      </span>
+                    )}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

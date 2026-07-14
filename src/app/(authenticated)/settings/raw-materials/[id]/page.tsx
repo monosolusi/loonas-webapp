@@ -19,7 +19,7 @@ export default function RawMaterialDetailPage(props: RawMaterialDetailPageProps)
     <RawMaterialDetailProvider id={id} loading={<RawMaterialDetailLoading />}>
       <div className="flex flex-col gap-y-6">
         <RawMaterialDetailHeader />
-        <div className="grid grid-cols-2 gap-x-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-x-6">
           <RawMaterialDetailInfoCard />
           <RawMaterialDetailStockCard />
         </div>

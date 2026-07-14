@@ -41,7 +41,7 @@ export default function SelectPaymentMethodPages() {
 
       {/*  Summary */}
       <div className="bg-primary-300 rounded-lg">
-        <div className="flex flex-row">
+        <div className="flex flex-col sm:flex-row">
           {/*  Total */}
           <div className="flex flex-1 flex-col gap-y-2 self-center p-6">
             <div className="flex flex-row items-center gap-x-2">
@@ -62,7 +62,7 @@ export default function SelectPaymentMethodPages() {
           </div>
 
           {/*  Recipient Detail */}
-          <div className="flex flex-1 flex-col gap-y-4 rounded-r-lg border border-l-0 border-neutral-100 bg-white p-6">
+          <div className="flex flex-1 flex-col gap-y-4 rounded-b-lg border border-neutral-100 bg-white p-6 sm:rounded-tr-lg sm:rounded-bl-none sm:border-t-0 sm:border-l-0">
             {/* Client Name */}
             <div className="flex flex-row gap-x-3 border-b border-b-neutral-200 pb-3">
               <div className="flex size-8 flex-row items-center justify-center rounded-lg bg-neutral-100">

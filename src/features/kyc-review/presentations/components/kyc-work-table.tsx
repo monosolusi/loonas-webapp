@@ -1,6 +1,7 @@
 import { VerificationWorkStatus } from "@/features/kyc-review/domain/enums/verification-work-status";
 import { VerificationWorkStatusBadge } from "@/features/kyc-review/presentations/components/verification-work-status-badge";
 import { DateTime } from "luxon";
+import { MobileListCard } from "@/core/presentations/components/table/mobile-list-card";
 
 export interface KycWorkRow {
   id: string;
@@ -23,25 +24,29 @@ const ACCOUNT_TYPE_LABELS: Record<string, string> = {
 };
 
 export function KycWorkTable({ rows, onRowClick }: KycWorkTableProps) {
-  return (
-    <div className="overflow-hidden rounded-xl border border-neutral-100">
-      {/* Header */}
-      <div className="grid grid-cols-[1.5fr_1.5fr_1fr_1fr_1.5fr_1.5fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Nama Akun</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Email</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tipe</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Status</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Peninjau</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tanggal</span>
-      </div>
-
-      {/* Rows */}
-      {rows.length === 0 ? (
+  if (rows.length === 0) {
+    return (
+      <div className="overflow-hidden rounded-xl border border-neutral-100">
         <div className="flex items-center justify-center py-12">
           <span className="text-sm text-neutral-300">Tidak ada data verifikasi.</span>
         </div>
-      ) : (
-        rows.map((row) => (
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-neutral-100">
+      {/* Desktop: grid rows (lg and up) */}
+      <div className="hidden lg:block">
+        <div className="grid grid-cols-[1.5fr_1.5fr_1fr_1fr_1.5fr_1.5fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
+          <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Nama Akun</span>
+          <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Email</span>
+          <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tipe</span>
+          <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Status</span>
+          <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Peninjau</span>
+          <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tanggal</span>
+        </div>
+        {rows.map((row) => (
           <div
             key={row.id}
             onClick={() => onRowClick(row.id)}
@@ -62,8 +67,28 @@ export function KycWorkTable({ rows, onRowClick }: KycWorkTableProps) {
               {DateTime.fromISO(row.createdAt).setLocale("id").toFormat("dd LLL yyyy")}
             </span>
           </div>
-        ))
-      )}
+        ))}
+      </div>
+
+      {/* Mobile: stacked cards (below lg) */}
+      <div className="lg:hidden">
+        {rows.map((row) => (
+          <MobileListCard
+            key={row.id}
+            onClick={() => onRowClick(row.id)}
+            title={row.accountName}
+            subtitle={row.userEmail}
+            meta={
+              <>
+                {ACCOUNT_TYPE_LABELS[row.accountType] ?? row.accountType}
+                {" · "}
+                {DateTime.fromISO(row.createdAt).setLocale("id").toFormat("dd LLL yyyy")}
+              </>
+            }
+            trailingBottom={<VerificationWorkStatusBadge status={row.status} />}
+          />
+        ))}
+      </div>
     </div>
   );
 }

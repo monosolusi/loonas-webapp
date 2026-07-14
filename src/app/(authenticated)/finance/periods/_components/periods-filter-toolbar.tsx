@@ -15,5 +15,9 @@ export function PeriodsFilterToolbar() {
     setStatusFilter(FILTER_VALUES[index]);
   };
 
-  return <TabFilter tabs={FILTER_TABS} selectedIndex={selectedIndex} onChange={handleChange} />;
+  return (
+    <div className="-mx-4 w-full overflow-x-auto px-4 sm:mx-0 sm:w-auto sm:overflow-visible sm:px-0">
+      <TabFilter tabs={FILTER_TABS} selectedIndex={selectedIndex} onChange={handleChange} />
+    </div>
+  );
 }

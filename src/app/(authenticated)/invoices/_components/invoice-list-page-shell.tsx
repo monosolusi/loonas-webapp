@@ -17,13 +17,17 @@ export function InvoiceListPageShell({ title, description, createHref, statistic
 
   return (
     <div className="flex flex-col gap-y-6">
-      <div className="flex flex-row items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-y-1">
           <span className="text-2xl leading-8 font-bold tracking-tight">{title}</span>
           <span className="text-sm leading-5">{description}</span>
         </div>
         <div className="flex">
-          <PrimaryButton label="Buat Faktur Baru" onClick={() => router.push(createHref)} />
+          <PrimaryButton
+            label="Buat Faktur Baru"
+            onClick={() => router.push(createHref)}
+            className="w-full sm:w-auto"
+          />
         </div>
       </div>
 

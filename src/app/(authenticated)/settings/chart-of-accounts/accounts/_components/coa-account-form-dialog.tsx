@@ -81,7 +81,7 @@ export function CoaAccountFormDialog(props: CoaAccountFormDialogProps) {
         )}
 
         {/* Row 1: Kode + Tipe — each column is its own div so the hint stacks under Kode without displacing Tipe */}
-        <div className="grid grid-cols-2 gap-x-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-4">
           <div className="flex flex-col gap-y-1">
             <TextInput
               label="Kode Akun"

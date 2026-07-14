@@ -59,13 +59,13 @@ export function JournalListImpl() {
   const isBalanced = selisih === 0;
 
   const toolbar = (
-    <div className="flex flex-row items-center justify-between">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <Link href="/finance/journals/new">
         <PrimaryButton label="Jurnal Baru" leftIcon={<PlusIcon className="size-4" />} />
       </Link>
-      <div className="flex flex-row items-center gap-x-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-x-3">
         <DateRangePicker value={pickerValue} onChange={handlePickerChange} maxSpanDays={365} disableFutureDates={false} />
-        <div className="w-[280px]">
+        <div className="w-full sm:w-[280px]">
           <TextInput
             label=""
             placeholder="Cari memo..."
@@ -92,6 +92,7 @@ export function JournalListImpl() {
         { label: "Total Kredit", align: "right" },
       ]}
       className="grid-cols-[1.5fr_3fr_1fr_1fr]"
+      hideOnMobile
     />
   );
 
@@ -102,7 +103,7 @@ export function JournalListImpl() {
         <p className="leading-6 text-neutral-300">{meta ? `${meta.total} entri` : "Memuat..."}</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <SummaryCard label="Total Debit" value={IDRFormatter.toCurrency(totalDebit)} variant="primary" loading={loading} subtitle="Halaman ini" />
         <SummaryCard label="Total Kredit" value={IDRFormatter.toCurrency(totalCredit)} variant="primary" loading={loading} subtitle="Halaman ini" />
         <SummaryCard

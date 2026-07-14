@@ -62,7 +62,7 @@ export function DashboardRangeSection() {
   }, []);
 
   return (
-    <div className="flex items-center justify-between border-b border-neutral-100 py-3">
+    <div className="flex flex-col items-start gap-2 border-b border-neutral-100 py-3 sm:flex-row sm:items-center sm:justify-between">
       <span className="text-sm text-neutral-300">Periode ditampilkan</span>
       <DateRangePicker
         value={pickerValue}

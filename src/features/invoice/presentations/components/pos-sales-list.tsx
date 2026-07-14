@@ -44,7 +44,7 @@ export function PosSalesList({ onSelectSale }: PosSalesListProps) {
       empty={!state.loading && posInvoices.length === 0}
       emptyMessage="Belum ada transaksi POS."
     >
-      <TableHeader className={GRID_COLUMNS_CLASS} columns={COLUMNS} />
+      <TableHeader className={GRID_COLUMNS_CLASS} columns={COLUMNS} hideOnMobile />
       {posInvoices.map((invoice) => (
         <PosSalesTableRow key={invoice.id} invoice={invoice} onClick={onSelectSale} />
       ))}

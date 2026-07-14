@@ -32,21 +32,23 @@ export function CostStructureBlock() {
 
   return (
     <div className="flex flex-col gap-y-3">
-      <div className="flex flex-row items-center gap-x-3 rounded-lg border border-neutral-100 px-4 py-3">
+      <div className="flex flex-col gap-2 rounded-lg border border-neutral-100 px-4 py-3 sm:flex-row sm:items-center sm:gap-x-3">
         <label htmlFor="cost-structure-quantity" className="text-sm text-neutral-400">
           Simulasi jumlah produksi
         </label>
-        <input
-          id="cost-structure-quantity"
-          type="number"
-          min={1}
-          step={1}
-          value={quantity}
-          onChange={handleQuantityChange}
-          className="h-11 w-24 rounded-lg border border-neutral-100 px-3 text-sm text-neutral-500 focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-300/20"
-          aria-label="Jumlah unit produksi"
-        />
-        <span className="text-sm text-neutral-300">unit</span>
+        <div className="flex flex-row items-center gap-x-3">
+          <input
+            id="cost-structure-quantity"
+            type="number"
+            min={1}
+            step={1}
+            value={quantity}
+            onChange={handleQuantityChange}
+            className="h-11 w-24 rounded-lg border border-neutral-100 px-3 text-sm text-neutral-500 focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-300/20"
+            aria-label="Jumlah unit produksi"
+          />
+          <span className="text-sm text-neutral-300">unit</span>
+        </div>
       </div>
 
       {state.loading ? (

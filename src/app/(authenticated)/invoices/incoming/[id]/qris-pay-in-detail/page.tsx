@@ -55,13 +55,15 @@ export default function QrisPayInDetailPage() {
       </div>
 
       <div className="rounded-lg border border-neutral-200">
-        <div className="flex flex-row">
-          {/* Left - Progress */}
-          <CreateIncomingSteppers currentStep="payment" />
+        <div className="flex flex-col lg:flex-row">
+          {/* Left - Progress (desktop only; the wizard rail is a fixed width, not meant to reflow) */}
+          <div className="hidden lg:block">
+            <CreateIncomingSteppers currentStep="payment" />
+          </div>
 
           {/* Right - Content */}
           <div className="flex flex-1 flex-col">
-            <div className="flex-1 px-12 py-8">
+            <div className="flex-1 px-4 py-6 lg:px-12 lg:py-8">
               <div className="flex flex-col gap-y-6">
                 {/* Title */}
                 <div className="flex flex-col">
@@ -94,7 +96,7 @@ export default function QrisPayInDetailPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-row items-center justify-end gap-x-3 border-t border-t-neutral-200 p-6">
+            <div className="flex flex-col-reverse gap-3 border-t border-t-neutral-200 p-4 sm:flex-row sm:items-center sm:justify-end sm:p-6">
               <SecondaryButton outlined label="Bayar Nanti" onClick={() => router.push("/invoices/incoming")} />
               <PrimaryButton
                 label="Sudah Bayar"

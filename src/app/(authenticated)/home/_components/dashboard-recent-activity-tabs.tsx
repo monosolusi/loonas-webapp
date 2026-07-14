@@ -25,6 +25,8 @@ export function DashboardRecentActivityTabs({ active, onChange }: DashboardRecen
   );
 
   return (
-    <TabFilter tabs={TAB_LABELS} selectedIndex={selectedIndex} onChange={(index) => onChange(tabs[index].value)} />
+    <div className="max-w-[150px] overflow-x-auto sm:max-w-none">
+      <TabFilter tabs={TAB_LABELS} selectedIndex={selectedIndex} onChange={(index) => onChange(tabs[index].value)} />
+    </div>
   );
 }

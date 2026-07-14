@@ -11,12 +11,12 @@ export function JournalReversalStatusCard() {
   if (journal.isReversal && journal.reversedJournalId) {
     return (
       <SectionCard title="Status Pembalikan">
-        <div className="flex flex-row items-center gap-x-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-x-3">
           <StatusChip label="Jurnal Pembalik" variant="primary" compact />
           <span className="text-sm text-neutral-500">Jurnal ini adalah pembalik dari jurnal lain.</span>
           <Link
             href={`/finance/journals/${journal.reversedJournalId}`}
-            className="ml-auto shrink-0 text-sm font-medium text-primary-300 hover:underline"
+            className="text-sm font-medium text-primary-300 hover:underline sm:ml-auto sm:shrink-0"
           >
             Lihat jurnal asal
           </Link>
@@ -28,12 +28,12 @@ export function JournalReversalStatusCard() {
   if (journal.isReversedCurrently && journal.supersededById) {
     return (
       <SectionCard title="Status Pembalikan">
-        <div className="flex flex-row items-center gap-x-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-x-3">
           <StatusChip label="Sudah Dibalik" variant="warning" compact />
           <span className="text-sm text-neutral-500">Jurnal ini telah dibalik.</span>
           <Link
             href={`/finance/journals/${journal.supersededById}`}
-            className="ml-auto shrink-0 text-sm font-medium text-primary-300 hover:underline"
+            className="text-sm font-medium text-primary-300 hover:underline sm:ml-auto sm:shrink-0"
           >
             Lihat jurnal pembalik
           </Link>

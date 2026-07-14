@@ -29,14 +29,18 @@ export function CoaAccountsTable() {
 
   return (
     <div className="overflow-hidden rounded-xl border border-neutral-100">
-      <CoaAccountsTableHeader />
-      {accounts.map((account) => (
-        <CoaAccountRow
-          key={account.id}
-          account={account}
-          parentName={account.parentId ? parentNameMap.get(account.parentId) : undefined}
-        />
-      ))}
+      <div className="overflow-x-auto">
+        <div className="min-w-[820px]">
+          <CoaAccountsTableHeader />
+          {accounts.map((account) => (
+            <CoaAccountRow
+              key={account.id}
+              account={account}
+              parentName={account.parentId ? parentNameMap.get(account.parentId) : undefined}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

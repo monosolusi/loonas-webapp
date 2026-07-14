@@ -25,13 +25,15 @@ export default function DisbursementStatusPage() {
       </div>
 
       <div className="rounded-lg border border-neutral-200">
-        <div className="flex flex-row">
-          {/*  Left - Progress */}
-          <CreateIncomingSteppers currentStep="invoice-created" />
+        <div className="flex flex-col lg:flex-row">
+          {/*  Left - Progress (desktop only; the wizard rail is a fixed width, not meant to reflow) */}
+          <div className="hidden lg:block">
+            <CreateIncomingSteppers currentStep="invoice-created" />
+          </div>
 
           {/*  Right - Content */}
           <div className="flex flex-1 flex-col">
-            <div className="flex-1 px-12 py-8">
+            <div className="flex-1 px-4 py-6 lg:px-12 lg:py-8">
               <div className="flex flex-col gap-y-6">
                 {/*  Title & Description */}
                 <div className="flex flex-1 flex-col items-center gap-y-3">
@@ -59,8 +61,8 @@ export default function DisbursementStatusPage() {
             </div>
 
             {/*  Action Buttons */}
-            <div className="flex flex-row items-center justify-end border-t border-t-neutral-200 p-6">
-              <div className="flex">
+            <div className="flex flex-row items-center justify-end border-t border-t-neutral-200 p-4 sm:p-6">
+              <div className="flex w-full sm:w-auto">
                 <PrimaryButton label="Lihat Faktur" onClick={() => router.replace(`/invoices/incoming/${id}`)} />
               </div>
             </div>

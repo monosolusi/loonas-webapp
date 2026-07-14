@@ -42,7 +42,7 @@ export function InvitationItem({ invite }: InvitationItemProps) {
 
   if (responded) {
     return (
-      <div className="flex flex-row items-center justify-between rounded-lg border border-neutral-200 bg-neutral-50 px-6 py-5">
+      <div className="flex flex-row items-center justify-between rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-4 sm:px-6 sm:py-5">
         <p className="text-sm text-neutral-300">
           {responded === InviteAction.ACCEPT ? "Undangan diterima" : "Undangan ditolak"}
         </p>
@@ -51,16 +51,16 @@ export function InvitationItem({ invite }: InvitationItemProps) {
   }
 
   return (
-    <div className="flex flex-row items-center justify-between rounded-lg border border-neutral-200 bg-white px-6 py-5">
+    <div className="flex flex-col gap-4 rounded-lg border border-neutral-200 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
       <div className="flex flex-row items-center gap-x-4">
-        <div className={clsx("flex size-11 items-center justify-center rounded-lg border", ACCOUNT_COLOR_MAP[invite.accountType])}>
+        <div className={clsx("flex size-11 shrink-0 items-center justify-center rounded-lg border", ACCOUNT_COLOR_MAP[invite.accountType])}>
           <Image src={ACCOUNT_ICON_MAP[invite.accountType]} alt="" width={22} height={22} />
         </div>
-        <div className="flex flex-col gap-y-0.5">
-          <p className="text-sm font-semibold text-neutral-500">
+        <div className="flex min-w-0 flex-col gap-y-0.5">
+          <p className="truncate text-sm font-semibold text-neutral-500">
             {invite.accountName}
           </p>
-          <p className="text-xs text-neutral-200">
+          <p className="truncate text-xs text-neutral-200">
             Diundang oleh {invite.invitedBy.email} · {createdDate}
           </p>
         </div>
@@ -71,7 +71,7 @@ export function InvitationItem({ invite }: InvitationItemProps) {
           type="button"
           disabled={isMutating}
           onClick={() => handleRespond(InviteAction.ACCEPT)}
-          className="rounded-lg bg-primary-300 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-300/90 disabled:opacity-50"
+          className="flex-1 rounded-lg bg-primary-300 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-300/90 disabled:opacity-50 sm:flex-none"
         >
           Terima
         </button>
@@ -79,7 +79,7 @@ export function InvitationItem({ invite }: InvitationItemProps) {
           type="button"
           disabled={isMutating}
           onClick={() => handleRespond(InviteAction.REJECT)}
-          className="rounded-lg border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-300 transition-colors hover:bg-neutral-50 disabled:opacity-50"
+          className="flex-1 rounded-lg border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-300 transition-colors hover:bg-neutral-50 disabled:opacity-50 sm:flex-none"
         >
           Tolak
         </button>

@@ -11,7 +11,7 @@ import { KycTimeline } from "@/features/kyc-review/presentations/components/kyc-
 
 function DetailSkeleton() {
   return (
-    <div className="flex flex-row gap-x-6">
+    <div className="flex flex-col gap-6 lg:flex-row lg:gap-x-6">
       {/* Left: document skeleton */}
       <div className="flex-1">
         <div className="animate-pulse rounded-lg border border-neutral-200 bg-white">
@@ -26,7 +26,7 @@ function DetailSkeleton() {
         </div>
       </div>
       {/* Right: info + action skeleton */}
-      <div className="flex w-[380px] shrink-0 flex-col gap-y-6">
+      <div className="flex w-full shrink-0 flex-col gap-y-6 lg:w-[380px]">
         <div className="animate-pulse rounded-lg border border-neutral-200 bg-white">
           <div className="flex flex-row items-center gap-x-2 border-b border-b-neutral-100 px-6 py-4">
             <div className="h-4 w-4 rounded bg-neutral-100" />
@@ -94,14 +94,14 @@ export default function KycDetailPage() {
       )}
 
       {work && (
-        <div className="flex flex-row gap-x-6">
+        <div className="flex flex-col gap-6 lg:flex-row lg:gap-x-6">
           {/* Left: documents (scrolls with page) */}
           <div className="flex-1">
             <KycDocumentViewer documents={work.documents} />
           </div>
 
           {/* Right: account info + timeline + review actions (sticky) */}
-          <div className="flex w-[380px] shrink-0 flex-col gap-y-6 self-start sticky top-8">
+          <div className="flex w-full shrink-0 flex-col gap-y-6 self-start lg:sticky lg:top-8 lg:w-[380px]">
             <AccountInfoSection account={work.account} userEmail={work.user.email} />
             <KycTimeline history={work.history} />
             <ReviewActionPanelImpl

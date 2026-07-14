@@ -23,15 +23,15 @@ import { DateTime } from "luxon";
 import { track } from "@/core/analytics";
 import type { ActivityTab } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-tabs";
 
-type ActivityKind = "pos" | "incoming" | "outgoing";
+export type ActivityKind = "pos" | "incoming" | "outgoing";
 
-const DESTINATION_TEMPLATE: Record<ActivityKind, string> = {
+export const DESTINATION_TEMPLATE: Record<ActivityKind, string> = {
   pos: "/sales/pos/:id",
   incoming: "/invoices/incoming/:id",
   outgoing: "/invoices/outgoing/:id",
 };
 
-type ActivityRowView = {
+export type ActivityRowView = {
   kind: ActivityKind;
   partyName: string;
   paymentMethod: string;
@@ -81,7 +81,7 @@ function mapPosPaymentKind(kind: InvoicePaymentStatusKind): InvoiceStatusType {
   }
 }
 
-function toActivityView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): ActivityRowView {
+export function toActivityView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): ActivityRowView {
   if (inv instanceof IncomingInvoiceEntity) {
     return {
       kind: "incoming",

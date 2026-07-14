@@ -94,7 +94,7 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
     <div className="flex flex-col gap-y-6">
       <DetailPageHeader backHref="/finance/ledger" title={accountName} subtitle={accountSubtitle} />
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <SummaryCard label="Saldo" value={balance?.displayBalance ?? "—"} variant="primary" valueClassName={balance && balance.balance < 0 ? "text-warning-500" : undefined} loading={balanceLoading} />
         <SummaryCard label="Total Debit" value={balance?.displayDebit ?? "—"} variant="neutral" loading={balanceLoading} />
         <SummaryCard label="Total Kredit" value={balance?.displayCredit ?? "—"} variant="neutral" loading={balanceLoading} />
@@ -103,15 +103,19 @@ export function LedgerDetailImpl({ accountId }: LedgerDetailImplProps) {
       {toolbar}
 
       <TableContainer loading={loading} error={!!error} empty={(entries ?? []).length === 0 && !loading} emptyMessage="Tidak ada transaksi pada periode ini.">
-        {header}
-        {(entries ?? []).map((entry) => (
-          <div key={entry.id} className="grid grid-cols-[1.5fr_3fr_1fr_1fr] items-center border-b border-neutral-100 px-6 py-4 last:border-b-0">
-            <span className="text-sm text-neutral-400">{entry.displayDate}</span>
-            <span className="text-sm text-neutral-500">{entry.memo || "—"}</span>
-            <span className="text-right text-sm font-medium text-neutral-500">{entry.displayDebit}</span>
-            <span className="text-right text-sm font-medium text-neutral-500">{entry.displayCredit}</span>
+        <div className="overflow-x-auto">
+          <div className="min-w-[640px]">
+            {header}
+            {(entries ?? []).map((entry) => (
+              <div key={entry.id} className="grid grid-cols-[1.5fr_3fr_1fr_1fr] items-center border-b border-neutral-100 px-6 py-4 last:border-b-0">
+                <span className="text-sm text-neutral-400">{entry.displayDate}</span>
+                <span className="text-sm text-neutral-500">{entry.memo || "—"}</span>
+                <span className="text-right text-sm font-medium text-neutral-500">{entry.displayDebit}</span>
+                <span className="text-right text-sm font-medium text-neutral-500">{entry.displayCredit}</span>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
         {meta && meta.totalPages > 1 && (
           <TablePagination displayedCount={(entries ?? []).length} meta={meta} currentPage={page} onPageChange={setPage} />
         )}

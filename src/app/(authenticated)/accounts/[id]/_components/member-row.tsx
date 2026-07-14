@@ -11,9 +11,9 @@ type MemberRowProps = {
 
 export function MemberRow({ member, onRemove, onResend, isResending }: MemberRowProps) {
   return (
-    <div className="flex flex-row items-center justify-between border-b border-neutral-100 px-6 py-4 last:border-b-0">
-      <div className="flex flex-col gap-y-0.5">
-        <p className="text-sm font-medium text-neutral-500">{member.email}</p>
+    <div className="flex flex-row flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-neutral-100 px-6 py-4 last:border-b-0">
+      <div className="flex min-w-0 flex-col gap-y-0.5">
+        <p className="truncate text-sm font-medium text-neutral-500">{member.email}</p>
         {member.isPending && <p className="text-xs text-neutral-200">Menunggu konfirmasi</p>}
         {member.isRejected && <p className="text-xs text-error-300">Undangan ditolak</p>}
       </div>

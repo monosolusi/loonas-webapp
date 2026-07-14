@@ -18,11 +18,11 @@ export default function FixedCostsPage() {
         <FixedCostHeader />
 
         <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-row items-center gap-x-3">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <FixedCostMonthNavigator />
             <FixedCostPeriodStatusChip />
           </div>
-          <div className="flex flex-row items-center gap-x-3">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <CopyFromPrevMonthButton />
             <FixedCostSaveButton />
             <FixedCostClosePeriodButton />

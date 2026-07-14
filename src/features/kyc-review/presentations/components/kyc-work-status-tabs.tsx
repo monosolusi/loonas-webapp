@@ -18,7 +18,7 @@ const TABS: { label: string; value: VerificationWorkStatus | undefined }[] = [
 
 export function KycWorkStatusTabs({ activeStatus, onChange }: KycWorkStatusTabsProps) {
   return (
-    <div className="flex flex-row gap-x-1">
+    <div className="-mx-4 flex flex-row gap-x-1 overflow-x-auto px-4 sm:mx-0 sm:overflow-visible sm:px-0">
       {TABS.map((tab) => {
         const isActive = activeStatus === tab.value;
         return (
@@ -26,7 +26,7 @@ export function KycWorkStatusTabs({ activeStatus, onChange }: KycWorkStatusTabsP
             key={tab.label}
             onClick={() => onChange(tab.value)}
             className={clsx(
-              "cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+              "shrink-0 cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors",
               isActive ? "bg-primary-300 text-white" : "text-neutral-300 hover:bg-neutral-50",
             )}
           >

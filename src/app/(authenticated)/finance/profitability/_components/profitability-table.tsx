@@ -32,14 +32,16 @@ export function ProfitabilityTable() {
         filteredEmptyMessage="Tidak ada produk yang cocok dengan pencarian."
       >
         <div className="overflow-x-auto">
-          <TableHeader columns={COLUMNS} className="[grid-template-columns:var(--grid-profitability-cols)]" />
+          <div className="min-w-[940px]">
+            <TableHeader columns={COLUMNS} className="[grid-template-columns:var(--grid-profitability-cols)]" />
 
-          <div>
-            {products.map((product) =>
-              product.variants.map((variant) => (
-                <ProfitabilityTableRow key={`${product.id}-${variant.id}`} product={product} variant={variant} />
-              )),
-            )}
+            <div>
+              {products.map((product) =>
+                product.variants.map((variant) => (
+                  <ProfitabilityTableRow key={`${product.id}-${variant.id}`} product={product} variant={variant} />
+                )),
+              )}
+            </div>
           </div>
         </div>
 

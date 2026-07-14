@@ -52,14 +52,14 @@ function OutgoingInvoiceDetail({ id }: { id: string }) {
       />
 
       {!loading && invoice instanceof OutgoingInvoiceEntity && (
-        <div className="flex flex-row gap-x-6">
+        <div className="flex flex-col gap-6 lg:flex-row lg:gap-x-6">
           {/* Left column */}
-          <div className="flex flex-2 flex-col gap-y-6">
+          <div className="flex flex-col gap-y-6 lg:flex-2">
             <ErrorDisplayImpl />
             <InvoicePreviewImpl />
           </div>
           {/* Right column */}
-          <div className="flex flex-1 flex-col gap-y-6">
+          <div className="flex flex-col gap-y-6 lg:flex-1">
             <OutgoingInvoiceSummaryImpl />
             <DraftActionCardImpl />
             <OutgoingRecipientInfoImpl />

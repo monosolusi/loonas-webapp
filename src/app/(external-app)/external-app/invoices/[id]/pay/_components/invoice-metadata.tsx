@@ -19,7 +19,7 @@ export function InvoiceMetadata(props: InvoiceMetadataProps) {
           <span className="text-sm text-neutral-500">ID Faktur</span>
           <span className="text-sm text-neutral-900">{props.id}</span>
         </div>
-        <div className="flex flex-row justify-between space-x-4 text-left">
+        <div className="grid grid-cols-2 gap-4 text-left sm:grid-cols-3 lg:flex lg:flex-row lg:justify-between lg:gap-0 lg:space-x-4">
           <div className="flex flex-col">
             <span className="text-sm text-neutral-500">Pengirim</span>
             <span className="text-sm text-neutral-900">{props.sender.name}</span>

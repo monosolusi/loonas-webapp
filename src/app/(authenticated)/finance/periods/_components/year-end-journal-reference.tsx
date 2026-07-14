@@ -20,16 +20,16 @@ export function YearEndJournalReference({ label = "Jurnal penutup:", closeJourna
   if (!closeJournalId) return null;
 
   return (
-    <div className="flex items-center gap-x-2 rounded-lg border border-neutral-100 bg-neutral-50 px-4 py-3">
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-neutral-100 bg-neutral-50 px-4 py-3">
       <span className="text-sm text-neutral-400">{label}</span>
       <Link
         href={`/finance/journals/${closeJournalId}`}
-        className="flex items-center gap-x-1 font-mono text-sm text-primary-500 hover:underline"
+        className="flex min-w-0 max-w-full items-center gap-x-1 font-mono text-sm text-primary-500 hover:underline"
       >
-        {closeJournalId}
-        <ArrowTopRightOnSquareIcon className="size-3.5" aria-hidden="true" />
+        <span className="truncate">{closeJournalId}</span>
+        <ArrowTopRightOnSquareIcon className="size-3.5 shrink-0" aria-hidden="true" />
       </Link>
-      <span className="ml-auto text-xs text-neutral-400">{formattedDate}</span>
+      <span className="text-xs text-neutral-400 sm:ml-auto">{formattedDate}</span>
     </div>
   );
 }

@@ -13,6 +13,8 @@ import clsx from "clsx";
 
 interface InvoicePreviewProps {
   className?: string;
+  /** Force the desktop (single-row) layout regardless of viewport — used by headless PDF rendering. */
+  forceDesktop?: boolean;
   sender: { name: string; address: string };
   recipient: { name: string; phoneNumber: string; email: string };
   invoice: {
@@ -43,10 +45,16 @@ interface InvoicePreviewProps {
 }
 
 export function InvoicePreview(props: InvoicePreviewProps) {
+  const { forceDesktop } = props;
   return (
-    <div className={clsx("w-full rounded-lg border border-neutral-200 bg-white p-6 text-sm shadow-md", props.className)}>
+    <div
+      className={clsx(
+        "w-full rounded-lg border border-neutral-200 bg-white p-4 text-sm shadow-md sm:p-6",
+        props.className,
+      )}
+    >
       <div className="flex flex-col space-y-4">
-        <div className="flex flex-1 flex-row space-x-4">
+        <div className={clsx("flex flex-1 gap-4", forceDesktop ? "flex-row" : "flex-col lg:flex-row")}>
           <div className="flex-1">
             <SenderInformation senderName={props.sender.name} address={props.sender.address} />
           </div>
@@ -55,16 +63,17 @@ export function InvoicePreview(props: InvoicePreviewProps) {
               invoiceNumber={props.invoice.invoiceNumber}
               invoiceDate={props.invoice.invoiceDate}
               dueDate={props.invoice.dueDate}
+              forceDesktop={forceDesktop}
             />
           </div>
         </div>
-        <div className="mt-16 flex w-1/3 flex-col space-y-1">
+        <div className={clsx("flex flex-col space-y-1", forceDesktop ? "mt-16 w-1/3" : "mt-8 w-full lg:mt-16 lg:w-1/3")}>
           <BillTo name={props.recipient.name} phoneNumber={props.recipient.phoneNumber} email={props.recipient.email} />
         </div>
         <div className="flex flex-1">
-          <InvoiceItemTable items={props.items} />
+          <InvoiceItemTable items={props.items} forceDesktop={forceDesktop} />
         </div>
-        <div className="mt-8 flex flex-1 flex-row space-x-4">
+        <div className={clsx("mt-8 flex flex-1 gap-4", forceDesktop ? "flex-row" : "flex-col lg:flex-row")}>
           <div className="flex-1 flex-col space-y-4">
             <Note note={props.invoice.note} />
             <Tnc tnc={props.invoice.tnc} />

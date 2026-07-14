@@ -34,34 +34,69 @@ export function PeriodRow({ period }: PeriodRowProps) {
   }, [period, openCloseDialog, openReopenDialog, openAllocateDialog, hasManagerialCosting, panelOpen, periodAllocated]);
 
   return (
-    <div className="grid grid-cols-[2fr_1fr_auto_64px] items-center gap-x-2 border-b border-neutral-100 px-6 py-4 last:border-b-0">
-      <span className="text-sm font-medium text-neutral-500">{period.label}</span>
-      <div>
-        <StatusChip
-          label={period.isClosed ? "Terkunci" : "Terbuka"}
-          variant={period.isClosed ? "success" : "neutral"}
-          compact
-        />
+    <>
+      {/* Desktop: grid row (lg and up) */}
+      <div className="hidden grid-cols-[2fr_1fr_auto_64px] items-center gap-x-2 border-b border-neutral-100 px-6 py-4 last:border-b-0 lg:grid">
+        <span className="text-sm font-medium text-neutral-500">{period.label}</span>
+        <div>
+          <StatusChip
+            label={period.isClosed ? "Terkunci" : "Terbuka"}
+            variant={period.isClosed ? "success" : "neutral"}
+            compact
+          />
+        </div>
+        <div>
+          {hasManagerialCosting && period.isClosed ? (
+            <button
+              type="button"
+              onClick={() => toggleAllocationPanel(period.id)}
+              aria-label={panelOpen ? "Tutup panel alokasi" : "Buka panel alokasi"}
+              aria-expanded={panelOpen}
+              className="flex size-8 items-center justify-center rounded-lg text-neutral-300 transition-colors hover:bg-neutral-50 hover:text-neutral-400"
+            >
+              <ChevronDownIcon
+                className={clsx("size-4 transition-transform", panelOpen ? "rotate-180" : "rotate-0")}
+                aria-hidden="true"
+              />
+            </button>
+          ) : null}
+        </div>
+        <div className="flex justify-end">
+          {actionOptions.length > 0 ? <ActionMenu options={actionOptions} /> : null}
+        </div>
       </div>
-      <div>
-        {hasManagerialCosting && period.isClosed ? (
-          <button
-            type="button"
-            onClick={() => toggleAllocationPanel(period.id)}
-            aria-label={panelOpen ? "Tutup panel alokasi" : "Buka panel alokasi"}
-            aria-expanded={panelOpen}
-            className="flex size-8 items-center justify-center rounded-lg text-neutral-300 transition-colors hover:bg-neutral-50 hover:text-neutral-400"
-          >
-            <ChevronDownIcon
-              className={clsx("size-4 transition-transform", panelOpen ? "rotate-180" : "rotate-0")}
-              aria-hidden="true"
+
+      {/* Mobile: stacked block (below lg). No single navigation target here (unlike browse-list
+          rows), so we don't use MobileListCard's tap-target model — instead mirror its visual
+          chrome (padding, border, text sizing) while keeping the expand toggle and ActionMenu as
+          independent, always-visible controls. */}
+      <div className="flex flex-col gap-2 border-b border-neutral-100 px-4 py-3.5 last:border-b-0 lg:hidden">
+        <span className="truncate text-sm font-semibold text-neutral-500">{period.label}</span>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <StatusChip
+              label={period.isClosed ? "Terkunci" : "Terbuka"}
+              variant={period.isClosed ? "success" : "neutral"}
+              compact
             />
-          </button>
-        ) : null}
+            {hasManagerialCosting && period.isClosed ? (
+              <button
+                type="button"
+                onClick={() => toggleAllocationPanel(period.id)}
+                aria-label={panelOpen ? "Tutup panel alokasi" : "Buka panel alokasi"}
+                aria-expanded={panelOpen}
+                className="flex size-8 items-center justify-center rounded-lg text-neutral-300 transition-colors hover:bg-neutral-50 hover:text-neutral-400"
+              >
+                <ChevronDownIcon
+                  className={clsx("size-4 transition-transform", panelOpen ? "rotate-180" : "rotate-0")}
+                  aria-hidden="true"
+                />
+              </button>
+            ) : null}
+          </div>
+          {actionOptions.length > 0 ? <ActionMenu options={actionOptions} /> : null}
+        </div>
       </div>
-      <div className="flex justify-end">
-        {actionOptions.length > 0 ? <ActionMenu options={actionOptions} /> : null}
-      </div>
-    </div>
+    </>
   );
 }

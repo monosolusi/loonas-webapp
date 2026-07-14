@@ -38,9 +38,12 @@ export function CoaMappingsTable() {
       loading={loading}
       empty={!loading && (!mappings || mappings.length === 0)}
       emptyMessage="Belum ada pemetaan akun."
+      scrollable
     >
-      <TableHeaderRow />
-      {mappings?.map((mapping) => <CoaMappingRow key={mapping.id} mapping={mapping} />)}
+      <div className="min-w-[820px]">
+        <TableHeaderRow />
+        {mappings?.map((mapping) => <CoaMappingRow key={mapping.id} mapping={mapping} />)}
+      </div>
     </TableContainer>
   );
 }
