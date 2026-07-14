@@ -57,7 +57,16 @@ export class InvoiceServiceImpl implements InvoiceService {
       const result = await this.http.request({ path, method, searchParams, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      const data = (result.data as Record<string, any>[]).map((item) => this.parseInvoiceListItem(item));
+      // Dedupe by id: the backend list query can fan out duplicate rows for an
+      // invoice with multiple related records (pay-ins / payment-methods / items),
+      // which otherwise collides React keys in every list consumer. First wins.
+      const parsed = (result.data as Record<string, any>[]).map((item) => this.parseInvoiceListItem(item));
+      const seen = new Set<string>();
+      const data = parsed.filter((item) => {
+        if (seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      });
       const meta = PaginationMetaModel.fromJson(result.meta);
 
       return { data, meta };
