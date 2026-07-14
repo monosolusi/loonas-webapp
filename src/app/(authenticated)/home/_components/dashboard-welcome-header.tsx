@@ -11,9 +11,9 @@ export function DashboardWelcomeHeader() {
   return (
     <div className="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-col gap-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-neutral-500">
+        <h1 className="text-3xl leading-9 font-bold tracking-tight text-neutral-500">
           Selamat Datang,{" "}
-          {loading ? <span className="inline-block h-7 w-32 animate-pulse rounded bg-neutral-100" /> : account?.fullName}{" "}
+          {loading ? <span className="inline-block h-8 w-32 animate-pulse rounded bg-neutral-100" /> : account?.fullName}{" "}
           👋
         </h1>
         <p className="text-sm text-neutral-300">Berikut ringkasan keuangan bisnis Anda hari ini.</p>

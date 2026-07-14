@@ -1,5 +1,6 @@
 "use client";
 
+import { ListPageHeader } from "@/core/presentations/components/list-page-header";
 import { useFixedCostEntries } from "@/app/(authenticated)/finance/fixed-costs/_providers/fixed-cost-entries-provider";
 
 export function FixedCostHeader() {
@@ -7,10 +8,7 @@ export function FixedCostHeader() {
 
   return (
     <>
-      <div className="flex flex-col gap-y-2">
-        <h1 className="text-3xl leading-9 font-bold tracking-tight">Biaya Tetap Bulanan</h1>
-        <p className="leading-6 text-neutral-300">{masterCount} jenis biaya</p>
-      </div>
+      <ListPageHeader title="Biaya Tetap Bulanan" subtitle={`${masterCount} jenis biaya`} />
 
       {hasNoMaster && (
         <div className="rounded-lg border border-warning-200 bg-warning-50 px-4 py-3 text-sm text-warning-400">

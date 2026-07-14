@@ -12,6 +12,7 @@ import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-fo
 import { TableContainer } from "@/core/presentations/components/table/table-container";
 import { TableHeader } from "@/core/presentations/components/table/table-header";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
+import { ListPageHeader } from "@/core/presentations/components/list-page-header";
 import { MobileListCard } from "@/core/presentations/components/table/mobile-list-card";
 import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
@@ -139,10 +140,7 @@ export function LedgerListImpl() {
 
   return (
     <div className="flex flex-col gap-y-6">
-      <div className="flex flex-col gap-y-2">
-        <h1 className="text-3xl leading-9 font-bold tracking-tight">Buku Besar</h1>
-        <p className="leading-6 text-neutral-300">{meta ? `${meta.total} akun` : "Memuat..."}</p>
-      </div>
+      <ListPageHeader title="Buku Besar" subtitle={meta ? `${meta.total} akun` : "Memuat..."} />
 
       {toolbar}
 
