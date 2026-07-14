@@ -7,7 +7,7 @@ import { TextInput } from "@/core/presentations/components/text-inputs/text-inpu
 import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledger-account";
 import { CoaMappingLinePosition } from "@/features/accounting/domain/entities/coa-mapping-line";
 import { LedgerAccountCombobox } from "@/features/accounting/presentations/components/ledger-account-combobox";
-import { CoaMappingLineFormItem } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_components/coa-mapping-form.types";
+import { CoaMappingLineFormItem } from "@/app/(authenticated)/chart-of-accounts/mappings/_components/coa-mapping-form.types";
 
 const POSITION_OPTIONS = [
   { label: "Debit", value: "debit" },

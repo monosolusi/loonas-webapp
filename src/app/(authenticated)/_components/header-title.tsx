@@ -27,8 +27,8 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/finance/opening-balance": { title: "Saldo Awal" },
   "/finance/pph-final": { title: "PPh Final UMKM" },
   "/finance/profitability": { title: "Profitabilitas Varian" },
-  "/settings/chart-of-accounts/accounts": { title: "Pengaturan" },
-  "/settings/chart-of-accounts/mappings": { title: "Pengaturan" },
+  "/chart-of-accounts/accounts": { title: "Bagan Akun" },
+  "/chart-of-accounts/mappings": { title: "Bagan Akun" },
 };
 
 export function HeaderTitle() {

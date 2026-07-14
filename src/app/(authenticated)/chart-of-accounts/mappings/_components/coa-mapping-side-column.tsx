@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { CoaMappingLineEntity } from "@/features/accounting/domain/entities/coa-mapping-line";
-import { CoaMappingLineDisplay } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_components/coa-mapping-line-display";
+import { CoaMappingLineDisplay } from "@/app/(authenticated)/chart-of-accounts/mappings/_components/coa-mapping-line-display";
 
 type CoaMappingSideColumnProps = {
   lines: CoaMappingLineEntity[];

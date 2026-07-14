@@ -5,52 +5,55 @@ import { ServerError } from "@/core/resources/server-error";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
-import { useCreateCoaMapping } from "@/features/accounting/presentations/hooks/use-create-coa-mapping";
-import { useCoaMappings } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_providers/coa-mappings-provider";
-import { CoaMappingFormDialog } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_components/coa-mapping-form-dialog";
-import { CoaMappingLineFormItem } from "@/app/(authenticated)/settings/chart-of-accounts/mappings/_components/coa-mapping-form.types";
+import { useUpdateCoaMapping } from "@/features/accounting/presentations/hooks/use-update-coa-mapping";
+import { CoaMappingEntity } from "@/features/accounting/domain/entities/coa-mapping";
+import { useCoaMappings } from "@/app/(authenticated)/chart-of-accounts/mappings/_providers/coa-mappings-provider";
+import { CoaMappingFormDialog } from "@/app/(authenticated)/chart-of-accounts/mappings/_components/coa-mapping-form-dialog";
+import { CoaMappingLineFormItem } from "@/app/(authenticated)/chart-of-accounts/mappings/_components/coa-mapping-form.types";
 
-function createEmptyLine(position: "debit" | "credit"): CoaMappingLineFormItem {
+function toFormItems(mapping: CoaMappingEntity): CoaMappingLineFormItem[] {
+  return mapping.lines.map((line) => ({
+    key: crypto.randomUUID(),
+    account: line.account,
+    position: line.position,
+    label: line.label ?? "",
+  }));
+}
+
+function newEmptyLine(): CoaMappingLineFormItem {
   return {
     key: crypto.randomUUID(),
     account: null,
-    position,
+    position: "debit",
     label: "",
   };
 }
 
-function initialLines(): CoaMappingLineFormItem[] {
-  return [createEmptyLine("debit"), createEmptyLine("credit")];
-}
-
-export function CoaMappingCreateDialog() {
+export function CoaMappingEditDialog() {
   const { showToast } = useToast();
-  const { creatingOpen, setCreatingOpen, entityTypes } = useCoaMappings();
-  const { trigger, isMutating } = useCreateCoaMapping();
+  const { editingItem, setEditingItem, entityTypes } = useCoaMappings();
+  const { trigger, isMutating } = useUpdateCoaMapping();
 
-  const [entityType, setEntityType] = useState("");
-  const [entityId, setEntityId] = useState("");
-  const [lines, setLines] = useState<CoaMappingLineFormItem[]>(initialLines);
+  const [lines, setLines] = useState<CoaMappingLineFormItem[]>([]);
 
   useEffect(() => {
-    if (!creatingOpen) {
-      setEntityType("");
-      setEntityId("");
-      setLines(initialLines());
+    if (editingItem) {
+      setLines(toFormItems(editingItem));
+    } else {
+      setLines([]);
     }
-  }, [creatingOpen]);
+  }, [editingItem]);
 
   const isValid = useMemo(() => {
-    if (!entityType) return false;
     if (lines.length < 2) return false;
     if (!lines.every((l) => l.account !== null)) return false;
     const hasDebit = lines.some((l) => l.position === "debit");
     const hasCredit = lines.some((l) => l.position === "credit");
     return hasDebit && hasCredit;
-  }, [entityType, lines]);
+  }, [lines]);
 
   const handleAddLine = () => {
-    setLines((prev) => [...prev, createEmptyLine("debit")]);
+    setLines((prev) => [...prev, newEmptyLine()]);
   };
 
   const handleRemoveLine = (key: string) => {
@@ -63,15 +66,14 @@ export function CoaMappingCreateDialog() {
 
   const handleClose = () => {
     if (isMutating) return;
-    setCreatingOpen(false);
+    setEditingItem(null);
   };
 
   const handleSubmit = async () => {
-    if (!isValid || isMutating) return;
+    if (!editingItem || !isValid || isMutating) return;
     try {
       await trigger({
-        entityType,
-        entityId: entityId.trim() || undefined,
+        id: editingItem.id,
         lines: lines.map((l, i) => ({
           accountId: l.account!.id,
           position: l.position,
@@ -80,8 +82,8 @@ export function CoaMappingCreateDialog() {
         })),
       });
       await revalidateSWRKey(ACCOUNTING_SWR_KEYS.LIST_COA_MAPPINGS);
-      showToast("Pemetaan berhasil dibuat", "success");
-      setCreatingOpen(false);
+      showToast("Pemetaan berhasil diubah", "success");
+      setEditingItem(null);
     } catch (err) {
       const message = err instanceof ServerError ? err.message : "Gagal menyimpan pemetaan";
       showToast(message, "error");
@@ -90,17 +92,18 @@ export function CoaMappingCreateDialog() {
 
   return (
     <CoaMappingFormDialog
-      open={creatingOpen}
-      title="Tambah Pemetaan Akun"
-      submitLabel="Simpan"
+      open={!!editingItem}
+      title="Ubah Pemetaan Akun"
+      submitLabel="Simpan Perubahan"
       entityTypes={entityTypes}
-      entityType={entityType}
-      entityId={entityId}
+      entityType={editingItem?.entityType ?? ""}
+      entityId={editingItem?.entityId ?? ""}
       lines={lines}
       isSubmitting={isMutating}
       isValid={isValid}
-      onEntityTypeChange={setEntityType}
-      onEntityIdChange={setEntityId}
+      immutableMeta
+      onEntityTypeChange={() => {}}
+      onEntityIdChange={() => {}}
       onLineChange={handleLineChange}
       onAddLine={handleAddLine}
       onRemoveLine={handleRemoveLine}

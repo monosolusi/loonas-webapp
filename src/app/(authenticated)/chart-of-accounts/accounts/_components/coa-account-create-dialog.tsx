@@ -8,8 +8,8 @@ import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constan
 import { useCreateLedgerAccount } from "@/features/accounting/presentations/hooks/use-create-ledger-account";
 import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledger-account";
 import { AccountType } from "@/features/accounting/domain/enums/account-type";
-import { CoaAccountFormDialog } from "@/app/(authenticated)/settings/chart-of-accounts/accounts/_components/coa-account-form-dialog";
-import { useCoaAccounts } from "@/app/(authenticated)/settings/chart-of-accounts/accounts/_providers/coa-accounts-provider";
+import { CoaAccountFormDialog } from "@/app/(authenticated)/chart-of-accounts/accounts/_components/coa-account-form-dialog";
+import { useCoaAccounts } from "@/app/(authenticated)/chart-of-accounts/accounts/_providers/coa-accounts-provider";
 
 export function CoaAccountCreateDialog() {
   const { showToast } = useToast();
