@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
+import { DateTime } from "luxon";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
@@ -11,40 +12,89 @@ import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-fo
 import { TableContainer } from "@/core/presentations/components/table/table-container";
 import { TableHeader } from "@/core/presentations/components/table/table-header";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
+import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { FilterDropdown, FilterPill } from "@/app/(authenticated)/products/_components/filter-dropdown";
 import { AccountTypeBadge } from "@/app/(authenticated)/finance/ledger/_components/account-type-badge";
+import { useLedgerListRange } from "@/app/(authenticated)/finance/ledger/_providers/ledger-list-range-provider";
 import { useListLedgerAccounts } from "@/features/accounting/presentations/hooks/use-list-ledger-accounts";
 import { AccountType, ACCOUNT_TYPE_LABELS } from "@/features/accounting/domain/enums/account-type";
 
 const TYPE_OPTIONS = Object.values(AccountType).map((t) => ({ label: ACCOUNT_TYPE_LABELS[t], value: t }));
 
+function isoToDate(iso: string): Date {
+  return DateTime.fromISO(iso, { zone: "Asia/Jakarta" }).toJSDate();
+}
+
+function dateToIso(date: Date): string {
+  return DateTime.fromJSDate(date).setZone("Asia/Jakarta").toFormat("yyyy-MM-dd");
+}
+
 export function LedgerListImpl() {
+  const { from, to, setRange } = useLedgerListRange();
+
   const [page, setPage] = useState(1);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search.trim(), 500);
   const searchQuery = debouncedSearch.length >= 2 ? debouncedSearch : undefined;
 
+  const startDate = useMemo(() => DateTime.fromISO(from, { zone: "Asia/Jakarta" }).toISODate() ?? undefined, [from]);
+  const endDate = useMemo(() => DateTime.fromISO(to, { zone: "Asia/Jakarta" }).toISODate() ?? undefined, [to]);
+
   const { accounts, meta, loading, error } = useListLedgerAccounts({
     page,
     limit: DEFAULT_PAGE_SIZE,
     search: searchQuery,
     types: selectedTypes.length > 0 ? (selectedTypes as AccountType[]) : undefined,
+    startDate,
+    endDate,
   });
+
+  const [pickerValue, setPickerValue] = useState({
+    from: isoToDate(from),
+    to: isoToDate(to),
+  });
+
+  useEffect(() => {
+    setPickerValue({ from: isoToDate(from), to: isoToDate(to) });
+  }, [from, to]);
+
+  const committedRef = useRef<{ from: string; to: string }>({ from, to });
+
+  const handlePickerChange = useCallback(
+    (range: { from: Date | undefined; to: Date | undefined }) => {
+      if (!range.from || !range.to) return;
+      const nextFrom = dateToIso(range.from);
+      const nextTo = dateToIso(range.to);
+      if (nextFrom === committedRef.current.from && nextTo === committedRef.current.to) return;
+      committedRef.current = { from: nextFrom, to: nextTo };
+      setRange({ from: nextFrom, to: nextTo });
+      setPage(1);
+    },
+    [setRange, setPage],
+  );
 
   const hasActiveFilters = selectedTypes.length > 0;
 
   const toolbar = (
     <div className="flex flex-col gap-y-3">
       <div className="flex flex-row items-center justify-between">
-        <FilterDropdown
-          label="Tipe Akun"
-          options={TYPE_OPTIONS}
-          selected={selectedTypes}
-          onChange={(v) => { setSelectedTypes(v); setPage(1); }}
-          multiple
-        />
+        <div className="flex flex-row items-center gap-x-3">
+          <FilterDropdown
+            label="Tipe Akun"
+            options={TYPE_OPTIONS}
+            selected={selectedTypes}
+            onChange={(v) => { setSelectedTypes(v); setPage(1); }}
+            multiple
+          />
+          <DateRangePicker
+            value={pickerValue}
+            onChange={handlePickerChange}
+            maxSpanDays={365}
+            disableFutureDates={false}
+          />
+        </div>
         <div className="w-[280px]">
           <TextInput
             label=""

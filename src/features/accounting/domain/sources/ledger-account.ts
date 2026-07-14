@@ -10,6 +10,8 @@ export type ListLedgerAccountsServiceParams = {
   limit?: number;
   search?: string;
   types?: AccountType[];
+  startDate?: string;
+  endDate?: string;
 };
 
 export type GetAccountBalanceServiceParams = {
