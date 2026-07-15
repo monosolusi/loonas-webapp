@@ -43,7 +43,7 @@ type CoaAccountsProviderProps = {
 export function CoaAccountsProvider({ children }: CoaAccountsProviderProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [showSeeded, setShowSeeded] = useState(false);
+  const [showSeeded, setShowSeeded] = useState(true);
   const [creatingOpen, setCreatingOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<LedgerAccountEntity | null>(null);
   const [deletingItem, setDeletingItem] = useState<LedgerAccountEntity | null>(null);
