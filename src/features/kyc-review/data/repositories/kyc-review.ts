@@ -1,4 +1,5 @@
 import { DataFailed, DataState, DataSuccess } from "@/core/resources/data-state";
+import { PaginatedData } from "@/core/resources/paginated";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { KycReviewRepository } from "@/features/kyc-review/domain/repositories/kyc-review";
@@ -12,12 +13,12 @@ export class KycReviewRepositoryImpl implements KycReviewRepository {
   constructor(private readonly kycReviewService: KycReviewService) {}
 
   public async listWorks(
-    params: { status?: VerificationWorkStatus },
+    params: { status?: VerificationWorkStatus; page?: number; limit?: number },
     session: SessionEntity,
-  ): Promise<DataState<VerificationWorkSummaryEntity[]>> {
+  ): Promise<DataState<PaginatedData<VerificationWorkSummaryEntity>>> {
     try {
-      const works = await this.kycReviewService.listWorks(params, session);
-      return new DataSuccess(works.map((work) => work.toEntity()));
+      const { data, meta } = await this.kycReviewService.listWorks(params, session);
+      return new DataSuccess({ data: data.map((work) => work.toEntity()), meta: meta.toMeta() });
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
