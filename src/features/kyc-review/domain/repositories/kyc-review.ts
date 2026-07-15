@@ -1,4 +1,5 @@
 import { DataState } from "@/core/resources/data-state";
+import { PaginatedData } from "@/core/resources/paginated";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { VerificationWorkSummaryEntity } from "@/features/kyc-review/domain/entities/verification-work-summary";
 import { VerificationWorkDetailEntity } from "@/features/kyc-review/domain/entities/verification-work-detail";
@@ -7,9 +8,9 @@ import { ReviewAction } from "@/features/kyc-review/domain/enums/review-action";
 
 export interface KycReviewRepository {
   listWorks(
-    params: { status?: VerificationWorkStatus },
+    params: { status?: VerificationWorkStatus; page?: number; limit?: number },
     session: SessionEntity,
-  ): Promise<DataState<VerificationWorkSummaryEntity[]>>;
+  ): Promise<DataState<PaginatedData<VerificationWorkSummaryEntity>>>;
 
   getWork(id: string, session: SessionEntity): Promise<DataState<VerificationWorkDetailEntity>>;
 

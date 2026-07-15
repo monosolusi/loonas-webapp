@@ -3,6 +3,7 @@
 import useSWR from "swr";
 import { useClerk } from "@clerk/nextjs";
 import { DataFailed } from "@/core/resources/data-state";
+import { PaginatedData } from "@/core/resources/paginated";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
@@ -23,12 +24,14 @@ import {
 async function ListVerificationWorksFetcher([_, params]: [
   string,
   ListVerificationWorksFetcherParams,
-]): Promise<VerificationWorkSummaryEntity[]> {
+]): Promise<PaginatedData<VerificationWorkSummaryEntity>> {
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const kycReviewRepository = new KycReviewRepositoryImpl(new KycReviewServiceImpl(new HttpRequest()));
   const useCase = new ListVerificationWorksUseCase(kycReviewRepository, sessionRepository);
 
-  const result = await useCase.execute(new ListVerificationWorksUseCaseParams(params.status));
+  const result = await useCase.execute(
+    new ListVerificationWorksUseCaseParams(params.status, params.page, params.limit),
+  );
   if (result instanceof DataFailed) throw result.error;
   if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
   return result.data;
@@ -42,7 +45,8 @@ export function useListVerificationWorks(params: UseListVerificationWorksParams)
     ListVerificationWorksFetcher,
   );
 
-  if (isLoading) return { works: null, loading: true, error: null, refresh: null };
-  if (error) return { works: null, loading: false, error, refresh: null };
-  return { works: data ?? [], loading: false, error: null, refresh: mutate };
+  if (isLoading) return { works: null, meta: null, loading: true, error: null, refresh: null };
+  if (error) return { works: null, meta: null, loading: false, error, refresh: null };
+  if (!data) return { works: null, meta: null, loading: true, error: null, refresh: null };
+  return { works: data.data, meta: data.meta, loading: false, error: null, refresh: mutate };
 }
