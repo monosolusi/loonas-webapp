@@ -1,11 +1,7 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import { XMarkIcon } from "@heroicons/react/16/solid";
-import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
-import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
+import { TableSearch } from "@/core/presentations/components/table/table-search";
 import { ProductType, ProductTypeLabel, ProductTypeType } from "@/features/product/domain/enums/product-type";
 import { useListProductCategories } from "@/features/product/presentations/hooks/use-list-product-categories";
 import { useProductList } from "@/app/(authenticated)/products/_providers/product-list-provider";
@@ -78,37 +74,7 @@ export function ProductListToolbar() {
             searchPlaceholder="Cari kategori..."
           />
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-x-3">
-          <div className="w-full sm:w-[250px]">
-            <TextInput
-              label=""
-              placeholder="Cari nama atau SKU..."
-              value={search}
-              onChange={setSearch}
-              leftIcon={
-                <Image src="/assets/images/search-icon-neutral-400-w20-h20.svg" alt="" width={20} height={20} />
-              }
-              rightIcon={
-                search ? (
-                  <button
-                    type="button"
-                    onClick={() => setSearch("")}
-                    className="flex items-center justify-center text-neutral-200 hover:text-neutral-400"
-                  >
-                    <XMarkIcon className="size-4" />
-                  </button>
-                ) : undefined
-              }
-            />
-          </div>
-          <Link href="/products/create" className="w-full sm:w-auto">
-            <PrimaryButton
-              label="Tambah Produk"
-              leftIcon={<Image src="/assets/images/plus-icon-white-w16-h16.svg" alt="" width={16} height={16} />}
-              className="w-full sm:w-auto"
-            />
-          </Link>
-        </div>
+        <TableSearch value={search} onChange={setSearch} placeholder="Cari nama atau SKU..." />
       </TableToolbar>
 
       {hasActiveFilters && (

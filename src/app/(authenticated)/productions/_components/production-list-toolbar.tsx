@@ -1,10 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import { XMarkIcon } from "@heroicons/react/16/solid";
 import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
-import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
+import { TableSearch } from "@/core/presentations/components/table/table-search";
 import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
 import { dateToIso, isoToDate } from "@/core/utilities/datetime/calendar-date";
 import { useProductionList } from "@/app/(authenticated)/productions/_providers/production-list-provider";
@@ -53,28 +51,7 @@ export function ProductionListToolbar() {
           disableFutureDates={false}
         />
       </div>
-      <div className="w-full sm:w-[250px]">
-        <TextInput
-          label=""
-          placeholder="Cari produk atau catatan..."
-          value={search}
-          onChange={handleSearchChange}
-          leftIcon={
-            <Image src="/assets/images/search-icon-neutral-400-w20-h20.svg" alt="" width={20} height={20} />
-          }
-          rightIcon={
-            search ? (
-              <button
-                type="button"
-                onClick={() => handleSearchChange("")}
-                className="flex items-center justify-center text-neutral-200 hover:text-neutral-400"
-              >
-                <XMarkIcon className="size-4" />
-              </button>
-            ) : undefined
-          }
-        />
-      </div>
+      <TableSearch value={search} onChange={handleSearchChange} placeholder="Cari produk atau catatan..." />
     </TableToolbar>
   );
 }
