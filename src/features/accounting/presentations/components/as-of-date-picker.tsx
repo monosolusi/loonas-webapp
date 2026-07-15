@@ -28,10 +28,10 @@ export function AsOfDatePicker({ value, onChange }: AsOfDatePickerProps) {
     <Popover className="relative">
       <PopoverButton
         className={clsx(
-          "flex flex-row items-center gap-x-2 rounded-lg border px-3 py-2 text-sm outline-none transition-colors h-11",
+          "flex h-11 flex-row items-center gap-x-2 rounded-lg border px-3 py-2 text-sm outline-none transition-colors",
           isActive
             ? "border-primary-300/30 bg-primary-300/5 text-primary-300"
-            : "border-neutral-100 text-neutral-200 hover:border-neutral-200",
+            : "border-neutral-200 text-neutral-400 hover:border-neutral-300",
         )}
       >
         <CalendarIcon className="size-4" aria-hidden="true" />
@@ -47,18 +47,23 @@ export function AsOfDatePicker({ value, onChange }: AsOfDatePickerProps) {
         leaveFrom="opacity-100 translate-y-0"
         leaveTo="opacity-0 translate-y-1"
       >
-        <PopoverPanel className="absolute left-0 z-30 mt-2 rounded-lg border border-neutral-100 bg-white">
+        <PopoverPanel
+          anchor={{ to: "bottom end", gap: 8 }}
+          className="z-30 w-max rounded-lg border border-neutral-200 bg-white shadow-lg"
+        >
           {({ close }) => (
-            <DayPicker
-              mode="single"
-              locale={id}
-              selected={value}
-              onSelect={(date) => {
-                onChange(date);
-                close();
-              }}
-              disabled={{ after: today }}
-            />
+            <div className="p-3">
+              <DayPicker
+                mode="single"
+                locale={id}
+                selected={value}
+                onSelect={(date) => {
+                  onChange(date);
+                  close();
+                }}
+                disabled={{ after: today }}
+              />
+            </div>
           )}
         </PopoverPanel>
       </Transition>
