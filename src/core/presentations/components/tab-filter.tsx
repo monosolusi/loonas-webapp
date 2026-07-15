@@ -10,7 +10,7 @@ interface TabFilterProps {
 export function TabFilter({ selectedIndex, onChange, tabs }: TabFilterProps) {
   return (
     <TabGroup selectedIndex={selectedIndex} onChange={onChange}>
-      <TabList className="flex flex-row rounded-lg bg-neutral-100 p-1">
+      <TabList className="flex w-fit flex-row rounded-lg bg-neutral-100 p-1">
         {tabs.map((label) => (
           <Tab
             key={label}
