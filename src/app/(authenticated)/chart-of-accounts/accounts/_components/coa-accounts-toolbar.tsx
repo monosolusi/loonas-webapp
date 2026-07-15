@@ -15,18 +15,16 @@ export function CoaAccountsToolbar() {
 
   return (
     <TableToolbar>
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={() => setShowSeeded(!showSeeded)}
-          className="flex cursor-pointer items-center gap-x-2"
-          aria-pressed={showSeeded}
-        >
-          <MiniToggle active={showSeeded} />
-          <label className="cursor-pointer select-none text-sm text-neutral-400">Tampilkan akun bawaan</label>
-        </button>
-        <TableSearch value={search} onChange={handleSearchChange} placeholder="Cari kode atau nama akun..." />
-      </div>
+      <button
+        type="button"
+        onClick={() => setShowSeeded(!showSeeded)}
+        className="flex cursor-pointer items-center gap-x-2"
+        aria-pressed={showSeeded}
+      >
+        <MiniToggle active={showSeeded} />
+        <label className="cursor-pointer select-none text-sm text-neutral-400">Tampilkan akun bawaan</label>
+      </button>
+      <TableSearch value={search} onChange={handleSearchChange} placeholder="Cari kode atau nama akun..." />
     </TableToolbar>
   );
 }

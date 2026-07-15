@@ -1,14 +1,25 @@
 "use client";
 
+import Image from "next/image";
+import { ListPageHeader } from "@/core/presentations/components/list-page-header";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useCoaMappings } from "@/app/(authenticated)/chart-of-accounts/mappings/_providers/coa-mappings-provider";
 
 export function CoaMappingsHeader() {
-  const { meta } = useCoaMappings();
+  const { meta, setCreatingOpen } = useCoaMappings();
 
   return (
-    <div className="flex flex-col gap-y-2">
-      <h1 className="text-3xl leading-9 font-bold tracking-tight">Pemetaan Akun</h1>
-      <p className="leading-6 text-neutral-300">{meta ? `${meta.total} pemetaan akun` : "Memuat..."}</p>
-    </div>
+    <ListPageHeader
+      title="Pemetaan Akun"
+      subtitle={meta ? `${meta.total} pemetaan akun` : "Memuat..."}
+      action={
+        <PrimaryButton
+          label="Tambah Pemetaan"
+          leftIcon={<Image src="/assets/images/plus-icon-white-w16-h16.svg" alt="" width={16} height={16} />}
+          onClick={() => setCreatingOpen(true)}
+          className="w-full sm:w-auto"
+        />
+      }
+    />
   );
 }

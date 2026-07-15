@@ -2,16 +2,15 @@
 
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
-import Image from "next/image";
 import Link from "next/link";
 import { DateTime } from "luxon";
-import { XMarkIcon } from "@heroicons/react/16/solid";
-import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { TableContainer } from "@/core/presentations/components/table/table-container";
 import { TableHeader } from "@/core/presentations/components/table/table-header";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
+import { TableSearch } from "@/core/presentations/components/table/table-search";
+import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
 import { ListPageHeader } from "@/core/presentations/components/list-page-header";
 import { MobileListCard } from "@/core/presentations/components/table/mobile-list-card";
 import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
@@ -81,8 +80,8 @@ export function LedgerListImpl() {
 
   const toolbar = (
     <div className="flex flex-col gap-y-3">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-x-3">
+      <TableToolbar>
+        <div className="flex flex-row flex-wrap items-center gap-3">
           <FilterDropdown
             label="Tipe Akun"
             options={TYPE_OPTIONS}
@@ -97,21 +96,8 @@ export function LedgerListImpl() {
             disableFutureDates={false}
           />
         </div>
-        <div className="w-full sm:w-[280px]">
-          <TextInput
-            label=""
-            placeholder="Cari kode atau nama akun..."
-            value={search}
-            onChange={setSearch}
-            leftIcon={<Image src="/assets/images/search-icon-neutral-400-w20-h20.svg" alt="" width={20} height={20} />}
-            rightIcon={search ? (
-              <button type="button" onClick={() => setSearch("")} className="flex items-center justify-center text-neutral-200 hover:text-neutral-400">
-                <XMarkIcon className="size-4" />
-              </button>
-            ) : undefined}
-          />
-        </div>
-      </div>
+        <TableSearch value={search} onChange={setSearch} placeholder="Cari kode atau nama akun..." />
+      </TableToolbar>
       {hasActiveFilters && (
         <div className="flex flex-row flex-wrap items-center gap-2">
           {selectedTypes.map((t) => (

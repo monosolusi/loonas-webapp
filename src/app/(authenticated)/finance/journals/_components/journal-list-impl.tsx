@@ -3,9 +3,6 @@
 import { useCallback, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { XMarkIcon } from "@heroicons/react/16/solid";
-import { PlusIcon } from "@heroicons/react/24/outline";
-import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
 import { dateToIso, isoToDate } from "@/core/utilities/datetime/calendar-date";
@@ -14,6 +11,8 @@ import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-fo
 import { TableContainer } from "@/core/presentations/components/table/table-container";
 import { TableHeader } from "@/core/presentations/components/table/table-header";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
+import { TableSearch } from "@/core/presentations/components/table/table-search";
+import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { SummaryCard } from "@/core/presentations/components/summary-card";
 import { ListPageHeader } from "@/core/presentations/components/list-page-header";
@@ -52,28 +51,12 @@ export function JournalListImpl() {
   const isBalanced = selisih === 0;
 
   const toolbar = (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <Link href="/finance/journals/new">
-        <PrimaryButton label="Jurnal Baru" leftIcon={<PlusIcon className="size-4" />} />
-      </Link>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-x-3">
+    <TableToolbar>
+      <div className="flex flex-row flex-wrap items-center gap-3">
         <DateRangePicker value={pickerValue} onChange={handlePickerChange} maxSpanDays={365} disableFutureDates={false} />
-        <div className="w-full sm:w-[280px]">
-          <TextInput
-            label=""
-            placeholder="Cari memo..."
-            value={search}
-            onChange={setSearch}
-            leftIcon={<Image src="/assets/images/search-icon-neutral-400-w20-h20.svg" alt="" width={20} height={20} />}
-            rightIcon={search ? (
-              <button type="button" onClick={() => setSearch("")} className="flex items-center justify-center text-neutral-200 hover:text-neutral-400">
-                <XMarkIcon className="size-4" />
-              </button>
-            ) : undefined}
-          />
-        </div>
       </div>
-    </div>
+      <TableSearch value={search} onChange={setSearch} placeholder="Cari memo..." />
+    </TableToolbar>
   );
 
   const header = (
@@ -91,7 +74,19 @@ export function JournalListImpl() {
 
   return (
     <div className="flex flex-col gap-y-6">
-      <ListPageHeader title="Jurnal Umum" subtitle={meta ? `${meta.total} entri` : "Memuat..."} />
+      <ListPageHeader
+        title="Jurnal Umum"
+        subtitle={meta ? `${meta.total} entri` : "Memuat..."}
+        action={
+          <Link href="/finance/journals/new" className="w-full sm:w-auto">
+            <PrimaryButton
+              label="Jurnal Baru"
+              leftIcon={<Image src="/assets/images/plus-icon-white-w16-h16.svg" alt="" width={16} height={16} />}
+              className="w-full sm:w-auto"
+            />
+          </Link>
+        }
+      />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <SummaryCard label="Total Debit" value={IDRFormatter.toCurrency(totalDebit)} variant="primary" loading={loading} subtitle="Halaman ini" />

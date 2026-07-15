@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import clsx from "clsx";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import { InvoiceSearchInput } from "@/app/(authenticated)/invoices/_components/invoice-search-input";
+import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
+import { TableSearch } from "@/core/presentations/components/table/table-search";
 import { TableContainer } from "@/core/presentations/components/table/table-container";
 import { TableHeader } from "@/core/presentations/components/table/table-header";
 import { TabFilter } from "@/core/presentations/components/tab-filter";
@@ -72,20 +72,15 @@ export function OutgoingInvoiceTableImpl({ filter }: OutgoingInvoiceTableImplPro
   };
 
   const toolbar = (
-    <div
-      className={clsx(
-        "flex flex-col gap-3 sm:flex-row sm:items-center",
-        showsTabs ? "sm:justify-between" : "sm:justify-end",
-      )}
-    >
+    <TableToolbar>
       {showsTabs && (
         <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:overflow-visible sm:px-0">
           <TabFilter tabs={FILTER_TABS} selectedIndex={activeTab} onChange={handleTabChange} />
         </div>
       )}
 
-      <InvoiceSearchInput value={search} onChange={handleSearchChange} placeholder="Filter halaman ini..." />
-    </div>
+      <TableSearch value={search} onChange={handleSearchChange} placeholder="Filter halaman ini..." />
+    </TableToolbar>
   );
 
   const header = (

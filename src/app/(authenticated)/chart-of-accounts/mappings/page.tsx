@@ -2,7 +2,6 @@
 
 import { CoaMappingsProvider } from "@/app/(authenticated)/chart-of-accounts/mappings/_providers/coa-mappings-provider";
 import { CoaMappingsHeader } from "@/app/(authenticated)/chart-of-accounts/mappings/_components/coa-mappings-header";
-import { CoaMappingsToolbar } from "@/app/(authenticated)/chart-of-accounts/mappings/_components/coa-mappings-toolbar";
 import { CoaMappingsTable } from "@/app/(authenticated)/chart-of-accounts/mappings/_components/coa-mappings-table";
 import { CoaMappingCreateDialog } from "@/app/(authenticated)/chart-of-accounts/mappings/_components/coa-mapping-create-dialog";
 import { CoaMappingEditDialog } from "@/app/(authenticated)/chart-of-accounts/mappings/_components/coa-mapping-edit-dialog";
@@ -13,7 +12,6 @@ export default function CoaMappingsPage() {
     <CoaMappingsProvider>
       <div className="flex flex-col gap-y-6">
         <CoaMappingsHeader />
-        <CoaMappingsToolbar />
         <CoaMappingsTable />
       </div>
       <CoaMappingCreateDialog />

@@ -117,6 +117,20 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   (`usePathname()` returns real ids, e.g. `/finance/journals/abc-123`, so a `"/finance/journals/[id]"` key never
   matches and the title falls back). For a dynamic route, add a `segments[]`-based `if` block in the `useMemo`
   (mirror `/accounts/:id`), not a bracket key.
+- **List-page header/toolbar standard**: every list/index page uses one layout. Heuristic: **action top-right,
+  filters bottom-left, search bottom-right.**
+  - **Row 1 — header**: `ListPageHeader` (`core/presentations/components/list-page-header.tsx`) for top-level pages,
+    or `DetailPageHeader` for `/settings/*` sub-pages. The primary create/add button ALWAYS goes in the header's
+    `action` slot (right) — **never in the toolbar**. It is a `PrimaryButton` with `className="w-full sm:w-auto"` and
+    the plus icon `<Image src="/assets/images/plus-icon-white-w16-h16.svg" alt="" width={16} height={16} />` (never a
+    Heroicons `PlusIcon`, never icon-less). Wrap in `<Link>` when it navigates; keep the `onClick` (no `Link`) when it
+    opens a dialog — and colocate the dialog + its open-state in the header component.
+  - **Row 2 — toolbar**: the shared `TableToolbar` (`core/presentations/components/table/table-toolbar.tsx`). Filters
+    (`DateRangePicker`, `FilterDropdown`, `TabFilter`, toggles) go in a LEFT group
+    (`<div className="flex flex-row flex-wrap items-center gap-3">…</div>`); search goes on the RIGHT and is ALWAYS the
+    shared `TableSearch` (`core/presentations/components/table/table-search.tsx`, `sm:w-[280px]`, right-pinned via
+    `sm:ml-auto`) — never an inline `TextInput` search copy, never a bespoke search box.
+  - **Row 3 (optional)**: active-filter `FilterPill` row below the toolbar.
 
 ### HTTP Requests
 
@@ -189,6 +203,8 @@ Directories use kebab-case. Components use kebab-case filenames.
 | `MiniToggle`    | `core/presentations/components/mini-toggle.tsx`    | Small toggle switch display                           |
 | `StatusChip`    | `core/presentations/components/status-chip.tsx`    | Status badges (success/warning/error/primary/neutral) |
 | `TablePagination` | `core/presentations/components/table/table-pagination.tsx` | Pagination controls; pairs with `TableContainer` + `TableHeader` |
+| `TableToolbar`  | `core/presentations/components/table/table-toolbar.tsx` | List-page toolbar row: filters left, search right (see List-page header/toolbar standard) |
+| `TableSearch`   | `core/presentations/components/table/table-search.tsx` | Standard list search input (`sm:w-[280px]`, right-pinned); use instead of inline `TextInput` search |
 
 ### Pagination
 
