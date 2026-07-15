@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { XMarkIcon } from "@heroicons/react/16/solid";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
@@ -16,6 +15,8 @@ import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { TableContainer } from "@/core/presentations/components/table/table-container";
 import { TableHeader } from "@/core/presentations/components/table/table-header";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
+import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
+import { TableSearch } from "@/core/presentations/components/table/table-search";
 import { MobileListCard } from "@/core/presentations/components/table/mobile-list-card";
 import { ActionMenu } from "@/core/presentations/components/action-menu";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
@@ -99,35 +100,18 @@ export function CategoryListImpl() {
   };
 
   const toolbar = (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="w-full sm:w-[280px]">
-        <TextInput
-          label=""
-          placeholder="Cari kategori..."
-          value={search}
-          onChange={setSearch}
-          leftIcon={<Image src="/assets/images/search-icon-neutral-400-w20-h20.svg" alt="" width={20} height={20} />}
-          rightIcon={
-            search ? (
-              <button
-                type="button"
-                onClick={() => setSearch("")}
-                className="flex items-center justify-center text-neutral-200 hover:text-neutral-400"
-              >
-                <XMarkIcon className="size-4" />
-              </button>
-            ) : undefined
-          }
-        />
-      </div>
-      <div className="flex">
-        <PrimaryButton
-          label="Tambah Kategori"
-          leftIcon={<Image src="/assets/images/plus-icon-white-w16-h16.svg" alt="" width={16} height={16} />}
-          onClick={openCreate}
-        />
-      </div>
-    </div>
+    <TableToolbar>
+      <TableSearch value={search} onChange={setSearch} placeholder="Cari kategori..." />
+    </TableToolbar>
+  );
+
+  const createButton = (
+    <PrimaryButton
+      label="Tambah Kategori"
+      leftIcon={<Image src="/assets/images/plus-icon-white-w16-h16.svg" alt="" width={16} height={16} />}
+      onClick={openCreate}
+      className="w-full sm:w-auto"
+    />
   );
 
   const header = (
@@ -143,7 +127,12 @@ export function CategoryListImpl() {
 
   return (
     <div className="flex flex-col gap-y-6">
-      <DetailPageHeader backHref="/settings" title="Kategori Produk" subtitle={meta ? `${meta.total} kategori` : "Memuat..."} />
+      <DetailPageHeader
+        backHref="/settings"
+        title="Kategori Produk"
+        subtitle={meta ? `${meta.total} kategori` : "Memuat..."}
+        action={createButton}
+      />
 
       {toolbar}
 
