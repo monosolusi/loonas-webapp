@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx";
+import { CheckIcon } from "@heroicons/react/20/solid";
 import { FixedCostCategory } from "@/features/fixed-cost/domain/enums/fixed-cost-category";
 
 type Option = {
@@ -40,7 +41,8 @@ export function FixedCostCategoryRadio({ value, onChange }: FixedCostCategoryRad
             <label
               key={option.value}
               className={clsx(
-                "flex h-11 cursor-pointer items-center gap-x-3 rounded-lg border px-3 transition-colors",
+                "flex cursor-pointer items-start justify-between gap-3 rounded-lg border p-3 transition-colors",
+                "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary-300 has-[:focus-visible]:ring-offset-1",
                 isSelected
                   ? "border-primary-300 bg-primary-50"
                   : "border-neutral-100 hover:border-neutral-200",
@@ -52,9 +54,9 @@ export function FixedCostCategoryRadio({ value, onChange }: FixedCostCategoryRad
                 value={option.value}
                 checked={isSelected}
                 onChange={() => onChange(option.value)}
-                className="size-4 shrink-0 accent-primary-300 focus:ring-2 focus:ring-primary-300 focus:ring-offset-1"
+                className="sr-only"
               />
-              <div className="min-w-0 flex-1">
+              <div className="flex min-w-0 flex-col gap-1">
                 <span
                   className={clsx(
                     "text-sm font-medium",
@@ -63,8 +65,9 @@ export function FixedCostCategoryRadio({ value, onChange }: FixedCostCategoryRad
                 >
                   {option.label}
                 </span>
-                <span className="ml-2 text-xs text-neutral-300">{option.description}</span>
+                <span className="text-xs leading-relaxed text-neutral-300">{option.description}</span>
               </div>
+              {isSelected && <CheckIcon className="size-5 shrink-0 text-primary-300" />}
             </label>
           );
         })}

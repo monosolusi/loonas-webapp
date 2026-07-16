@@ -43,7 +43,7 @@ export function FixedCostCreateDialog({ open, onClose }: FixedCostCreateDialogPr
   };
 
   return (
-    <LoonasDialog title="Tambah Biaya Tetap" width="sm" open={open} onClose={handleClose}>
+    <LoonasDialog title="Tambah Biaya Tetap" width="md" open={open} onClose={handleClose}>
       <div className="mt-2 flex flex-col gap-y-4">
         <TextInput
           label="Nama Biaya"

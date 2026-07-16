@@ -47,7 +47,7 @@ export function FixedCostEditDialog() {
   };
 
   return (
-    <LoonasDialog title="Edit Biaya Tetap" width="sm" open={!!editingItem} onClose={handleClose}>
+    <LoonasDialog title="Edit Biaya Tetap" width="md" open={!!editingItem} onClose={handleClose}>
       <div className="mt-2 flex flex-col gap-y-4">
         <TextInput
           label="Nama Biaya"
