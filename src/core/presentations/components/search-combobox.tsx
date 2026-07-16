@@ -10,6 +10,10 @@ export type SearchComboboxOption = {
   id: string;
   label: string;
   description?: string;
+  /** Optional third line, rendered small/grey below `description`. */
+  caption?: string;
+  /** Extra text matched during filtering, in addition to `label` (e.g. SKU). */
+  keywords?: string;
 };
 
 type SearchComboboxBaseProps<T extends SearchComboboxOption> = {
@@ -45,7 +49,10 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
 
   const filtered = useMemo(() => {
     if (!query) return props.options;
-    return props.options.filter((opt) => opt.label.toLowerCase().includes(query.toLowerCase()));
+    const q = query.toLowerCase();
+    return props.options.filter(
+      (opt) => opt.label.toLowerCase().includes(q) || (opt.keywords?.toLowerCase().includes(q) ?? false),
+    );
   }, [props.options, query]);
 
   return (
@@ -98,6 +105,9 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
                 <span className="block truncate group-data-selected:font-semibold">{opt.label}</span>
                 {opt.description && (
                   <span className="group-data-focus:text-primary-200 text-sm text-neutral-200">{opt.description}</span>
+                )}
+                {opt.caption && (
+                  <span className="group-data-focus:text-primary-200 text-sm text-neutral-200">{opt.caption}</span>
                 )}
               </div>
               <span className="text-primary-300 absolute inset-y-0 right-0 hidden items-center pr-3 group-data-selected:flex">

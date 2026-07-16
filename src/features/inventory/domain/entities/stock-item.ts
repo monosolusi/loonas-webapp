@@ -10,6 +10,7 @@ type StockItemVariantRef = {
   id: string;
   name: string;
   productName: string | null;
+  sku: string | null;
 };
 
 type StockItemEntityConstructor = {
@@ -56,5 +57,9 @@ export class StockItemEntity implements AbstractEntity {
 
   get variantName(): string | null {
     return this.variant?.name ?? null;
+  }
+
+  get sku(): string | null {
+    return this.variant?.sku ?? null;
   }
 }
