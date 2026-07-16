@@ -12,15 +12,15 @@ type GrossProfitBlockBodyProps = {
 };
 
 export function GrossProfitBlockBody({ grossProfit }: GrossProfitBlockBodyProps) {
-  const { estimasiLabaKotor, inputs } = grossProfit;
-  const isPositive = estimasiLabaKotor !== null && estimasiLabaKotor >= 0;
-  const sign = estimasiLabaKotor !== null ? (estimasiLabaKotor >= 0 ? "+" : "−") : "";
-  const absValue = estimasiLabaKotor !== null ? Math.abs(estimasiLabaKotor) : 0;
+  const { estimatedGrossProfit, inputs } = grossProfit;
+  const isPositive = estimatedGrossProfit !== null && estimatedGrossProfit >= 0;
+  const sign = estimatedGrossProfit !== null ? (estimatedGrossProfit >= 0 ? "+" : "−") : "";
+  const absValue = estimatedGrossProfit !== null ? Math.abs(estimatedGrossProfit) : 0;
 
   const realizedMargin = useMemo(() => {
-    if (!inputs || inputs.posRevenue <= 0 || estimasiLabaKotor === null) return null;
-    return (estimasiLabaKotor / inputs.posRevenue) * 100;
-  }, [inputs, estimasiLabaKotor]);
+    if (!inputs || inputs.posRevenue <= 0 || estimatedGrossProfit === null) return null;
+    return (estimatedGrossProfit / inputs.posRevenue) * 100;
+  }, [inputs, estimatedGrossProfit]);
 
   return (
     <SectionCard title="Laba Kotor">
@@ -47,10 +47,10 @@ export function GrossProfitBlockBody({ grossProfit }: GrossProfitBlockBodyProps)
                 isPositive ? "text-success-500" : "text-error-500",
               )}
             >
-              {estimasiLabaKotor !== null ? `${sign} ${IDRFormatter.toCurrency(absValue)}` : "—"}
+              {estimatedGrossProfit !== null ? `${sign} ${IDRFormatter.toCurrency(absValue)}` : "—"}
             </dd>
           </div>
-          {estimasiLabaKotor !== null && (
+          {estimatedGrossProfit !== null && (
             <StatusChip
               variant={isPositive ? "success" : "error"}
               label={isPositive ? "Menguntungkan" : "Rugi"}

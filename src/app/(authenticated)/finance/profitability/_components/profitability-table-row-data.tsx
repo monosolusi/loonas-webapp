@@ -2,13 +2,13 @@
 
 import { StatusChip } from "@/core/presentations/components/status-chip";
 import { CurrencyDisplay } from "@/core/presentations/components/currency-display";
-import { VariantHppEntity } from "@/features/profitability/domain/entities/variant-hpp";
+import { VariantCogsEntity } from "@/features/profitability/domain/entities/variant-cogs";
 import { VariantGrossProfitEntity } from "@/features/profitability/domain/entities/variant-gross-profit";
 import { VariantRecommendedPriceEntity } from "@/features/profitability/domain/entities/variant-recommended-price";
 
 type ProfitabilityTableRowDataProps = {
-  hpp: VariantHppEntity | null;
-  hppIncomplete: boolean;
+  cogs: VariantCogsEntity | null;
+  cogsIncomplete: boolean;
   grossProfit: VariantGrossProfitEntity | null;
   grossProfitIncomplete: boolean;
   recommendedPrice: VariantRecommendedPriceEntity | null;
@@ -16,66 +16,66 @@ type ProfitabilityTableRowDataProps = {
 };
 
 function deriveStatusChip(
-  hppIncomplete: boolean,
+  cogsIncomplete: boolean,
   grossProfit: VariantGrossProfitEntity | null,
   grossProfitIncomplete: boolean,
 ): React.ReactNode {
-  if (hppIncomplete || grossProfitIncomplete) {
+  if (cogsIncomplete || grossProfitIncomplete) {
     return <StatusChip variant="warning" label="Kurang" compact />;
   }
   if (!grossProfit) return null;
   if (grossProfit.needsData) {
     return <StatusChip variant="neutral" label="Belum Jual" compact />;
   }
-  if (grossProfit.estimasiLabaKotor === null) return null;
-  if (grossProfit.estimasiLabaKotor < 0) {
+  if (grossProfit.estimatedGrossProfit === null) return null;
+  if (grossProfit.estimatedGrossProfit < 0) {
     return <StatusChip variant="error" label="Rugi" compact />;
   }
   return <StatusChip variant="success" label="Untung" compact />;
 }
 
 export function ProfitabilityTableRowData({
-  hpp,
-  hppIncomplete,
+  cogs,
+  cogsIncomplete,
   grossProfit,
   grossProfitIncomplete,
   recommendedPrice,
   variantPrice,
 }: ProfitabilityTableRowDataProps) {
-  const hppCell = hpp ? <CurrencyDisplay value={hpp.hppPerUnit} /> : "—";
+  const cogsCell = cogs ? <CurrencyDisplay value={cogs.cogsPerUnit} /> : "—";
   const hargaJualCell = <CurrencyDisplay value={variantPrice} />;
   const recPriceCell = recommendedPrice ? <CurrencyDisplay value={recommendedPrice.recommendedPrice} /> : "—";
 
   const grossProfitPositive =
-    grossProfit?.estimasiLabaKotor !== undefined &&
-    grossProfit?.estimasiLabaKotor !== null &&
-    grossProfit.estimasiLabaKotor >= 0 &&
+    grossProfit?.estimatedGrossProfit !== undefined &&
+    grossProfit?.estimatedGrossProfit !== null &&
+    grossProfit.estimatedGrossProfit >= 0 &&
     !grossProfit.needsData;
 
   const grossProfitNegative =
-    grossProfit?.estimasiLabaKotor !== undefined &&
-    grossProfit?.estimasiLabaKotor !== null &&
-    grossProfit.estimasiLabaKotor < 0 &&
+    grossProfit?.estimatedGrossProfit !== undefined &&
+    grossProfit?.estimatedGrossProfit !== null &&
+    grossProfit.estimatedGrossProfit < 0 &&
     !grossProfit.needsData;
 
   const grossProfitCell = (() => {
     if (grossProfitIncomplete) return "—";
     if (!grossProfit) return "—";
     if (grossProfit.needsData) return "—";
-    if (grossProfit.estimasiLabaKotor === null) return "—";
+    if (grossProfit.estimatedGrossProfit === null) return "—";
     return (
       <span className={grossProfitPositive ? "text-success-500" : grossProfitNegative ? "text-error-500" : undefined}>
-        <CurrencyDisplay value={Math.abs(grossProfit.estimasiLabaKotor)} />
+        <CurrencyDisplay value={Math.abs(grossProfit.estimatedGrossProfit)} />
       </span>
     );
   })();
 
-  const statusNode = deriveStatusChip(hppIncomplete, grossProfit, grossProfitIncomplete);
+  const statusNode = deriveStatusChip(cogsIncomplete, grossProfit, grossProfitIncomplete);
 
   return (
     <>
       <div className="text-center text-sm text-neutral-500 tabular-nums">
-        {hppCell} / {hargaJualCell}
+        {cogsCell} / {hargaJualCell}
       </div>
 
       <div className="text-right text-sm text-neutral-500 tabular-nums">{recPriceCell}</div>

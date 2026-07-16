@@ -1,10 +1,10 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { VariantHppModel } from "@/features/profitability/data/models/variant-hpp";
+import { VariantCogsModel } from "@/features/profitability/data/models/variant-cogs";
 import { VariantProductionCostModel } from "@/features/profitability/data/models/variant-production-cost";
 import { VariantGrossProfitModel } from "@/features/profitability/data/models/variant-gross-profit";
 import { VariantRecommendedPriceModel } from "@/features/profitability/data/models/variant-recommended-price";
 
-export type GetVariantHppServiceParams = {
+export type GetVariantCogsServiceParams = {
   readonly productId: string;
   readonly variantId: string;
 };
@@ -26,13 +26,13 @@ export type GetVariantRecommendedPriceServiceParams = {
   readonly margin: number;
 };
 
-export type GetVariantHppServiceResult = { readonly data: VariantHppModel };
+export type GetVariantCogsServiceResult = { readonly data: VariantCogsModel };
 export type GetVariantProductionCostServiceResult = { readonly data: VariantProductionCostModel };
 export type GetVariantGrossProfitServiceResult = { readonly data: VariantGrossProfitModel };
 export type GetVariantRecommendedPriceServiceResult = { readonly data: VariantRecommendedPriceModel };
 
 export interface ProfitabilityService {
-  getVariantHpp(params: GetVariantHppServiceParams, session: SessionEntity): Promise<GetVariantHppServiceResult>;
+  getVariantCogs(params: GetVariantCogsServiceParams, session: SessionEntity): Promise<GetVariantCogsServiceResult>;
   getVariantProductionCost(
     params: GetVariantProductionCostServiceParams,
     session: SessionEntity,

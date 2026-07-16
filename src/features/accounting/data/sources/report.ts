@@ -3,18 +3,18 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import {
   ReportService,
-  GetNeracaParams,
-  GetLabaRugiParams,
-  GetArusKasParams,
+  GetBalanceSheetParams,
+  GetIncomeStatementParams,
+  GetCashFlowParams,
   GetTrialBalanceParams,
   GetGeneralLedgerParams,
-  GetCalkParams,
-  GetNeracaServiceResult,
-  GetLabaRugiServiceResult,
-  GetArusKasServiceResult,
+  GetNotesParams,
+  GetBalanceSheetServiceResult,
+  GetIncomeStatementServiceResult,
+  GetCashFlowServiceResult,
   GetTrialBalanceServiceResult,
   GetGeneralLedgerServiceResult,
-  GetCalkServiceResult,
+  GetNotesServiceResult,
   ListTrialBalanceLinesParams,
   ListTrialBalanceLinesServiceResult,
 } from "@/features/accounting/domain/sources/report";
@@ -22,13 +22,16 @@ import {
 export class ReportServiceImpl implements ReportService {
   constructor(private readonly http: HttpRequest) {}
 
-  public async getNeraca(params: GetNeracaParams, session: SessionEntity): Promise<GetNeracaServiceResult> {
+  public async getBalanceSheet(
+    params: GetBalanceSheetParams,
+    session: SessionEntity,
+  ): Promise<GetBalanceSheetServiceResult> {
     try {
       const searchParams: Record<string, any> = { as_of: params.asOf };
       if (params.compareTo !== undefined) searchParams["compare_to"] = params.compareTo;
 
       const result = await this.http.request({
-        path: "/accounting/reports/neraca",
+        path: "/accounting/reports/balance-sheet",
         method: "GET",
         searchParams,
         session,
@@ -42,7 +45,10 @@ export class ReportServiceImpl implements ReportService {
     }
   }
 
-  public async getLabaRugi(params: GetLabaRugiParams, session: SessionEntity): Promise<GetLabaRugiServiceResult> {
+  public async getIncomeStatement(
+    params: GetIncomeStatementParams,
+    session: SessionEntity,
+  ): Promise<GetIncomeStatementServiceResult> {
     try {
       const body: Record<string, any> = { start_date: params.from, end_date: params.to };
       if (params.compareFrom && params.compareTo) {
@@ -51,7 +57,7 @@ export class ReportServiceImpl implements ReportService {
       }
 
       const result = await this.http.request({
-        path: "/accounting/reports/laba-rugi",
+        path: "/accounting/reports/income-statement",
         method: "POST",
         body,
         session,
@@ -65,12 +71,12 @@ export class ReportServiceImpl implements ReportService {
     }
   }
 
-  public async getArusKas(params: GetArusKasParams, session: SessionEntity): Promise<GetArusKasServiceResult> {
+  public async getCashFlow(params: GetCashFlowParams, session: SessionEntity): Promise<GetCashFlowServiceResult> {
     try {
       const searchParams: Record<string, any> = { start_date: params.from, end_date: params.to };
 
       const result = await this.http.request({
-        path: "/accounting/reports/arus-kas",
+        path: "/accounting/reports/cash-flow",
         method: "GET",
         searchParams,
         session,
@@ -139,12 +145,12 @@ export class ReportServiceImpl implements ReportService {
     }
   }
 
-  public async getCalk(params: GetCalkParams, session: SessionEntity): Promise<GetCalkServiceResult> {
+  public async getNotes(params: GetNotesParams, session: SessionEntity): Promise<GetNotesServiceResult> {
     try {
       const searchParams: Record<string, any> = { as_of: params.asOf };
 
       const result = await this.http.request({
-        path: "/accounting/reports/calk",
+        path: "/accounting/reports/notes",
         method: "GET",
         searchParams,
         session,

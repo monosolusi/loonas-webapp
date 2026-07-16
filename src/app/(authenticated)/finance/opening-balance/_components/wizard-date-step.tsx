@@ -6,7 +6,7 @@ import { DateTime } from "luxon";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
-import { LabaRugiMigrationNotice } from "@/features/accounting/presentations/components/reports/laba-rugi-migration-notice";
+import { IncomeStatementMigrationNotice } from "@/features/accounting/presentations/components/reports/income-statement-migration-notice";
 import { useOpeningBalanceWizard } from "@/app/(authenticated)/finance/opening-balance/_providers/opening-balance-wizard-provider";
 
 const today = DateTime.now().toISODate() ?? "";
@@ -67,7 +67,7 @@ export function WizardDateStep() {
           </div>
 
           <div className="mt-4">
-            <LabaRugiMigrationNotice />
+            <IncomeStatementMigrationNotice />
           </div>
 
           <div className="mt-6 flex flex-col-reverse gap-2 border-t border-neutral-100 pt-6 sm:flex-row sm:items-center sm:justify-between">

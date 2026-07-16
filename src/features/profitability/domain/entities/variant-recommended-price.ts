@@ -2,24 +2,24 @@ import { AbstractEntity } from "@/core/resources/entity";
 
 type VariantRecommendedPriceEntityConstructor = {
   variantId: string;
-  hppPerUnit: number;
-  marginPersen: number;
+  cogsPerUnit: number;
+  marginPercent: number;
   recommendedPrice: number;
-  basisPerhitungan: string;
+  calculationBasis: string;
 };
 
 export class VariantRecommendedPriceEntity implements AbstractEntity {
   public readonly variantId: string;
-  public readonly hppPerUnit: number;
-  public readonly marginPersen: number;
+  public readonly cogsPerUnit: number;
+  public readonly marginPercent: number;
   public readonly recommendedPrice: number;
-  public readonly basisPerhitungan: string;
+  public readonly calculationBasis: string;
 
   constructor(args: VariantRecommendedPriceEntityConstructor) {
     this.variantId = args.variantId;
-    this.hppPerUnit = args.hppPerUnit;
-    this.marginPersen = args.marginPersen;
+    this.cogsPerUnit = args.cogsPerUnit;
+    this.marginPercent = args.marginPercent;
     this.recommendedPrice = args.recommendedPrice;
-    this.basisPerhitungan = args.basisPerhitungan;
+    this.calculationBasis = args.calculationBasis;
   }
 }

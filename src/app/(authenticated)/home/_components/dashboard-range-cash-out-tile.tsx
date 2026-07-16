@@ -1,7 +1,7 @@
 "use client";
 
 // Cash outflow (Kas keluar, Arus-Kas basis) for the selected period — sourced from GET /dashboard
-// `kas_keluar`. This is a cash-basis figure (credits to Kas & Bank), distinct from the accrual Beban.
+// `cash_out`. This is a cash-basis figure (credits to Kas & Bank), distinct from the accrual Beban.
 // MoM trend is inverted: a rise in cash out reads as caution, not success.
 
 import { useMemo } from "react";
@@ -23,12 +23,12 @@ export function DashboardRangeCashOutTile() {
 
   const amount = useMemo(() => {
     if (result.loading || result.error || !result.statistics) return null;
-    return result.statistics.kasKeluar.amount;
+    return result.statistics.cashOut.amount;
   }, [result]);
 
   const trend = useMemo(() => {
     if (result.loading || result.error || !result.statistics) return null;
-    return computeMomTrend(result.statistics.kasKeluar.changes, { noun: "Kas keluar", invert: true });
+    return computeMomTrend(result.statistics.cashOut.changes, { noun: "Kas keluar", invert: true });
   }, [result]);
 
   if (result.loading) return <DashboardRangeCashOutTileLoading />;

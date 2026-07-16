@@ -4,29 +4,29 @@ import { VariantRecommendedPriceEntity } from "@/features/profitability/domain/e
 export class VariantRecommendedPriceModel implements AbstractModel {
   constructor(
     public readonly variantId: string,
-    public readonly hppPerUnit: number,
-    public readonly marginPersen: number,
+    public readonly cogsPerUnit: number,
+    public readonly marginPercent: number,
     public readonly recommendedPrice: number,
-    public readonly basisPerhitungan: string,
+    public readonly calculationBasis: string,
   ) {}
 
   public static fromJson(data: Record<string, any>): VariantRecommendedPriceModel {
     return new VariantRecommendedPriceModel(
       data["variant"]["id"],
-      data["hpp_per_unit"],
-      data["margin_persen"],
+      data["cogs_per_unit"],
+      data["margin_percent"],
       data["recommended_price"],
-      data["basis_perhitungan"],
+      data["calculation_basis"],
     );
   }
 
   public toEntity(): VariantRecommendedPriceEntity {
     return new VariantRecommendedPriceEntity({
       variantId: this.variantId,
-      hppPerUnit: this.hppPerUnit,
-      marginPersen: this.marginPersen,
+      cogsPerUnit: this.cogsPerUnit,
+      marginPercent: this.marginPercent,
       recommendedPrice: this.recommendedPrice,
-      basisPerhitungan: this.basisPerhitungan,
+      calculationBasis: this.calculationBasis,
     });
   }
 }

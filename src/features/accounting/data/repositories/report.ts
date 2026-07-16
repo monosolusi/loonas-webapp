@@ -3,51 +3,40 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import {
   ReportRepository,
-  GetNeracaRepoParams,
-  GetLabaRugiRepoParams,
-  GetArusKasRepoParams,
+  GetBalanceSheetRepoParams,
+  GetIncomeStatementRepoParams,
+  GetCashFlowRepoParams,
   GetTrialBalanceRepoParams,
   GetGeneralLedgerRepoParams,
-  GetCalkRepoParams,
+  GetNotesRepoParams,
   ListTrialBalanceLinesRepoParams,
-  NeracaReportData,
-  LabaRugiReportData,
-  ArusKasReportData,
+  BalanceSheetReportData,
+  IncomeStatementReportData,
+  CashFlowReportData,
   TrialBalanceReportData,
   GeneralLedgerReportData,
   TrialBalanceLinesData,
-  CalkReportData,
+  NotesReportData,
 } from "@/features/accounting/domain/repositories/report";
 import { ReportService } from "@/features/accounting/domain/sources/report";
-import { NeracaModel } from "@/features/accounting/data/models/neraca";
-import { LabaRugiModel } from "@/features/accounting/data/models/laba-rugi";
-import { ArusKasModel } from "@/features/accounting/data/models/arus-kas";
+import { BalanceSheetModel } from "@/features/accounting/data/models/balance-sheet";
+import { IncomeStatementModel } from "@/features/accounting/data/models/income-statement";
+import { CashFlowModel } from "@/features/accounting/data/models/cash-flow";
 import { TrialBalanceReportModel } from "@/features/accounting/data/models/trial-balance";
 import { TrialBalanceLineModel } from "@/features/accounting/data/models/trial-balance-line";
 import { GeneralLedgerReportModel } from "@/features/accounting/data/models/general-ledger";
-import { CalkModel } from "@/features/accounting/data/models/calk";
+import { NotesModel } from "@/features/accounting/data/models/notes";
 
 export class ReportRepositoryImpl implements ReportRepository {
   constructor(private readonly service: ReportService) {}
 
-  public async getNeraca(params: GetNeracaRepoParams, session: SessionEntity): Promise<DataState<NeracaReportData>> {
-    try {
-      const result = await this.service.getNeraca(params, session);
-      const model = NeracaModel.fromJson(result.data);
-      return new DataSuccess(model.toEntity());
-    } catch (err) {
-      if (err instanceof ServerError) return new DataFailed(err);
-      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
-    }
-  }
-
-  public async getLabaRugi(
-    params: GetLabaRugiRepoParams,
+  public async getBalanceSheet(
+    params: GetBalanceSheetRepoParams,
     session: SessionEntity,
-  ): Promise<DataState<LabaRugiReportData>> {
+  ): Promise<DataState<BalanceSheetReportData>> {
     try {
-      const result = await this.service.getLabaRugi(params, session);
-      const model = LabaRugiModel.fromJson(result.data);
+      const result = await this.service.getBalanceSheet(params, session);
+      const model = BalanceSheetModel.fromJson(result.data);
       return new DataSuccess(model.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
@@ -55,10 +44,24 @@ export class ReportRepositoryImpl implements ReportRepository {
     }
   }
 
-  public async getArusKas(params: GetArusKasRepoParams, session: SessionEntity): Promise<DataState<ArusKasReportData>> {
+  public async getIncomeStatement(
+    params: GetIncomeStatementRepoParams,
+    session: SessionEntity,
+  ): Promise<DataState<IncomeStatementReportData>> {
     try {
-      const result = await this.service.getArusKas(params, session);
-      const model = ArusKasModel.fromJson(result.data);
+      const result = await this.service.getIncomeStatement(params, session);
+      const model = IncomeStatementModel.fromJson(result.data);
+      return new DataSuccess(model.toEntity());
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async getCashFlow(params: GetCashFlowRepoParams, session: SessionEntity): Promise<DataState<CashFlowReportData>> {
+    try {
+      const result = await this.service.getCashFlow(params, session);
+      const model = CashFlowModel.fromJson(result.data);
       return new DataSuccess(model.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
@@ -94,10 +97,10 @@ export class ReportRepositoryImpl implements ReportRepository {
     }
   }
 
-  public async getCalk(params: GetCalkRepoParams, session: SessionEntity): Promise<DataState<CalkReportData>> {
+  public async getNotes(params: GetNotesRepoParams, session: SessionEntity): Promise<DataState<NotesReportData>> {
     try {
-      const result = await this.service.getCalk(params, session);
-      const model = CalkModel.fromJson(result.data);
+      const result = await this.service.getNotes(params, session);
+      const model = NotesModel.fromJson(result.data);
       return new DataSuccess(model.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);

@@ -2,7 +2,7 @@ import { use } from "react";
 import { ProfitabilityDetailProvider } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_providers/profitability-detail-provider";
 import { ProfitabilityDetailSkeleton } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/profitability-detail-skeleton";
 import { ProfitabilityDetailHeader } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/profitability-detail-header";
-import { HppBlock } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/hpp-block";
+import { CogsBlock } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/cogs-block";
 import { CostStructureBlock } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/cost-structure-block";
 import { GrossProfitBlock } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/gross-profit-block";
 import { RecommendedPriceBlock } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/recommended-price-block";
@@ -23,7 +23,7 @@ export default function ProfitabilityDetailPage(props: ProfitabilityDetailPagePr
       <div className="flex flex-col gap-y-6">
         <ProfitabilityDetailHeader />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <HppBlock />
+          <CogsBlock />
           <GrossProfitBlock />
         </div>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

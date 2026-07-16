@@ -40,8 +40,8 @@ export function DashboardRangeReceivablesPayables() {
 
   const balances = useMemo(() => {
     if (result.loading || result.error || !result.statistics) return null;
-    const { piutang, hutang } = result.statistics;
-    return { piutang, hutang };
+    const { accountsReceivable, accountsPayable } = result.statistics;
+    return { accountsReceivable, accountsPayable };
   }, [result]);
 
   if (result.loading) return <DashboardRangeReceivablesPayablesLoading />;
@@ -52,7 +52,7 @@ export function DashboardRangeReceivablesPayables() {
       />
     );
   }
-  if (!balances || (balances.piutang.amount === 0 && balances.hutang.amount === 0)) {
+  if (!balances || (balances.accountsReceivable.amount === 0 && balances.accountsPayable.amount === 0)) {
     return <DashboardRangeReceivablesPayablesEmpty />;
   }
 
@@ -62,15 +62,15 @@ export function DashboardRangeReceivablesPayables() {
         <BalanceRow
           label="Piutang"
           hint="akan diterima dari pelanggan"
-          amount={balances.piutang.amount}
-          count={balances.piutang.count}
+          amount={balances.accountsReceivable.amount}
+          count={balances.accountsReceivable.count}
         />
         <div className="border-t border-neutral-100" />
         <BalanceRow
           label="Hutang"
           hint="akan dibayar ke pemasok"
-          amount={balances.hutang.amount}
-          count={balances.hutang.count}
+          amount={balances.accountsPayable.amount}
+          count={balances.accountsPayable.count}
         />
       </div>
     </SectionCard>

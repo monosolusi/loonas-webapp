@@ -5,7 +5,7 @@ type VariantGrossProfitEntityConstructor = {
   variantId: string;
   needsData: boolean;
   needsDataReason: string | null;
-  estimasiLabaKotor: number | null;
+  estimatedGrossProfit: number | null;
   isEstimate: boolean;
   basis: string;
   formula: string | null;
@@ -16,7 +16,7 @@ export class VariantGrossProfitEntity implements AbstractEntity {
   public readonly variantId: string;
   public readonly needsData: boolean;
   public readonly needsDataReason: string | null;
-  public readonly estimasiLabaKotor: number | null;
+  public readonly estimatedGrossProfit: number | null;
   public readonly isEstimate: boolean;
   public readonly basis: string;
   public readonly formula: string | null;
@@ -26,7 +26,7 @@ export class VariantGrossProfitEntity implements AbstractEntity {
     this.variantId = args.variantId;
     this.needsData = args.needsData;
     this.needsDataReason = args.needsDataReason;
-    this.estimasiLabaKotor = args.estimasiLabaKotor;
+    this.estimatedGrossProfit = args.estimatedGrossProfit;
     this.isEstimate = args.isEstimate;
     this.basis = args.basis;
     this.formula = args.formula;

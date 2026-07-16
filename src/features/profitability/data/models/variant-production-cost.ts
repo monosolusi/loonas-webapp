@@ -5,7 +5,7 @@ export class VariantProductionCostModel implements AbstractModel {
   constructor(
     public readonly variantId: string,
     public readonly quantity: number,
-    public readonly hppPerUnit: number,
+    public readonly cogsPerUnit: number,
     public readonly fixedComponent: number,
     public readonly variableComponent: number,
     public readonly totalProductionCost: number,
@@ -17,7 +17,7 @@ export class VariantProductionCostModel implements AbstractModel {
     return new VariantProductionCostModel(
       data["variant"]["id"],
       data["quantity"],
-      data["hpp_per_unit"],
+      data["cogs_per_unit"],
       data["fixed_component"],
       data["variable_component"],
       data["total_production_cost"],
@@ -30,7 +30,7 @@ export class VariantProductionCostModel implements AbstractModel {
     return new VariantProductionCostEntity({
       variantId: this.variantId,
       quantity: this.quantity,
-      hppPerUnit: this.hppPerUnit,
+      cogsPerUnit: this.cogsPerUnit,
       fixedComponent: this.fixedComponent,
       variableComponent: this.variableComponent,
       totalProductionCost: this.totalProductionCost,

@@ -2,8 +2,8 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import {
   ProfitabilityService,
-  GetVariantHppServiceParams,
-  GetVariantHppServiceResult,
+  GetVariantCogsServiceParams,
+  GetVariantCogsServiceResult,
   GetVariantProductionCostServiceParams,
   GetVariantProductionCostServiceResult,
   GetVariantGrossProfitServiceParams,
@@ -11,7 +11,7 @@ import {
   GetVariantRecommendedPriceServiceParams,
   GetVariantRecommendedPriceServiceResult,
 } from "@/features/profitability/domain/sources/profitability";
-import { VariantHppModel } from "@/features/profitability/data/models/variant-hpp";
+import { VariantCogsModel } from "@/features/profitability/data/models/variant-cogs";
 import { VariantProductionCostModel } from "@/features/profitability/data/models/variant-production-cost";
 import { VariantGrossProfitModel } from "@/features/profitability/data/models/variant-gross-profit";
 import { VariantRecommendedPriceModel } from "@/features/profitability/data/models/variant-recommended-price";
@@ -62,15 +62,15 @@ function getBaseUrl(): string {
 }
 
 export class ProfitabilityServiceImpl implements ProfitabilityService {
-  public async getVariantHpp(
-    params: GetVariantHppServiceParams,
+  public async getVariantCogs(
+    params: GetVariantCogsServiceParams,
     session: SessionEntity,
-  ): Promise<GetVariantHppServiceResult> {
+  ): Promise<GetVariantCogsServiceResult> {
     const url = new URL(
-      `${getBaseUrl()}/products/${params.productId}/variants/${params.variantId}/hpp`,
+      `${getBaseUrl()}/products/${params.productId}/variants/${params.variantId}/cogs`,
     );
     const data = await profitabilityFetch(url, session);
-    return { data: VariantHppModel.fromJson(data) };
+    return { data: VariantCogsModel.fromJson(data) };
   }
 
   public async getVariantProductionCost(

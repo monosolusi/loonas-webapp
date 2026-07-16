@@ -1,7 +1,7 @@
 "use client";
 
 // Operating profit (Laba usaha) mini P&L for the selected period — sourced from GET /dashboard.
-// `laba_usaha` = revenue.amount − beban.amount (before tax). Pajak (PPh Final) is shown as an
+// `operating_profit` = revenue.amount − expense.amount (before tax). Pajak (PPh Final) is shown as an
 // informational footnote, NOT deducted here — the backend does not provide a net-after-tax figure,
 // so we never invent one.
 
@@ -41,12 +41,12 @@ export function DashboardRangeOperatingProfitCard() {
 
   const summary = useMemo(() => {
     if (result.loading || result.error || !result.statistics) return null;
-    const { revenue, beban } = result.statistics;
+    const { revenue, expense } = result.statistics;
     return {
       revenue: revenue.amount,
-      beban: beban.amount,
-      labaUsaha: beban.labaUsaha,
-      pajak: beban.pajak,
+      expense: expense.amount,
+      operatingProfit: expense.operatingProfit,
+      tax: expense.tax,
     };
   }, [result]);
 
@@ -58,25 +58,25 @@ export function DashboardRangeOperatingProfitCard() {
       />
     );
   }
-  if (!summary || (summary.revenue === 0 && summary.beban === 0)) {
+  if (!summary || (summary.revenue === 0 && summary.expense === 0)) {
     return <DashboardRangeOperatingProfitCardEmpty />;
   }
 
-  const isLoss = summary.labaUsaha < 0;
+  const isLoss = summary.operatingProfit < 0;
 
   return (
     <SectionCard title="Laba usaha">
       <div className="flex flex-col gap-y-4">
         <div className="flex flex-col gap-y-3">
           <RegisterRow label="Pendapatan" amount={summary.revenue} />
-          <RegisterRow label="Beban" amount={summary.beban} deduction />
+          <RegisterRow label="Beban" amount={summary.expense} deduction />
         </div>
 
         <div className="flex items-center justify-between gap-x-4 border-t border-neutral-100 pt-4">
           <span className="text-sm font-semibold text-neutral-500">Laba usaha</span>
           <span className={clsx("text-xl font-bold tracking-tight", isLoss ? "text-error-500" : "text-success-500")}>
             {isLoss && "− "}
-            <NumberDisplay value={Math.abs(summary.labaUsaha)} prefix="Rp" />
+            <NumberDisplay value={Math.abs(summary.operatingProfit)} prefix="Rp" />
           </span>
         </div>
 
@@ -86,7 +86,7 @@ export function DashboardRangeOperatingProfitCard() {
             <span className="text-xs text-neutral-300">di luar laba usaha</span>
           </div>
           <span className="text-base font-semibold text-neutral-500">
-            <NumberDisplay value={summary.pajak} prefix="Rp" />
+            <NumberDisplay value={summary.tax} prefix="Rp" />
           </span>
         </div>
       </div>

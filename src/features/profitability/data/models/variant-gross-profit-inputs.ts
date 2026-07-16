@@ -3,7 +3,7 @@ import { VariantGrossProfitInputsEntity } from "@/features/profitability/domain/
 
 export class VariantGrossProfitInputsModel implements AbstractModel {
   constructor(
-    public readonly hppPerUnit: number,
+    public readonly cogsPerUnit: number,
     public readonly unitsSold: number,
     public readonly posRevenue: number,
     public readonly periodFrom: string | null,
@@ -12,7 +12,7 @@ export class VariantGrossProfitInputsModel implements AbstractModel {
 
   public static fromJson(data: Record<string, any>): VariantGrossProfitInputsModel {
     return new VariantGrossProfitInputsModel(
-      data["hpp_per_unit"],
+      data["cogs_per_unit"],
       data["units_sold"],
       data["pos_revenue"],
       data["period"]?.["from"] ?? null,
@@ -22,7 +22,7 @@ export class VariantGrossProfitInputsModel implements AbstractModel {
 
   public toEntity(): VariantGrossProfitInputsEntity {
     return new VariantGrossProfitInputsEntity({
-      hppPerUnit: this.hppPerUnit,
+      cogsPerUnit: this.cogsPerUnit,
       unitsSold: this.unitsSold,
       posRevenue: this.posRevenue,
       periodFrom: this.periodFrom,
