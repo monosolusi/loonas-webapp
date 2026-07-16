@@ -6,7 +6,6 @@ import { TableHeader } from "@/core/presentations/components/table/table-header"
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { PeriodRow } from "@/app/(authenticated)/finance/periods/_components/period-row";
 import { PeriodAdvisory } from "@/app/(authenticated)/finance/periods/_components/period-advisory";
-import { PeriodAllocationPanel } from "@/app/(authenticated)/finance/periods/_components/period-allocation-panel";
 import { AllocateFixedCostDialog } from "@/app/(authenticated)/finance/periods/_components/allocate-fixed-cost-dialog";
 import { usePeriods, MANAGERIAL_COSTING_FEATURE } from "@/app/(authenticated)/finance/periods/_providers/periods-provider";
 import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
@@ -14,7 +13,6 @@ import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-
 const TABLE_COLUMNS = [
   { label: "Periode" },
   { label: "Status" },
-  { label: "" },
   { label: "Aksi", align: "right" as const },
 ];
 
@@ -30,7 +28,7 @@ export function PeriodsTable() {
       <TableContainer>
         <TableHeader
           columns={TABLE_COLUMNS}
-          className="grid-cols-[2fr_1fr_auto_64px]"
+          className="grid-cols-[2fr_1fr_64px]"
           hideOnMobile
         />
         {periods.map((period) => (
@@ -42,9 +40,6 @@ export function PeriodsTable() {
                 warnings={pendingAdvisories[period.id]}
                 onDismiss={() => dismissAdvisory(period.id)}
               />
-            ) : null}
-            {hasManagerialCosting && period.isClosed ? (
-              <PeriodAllocationPanel period={period} />
             ) : null}
           </Fragment>
         ))}

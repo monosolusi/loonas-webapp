@@ -71,9 +71,6 @@ type PeriodsContextValue = {
   handleReopenYear: (reason: string) => Promise<boolean>;
   // Post-reopen reversal journal reference
   reopenedReversalJournalId: string | null;
-  // Allocation panel expand state (single-open)
-  toggleAllocationPanel: (id: string) => void;
-  isPanelOpen: (id: string) => boolean;
   // Allocate dialog state
   allocatingPeriod: AccountingPeriodEntity | null;
   openAllocateDialog: (period: AccountingPeriodEntity) => void;
@@ -81,10 +78,6 @@ type PeriodsContextValue = {
   allocateError: string | null;
   isAllocating: boolean;
   handleAllocate: () => Promise<boolean>;
-  // Per-period allocation loaded state (written by PeriodAllocationPanel on data load)
-  // Used by PeriodRow to pick the correct ActionMenu verb without an extra fetch.
-  setPeriodAllocated: (periodId: string, isAllocated: boolean) => void;
-  isPeriodAllocated: (periodId: string) => boolean;
 };
 
 const PeriodsContext = createContext<PeriodsContextValue | null>(null);
@@ -140,16 +133,9 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
   // Post-reopen reversal journal reference (transient — cleared when dialog re-opens)
   const [reopenedReversalJournalId, setReopenedReversalJournalId] = useState<string | null>(null);
 
-  // Allocation panel expand state (single-open)
-  const [openPanelId, setOpenPanelId] = useState<string | null>(null);
-
   // Allocate dialog state
   const [allocatingPeriod, setAllocatingPeriod] = useState<AccountingPeriodEntity | null>(null);
   const [allocateError, setAllocateError] = useState<string | null>(null);
-
-  // Per-period allocation loaded state — written by PeriodAllocationPanel when data arrives.
-  // Avoids an eager GET just to determine the ActionMenu verb.
-  const [periodAllocationState, setPeriodAllocationState] = useState<Record<string, boolean>>({});
 
   const openCloseDialog = useCallback((period: AccountingPeriodEntity) => {
     setClosePeriodError(null);
@@ -179,12 +165,6 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
     });
   }, []);
 
-  const toggleAllocationPanel = useCallback((id: string) => {
-    setOpenPanelId((prev) => (prev === id ? null : id));
-  }, []);
-
-  const isPanelOpen = useCallback((id: string) => openPanelId === id, [openPanelId]);
-
   const openAllocateDialog = useCallback((period: AccountingPeriodEntity) => {
     setAllocateError(null);
     setAllocatingPeriod(period);
@@ -194,15 +174,6 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
     setAllocatingPeriod(null);
     setAllocateError(null);
   }, []);
-
-  const setPeriodAllocated = useCallback((periodId: string, isAllocated: boolean) => {
-    setPeriodAllocationState((prev) => ({ ...prev, [periodId]: isAllocated }));
-  }, []);
-
-  const isPeriodAllocated = useCallback(
-    (periodId: string) => periodAllocationState[periodId] ?? false,
-    [periodAllocationState],
-  );
 
   const openCloseYearDialog = useCallback(() => {
     setCloseYearError(null);
@@ -455,16 +426,12 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
         isReopeningYear,
         handleReopenYear,
         reopenedReversalJournalId,
-        toggleAllocationPanel,
-        isPanelOpen,
         allocatingPeriod,
         openAllocateDialog,
         dismissAllocateDialog,
         allocateError,
         isAllocating,
         handleAllocate,
-        setPeriodAllocated,
-        isPeriodAllocated,
       }}
     >
       {children}
