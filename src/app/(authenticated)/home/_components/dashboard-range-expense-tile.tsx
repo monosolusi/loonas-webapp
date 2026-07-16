@@ -1,7 +1,7 @@
 "use client";
 
 // Accrual operating expense (Beban, Laba-Rugi basis) for the selected period — sourced from
-// GET /dashboard `beban`. Amount excludes PPh Final tax (surfaced separately as Pajak in the
+// GET /dashboard `expense`. Amount excludes PPh Final tax (surfaced separately as Pajak in the
 // Laba usaha card). MoM trend is inverted: a rise in expense reads as caution, not success.
 
 import { useMemo } from "react";
@@ -23,12 +23,12 @@ export function DashboardRangeExpenseTile() {
 
   const amount = useMemo(() => {
     if (result.loading || result.error || !result.statistics) return null;
-    return result.statistics.beban.amount;
+    return result.statistics.expense.amount;
   }, [result]);
 
   const trend = useMemo(() => {
     if (result.loading || result.error || !result.statistics) return null;
-    return computeMomTrend(result.statistics.beban.changes, { noun: "Beban", invert: true });
+    return computeMomTrend(result.statistics.expense.changes, { noun: "Beban", invert: true });
   }, [result]);
 
   if (result.loading) return <DashboardRangeExpenseTileLoading />;

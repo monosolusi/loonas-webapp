@@ -2,7 +2,7 @@
 
 import { TabFilter } from "@/core/presentations/components/tab-filter";
 
-type TabId = "neraca" | "laba-rugi" | "arus-kas" | "trial-balance" | "buku-besar" | "calk";
+type TabId = "balance-sheet" | "income-statement" | "cash-flow" | "trial-balance" | "buku-besar" | "notes";
 
 type TabDefinition = {
   id: TabId;
@@ -10,12 +10,12 @@ type TabDefinition = {
 };
 
 const TABS: TabDefinition[] = [
-  { id: "neraca", label: "Neraca" },
-  { id: "laba-rugi", label: "Laba Rugi" },
-  { id: "arus-kas", label: "Arus Kas" },
+  { id: "balance-sheet", label: "Neraca" },
+  { id: "income-statement", label: "Laba Rugi" },
+  { id: "cash-flow", label: "Arus Kas" },
   { id: "trial-balance", label: "Neraca Saldo" },
   { id: "buku-besar", label: "Buku Besar" },
-  { id: "calk", label: "CALK" },
+  { id: "notes", label: "CALK" },
 ];
 
 const TAB_LABELS = TABS.map((tab) => tab.label);

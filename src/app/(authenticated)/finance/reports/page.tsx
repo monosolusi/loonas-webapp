@@ -5,36 +5,43 @@
 // ReportsTabStrip via the shell tabStrip prop, passing the shared onTabChange.
 // No business logic lives here — this is a composition + routing component.
 import { useState } from "react";
-import { NeracaProvider } from "@/app/(authenticated)/finance/reports/_providers/neraca-provider";
-import { NeracaImpl } from "@/app/(authenticated)/finance/reports/_components/neraca-impl";
+import { BalanceSheetProvider } from "@/app/(authenticated)/finance/reports/_providers/balance-sheet-provider";
+import { BalanceSheetImpl } from "@/app/(authenticated)/finance/reports/_components/balance-sheet-impl";
 import { TrialBalanceProvider } from "@/app/(authenticated)/finance/reports/_providers/trial-balance-provider";
 import { TrialBalanceImpl } from "@/app/(authenticated)/finance/reports/_components/trial-balance-impl";
 import { BukuBesarProvider } from "@/app/(authenticated)/finance/reports/_providers/buku-besar-provider";
 import { BukuBesarImpl } from "@/app/(authenticated)/finance/reports/_components/buku-besar-impl";
-import { LabaRugiProvider } from "@/app/(authenticated)/finance/reports/_providers/laba-rugi-provider";
-import { LabaRugiImpl } from "@/app/(authenticated)/finance/reports/_components/laba-rugi-impl";
-import { ArusKasProvider } from "@/app/(authenticated)/finance/reports/_providers/arus-kas-provider";
-import { ArusKasImpl } from "@/app/(authenticated)/finance/reports/_components/arus-kas-impl";
-import { CalkProvider } from "@/app/(authenticated)/finance/reports/_providers/calk-provider";
-import { CalkImpl } from "@/app/(authenticated)/finance/reports/_components/calk-impl";
+import { IncomeStatementProvider } from "@/app/(authenticated)/finance/reports/_providers/income-statement-provider";
+import { IncomeStatementImpl } from "@/app/(authenticated)/finance/reports/_components/income-statement-impl";
+import { CashFlowProvider } from "@/app/(authenticated)/finance/reports/_providers/cash-flow-provider";
+import { CashFlowImpl } from "@/app/(authenticated)/finance/reports/_components/cash-flow-impl";
+import { NotesProvider } from "@/app/(authenticated)/finance/reports/_providers/notes-provider";
+import { NotesImpl } from "@/app/(authenticated)/finance/reports/_components/notes-impl";
 
-type ActiveTab = "neraca" | "trial-balance" | "buku-besar" | "laba-rugi" | "arus-kas" | "calk";
+type ActiveTab = "balance-sheet" | "trial-balance" | "buku-besar" | "income-statement" | "cash-flow" | "notes";
 
 export default function ReportsPage() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("neraca");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("balance-sheet");
 
   const handleTabChange = (id: string) => {
-    if (id === "neraca" || id === "trial-balance" || id === "buku-besar" || id === "laba-rugi" || id === "arus-kas" || id === "calk") {
+    if (
+      id === "balance-sheet" ||
+      id === "trial-balance" ||
+      id === "buku-besar" ||
+      id === "income-statement" ||
+      id === "cash-flow" ||
+      id === "notes"
+    ) {
       setActiveTab(id);
     }
   };
 
   return (
     <>
-      {activeTab === "neraca" && (
-        <NeracaProvider>
-          <NeracaImpl onTabChange={handleTabChange} />
-        </NeracaProvider>
+      {activeTab === "balance-sheet" && (
+        <BalanceSheetProvider>
+          <BalanceSheetImpl onTabChange={handleTabChange} />
+        </BalanceSheetProvider>
       )}
       {activeTab === "trial-balance" && (
         <TrialBalanceProvider>
@@ -46,20 +53,20 @@ export default function ReportsPage() {
           <BukuBesarImpl onTabChange={handleTabChange} />
         </BukuBesarProvider>
       )}
-      {activeTab === "laba-rugi" && (
-        <LabaRugiProvider>
-          <LabaRugiImpl onTabChange={handleTabChange} />
-        </LabaRugiProvider>
+      {activeTab === "income-statement" && (
+        <IncomeStatementProvider>
+          <IncomeStatementImpl onTabChange={handleTabChange} />
+        </IncomeStatementProvider>
       )}
-      {activeTab === "arus-kas" && (
-        <ArusKasProvider>
-          <ArusKasImpl onTabChange={handleTabChange} />
-        </ArusKasProvider>
+      {activeTab === "cash-flow" && (
+        <CashFlowProvider>
+          <CashFlowImpl onTabChange={handleTabChange} />
+        </CashFlowProvider>
       )}
-      {activeTab === "calk" && (
-        <CalkProvider>
-          <CalkImpl onTabChange={handleTabChange} />
-        </CalkProvider>
+      {activeTab === "notes" && (
+        <NotesProvider>
+          <NotesImpl onTabChange={handleTabChange} />
+        </NotesProvider>
       )}
     </>
   );

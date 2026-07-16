@@ -9,7 +9,7 @@ import { useToast } from "@/core/presentations/hooks/use-toast";
 import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledger-account";
 import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
 import { useGetAccountSetting } from "@/features/accounting/presentations/hooks/use-get-account-setting";
-import { useSettlePphFinal } from "@/features/accounting/presentations/hooks/use-settle-pph-final";
+import { useSettleFinalIncomeTax } from "@/features/accounting/presentations/hooks/use-settle-final-income-tax";
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 
 type FieldErrors = {
@@ -55,7 +55,7 @@ export function PphFinalProvider({
 }: PphFinalProviderProps) {
   const router = useRouter();
   const { showToast } = useToast();
-  const { trigger, isMutating } = useSettlePphFinal();
+  const { trigger, isMutating } = useSettleFinalIncomeTax();
 
   const { account, loading: accountLoading } = useGetCurrentAccount();
   const accountSettingResult = useGetAccountSetting();

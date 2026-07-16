@@ -15,19 +15,19 @@ export type ListTrialBalanceLinesServiceResult = {
   readonly meta: PaginationMeta;
 };
 
-export type GetNeracaParams = {
+export type GetBalanceSheetParams = {
   readonly asOf: string;
   readonly compareTo?: string;
 };
 
-export type GetLabaRugiParams = {
+export type GetIncomeStatementParams = {
   readonly from: string;
   readonly to: string;
   readonly compareFrom?: string;
   readonly compareTo?: string;
 };
 
-export type GetArusKasParams = {
+export type GetCashFlowParams = {
   readonly from: string;
   readonly to: string;
 };
@@ -45,27 +45,27 @@ export type GetGeneralLedgerParams = {
   readonly limit?: number;
 };
 
-export type GetCalkParams = {
+export type GetNotesParams = {
   readonly asOf: string;
 };
 
-export type GetNeracaServiceResult = { readonly data: Record<string, any> };
-export type GetLabaRugiServiceResult = { readonly data: Record<string, any> };
-export type GetArusKasServiceResult = { readonly data: Record<string, any> };
+export type GetBalanceSheetServiceResult = { readonly data: Record<string, any> };
+export type GetIncomeStatementServiceResult = { readonly data: Record<string, any> };
+export type GetCashFlowServiceResult = { readonly data: Record<string, any> };
 export type GetTrialBalanceServiceResult = { readonly data: Record<string, any> };
 export type GetGeneralLedgerServiceResult = {
   readonly data: Record<string, any>;
   readonly meta: PaginationMeta;
 };
-export type GetCalkServiceResult = { readonly data: Record<string, any> };
+export type GetNotesServiceResult = { readonly data: Record<string, any> };
 
 export interface ReportService {
-  getNeraca(params: GetNeracaParams, session: SessionEntity): Promise<GetNeracaServiceResult>;
-  getLabaRugi(params: GetLabaRugiParams, session: SessionEntity): Promise<GetLabaRugiServiceResult>;
-  getArusKas(params: GetArusKasParams, session: SessionEntity): Promise<GetArusKasServiceResult>;
+  getBalanceSheet(params: GetBalanceSheetParams, session: SessionEntity): Promise<GetBalanceSheetServiceResult>;
+  getIncomeStatement(params: GetIncomeStatementParams, session: SessionEntity): Promise<GetIncomeStatementServiceResult>;
+  getCashFlow(params: GetCashFlowParams, session: SessionEntity): Promise<GetCashFlowServiceResult>;
   getTrialBalance(params: GetTrialBalanceParams, session: SessionEntity): Promise<GetTrialBalanceServiceResult>;
   getGeneralLedger(params: GetGeneralLedgerParams, session: SessionEntity): Promise<GetGeneralLedgerServiceResult>;
-  getCalk(params: GetCalkParams, session: SessionEntity): Promise<GetCalkServiceResult>;
+  getNotes(params: GetNotesParams, session: SessionEntity): Promise<GetNotesServiceResult>;
   listTrialBalanceLines(
     params: ListTrialBalanceLinesParams,
     session: SessionEntity,

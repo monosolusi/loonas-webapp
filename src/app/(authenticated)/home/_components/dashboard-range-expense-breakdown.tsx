@@ -11,14 +11,14 @@ import { DashboardRangeExpenseBreakdownLoading } from "@/app/(authenticated)/hom
 import { DashboardRangeExpenseBreakdownEmpty } from "@/app/(authenticated)/home/_components/dashboard-range-expense-breakdown-empty";
 import { DashboardRangeExpenseBreakdownError } from "@/app/(authenticated)/home/_components/dashboard-range-expense-breakdown-error";
 import { DASHBOARD_SWR_KEYS } from "@/features/dashboard/presentations/constants/swr-keys";
-import { ExpenseCategory } from "@/features/dashboard/domain/entities/beban-breakdown";
+import { ExpenseCategory } from "@/features/dashboard/domain/entities/expense-breakdown";
 
 // Expense categories share a calm neutral (monochrome) ramp — differentiated by tone, never a second
 // saturated hue. Blue stays reserved for the revenue composition (One Signal Rule); outflow reads grey.
 const EXPENSE_CATEGORIES: { category: ExpenseCategory; label: string; fillClass: string }[] = [
-  { category: "hpp", label: "HPP", fillClass: "bg-neutral-400" },
-  { category: "biaya_operasional", label: "Biaya operasional", fillClass: "bg-neutral-300" },
-  { category: "beban_lain_lain", label: "Beban lain-lain", fillClass: "bg-neutral-200" },
+  { category: "cost_of_goods_sold", label: "HPP", fillClass: "bg-neutral-400" },
+  { category: "operating_expenses", label: "Biaya operasional", fillClass: "bg-neutral-300" },
+  { category: "other_expenses", label: "Beban lain-lain", fillClass: "bg-neutral-200" },
 ];
 
 type BreakdownRowProps = {
@@ -68,10 +68,10 @@ export function DashboardRangeExpenseBreakdown() {
   const breakdown = useMemo(() => {
     if (result.loading || result.error || !result.statistics) return null;
     const stats = result.statistics;
-    // Reconcile against beban.amount — the value the BE invariant sum(beban_breakdown) === beban targets.
-    const total = stats.beban.amount;
+    // Reconcile against expense.amount — the value the BE invariant sum(expense_breakdown) === expense targets.
+    const total = stats.expense.amount;
     const amountByCategory = new Map<ExpenseCategory, number>();
-    for (const item of stats.bebanBreakdown) {
+    for (const item of stats.expenseBreakdown) {
       amountByCategory.set(item.category, (amountByCategory.get(item.category) ?? 0) + item.amount);
     }
     const toPct = (amount: number) => (total > 0 ? Math.round((amount / total) * 100) : 0);

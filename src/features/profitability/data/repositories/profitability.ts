@@ -3,8 +3,8 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import {
   ProfitabilityRepository,
-  GetVariantHppRepoParams,
-  GetVariantHppResult,
+  GetVariantCogsRepoParams,
+  GetVariantCogsResult,
   GetVariantProductionCostRepoParams,
   GetVariantProductionCostResult,
   GetVariantGrossProfitRepoParams,
@@ -17,12 +17,12 @@ import { ProfitabilityService } from "@/features/profitability/domain/sources/pr
 export class ProfitabilityRepositoryImpl implements ProfitabilityRepository {
   constructor(private readonly service: ProfitabilityService) {}
 
-  public async getVariantHpp(
-    params: GetVariantHppRepoParams,
+  public async getVariantCogs(
+    params: GetVariantCogsRepoParams,
     session: SessionEntity,
-  ): Promise<DataState<GetVariantHppResult>> {
+  ): Promise<DataState<GetVariantCogsResult>> {
     try {
-      const result = await this.service.getVariantHpp(params, session);
+      const result = await this.service.getVariantCogs(params, session);
       return new DataSuccess(result.data.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);

@@ -84,9 +84,9 @@ export function ProfitabilityDashboardProvider({ children }: ProfitabilityDashbo
     for (const state of Object.values(grossProfitStates)) {
       if (state.loading || state.error || state.isIncompleteRecipe || !state.data) continue;
       const grossProfit = state.data;
-      if (grossProfit.needsData || grossProfit.estimasiLabaKotor === null) continue;
+      if (grossProfit.needsData || grossProfit.estimatedGrossProfit === null) continue;
 
-      if (grossProfit.estimasiLabaKotor >= 0) {
+      if (grossProfit.estimatedGrossProfit >= 0) {
         profitable += 1;
       } else {
         atRisk += 1;

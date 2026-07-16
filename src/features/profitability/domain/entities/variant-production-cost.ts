@@ -3,7 +3,7 @@ import { AbstractEntity } from "@/core/resources/entity";
 type VariantProductionCostEntityConstructor = {
   variantId: string;
   quantity: number;
-  hppPerUnit: number;
+  cogsPerUnit: number;
   fixedComponent: number;
   variableComponent: number;
   totalProductionCost: number;
@@ -14,7 +14,7 @@ type VariantProductionCostEntityConstructor = {
 export class VariantProductionCostEntity implements AbstractEntity {
   public readonly variantId: string;
   public readonly quantity: number;
-  public readonly hppPerUnit: number;
+  public readonly cogsPerUnit: number;
   public readonly fixedComponent: number;
   public readonly variableComponent: number;
   public readonly totalProductionCost: number;
@@ -24,7 +24,7 @@ export class VariantProductionCostEntity implements AbstractEntity {
   constructor(args: VariantProductionCostEntityConstructor) {
     this.variantId = args.variantId;
     this.quantity = args.quantity;
-    this.hppPerUnit = args.hppPerUnit;
+    this.cogsPerUnit = args.cogsPerUnit;
     this.fixedComponent = args.fixedComponent;
     this.variableComponent = args.variableComponent;
     this.totalProductionCost = args.totalProductionCost;

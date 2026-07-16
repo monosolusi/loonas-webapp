@@ -1,27 +1,27 @@
 import { DataState } from "@/core/resources/data-state";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { NeracaReportEntity } from "@/features/accounting/domain/entities/neraca";
-import { LabaRugiReportEntity } from "@/features/accounting/domain/entities/laba-rugi";
-import { ArusKasReportEntity } from "@/features/accounting/domain/entities/arus-kas";
+import { BalanceSheetReportEntity } from "@/features/accounting/domain/entities/balance-sheet";
+import { IncomeStatementReportEntity } from "@/features/accounting/domain/entities/income-statement";
+import { CashFlowReportEntity } from "@/features/accounting/domain/entities/cash-flow";
 import { TrialBalanceReportEntity } from "@/features/accounting/domain/entities/trial-balance";
 import { TrialBalanceLineEntity } from "@/features/accounting/domain/entities/trial-balance-line";
 import { GeneralLedgerReportEntity } from "@/features/accounting/domain/entities/general-ledger";
-import { CalkReportEntity } from "@/features/accounting/domain/entities/calk";
+import { NotesReportEntity } from "@/features/accounting/domain/entities/notes";
 
-export type GetNeracaRepoParams = {
+export type GetBalanceSheetRepoParams = {
   readonly asOf: string;
   readonly compareTo?: string;
 };
 
-export type GetLabaRugiRepoParams = {
+export type GetIncomeStatementRepoParams = {
   readonly from: string;
   readonly to: string;
   readonly compareFrom?: string;
   readonly compareTo?: string;
 };
 
-export type GetArusKasRepoParams = {
+export type GetCashFlowRepoParams = {
   readonly from: string;
   readonly to: string;
 };
@@ -39,7 +39,7 @@ export type GetGeneralLedgerRepoParams = {
   readonly limit?: number;
 };
 
-export type GetCalkRepoParams = {
+export type GetNotesRepoParams = {
   readonly asOf: string;
 };
 
@@ -51,9 +51,9 @@ export type ListTrialBalanceLinesRepoParams = {
   readonly limit?: number;
 };
 
-export type NeracaReportData = NeracaReportEntity;
-export type LabaRugiReportData = LabaRugiReportEntity;
-export type ArusKasReportData = ArusKasReportEntity;
+export type BalanceSheetReportData = BalanceSheetReportEntity;
+export type IncomeStatementReportData = IncomeStatementReportEntity;
+export type CashFlowReportData = CashFlowReportEntity;
 export type TrialBalanceReportData = TrialBalanceReportEntity;
 export type GeneralLedgerReportData = {
   readonly data: GeneralLedgerReportEntity;
@@ -64,18 +64,21 @@ export type TrialBalanceLinesData = {
   readonly counterparts: TrialBalanceLineEntity[];
   readonly meta: PaginationMeta;
 };
-export type CalkReportData = CalkReportEntity;
+export type NotesReportData = NotesReportEntity;
 
 export interface ReportRepository {
-  getNeraca(params: GetNeracaRepoParams, session: SessionEntity): Promise<DataState<NeracaReportData>>;
-  getLabaRugi(params: GetLabaRugiRepoParams, session: SessionEntity): Promise<DataState<LabaRugiReportData>>;
-  getArusKas(params: GetArusKasRepoParams, session: SessionEntity): Promise<DataState<ArusKasReportData>>;
+  getBalanceSheet(params: GetBalanceSheetRepoParams, session: SessionEntity): Promise<DataState<BalanceSheetReportData>>;
+  getIncomeStatement(
+    params: GetIncomeStatementRepoParams,
+    session: SessionEntity,
+  ): Promise<DataState<IncomeStatementReportData>>;
+  getCashFlow(params: GetCashFlowRepoParams, session: SessionEntity): Promise<DataState<CashFlowReportData>>;
   getTrialBalance(params: GetTrialBalanceRepoParams, session: SessionEntity): Promise<DataState<TrialBalanceReportData>>;
   getGeneralLedger(
     params: GetGeneralLedgerRepoParams,
     session: SessionEntity,
   ): Promise<DataState<GeneralLedgerReportData>>;
-  getCalk(params: GetCalkRepoParams, session: SessionEntity): Promise<DataState<CalkReportData>>;
+  getNotes(params: GetNotesRepoParams, session: SessionEntity): Promise<DataState<NotesReportData>>;
   listTrialBalanceLines(
     params: ListTrialBalanceLinesRepoParams,
     session: SessionEntity,

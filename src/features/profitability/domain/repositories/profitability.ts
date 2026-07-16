@@ -1,11 +1,11 @@
 import { DataState } from "@/core/resources/data-state";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
-import { VariantHppEntity } from "@/features/profitability/domain/entities/variant-hpp";
+import { VariantCogsEntity } from "@/features/profitability/domain/entities/variant-cogs";
 import { VariantProductionCostEntity } from "@/features/profitability/domain/entities/variant-production-cost";
 import { VariantGrossProfitEntity } from "@/features/profitability/domain/entities/variant-gross-profit";
 import { VariantRecommendedPriceEntity } from "@/features/profitability/domain/entities/variant-recommended-price";
 
-export type GetVariantHppRepoParams = {
+export type GetVariantCogsRepoParams = {
   readonly productId: string;
   readonly variantId: string;
 };
@@ -27,13 +27,13 @@ export type GetVariantRecommendedPriceRepoParams = {
   readonly margin: number;
 };
 
-export type GetVariantHppResult = VariantHppEntity;
+export type GetVariantCogsResult = VariantCogsEntity;
 export type GetVariantProductionCostResult = VariantProductionCostEntity;
 export type GetVariantGrossProfitResult = VariantGrossProfitEntity;
 export type GetVariantRecommendedPriceResult = VariantRecommendedPriceEntity;
 
 export interface ProfitabilityRepository {
-  getVariantHpp(params: GetVariantHppRepoParams, session: SessionEntity): Promise<DataState<GetVariantHppResult>>;
+  getVariantCogs(params: GetVariantCogsRepoParams, session: SessionEntity): Promise<DataState<GetVariantCogsResult>>;
   getVariantProductionCost(
     params: GetVariantProductionCostRepoParams,
     session: SessionEntity,
