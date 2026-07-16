@@ -32,7 +32,7 @@ export function ProfitabilityTable() {
         filteredEmptyMessage="Tidak ada produk yang cocok dengan pencarian."
       >
         <div className="overflow-x-auto">
-          <div className="min-w-[940px]">
+          <div className="min-w-[840px]">
             <TableHeader columns={COLUMNS} className="[grid-template-columns:var(--grid-profitability-cols)]" />
 
             <div>

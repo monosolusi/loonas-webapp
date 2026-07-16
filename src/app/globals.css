@@ -116,7 +116,7 @@
 :root {
     --background: var(--color-background);
     --foreground: var(--color-neutral-500);
-    --grid-profitability-cols: minmax(280px,2fr) 200px 160px 200px 100px;
+    --grid-profitability-cols: minmax(200px,2fr) 200px 150px 150px 96px;
 }
 
 /*
