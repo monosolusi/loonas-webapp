@@ -1,6 +1,6 @@
 "use client";
 
-import { SectionCard } from "@/core/presentations/components/section-card";
+import { TableContainer } from "@/core/presentations/components/table/table-container";
 import { usePeriods } from "@/app/(authenticated)/finance/periods/_providers/periods-provider";
 import { PeriodsFilterToolbar } from "@/app/(authenticated)/finance/periods/_components/periods-filter-toolbar";
 import { PeriodsLoadingContent } from "@/app/(authenticated)/finance/periods/_components/periods-loading";
@@ -19,12 +19,24 @@ export function PeriodsList() {
   return (
     <div className="flex flex-col items-start gap-y-4">
       <PeriodsFilterToolbar />
-      <SectionCard title="Periode Akuntansi" className="w-full">
-        {isLoading ? <PeriodsLoadingContent /> : null}
-        {hasError ? <PeriodsErrorContent /> : null}
-        {isEmpty ? <PeriodsEmptyContent /> : null}
+      <div className="w-full">
+        {isLoading ? (
+          <TableContainer>
+            <PeriodsLoadingContent />
+          </TableContainer>
+        ) : null}
+        {hasError ? (
+          <TableContainer>
+            <PeriodsErrorContent />
+          </TableContainer>
+        ) : null}
+        {isEmpty ? (
+          <TableContainer>
+            <PeriodsEmptyContent />
+          </TableContainer>
+        ) : null}
         {hasData ? <PeriodsTable /> : null}
-      </SectionCard>
+      </div>
     </div>
   );
 }
