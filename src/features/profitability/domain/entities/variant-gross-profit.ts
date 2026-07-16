@@ -1,5 +1,6 @@
 import { AbstractEntity } from "@/core/resources/entity";
 import { VariantGrossProfitInputsEntity } from "@/features/profitability/domain/entities/variant-gross-profit-inputs";
+import { OverheadAllocationEntity } from "@/features/profitability/domain/entities/overhead-allocation";
 
 type VariantGrossProfitEntityConstructor = {
   variantId: string;
@@ -10,6 +11,7 @@ type VariantGrossProfitEntityConstructor = {
   basis: string;
   formula: string | null;
   inputs: VariantGrossProfitInputsEntity | null;
+  overheadAllocation: OverheadAllocationEntity;
 };
 
 export class VariantGrossProfitEntity implements AbstractEntity {
@@ -21,6 +23,7 @@ export class VariantGrossProfitEntity implements AbstractEntity {
   public readonly basis: string;
   public readonly formula: string | null;
   public readonly inputs: VariantGrossProfitInputsEntity | null;
+  public readonly overheadAllocation: OverheadAllocationEntity;
 
   constructor(args: VariantGrossProfitEntityConstructor) {
     this.variantId = args.variantId;
@@ -31,5 +34,6 @@ export class VariantGrossProfitEntity implements AbstractEntity {
     this.basis = args.basis;
     this.formula = args.formula;
     this.inputs = args.inputs;
+    this.overheadAllocation = args.overheadAllocation;
   }
 }

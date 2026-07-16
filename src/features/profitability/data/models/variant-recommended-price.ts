@@ -1,5 +1,6 @@
 import { AbstractModel } from "@/core/resources/model";
 import { VariantRecommendedPriceEntity } from "@/features/profitability/domain/entities/variant-recommended-price";
+import { OverheadAllocationModel } from "@/features/profitability/data/models/overhead-allocation";
 
 export class VariantRecommendedPriceModel implements AbstractModel {
   constructor(
@@ -8,6 +9,7 @@ export class VariantRecommendedPriceModel implements AbstractModel {
     public readonly marginPercent: number,
     public readonly recommendedPrice: number,
     public readonly calculationBasis: string,
+    public readonly overheadAllocation: OverheadAllocationModel,
   ) {}
 
   public static fromJson(data: Record<string, any>): VariantRecommendedPriceModel {
@@ -17,6 +19,7 @@ export class VariantRecommendedPriceModel implements AbstractModel {
       data["margin_percent"],
       data["recommended_price"],
       data["calculation_basis"],
+      OverheadAllocationModel.fromJson(data),
     );
   }
 
@@ -27,6 +30,7 @@ export class VariantRecommendedPriceModel implements AbstractModel {
       marginPercent: this.marginPercent,
       recommendedPrice: this.recommendedPrice,
       calculationBasis: this.calculationBasis,
+      overheadAllocation: this.overheadAllocation.toEntity(),
     });
   }
 }
