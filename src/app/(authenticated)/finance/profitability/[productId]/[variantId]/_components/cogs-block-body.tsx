@@ -4,6 +4,7 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
 import { VariantCogsEntity } from "@/features/profitability/domain/entities/variant-cogs";
+import { OverheadAllocationCaption } from "@/app/(authenticated)/finance/profitability/[productId]/[variantId]/_components/overhead-allocation-caption";
 
 type CogsBlockBodyProps = {
   cogs: VariantCogsEntity;
@@ -35,17 +36,14 @@ export function CogsBlockBody({ cogs }: CogsBlockBodyProps) {
             {IDRFormatter.toCurrency(cogs.materialCostPerUnit)}
           </span>
         </div>
-        <div className="flex flex-row justify-between">
-          <span className="text-sm text-neutral-300">Biaya Pengemasan</span>
-          <span className="text-sm font-medium text-neutral-500">
-            {IDRFormatter.toCurrency(cogs.packagingCostPerUnit)}
-          </span>
-        </div>
-        <div className="flex flex-row justify-between">
-          <span className="text-sm text-neutral-300">Biaya Overhead</span>
-          <span className="text-sm font-medium text-neutral-500">
-            {IDRFormatter.toCurrency(cogs.overheadCostPerUnit)}
-          </span>
+        <div className="flex flex-col gap-y-1">
+          <div className="flex flex-row justify-between">
+            <span className="text-sm text-neutral-300">Biaya Overhead</span>
+            <span className="text-sm font-medium text-neutral-500">
+              {IDRFormatter.toCurrency(cogs.overheadCostPerUnit)}
+            </span>
+          </div>
+          <OverheadAllocationCaption allocation={cogs.overheadAllocation} />
         </div>
         {cogs.lines.length > 0 && (
           <>
