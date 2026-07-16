@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { useGetInvoiceTimeline } from "@/features/invoice/presentations/hooks/use-get-invoice-timeline";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { Timeline } from "@/core/presentations/components/timeline/timeline";
@@ -36,16 +37,22 @@ export function TransactionTimelineImpl({ id }: TransactionTimelineImplProps) {
   if (loading) {
     return (
       <SectionCard iconSrc="/assets/images/shield-icon-primary-w16-h16.svg" title="Status Transaksi">
-        <div className="flex flex-col gap-y-8">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="flex flex-row gap-x-4">
-              <div className="size-10 animate-pulse rounded-full bg-neutral-100" />
-              <div className="flex flex-1 flex-col gap-y-2">
-                <div className="h-3.5 w-32 animate-pulse rounded bg-neutral-100" />
-                <div className="h-6 w-full animate-pulse rounded bg-neutral-100" />
+        <div className="flex flex-col">
+          {Array.from({ length: 4 }).map((_, i, arr) => {
+            const isLast = i === arr.length - 1;
+            return (
+              <div key={i} className="flex flex-row gap-x-4">
+                <div className="flex flex-col items-center">
+                  <div className="size-9 shrink-0 animate-pulse rounded-full bg-neutral-100" />
+                  {!isLast && <div className="mt-1 min-h-[28px] w-0.5 flex-1 rounded-full bg-neutral-100" />}
+                </div>
+                <div className={clsx("flex flex-1 flex-col gap-y-2", !isLast && "pb-7")}>
+                  <div className="h-3.5 w-32 animate-pulse rounded bg-neutral-100" />
+                  <div className="h-4 w-full animate-pulse rounded bg-neutral-100" />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </SectionCard>
     );
@@ -65,7 +72,7 @@ export function TransactionTimelineImpl({ id }: TransactionTimelineImplProps) {
   return (
     <SectionCard iconSrc="/assets/images/shield-icon-primary-w16-h16.svg" title="Status Transaksi">
       <Timeline>
-        {timeline.steps.map((step) => {
+        {timeline.steps.map((step, index, arr) => {
           const state = deriveState(step, firstIncompleteStep);
           return (
             <TimelineItem
@@ -75,6 +82,7 @@ export function TransactionTimelineImpl({ id }: TransactionTimelineImplProps) {
               description={step.description}
               iconSrc={STEP_ICONS[step.status]}
               timestamp={step.completedAt ? step.completedAt.toFormat("dd LLL, HH:mm") : undefined}
+              isLast={index === arr.length - 1}
             />
           );
         })}
