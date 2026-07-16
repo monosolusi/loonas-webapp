@@ -53,9 +53,9 @@ export function HppBlockBody({ hpp }: HppBlockBodyProps) {
             <div className="flex flex-col gap-y-2">
               <span className="text-xs font-medium uppercase tracking-wider text-neutral-300">Bahan Baku</span>
               {hpp.lines.map((line, index) => (
-                <div key={`${line.rawMaterialId}-${index}`} className="flex flex-row justify-between">
+                <div key={`${line.rawMaterial.id}-${index}`} className="flex flex-row justify-between">
                   <span className="text-sm text-neutral-400">
-                    {line.rawMaterialId}
+                    {line.rawMaterial.name || "Bahan baku dihapus"}
                     {!line.costAvailable && (
                       <span className="ml-1 text-xs text-warning-500">(harga tidak tersedia)</span>
                     )}
