@@ -36,8 +36,8 @@ export function AccountingNavigationMenu() {
         <NavigationGroup
           id="acc-journals-ledger"
           label="Jurnal & Buku Besar"
-          iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
-          selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
+          iconPath="/assets/images/book-icon-neutral-300-w16-h16.svg"
+          selectedIconPath="/assets/images/book-icon-primary-300-w16-h16.svg"
           matchPrefixes={["/finance/journals", "/finance/ledger", "/finance/opening-balance"]}
           openGroup={openGroup}
           onOpenChange={handleOpenChange}
@@ -50,8 +50,8 @@ export function AccountingNavigationMenu() {
         <NavigationGroup
           id="acc-costs-profitability"
           label="Biaya & Profitabilitas"
-          iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
-          selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
+          iconPath="/assets/images/coins-icon-neutral-300-w16-h16.svg"
+          selectedIconPath="/assets/images/coins-icon-primary-300-w16-h16.svg"
           matchPrefixes={["/finance/fixed-costs", "/settings/fixed-costs", "/finance/profitability"]}
           openGroup={openGroup}
           onOpenChange={handleOpenChange}
@@ -64,8 +64,8 @@ export function AccountingNavigationMenu() {
         <NavigationGroup
           id="acc-tax"
           label="Pajak"
-          iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
-          selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
+          iconPath="/assets/images/percent-icon-neutral-300-w16-h16.svg"
+          selectedIconPath="/assets/images/percent-icon-primary-300-w16-h16.svg"
           matchPrefixes={["/finance/pph-final", "/settings/tax-posture"]}
           openGroup={openGroup}
           onOpenChange={handleOpenChange}
@@ -77,8 +77,8 @@ export function AccountingNavigationMenu() {
         <NavigationGroup
           id="acc-chart-of-accounts"
           label="Bagan Akun"
-          iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
-          selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
+          iconPath="/assets/images/list-tree-icon-neutral-300-w16-h16.svg"
+          selectedIconPath="/assets/images/list-tree-icon-primary-300-w16-h16.svg"
           matchPrefixes={["/chart-of-accounts"]}
           openGroup={openGroup}
           onOpenChange={handleOpenChange}
@@ -90,8 +90,8 @@ export function AccountingNavigationMenu() {
         <NavigationGroup
           id="acc-period-reports"
           label="Periode & Laporan"
-          iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
-          selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
+          iconPath="/assets/images/report-icon-neutral-300-w16-h16.svg"
+          selectedIconPath="/assets/images/report-icon-primary-300-w16-h16.svg"
           matchPrefixes={["/finance/periods", "/finance/reports"]}
           openGroup={openGroup}
           onOpenChange={handleOpenChange}
