@@ -1,14 +1,19 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import clsx from "clsx";
 import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { SearchCombobox } from "@/core/presentations/components/search-combobox";
 import { CHANGE_REASON_CATEGORY_OPTIONS } from "@/features/accounting/presentations/helpers/change-reason-category-labels";
+import { ChangeReasonCategory } from "@/features/accounting/domain/enums/change-reason-category";
 import { useJournalDetail } from "@/app/(authenticated)/finance/journals/[id]/_providers/journal-detail-provider";
 
-const MIN_DETAIL_LENGTH = 10;
+// Mirror the backend rule (CHANGE_REASON_DETAIL_TOO_SHORT): 20 chars for standard
+// categories, 50 for the "other" ("Lainnya") category.
+const MIN_DETAIL_LENGTH = 20;
+const MIN_DETAIL_LENGTH_OTHER = 50;
 const MAX_DETAIL_LENGTH = 1000;
 
 export function JournalReverseForm() {
@@ -23,19 +28,21 @@ export function JournalReverseForm() {
     [category],
   );
 
+  // The "Lainnya" (other) category demands a longer justification — reflect that reactively.
+  const isOtherCategory = category === ChangeReasonCategory.Other;
+  const requiredMin = isOtherCategory ? MIN_DETAIL_LENGTH_OTHER : MIN_DETAIL_LENGTH;
+  const detailLength = detail.trim().length;
+
   const detailError = useMemo((): string | null => {
     if (!touched) return null;
-    if (detail.trim().length === 0) return "Detail alasan tidak boleh kosong.";
-    if (detail.trim().length < MIN_DETAIL_LENGTH) return `Minimal ${MIN_DETAIL_LENGTH} karakter.`;
+    if (detailLength === 0) return "Detail alasan tidak boleh kosong.";
+    if (detailLength < requiredMin) return `Minimal ${requiredMin} karakter.`;
     return null;
-  }, [detail, touched]);
+  }, [detailLength, requiredMin, touched]);
 
   const isValid = useMemo(
-    () =>
-      category.trim().length > 0 &&
-      detail.trim().length >= MIN_DETAIL_LENGTH &&
-      detail.trim().length <= MAX_DETAIL_LENGTH,
-    [category, detail],
+    () => category.trim().length > 0 && detailLength >= requiredMin && detailLength <= MAX_DETAIL_LENGTH,
+    [category, detailLength, requiredMin],
   );
 
   const handleClose = () => {
@@ -80,11 +87,20 @@ export function JournalReverseForm() {
           value={detail}
           onChange={(e) => setDetail(e.target.value)}
           onBlur={() => setTouched(true)}
-          placeholder="Tuliskan detail alasan pembalikan jurnal (min. 10 karakter)..."
+          placeholder={`Tuliskan detail alasan pembalikan jurnal (min. ${requiredMin} karakter)...`}
           disabled={isReversing}
+          aria-invalid={!!detailError}
+          aria-describedby="reverse-detail-hint"
           className="w-full resize-none rounded-lg border border-neutral-100 px-3 py-2 text-sm text-neutral-500 placeholder:text-neutral-200 focus:border-primary-300 focus:outline-none disabled:cursor-not-allowed disabled:bg-neutral-100 disabled:text-neutral-300"
         />
-        {detailError && <p className="text-xs text-error-300">{detailError}</p>}
+        <div id="reverse-detail-hint" className="flex items-start justify-between gap-2">
+          <p className={clsx("text-xs", detailError ? "text-error-300" : "text-neutral-300")}>
+            {detailError ?? `Minimal ${requiredMin} karakter${isOtherCategory ? " untuk kategori Lainnya" : ""}.`}
+          </p>
+          <p className={clsx("shrink-0 text-xs tabular-nums", detailError ? "text-error-300" : "text-neutral-300")}>
+            {detailLength}/{requiredMin}
+          </p>
+        </div>
       </div>
 
       {reverseFormError && (
