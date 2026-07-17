@@ -9,14 +9,6 @@ type NotesViewerProps = {
 export function NotesViewer({ report }: NotesViewerProps) {
   return (
     <div className="px-6 py-6">
-      <div className="mb-6">
-        <p className="text-sm font-semibold text-neutral-500">{report.meta.entityName}</p>
-        <p className="text-sm font-medium text-neutral-500">{report.meta.title}</p>
-        {report.meta.asOfDisplay && (
-          <p className="text-sm text-neutral-300">Per {report.meta.asOfDisplay}</p>
-        )}
-      </div>
-
       <div className="space-y-8">
         {report.notes.map((note) => (
           <section key={note.noteNumber}>

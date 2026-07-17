@@ -9,7 +9,19 @@ import { ReportShellSuccess } from "@/features/accounting/presentations/componen
 import { ReportShellProps } from "@/features/accounting/presentations/types/report-shell.types";
 
 export function ReportShell(props: ReportShellProps) {
-  const { title, subtitle, imbalance, state, onRetry, children, headerAction, tabStrip, controlsSlot } = props;
+  const {
+    title,
+    periodLabel,
+    explainer,
+    imbalance,
+    state,
+    onRetry,
+    children,
+    headerAction,
+    tabStrip,
+    controlsSlot,
+    documentMasthead = true,
+  } = props;
 
   const showBanner =
     imbalance !== null &&
@@ -23,23 +35,32 @@ export function ReportShell(props: ReportShellProps) {
 
   return (
     <div className="flex flex-col gap-y-6">
-      <div>
-        <h1 className="text-3xl font-bold leading-9 tracking-tight">{title}</h1>
-        {subtitle && <p className="leading-6 text-neutral-300">{subtitle}</p>}
-      </div>
+      {/* The chrome top-bar renders the visible "Laporan Keuangan" title; this keeps a
+          single, stable page heading for assistive tech without duplicating it on screen. */}
+      <h1 className="sr-only">Laporan Keuangan</h1>
+
+      {tabStrip && (
+        <div className="flex flex-col gap-y-2">
+          {tabStrip}
+          {explainer && <p className="text-sm leading-6 text-neutral-300">{explainer}</p>}
+        </div>
+      )}
 
       <ReportControlsRow {...dateProps} controlsSlot={controlsSlot} />
 
       {showBanner && <ReportImbalanceBanner imbalance={imbalance} />}
-
-      {tabStrip && <div className="flex flex-col gap-y-6">{tabStrip}</div>}
 
       <div aria-busy={state === "loading"}>
         {state === "loading" && <ReportShellLoading title={title} />}
         {state === "empty" && <ReportShellEmpty title={title} />}
         {state === "error" && <ReportShellError title={title} onRetry={onRetry} />}
         {state === "success" && (
-          <ReportShellSuccess title={title} headerAction={headerAction}>
+          <ReportShellSuccess
+            title={title}
+            periodLabel={periodLabel}
+            documentMasthead={documentMasthead}
+            headerAction={headerAction}
+          >
             {children}
           </ReportShellSuccess>
         )}

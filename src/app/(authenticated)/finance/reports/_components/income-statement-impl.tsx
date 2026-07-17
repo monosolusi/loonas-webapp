@@ -9,6 +9,7 @@ import { IncomeStatementMigrationNotice } from "@/features/accounting/presentati
 import { IncomeStatementEmptyBody } from "@/app/(authenticated)/finance/reports/_components/income-statement-empty-body";
 import { useIncomeStatementProvider } from "@/app/(authenticated)/finance/reports/_providers/income-statement-provider";
 import { useGetOpeningBalance } from "@/features/accounting/presentations/hooks/use-get-opening-balance";
+import { formatStatementRangeLabel } from "@/features/accounting/presentations/helpers/statement-period";
 
 // Adapter component: translates IncomeStatementProvider context to ReportShell props.
 // ReportShell is shared infrastructure with a fixed prop contract — it cannot
@@ -22,7 +23,9 @@ export function IncomeStatementImpl({ onTabChange }: { onTabChange?: (id: string
   return (
     <div role="tabpanel" id="panel-income-statement" aria-labelledby="tab-income-statement" tabIndex={0}>
       <ReportShell
-        title="Laba Rugi"
+        title="Laporan Laba Rugi"
+        periodLabel={formatStatementRangeLabel(dateValue)}
+        explainer="Menampilkan pendapatan, biaya, dan laba bersih bisnis Anda selama satu periode."
         dateMode="range"
         dateValue={dateValue}
         onDateChange={onRangeChange}

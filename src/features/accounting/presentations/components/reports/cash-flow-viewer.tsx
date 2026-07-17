@@ -67,7 +67,7 @@ export function CashFlowViewer({ report }: CashFlowViewerProps) {
             </th>
           </tr>
           <tr className="border-b border-neutral-100">
-            <td className="py-2 pl-8 pr-4 text-sm text-neutral-500">{report.operating.label} — Laba Bersih</td>
+            <td className="py-2 pl-8 pr-4 text-sm text-neutral-500">Laba Bersih</td>
             <td className="py-2 pr-6 text-right text-sm tabular-nums">
               <BalanceDisplay value={report.operating.netProfit} />
             </td>

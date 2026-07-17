@@ -21,7 +21,7 @@ export function BalanceSheetSection({ section }: BalanceSheetSectionProps) {
         <th
           scope="rowgroup"
           colSpan={2}
-          className="border-t border-neutral-100 bg-neutral-50 px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-300"
+          className="border-t-2 border-neutral-200 bg-neutral-50 px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-neutral-500"
         >
           {section.name.toUpperCase()}
         </th>
@@ -59,12 +59,16 @@ export function BalanceSheetSection({ section }: BalanceSheetSectionProps) {
             </tr>
           ))}
 
-          <tr className="border-t border-neutral-100">
-            <td className="pl-10 pr-6 py-3 text-sm font-semibold text-neutral-500">Total {bucket.name}</td>
-            <td className="px-6 py-3 text-right text-sm font-semibold">
-              <BalanceDisplay value={bucket.subtotal} />
-            </td>
-          </tr>
+          {/* A single unnamed bucket is fully represented by the section total below,
+              so only show a per-bucket subtotal when the section splits into groups. */}
+          {showBucketHeaders && bucket.name && (
+            <tr className="border-t border-neutral-100">
+              <td className="pl-10 pr-6 py-3 text-sm font-semibold text-neutral-500">Total {bucket.name}</td>
+              <td className="px-6 py-3 text-right text-sm font-semibold">
+                <BalanceDisplay value={bucket.subtotal} />
+              </td>
+            </tr>
+          )}
         </Fragment>
       ))}
 
