@@ -38,13 +38,13 @@ export function AccountingNavigationMenu() {
           label="Jurnal & Buku Besar"
           iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
-          matchPrefixes={["/finance/journals", "/finance/ledger", "/finance/opening-balance"]}
+          matchPrefixes={["/accounting/journals", "/accounting/ledger", "/accounting/opening-balance"]}
           openGroup={openGroup}
           onOpenChange={handleOpenChange}
         >
-          <NavigationChildItem href="/finance/journals" label="Jurnal Umum" />
-          <NavigationChildItem href="/finance/ledger" label="Buku Besar" />
-          <NavigationChildItem href="/finance/opening-balance" label="Saldo Awal" />
+          <NavigationChildItem href="/accounting/journals" label="Jurnal Umum" />
+          <NavigationChildItem href="/accounting/ledger" label="Buku Besar" />
+          <NavigationChildItem href="/accounting/opening-balance" label="Saldo Awal" />
         </NavigationGroup>
 
         <NavigationGroup
@@ -52,13 +52,13 @@ export function AccountingNavigationMenu() {
           label="Biaya & Profitabilitas"
           iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
-          matchPrefixes={["/finance/fixed-costs", "/settings/fixed-costs", "/finance/profitability"]}
+          matchPrefixes={["/accounting/fixed-costs", "/accounting/fixed-cost-types", "/accounting/profitability"]}
           openGroup={openGroup}
           onOpenChange={handleOpenChange}
         >
-          <NavigationChildItem href="/finance/fixed-costs" label="Biaya Tetap" />
-          <NavigationChildItem href="/settings/fixed-costs" label="Jenis Biaya Tetap" />
-          <NavigationChildItem href="/finance/profitability" label="Profitabilitas" />
+          <NavigationChildItem href="/accounting/fixed-costs" label="Biaya Tetap" />
+          <NavigationChildItem href="/accounting/fixed-cost-types" label="Jenis Biaya Tetap" />
+          <NavigationChildItem href="/accounting/profitability" label="Profitabilitas" />
         </NavigationGroup>
 
         <NavigationGroup
@@ -66,12 +66,12 @@ export function AccountingNavigationMenu() {
           label="Pajak"
           iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
-          matchPrefixes={["/finance/pph-final", "/settings/tax-posture"]}
+          matchPrefixes={["/accounting/pph-final", "/accounting/tax-posture"]}
           openGroup={openGroup}
           onOpenChange={handleOpenChange}
         >
-          <NavigationChildItem href="/finance/pph-final" label="PPh Final UMKM" />
-          <NavigationChildItem href="/settings/tax-posture" label="Postur Pajak" />
+          <NavigationChildItem href="/accounting/pph-final" label="PPh Final UMKM" />
+          <NavigationChildItem href="/accounting/tax-posture" label="Postur Pajak" />
         </NavigationGroup>
 
         <NavigationGroup
@@ -79,12 +79,12 @@ export function AccountingNavigationMenu() {
           label="Bagan Akun"
           iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
-          matchPrefixes={["/chart-of-accounts"]}
+          matchPrefixes={["/accounting/accounts", "/accounting/mappings"]}
           openGroup={openGroup}
           onOpenChange={handleOpenChange}
         >
-          <NavigationChildItem href="/chart-of-accounts/accounts" label="Daftar Akun" />
-          <NavigationChildItem href="/chart-of-accounts/mappings" label="Pemetaan Akun" />
+          <NavigationChildItem href="/accounting/accounts" label="Daftar Akun" />
+          <NavigationChildItem href="/accounting/mappings" label="Pemetaan Akun" />
         </NavigationGroup>
 
         <NavigationGroup
@@ -92,12 +92,12 @@ export function AccountingNavigationMenu() {
           label="Periode & Laporan"
           iconPath="/assets/images/chart-icon-neutral-300-w16-h16.svg"
           selectedIconPath="/assets/images/chart-icon-primary-300-w16-h16.svg"
-          matchPrefixes={["/finance/periods", "/finance/reports"]}
+          matchPrefixes={["/accounting/periods", "/accounting/reports"]}
           openGroup={openGroup}
           onOpenChange={handleOpenChange}
         >
-          <NavigationChildItem href="/finance/periods" label="Periode Akuntansi" />
-          <NavigationChildItem href="/finance/reports" label="Laporan Keuangan" />
+          <NavigationChildItem href="/accounting/periods" label="Periode Akuntansi" />
+          <NavigationChildItem href="/accounting/reports" label="Laporan Keuangan" />
         </NavigationGroup>
       </div>
     </div>

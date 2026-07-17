@@ -9,10 +9,11 @@ interface DetailPageHeaderProps {
   subtitle?: string;
   backHref?: string;
   onBack?: () => void;
+  hideBack?: boolean;
   action?: React.ReactNode;
 }
 
-export function DetailPageHeader({ title, subtitle, backHref, onBack, action }: DetailPageHeaderProps) {
+export function DetailPageHeader({ title, subtitle, backHref, onBack, hideBack, action }: DetailPageHeaderProps) {
   const router = useRouter();
 
   const backButtonClasses =
@@ -24,7 +25,7 @@ export function DetailPageHeader({ title, subtitle, backHref, onBack, action }: 
 
   return (
     <div className="flex flex-row items-center gap-x-4">
-      {backHref ? (
+      {hideBack ? null : backHref ? (
         <Link href={backHref} className={backButtonClasses}>
           {arrowIcon}
         </Link>

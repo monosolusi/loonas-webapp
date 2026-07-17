@@ -20,17 +20,18 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/invoices/outgoing/overdue": { title: "Faktur Keluaran" },
   "/settings": { title: "Pengaturan" },
   "/settings/bank-accounts": { title: "Pengaturan" },
-  "/settings/tax-posture": { title: "Pengaturan" },
-  "/finance/fixed-costs": { title: "Biaya Tetap" },
-  "/finance/reports": { title: "Laporan Keuangan" },
-  "/finance/journals": { title: "Jurnal Umum" },
-  "/finance/journals/new": { title: "Jurnal Baru" },
-  "/finance/periods": { title: "Periode Akuntansi" },
-  "/finance/opening-balance": { title: "Saldo Awal" },
-  "/finance/pph-final": { title: "PPh Final UMKM" },
-  "/finance/profitability": { title: "Profitabilitas Varian" },
-  "/chart-of-accounts/accounts": { title: "Bagan Akun" },
-  "/chart-of-accounts/mappings": { title: "Bagan Akun" },
+  "/accounting/tax-posture": { title: "Postur Pajak" },
+  "/accounting/fixed-costs": { title: "Biaya Tetap" },
+  "/accounting/fixed-cost-types": { title: "Jenis Biaya Tetap" },
+  "/accounting/reports": { title: "Laporan Keuangan" },
+  "/accounting/journals": { title: "Jurnal Umum" },
+  "/accounting/journals/new": { title: "Jurnal Baru" },
+  "/accounting/periods": { title: "Periode Akuntansi" },
+  "/accounting/opening-balance": { title: "Saldo Awal" },
+  "/accounting/pph-final": { title: "PPh Final UMKM" },
+  "/accounting/profitability": { title: "Profitabilitas Varian" },
+  "/accounting/accounts": { title: "Bagan Akun" },
+  "/accounting/mappings": { title: "Bagan Akun" },
 };
 
 export function HeaderTitle() {
@@ -60,13 +61,13 @@ export function HeaderTitle() {
       return { title: "Faktur Keluaran", description: segments[2] };
     }
 
-    // /finance/journals/:id
-    if (segments[0] === "finance" && segments[1] === "journals" && segments[2] && segments[2] !== "new") {
+    // /accounting/journals/:id
+    if (segments[0] === "accounting" && segments[1] === "journals" && segments[2] && segments[2] !== "new") {
       return { title: "Detail Jurnal" };
     }
 
-    // /finance/profitability/:productId/:variantId
-    if (segments[0] === "finance" && segments[1] === "profitability" && segments[2] && segments[3]) {
+    // /accounting/profitability/:productId/:variantId
+    if (segments[0] === "accounting" && segments[1] === "profitability" && segments[2] && segments[3]) {
       return { title: "Profitabilitas Varian" };
     }
 
