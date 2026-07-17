@@ -11,6 +11,7 @@ type RouteConfig = {
 // Static route mappings
 const ROUTE_MAP: Record<string, RouteConfig> = {
   "/home": { title: "Dashboard" },
+  "/accounting": { title: "Akuntansi", description: "Beranda Akuntansi" },
   "/accounts": { title: "Manajemen Akun" },
   "/invoices/incoming": { title: "Faktur Masukan" },
   "/invoices/incoming/create": { title: "Faktur Masukan" },

@@ -1,23 +1,35 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { NavigationItem } from "@/app/(authenticated)/_components/navigation-item";
 import { NavigationGroup } from "@/app/(authenticated)/_components/navigation-group";
 import { NavigationChildItem } from "@/app/(authenticated)/_components/navigation-child-item";
 import { KycReviewNavItem } from "@/app/(authenticated)/_components/kyc-review-nav-item";
-import { FinanceNavGroup } from "@/app/(authenticated)/_components/finance-nav-group";
-import { ChartOfAccountsNavGroup } from "@/app/(authenticated)/_components/chart-of-accounts-nav-group";
 import { PurchasingNavGroup } from "@/app/(authenticated)/_components/purchasing-nav-group";
 import { SalesNavGroup } from "@/app/(authenticated)/_components/sales-nav-group";
+import { AccountingNavEntry } from "@/app/(authenticated)/_components/accounting-nav-entry";
+import { AccountingNavigationMenu } from "@/app/(authenticated)/_components/accounting-navigation-menu";
+import { isAccountingPath } from "@/app/(authenticated)/_components/accounting-routes";
 
 /**
  * The full authenticated navigation tree. Shared by the desktop sidebar
  * (`NavigationBar`) and the mobile "Lainnya" bottom sheet (`MobileMoreSheet`)
  * so both surfaces present one identical information architecture.
+ *
+ * On accounting routes the sidebar swaps into the focused "Akuntansi" workspace
+ * (`AccountingNavigationMenu`); everywhere else it shows the main menu, where the
+ * accounting groups collapse into a single "Akuntansi" launcher. Both surfaces
+ * inherit the swap automatically because they render this one component.
  */
 export function NavigationMenu() {
+  const pathname = usePathname();
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const handleOpenChange = (id: string) => setOpenGroup((current) => (current === id ? null : id));
+
+  if (isAccountingPath(pathname)) {
+    return <AccountingNavigationMenu />;
+  }
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-y-1 overflow-y-auto scrollbar-hide">
@@ -41,8 +53,7 @@ export function NavigationMenu() {
         <NavigationChildItem href="/products" label="Semua Produk" />
         <NavigationChildItem href="/productions" label="Produksi" />
       </NavigationGroup>
-      <FinanceNavGroup id="finance" openGroup={openGroup} onOpenChange={handleOpenChange} />
-      <ChartOfAccountsNavGroup id="chart-of-accounts" openGroup={openGroup} onOpenChange={handleOpenChange} />
+      <AccountingNavEntry />
       <NavigationItem
         href="/accounts"
         label="Manajemen Akun"
