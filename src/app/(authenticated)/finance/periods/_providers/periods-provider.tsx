@@ -3,6 +3,10 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import { DateTime } from "luxon";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import {
+  resolveClosePeriodErrorMessage,
+  isPeriodHasFailedPostingsError,
+} from "@/features/accounting/presentations/helpers/close-period-error";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { PaginationMeta } from "@/core/resources/paginated";
@@ -38,6 +42,7 @@ type PeriodsContextValue = {
   openCloseDialog: (period: AccountingPeriodEntity) => void;
   dismissCloseDialog: () => void;
   closePeriodError: string | null;
+  closePeriodFailureCount: number;
   isClosing: boolean;
   handleClosePeriod: (reason: string) => Promise<boolean>;
   // Reopen period dialog
@@ -106,6 +111,7 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
   // Close period dialog state
   const [closingPeriod, setClosingPeriod] = useState<AccountingPeriodEntity | null>(null);
   const [closePeriodError, setClosePeriodError] = useState<string | null>(null);
+  const [closePeriodFailureCount, setClosePeriodFailureCount] = useState(0);
 
   // Advisory state
   const [pendingAdvisories, setPendingAdvisories] = useState<Record<string, CloseWarning[]>>({});
@@ -139,12 +145,14 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
 
   const openCloseDialog = useCallback((period: AccountingPeriodEntity) => {
     setClosePeriodError(null);
+    setClosePeriodFailureCount(0);
     setClosingPeriod(period);
   }, []);
 
   const dismissCloseDialog = useCallback(() => {
     setClosingPeriod(null);
     setClosePeriodError(null);
+    setClosePeriodFailureCount(0);
   }, []);
 
   const openReopenDialog = useCallback((period: AccountingPeriodEntity) => {
@@ -208,9 +216,13 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
           setPendingAdvisories((prev) => ({ ...prev, [closingPeriod.id]: res.warnings }));
         }
         setClosingPeriod(null);
+        setClosePeriodFailureCount(0);
         showToast("Periode berhasil ditutup.", "success");
         return true;
       } catch (err) {
+        const isFailedPostings = isPeriodHasFailedPostingsError(err);
+        setClosePeriodFailureCount((c) => (isFailedPostings ? c + 1 : 0));
+
         if (err instanceof ServerError) {
           if (err.httpCode === 403) {
             showToast("Anda tidak memiliki akses untuk menutup periode ini.", "error");
@@ -222,11 +234,7 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
             showToast(ErrorCodes.PERIOD_ALREADY_CLOSED.message, "error");
           } else if (err.httpCode === 422) {
             // AC-5: inline warning inside the dialog — set error message, do NOT close dialog
-            if (err.code === ErrorCodes.PPH_FINAL_NOT_POSTED.code) {
-              setClosePeriodError(ErrorCodes.PPH_FINAL_NOT_POSTED.message);
-            } else {
-              setClosePeriodError(ErrorCodes.PERIOD_NOT_DRAINED.message);
-            }
+            setClosePeriodError(resolveClosePeriodErrorMessage(err));
           } else {
             showToast("Terjadi kesalahan. Silakan coba lagi.", "error");
           }
@@ -399,6 +407,7 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
         openCloseDialog,
         dismissCloseDialog,
         closePeriodError,
+        closePeriodFailureCount,
         isClosing,
         handleClosePeriod,
         reopeningPeriod,
