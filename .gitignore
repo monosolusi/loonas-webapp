@@ -44,3 +44,6 @@ next-env.d.ts
 
 # claude code
 .claude/worktrees/
+
+# impeccable (design tooling output; design.json + live/config.json stay tracked)
+.impeccable/
