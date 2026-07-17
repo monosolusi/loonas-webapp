@@ -9,13 +9,15 @@ type TabDefinition = {
   label: string;
 };
 
+// Formal SAK EMKM statements first (Neraca, Laba Rugi, Arus Kas, Catatan), then the
+// working papers used to trace the numbers behind them (Neraca Saldo, Buku Besar).
 const TABS: TabDefinition[] = [
   { id: "balance-sheet", label: "Neraca" },
   { id: "income-statement", label: "Laba Rugi" },
   { id: "cash-flow", label: "Arus Kas" },
+  { id: "notes", label: "Catatan" },
   { id: "trial-balance", label: "Neraca Saldo" },
   { id: "buku-besar", label: "Buku Besar" },
-  { id: "notes", label: "CALK" },
 ];
 
 const TAB_LABELS = TABS.map((tab) => tab.label);

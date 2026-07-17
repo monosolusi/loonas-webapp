@@ -6,6 +6,7 @@ import { IncludeZeroToggle } from "@/features/accounting/presentations/component
 import { NeracaSaldoViewer } from "@/features/accounting/presentations/components/reports/neraca-saldo-viewer";
 import { NeracaSaldoEmptyBody } from "@/app/(authenticated)/finance/reports/_components/neraca-saldo-empty-body";
 import { useTrialBalanceProvider } from "@/app/(authenticated)/finance/reports/_providers/trial-balance-provider";
+import { formatStatementAsOfLabel } from "@/features/accounting/presentations/helpers/statement-period";
 
 // Adapter component: translates TrialBalanceProvider context to ReportShell props.
 // ReportShell is shared infrastructure with a fixed prop contract — it cannot
@@ -29,6 +30,8 @@ export function TrialBalanceImpl({ onTabChange }: { onTabChange?: (id: string) =
     <div role="tabpanel" id="panel-trial-balance" aria-labelledby="tab-trial-balance" tabIndex={0}>
       <ReportShell
         title="Neraca Saldo"
+        periodLabel={formatStatementAsOfLabel(dateValue)}
+        explainer="Daftar saldo seluruh akun untuk memeriksa keseimbangan total debit dan kredit."
         dateMode="as-of"
         dateValue={dateValue}
         onDateChange={onDateChange}

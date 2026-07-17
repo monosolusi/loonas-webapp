@@ -1,16 +1,29 @@
 import { ReactNode } from "react";
-import { SectionCard } from "@/core/presentations/components/section-card";
+import { ReportStatementMasthead } from "@/features/accounting/presentations/components/reports/report-statement-masthead";
 
 type ReportShellSuccessProps = {
   title: string;
+  periodLabel: string;
+  documentMasthead: boolean;
   headerAction?: ReactNode;
   children: ReactNode;
 };
 
-export function ReportShellSuccess({ title, headerAction, children }: ReportShellSuccessProps) {
+// The statement "paper": a flat white card (border, no shadow) whose header is the formal
+// masthead, with the statement body below — so the card reads as one printed document.
+export function ReportShellSuccess({
+  title,
+  periodLabel,
+  documentMasthead,
+  headerAction,
+  children,
+}: ReportShellSuccessProps) {
   return (
-    <SectionCard title={title} headerAction={headerAction} bodyClassName="p-0">
+    <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
+      {documentMasthead && (
+        <ReportStatementMasthead title={title} periodLabel={periodLabel} action={headerAction} />
+      )}
       {children}
-    </SectionCard>
+    </div>
   );
 }

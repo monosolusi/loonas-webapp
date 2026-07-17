@@ -6,6 +6,7 @@ import { ReportsTabStrip } from "@/features/accounting/presentations/components/
 import { CashFlowViewer } from "@/features/accounting/presentations/components/reports/cash-flow-viewer";
 import { CashFlowEmptyBody } from "@/app/(authenticated)/finance/reports/_components/cash-flow-empty-body";
 import { useCashFlowProvider } from "@/app/(authenticated)/finance/reports/_providers/cash-flow-provider";
+import { formatStatementRangeLabel } from "@/features/accounting/presentations/helpers/statement-period";
 
 // Adapter component: translates CashFlowProvider context to ReportShell props.
 // ReportShell is shared infrastructure with a fixed prop contract — it cannot
@@ -17,7 +18,9 @@ export function CashFlowImpl({ onTabChange }: { onTabChange?: (id: string) => vo
   return (
     <div role="tabpanel" id="panel-cash-flow" aria-labelledby="tab-cash-flow" tabIndex={0}>
       <ReportShell
-        title="Arus Kas"
+        title="Laporan Arus Kas"
+        periodLabel={formatStatementRangeLabel(dateValue)}
+        explainer="Menampilkan uang kas yang masuk dan keluar dari bisnis Anda selama satu periode."
         dateMode="range"
         dateValue={dateValue}
         onDateChange={onRangeChange}

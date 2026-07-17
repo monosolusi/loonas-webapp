@@ -20,8 +20,12 @@ export type ReportShellRangeDateProps = {
 export type ReportShellDateProps = ReportShellAsOfDateProps | ReportShellRangeDateProps;
 
 export type ReportShellProps = ReportShellDateProps & {
+  // Formal statement title (kop laporan), e.g. "Laporan Posisi Keuangan (Neraca)".
   readonly title: string;
-  readonly subtitle?: string;
+  // Period line shown in the statement masthead, e.g. "Per 31 Desember 2025".
+  readonly periodLabel: string;
+  // Plain-language, one-line description of the report for non-accountant owners.
+  readonly explainer?: string;
   readonly imbalance: NormalizedImbalance | null;
   readonly state: ReportShellState;
   readonly onRetry: () => void;
@@ -29,4 +33,7 @@ export type ReportShellProps = ReportShellDateProps & {
   readonly headerAction?: ReactNode;
   readonly tabStrip?: ReactNode;
   readonly controlsSlot?: ReactNode;
+  // Render the centered document masthead above the body (default true). Set false for
+  // interactive working papers (e.g. Buku Besar) that carry their own in-card header.
+  readonly documentMasthead?: boolean;
 };

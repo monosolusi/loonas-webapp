@@ -5,6 +5,7 @@ import { ReportsTabStrip } from "@/features/accounting/presentations/components/
 import { NotesViewer } from "@/features/accounting/presentations/components/reports/notes-viewer";
 import { NotesEmptyBody } from "@/app/(authenticated)/finance/reports/_components/notes-empty-body";
 import { useNotesProvider } from "@/app/(authenticated)/finance/reports/_providers/notes-provider";
+import { formatStatementAsOfLabel } from "@/features/accounting/presentations/helpers/statement-period";
 
 // Adapter component: translates NotesProvider context to ReportShell props.
 // ReportShell is shared infrastructure with a fixed prop contract — it cannot
@@ -17,7 +18,8 @@ export function NotesImpl({ onTabChange }: { onTabChange?: (id: string) => void 
     <div role="tabpanel" id="panel-notes" aria-labelledby="tab-notes" tabIndex={0}>
       <ReportShell
         title="Catatan atas Laporan Keuangan"
-        subtitle="Catatan atas laporan keuangan sesuai SAK EMKM."
+        periodLabel={formatStatementAsOfLabel(dateValue)}
+        explainer="Penjelasan rinci dan kebijakan akuntansi yang mendasari laporan keuangan (SAK EMKM)."
         dateMode="as-of"
         dateValue={dateValue}
         onDateChange={onDateChange}

@@ -5,6 +5,7 @@ import { ReportsTabStrip } from "@/features/accounting/presentations/components/
 import { BalanceSheetViewer } from "@/features/accounting/presentations/components/reports/balance-sheet-viewer";
 import { BalanceSheetEmptyBody } from "@/app/(authenticated)/finance/reports/_components/balance-sheet-empty-body";
 import { useBalanceSheetProvider } from "@/app/(authenticated)/finance/reports/_providers/balance-sheet-provider";
+import { formatStatementAsOfLabel } from "@/features/accounting/presentations/helpers/statement-period";
 
 // Adapter component: translates BalanceSheetProvider context to ReportShell props.
 // ReportShell is shared infrastructure with a fixed prop contract — it cannot
@@ -16,8 +17,9 @@ export function BalanceSheetImpl({ onTabChange }: { onTabChange?: (id: string) =
   return (
     <div role="tabpanel" id="panel-balance-sheet" aria-labelledby="tab-balance-sheet" tabIndex={0}>
       <ReportShell
-        title="Neraca"
-        subtitle="Laporan neraca per tanggal yang dipilih."
+        title="Laporan Posisi Keuangan (Neraca)"
+        periodLabel={formatStatementAsOfLabel(dateValue)}
+        explainer="Menampilkan harta, utang, dan modal bisnis Anda pada satu tanggal tertentu."
         dateMode="as-of"
         dateValue={dateValue}
         onDateChange={onDateChange}

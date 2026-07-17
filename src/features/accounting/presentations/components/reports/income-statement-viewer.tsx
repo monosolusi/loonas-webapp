@@ -16,7 +16,31 @@ type BucketBlockProps = {
   readonly hasCompare: boolean;
 };
 
+// Merge the current and comparison period lines onto one row per account, so a
+// comparative statement shows both figures side by side instead of a column of dashes.
+function useMergedBucketLines(bucket: IncomeStatementBucketEntity, compareBucket: IncomeStatementBucketEntity | null) {
+  return useMemo(() => {
+    const keyOf = (line: { accountCode: string; accountName: string }) => line.accountCode || line.accountName;
+    const merged = new Map<string, { key: string; name: string; current: number | null; compare: number | null }>();
+
+    for (const line of bucket.lines) {
+      merged.set(keyOf(line), { key: keyOf(line), name: line.accountName, current: line.amount, compare: null });
+    }
+    if (compareBucket) {
+      for (const line of compareBucket.lines) {
+        const key = keyOf(line);
+        const existing = merged.get(key);
+        if (existing) existing.compare = line.amount;
+        else merged.set(key, { key, name: line.accountName, current: null, compare: line.amount });
+      }
+    }
+    return Array.from(merged.values());
+  }, [bucket.lines, compareBucket]);
+}
+
 function IncomeStatementBucketBlock({ bucket, compareBucket, hasCompare }: BucketBlockProps) {
+  const lines = useMergedBucketLines(bucket, compareBucket);
+
   return (
     <>
       <tr className="border-b border-neutral-100 bg-neutral-50">
@@ -28,13 +52,17 @@ function IncomeStatementBucketBlock({ bucket, compareBucket, hasCompare }: Bucke
           {bucket.label}
         </th>
       </tr>
-      {bucket.lines.map((line) => (
-        <tr key={line.id} className="border-b border-neutral-100">
-          <td className="py-2 pl-8 pr-4 text-sm text-neutral-500">{line.accountName}</td>
+      {lines.map((line) => (
+        <tr key={line.key} className="border-b border-neutral-100">
+          <td className="py-2 pl-8 pr-4 text-sm text-neutral-500">{line.name}</td>
           <td className="py-2 pr-6 text-right text-sm tabular-nums">
-            <BalanceDisplay value={line.amount} />
+            {line.current !== null ? <BalanceDisplay value={line.current} /> : <span className="text-neutral-200">—</span>}
           </td>
-          {hasCompare && <td className="py-2 pr-6 text-right text-sm tabular-nums text-neutral-200">—</td>}
+          {hasCompare && (
+            <td className="py-2 pr-6 text-right text-sm tabular-nums">
+              {line.compare !== null ? <BalanceDisplay value={line.compare} /> : <span className="text-neutral-200">—</span>}
+            </td>
+          )}
         </tr>
       ))}
       <tr className="border-b border-neutral-100">
