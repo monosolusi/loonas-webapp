@@ -432,6 +432,13 @@ export class ErrorCodes {
       "Periode belum bisa dikunci. Jurnal PPh Final UMKM (akun 8110) belum diposting dan batas setor sudah lewat. Posting jurnal PPh Final lalu coba lagi.",
   };
 
+  public static readonly PERIOD_HAS_FAILED_POSTINGS: ErrorStructureType = {
+    code: "PERIOD_HAS_FAILED_POSTINGS",
+    httpCode: 422,
+    message:
+      "Periode belum bisa dikunci. Ada transaksi yang gagal tercatat ke pembukuan dan perlu diselesaikan sebelum periode ini bisa ditutup.",
+  };
+
   public static readonly IDEMPOTENCY_KEY_REQUIRED: ErrorStructureType = {
     code: "IDEMPOTENCY_KEY_REQUIRED",
     httpCode: 400,
