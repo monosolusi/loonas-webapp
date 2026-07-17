@@ -4,7 +4,8 @@ import { useState, useMemo } from "react";
 import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
-import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
+import { SearchCombobox } from "@/core/presentations/components/search-combobox";
+import { CHANGE_REASON_CATEGORY_OPTIONS } from "@/features/accounting/presentations/helpers/change-reason-category-labels";
 import { useJournalDetail } from "@/app/(authenticated)/finance/journals/[id]/_providers/journal-detail-provider";
 
 const MIN_DETAIL_LENGTH = 10;
@@ -16,6 +17,11 @@ export function JournalReverseForm() {
   const [category, setCategory] = useState("");
   const [detail, setDetail] = useState("");
   const [touched, setTouched] = useState(false);
+
+  const selectedCategory = useMemo(
+    () => CHANGE_REASON_CATEGORY_OPTIONS.find((opt) => opt.id === category) ?? null,
+    [category],
+  );
 
   const detailError = useMemo((): string | null => {
     if (!touched) return null;
@@ -53,12 +59,13 @@ export function JournalReverseForm() {
 
   return (
     <>
-      <TextInput
+      <SearchCombobox
         label="Kategori alasan"
         required
-        placeholder="Contoh: Koreksi kesalahan pencatatan"
-        value={category}
-        onChange={setCategory}
+        placeholder="Cari atau pilih kategori alasan..."
+        options={CHANGE_REASON_CATEGORY_OPTIONS}
+        value={selectedCategory}
+        onChange={(opt) => setCategory(opt?.id ?? "")}
         disabled={isReversing}
       />
 
