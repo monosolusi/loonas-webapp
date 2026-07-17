@@ -5,6 +5,10 @@ import { DateTime } from "luxon";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import {
+  resolveClosePeriodErrorMessage,
+  isPeriodHasFailedPostingsError,
+} from "@/features/accounting/presentations/helpers/close-period-error";
 import { FIXED_COST_SWR_KEYS } from "@/features/fixed-cost/presentations/constants/swr-keys";
 import { FIXED_COST_ENTRY_SWR_KEYS } from "@/features/fixed-cost/presentations/constants/fixed-cost-entry-swr-keys";
 import { useListFixedCosts } from "@/features/fixed-cost/presentations/hooks/use-list-fixed-costs";
@@ -49,6 +53,7 @@ type FixedCostEntriesContextValue = {
   openCloseDialog: () => void;
   dismissCloseDialog: () => void;
   closePeriodError: string | null;
+  closePeriodFailureCount: number;
   isClosing: boolean;
   handleClosePeriod: (reason: string) => Promise<boolean>;
 };
@@ -85,6 +90,7 @@ export function FixedCostEntriesProvider({ children }: FixedCostEntriesProviderP
   // Close dialog state
   const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false);
   const [closePeriodError, setClosePeriodError] = useState<string | null>(null);
+  const [closePeriodFailureCount, setClosePeriodFailureCount] = useState(0);
 
   // Derived
   const { startDate, endDate } = useMemo(() => {
@@ -176,12 +182,14 @@ export function FixedCostEntriesProvider({ children }: FixedCostEntriesProviderP
   // Close dialog handlers
   const openCloseDialog = () => {
     setClosePeriodError(null);
+    setClosePeriodFailureCount(0);
     setIsCloseDialogOpen(true);
   };
 
   const dismissCloseDialog = () => {
     setIsCloseDialogOpen(false);
     setClosePeriodError(null);
+    setClosePeriodFailureCount(0);
   };
 
   const handleClosePeriod = async (reason: string): Promise<boolean> => {
@@ -192,14 +200,18 @@ export function FixedCostEntriesProvider({ children }: FixedCostEntriesProviderP
       await triggerClose({ id: matchedPeriod.id, idempotencyKey, reason: reason || undefined });
       await revalidateSWRKey(ACCOUNTING_SWR_KEYS.LIST_ACCOUNTING_PERIODS, FIXED_COST_ENTRY_SWR_KEYS.LIST_BY_DATE);
       setIsCloseDialogOpen(false);
+      setClosePeriodFailureCount(0);
       showToast("Periode berhasil ditutup.", "success");
       return true;
     } catch (err) {
+      const isFailedPostings = isPeriodHasFailedPostingsError(err);
+      setClosePeriodFailureCount((c) => (isFailedPostings ? c + 1 : 0));
+
       if (err instanceof ServerError) {
         if (err.httpCode === 403) {
           showToast("Anda tidak memiliki akses untuk menutup periode ini.", "error");
         } else if (err.httpCode === 422) {
-          setClosePeriodError(err.message);
+          setClosePeriodError(resolveClosePeriodErrorMessage(err));
         } else if (err.code === ErrorCodes.PERIOD_ALREADY_CLOSED.code || err.httpCode === 409) {
           showToast(ErrorCodes.PERIOD_ALREADY_CLOSED.message, "error");
         } else {
@@ -236,6 +248,7 @@ export function FixedCostEntriesProvider({ children }: FixedCostEntriesProviderP
         openCloseDialog,
         dismissCloseDialog,
         closePeriodError,
+        closePeriodFailureCount,
         isClosing,
         handleClosePeriod,
       }}
