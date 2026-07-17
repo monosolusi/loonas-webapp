@@ -21,3 +21,5 @@
 - [Inline advisory below mutated row](feedback_inline_advisory_precedent.md) — must-persist compliance notice → dismissible inline panel below the row, not toast/banner (LNS-405)
 - [CoA Accounts page LNS-117](project_coa_accounts_page.md) — Daftar Akun modal pattern, seeded-hide decision, journal-line link degradation, Bagan Akun nav group
 - [Journal detail + reverse action LNS-372](project_lns372_journal_detail_reverse.md) — OQ-U1 ActionMenu decision, OQ-U2 disabled vs hidden CTA, inline warn-ack pattern, audit panel, ROUTE_MAP note
+- [Failed-postings retry LNS-457](project_lns457_failed_postings_retry.md) — reuse-button-as-retry, 2nd-failure escalation hint, count-guard copy, aria-live polite tier, verified contrast
+- [ServerError details-bag mechanism](project_error_details_bag_mechanism.md) — double-nested `.details.details`, err.message-leaks-raw-BE-text risk, provider-parity gotcha

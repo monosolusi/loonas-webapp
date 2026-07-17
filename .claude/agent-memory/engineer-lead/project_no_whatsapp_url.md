@@ -1,14 +1,14 @@
 ---
 name: no-whatsapp-url-constant
-description: No WhatsApp deep-link/URL or PkvWhatsAppPanel exists anywhere in the FE; only support@loonas.com email + generic "hubungi support" copy. Any "contact via WhatsApp" CTA needs a canonical number supplied by PM/UID.
+description: LOONAS_WHATSAPP_URL constant NOW exists at core/utilities/contact.ts (empty string, TODO pending real deep-link); reuse it + the AccumulatedDeficitBlock disabled-gating pattern for any WhatsApp CTA.
 metadata:
   type: project
 ---
 
-As of 2026-06-19 (LNS-344): there is **no WhatsApp URL/deep-link constant** anywhere in `src`. Grep for `wa.me` / `api.whatsapp` / `whatsapp.com` / `+62` / `628...` returns zero URL literals. There is **no `PkvWhatsAppPanel` component** (the LNS-344 UI spec referenced it as "existing" — it does not exist).
+**Updated 2026-07-17 (LNS-457):** the shared constant `LOONAS_WHATSAPP_URL` now EXISTS at `src/core/utilities/contact.ts` — but its value is still the empty string `""` (`// TODO(LNS-344): canonical Loonas WhatsApp deep-link pending PM/UID`). So the real number is STILL not supplied; the constant just centralizes the seam.
 
-What DOES exist: `SendViaWhatsappCheckbox` (invoices) — a notification-channel toggle, NOT a contact link, carries no Loonas number. Support contact patterns in the app are `support@loonas.com` (mailto, onboarding/kyc-summary) and generic "hubungi support/customer support" copy.
+Consumers today: `src/features/accounting/presentations/components/accumulated-deficit-block.tsx` and `src/app/(authenticated)/finance/opening-balance/_components/opening-balance-readonly.tsx`. There is still no `PkvWhatsAppPanel` component.
 
-**Why:** LNS-344 Item B2 (AccumulatedDeficitBlock) CTA "Hubungi Loonas via WhatsApp" needs a real deep-link. The locked UI spec assumed a reusable URL that isn't there.
+**Canonical reuse pattern (from `AccumulatedDeficitBlock`, verbatim behavior):** a `<button disabled={!LOONAS_WHATSAPP_URL} onClick={() => LOONAS_WHATSAPP_URL && window.open(LOONAS_WHATSAPP_URL, "_blank", "noopener,noreferrer")} aria-label="Hubungi tim Loonas melalui WhatsApp" className="… underline underline-offset-2 disabled:cursor-not-allowed disabled:opacity-50">Hubungi Loonas via WhatsApp →</button>`. When URL is empty the link degrades disabled — hint text must stay meaningful without the link.
 
-**How to apply:** Any future "contact Loonas via WhatsApp" CTA is BLOCKED on PM/UID supplying the canonical WhatsApp business number/deep-link (or redirecting to `support@loonas.com`). Do not invent a phone number. When supplied, extract a shared `LOONAS_WHATSAPP_URL` constant (suggest `src/core/utilities/contact.ts` or similar) since this is the first consumer.
+**How to apply:** Reuse `LOONAS_WHATSAPP_URL` + this disabled-gating pattern for any WhatsApp CTA. Recolor the link to the host callout's palette (e.g. `text-warning-500` inside a warning callout) rather than copying the deficit block's `text-error-500` — reuse the BEHAVIOR, adapt the color for coherence. The CTA still won't navigate until PM/UID fills in the real deep-link; do not invent a phone number.
