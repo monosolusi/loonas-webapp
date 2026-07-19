@@ -2,7 +2,7 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
 /**
  * Curates a jargon-free Indonesian message for a close-period 422 error, shared by both
- * close-period entry points (`/finance/periods` and `/finance/fixed-costs`).
+ * close-period entry points (`/accounting/periods` and `/accounting/fixed-costs`).
  *
  * `PERIOD_HAS_FAILED_POSTINGS` details are double-nested: `http-request.ts` forwards the
  * server's `details` payload as `{ details: data.details }`, and the `ServerError` constructor
