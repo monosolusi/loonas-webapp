@@ -87,7 +87,7 @@ metadata:
 
 ## Clerk Environment Gotcha (LNS-197, 2026-05-21; updated LNS-387 2026-06-14; updated LNS-377 2026-06-25)
 
-- `.env.local` does NOT exist on this machine. However, `.env` DOES contain `CLERK_SECRET_KEY` and `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (confirmed LNS-387 2026-06-14). Prior memory was stale.
+- **SUPERSEDED (LNS-457/LNS-459, 2026-07-17; re-verified 2026-07-19): NO `.env` OR `.env.local` file exists in this repo (`loonas-webapp-2`) at all — confirmed via `ls -la .env*` → "no matches found".** Assume keyless Clerk from the start; do not attempt route-mocking, and expect the production `next build` prerender step to fail on `Missing publishableKey`. (Historical, now stale for this repo: LNS-387 2026-06-14 recorded `.env` containing `CLERK_SECRET_KEY` + `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` — that reflected the sibling `loonas-webapp` checkout, not `loonas-webapp-2`.)
 - Server boots. Auth-gated routes may return 200 for unauthenticated hits (Clerk redirects to sign-in), but kyc-summary requires a real authenticated session WITH a specific account state (e.g., REJECTED outcome) — not achievable in headless QA without a seeded account.
 - **Mitigation for state-dependent routes** (e.g., KYC REJECTED branch): source-code static analysis is the only viable path. Note "manual browser smoke required" in reports for these routes.
 - **Feature-gate redirects:** Routes guarded by `account.hasFeature(X)` (e.g. `PeriodsLayout` → `/home` when account lacks `accounting` feature) are environmental limitations, NOT implementation failures. Name the gate mechanism and source file explicitly in the report (e.g. "redirected by `layout.tsx:13 account.hasFeature('accounting')`") so EL knows it is working-as-intended, not a crash or missing route.
@@ -345,6 +345,14 @@ metadata:
 
 - **When verifying any get-hook, check BOTH the success branch AND the error branch for `refresh: mutate` vs `refresh: null`.** An error component's retry button is a no-op if the hook returns `refresh: null` in the error branch — the provider's `onRetry` guard (`if (hookResult.refresh)`) silently swallows the click.
 - **Recurring pattern:** LNS-373 `use-get-neraca-report.ts` error branch returned `refresh: null` (AC-7 FAIL). LNS-372 `use-get-journal.ts` initially had the same gap (AC-8 PARTIAL → fixed to `refresh: mutate`). Check both branches on every get-hook review.
+
+## LNS-459 Sidebar Icon Swap (2026-07-17)
+
+- **Pure static-asset + prop-value swap, zero logic touched** — `accounting-navigation-menu.tsx` only swapped the `iconPath`/`selectedIconPath` literals on 5 `NavigationGroup`s (`chart-icon` → `book`/`coins`/`percent`/`list-tree`/`report`); the active/inactive selection logic (`navigation-group.tsx:43-44`) was untouched, so source-level confirmation is decisive (same principle as the LNS-402 "pure-refactor smoke non-blocking" rule in `qa.md`).
+- **`curl` fallback for `next/image` static assets works great when Clerk blocks browser smoke.** `public/*.svg` files are served unauthenticated regardless of the Clerk wall — `curl -I http://localhost:3000/assets/images/{name}.svg` returns real HTTP 200 + `Content-Type: image/svg+xml` from the running dev server, which is stronger evidence than reading the file off disk alone (proves Next.js static serving actually works, not just that the file exists).
+- **Desktop sidebar and mobile "Lainnya" sheet are the SAME component instance** (`navigation-menu.tsx` renders one `<AccountingNavigationMenu/>` for both, gated by route — confirmed via its own doc comment). A change to `AccountingNavigationMenu` cannot diverge between desktop/mobile; no separate mobile verification pass is needed beyond confirming this single-instance sharing, once per ticket.
+- **`git diff dev --stat` can show files NOT in your working-tree diff** if the branch has prior commits ahead of `dev` unrelated to the current ticket (here: `journal-reverse-form.tsx` + `reopen-period-dialog.tsx`, already committed via 2 earlier commits on this branch before QA picked it up). Distinguish via `git status` (uncommitted) vs `git log dev..HEAD` (committed-but-unmerged) before scoping the review — don't grade unrelated already-committed work against the current ticket's ACs.
+- Build failure = the same environmental `@clerk/clerk-react: Missing publishableKey` prerender pattern as LNS-402/411/381 (see the qa.md rule + "Clerk Environment Gotcha" above); this run additionally hit `/finance/ledger` + `/invoices/incoming/unpaid`. `Compiled successfully` completed clean before the prerender stage — the icon change introduced zero type/compile errors.
 
 ## State-Transition Render Check (LNS-378)
 

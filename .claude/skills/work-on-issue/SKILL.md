@@ -113,7 +113,7 @@ After SWE reports completion, the orchestrator launches **two parallel** verific
 Spawn the `qa` agent (NOT `general-purpose`) with a self-contained QA brief:
 
 - Run `npx tsc --noEmit` and `npm run lint`; report any failure.
-- Use the `/restart-server` skill (or a free port) to boot the dev server.
+- Boot the dev server on a free port (e.g. `npm run dev`; kill any existing port-3000 listener first).
 - Browser-smoke the changed flow at **1280×720** (per user preference). Cover golden path + the acceptance criteria from PM's PRD.
 - Look for regressions in adjacent flows the change might touch.
 - Produce a QA report: pass/fail per acceptance-criterion, screenshots/observations for failures.
