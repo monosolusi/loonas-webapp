@@ -24,19 +24,19 @@ const SECTIONS: AccountingSection[] = [
     title: "Jurnal & Buku Besar",
     links: [
       {
-        href: "/finance/journals",
+        href: "/accounting/journals",
         iconSrc: "/assets/images/document-icon-primary-300-w16-h16.svg",
         title: "Jurnal Umum",
         description: "Catat dan telusuri jurnal umum transaksi.",
       },
       {
-        href: "/finance/ledger",
+        href: "/accounting/ledger",
         iconSrc: "/assets/images/chart-icon-primary-300-w16-h16.svg",
         title: "Buku Besar",
         description: "Lihat mutasi dan saldo per akun.",
       },
       {
-        href: "/finance/opening-balance",
+        href: "/accounting/opening-balance",
         iconSrc: "/assets/images/wallet-icon-primary-300-w16-h16.svg",
         title: "Saldo Awal",
         description: "Tetapkan saldo awal untuk memulai pembukuan.",
@@ -47,19 +47,19 @@ const SECTIONS: AccountingSection[] = [
     title: "Biaya & Profitabilitas",
     links: [
       {
-        href: "/finance/fixed-costs",
+        href: "/accounting/fixed-costs",
         iconSrc: "/assets/images/dollar-icon-primary-300-w16-h16.svg",
         title: "Biaya Tetap",
         description: "Catat biaya tetap bulanan seperti sewa dan gaji.",
       },
       {
-        href: "/settings/fixed-costs",
+        href: "/accounting/fixed-cost-types",
         iconSrc: "/assets/images/chart-icon-primary-300-w16-h16.svg",
         title: "Jenis Biaya Tetap",
         description: "Kelola daftar jenis biaya tetap.",
       },
       {
-        href: "/finance/profitability",
+        href: "/accounting/profitability",
         iconSrc: "/assets/images/chart-icon-primary-300-w16-h16.svg",
         title: "Profitabilitas",
         description: "Analisis margin per produk dan varian.",
@@ -70,13 +70,13 @@ const SECTIONS: AccountingSection[] = [
     title: "Pajak",
     links: [
       {
-        href: "/finance/pph-final",
+        href: "/accounting/pph-final",
         iconSrc: "/assets/images/document-icon-primary-300-w16-h16.svg",
         title: "PPh Final UMKM",
         description: "Hitung dan kelola PPh Final UMKM.",
       },
       {
-        href: "/settings/tax-posture",
+        href: "/accounting/tax-posture",
         iconSrc: "/assets/images/credit-card-icon-primary-300-w16-h16.svg",
         title: "Postur Pajak",
         description: "Atur bentuk usaha, NPWP, dan status pajak.",
@@ -87,13 +87,13 @@ const SECTIONS: AccountingSection[] = [
     title: "Bagan Akun",
     links: [
       {
-        href: "/chart-of-accounts/accounts",
+        href: "/accounting/accounts",
         iconSrc: "/assets/images/chart-icon-primary-300-w16-h16.svg",
         title: "Daftar Akun",
         description: "Kelola bagan akun (chart of accounts).",
       },
       {
-        href: "/chart-of-accounts/mappings",
+        href: "/accounting/mappings",
         iconSrc: "/assets/images/chart-icon-primary-300-w16-h16.svg",
         title: "Pemetaan Akun",
         description: "Petakan akun ke transaksi otomatis.",
@@ -104,13 +104,13 @@ const SECTIONS: AccountingSection[] = [
     title: "Periode & Laporan",
     links: [
       {
-        href: "/finance/periods",
+        href: "/accounting/periods",
         iconSrc: "/assets/images/clock-icon-primary-300-w16-h16.svg",
         title: "Periode Akuntansi",
         description: "Buka dan tutup periode akuntansi.",
       },
       {
-        href: "/finance/reports",
+        href: "/accounting/reports",
         iconSrc: "/assets/images/document-icon-primary-300-w16-h16.svg",
         title: "Laporan Keuangan",
         description: "Neraca, Laba Rugi, Arus Kas, dan lainnya.",

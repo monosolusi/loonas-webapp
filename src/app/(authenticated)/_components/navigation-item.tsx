@@ -11,8 +11,8 @@ export function NavigationItem(props: NavigationItemProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   const selected = useMemo(() => {
-    return pathname.startsWith(props.href);
-  }, [pathname, props.href]);
+    return props.exact ? pathname === props.href : pathname.startsWith(props.href);
+  }, [pathname, props.href, props.exact]);
 
   const iconPath = useMemo(() => {
     if (selected || isHovered) return props.selectedIconPath ?? props.iconPath;
