@@ -7,12 +7,11 @@ import { NavigationGroup } from "@/app/(authenticated)/_components/navigation-gr
 import { NavigationChildItem } from "@/app/(authenticated)/_components/navigation-child-item";
 import { AccountingBackButton } from "@/app/(authenticated)/_components/accounting-back-button";
 
-const GROUP_ICON = "/assets/images/chart-icon-neutral-300-w16-h16.svg";
-const GROUP_ICON_SELECTED = "/assets/images/chart-icon-primary-300-w16-h16.svg";
-
 type AccountingNavGroup = {
   id: string;
   label: string;
+  iconPath: string;
+  selectedIconPath: string;
   matchPrefixes: string[];
   items: { href: string; label: string }[];
 };
@@ -26,6 +25,8 @@ const ACCOUNTING_NAV_GROUPS: AccountingNavGroup[] = [
   {
     id: "acc-journals-ledger",
     label: "Jurnal & Buku Besar",
+    iconPath: "/assets/images/book-icon-neutral-300-w16-h16.svg",
+    selectedIconPath: "/assets/images/book-icon-primary-300-w16-h16.svg",
     matchPrefixes: ["/accounting/journals", "/accounting/ledger", "/accounting/opening-balance"],
     items: [
       { href: "/accounting/journals", label: "Jurnal Umum" },
@@ -36,6 +37,8 @@ const ACCOUNTING_NAV_GROUPS: AccountingNavGroup[] = [
   {
     id: "acc-costs-profitability",
     label: "Biaya & Profitabilitas",
+    iconPath: "/assets/images/coins-icon-neutral-300-w16-h16.svg",
+    selectedIconPath: "/assets/images/coins-icon-primary-300-w16-h16.svg",
     matchPrefixes: ["/accounting/fixed-costs", "/accounting/fixed-cost-types", "/accounting/profitability"],
     items: [
       { href: "/accounting/fixed-costs", label: "Biaya Tetap" },
@@ -46,6 +49,8 @@ const ACCOUNTING_NAV_GROUPS: AccountingNavGroup[] = [
   {
     id: "acc-tax",
     label: "Pajak",
+    iconPath: "/assets/images/percent-icon-neutral-300-w16-h16.svg",
+    selectedIconPath: "/assets/images/percent-icon-primary-300-w16-h16.svg",
     matchPrefixes: ["/accounting/pph-final", "/accounting/tax-posture"],
     items: [
       { href: "/accounting/pph-final", label: "PPh Final UMKM" },
@@ -55,6 +60,8 @@ const ACCOUNTING_NAV_GROUPS: AccountingNavGroup[] = [
   {
     id: "acc-chart-of-accounts",
     label: "Bagan Akun",
+    iconPath: "/assets/images/list-tree-icon-neutral-300-w16-h16.svg",
+    selectedIconPath: "/assets/images/list-tree-icon-primary-300-w16-h16.svg",
     matchPrefixes: ["/accounting/accounts", "/accounting/mappings"],
     items: [
       { href: "/accounting/accounts", label: "Daftar Akun" },
@@ -64,6 +71,8 @@ const ACCOUNTING_NAV_GROUPS: AccountingNavGroup[] = [
   {
     id: "acc-period-reports",
     label: "Periode & Laporan",
+    iconPath: "/assets/images/report-icon-neutral-300-w16-h16.svg",
+    selectedIconPath: "/assets/images/report-icon-primary-300-w16-h16.svg",
     matchPrefixes: ["/accounting/periods", "/accounting/reports"],
     items: [
       { href: "/accounting/periods", label: "Periode Akuntansi" },
@@ -120,8 +129,8 @@ export function AccountingNavigationMenu() {
             key={group.id}
             id={group.id}
             label={group.label}
-            iconPath={GROUP_ICON}
-            selectedIconPath={GROUP_ICON_SELECTED}
+            iconPath={group.iconPath}
+            selectedIconPath={group.selectedIconPath}
             matchPrefixes={group.matchPrefixes}
             openGroup={openGroup}
             onOpenChange={handleOpenChange}
