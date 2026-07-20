@@ -1,5 +1,6 @@
 import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
+import { PaginatedData } from "@/core/resources/paginated";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { KycReviewRepository } from "@/features/kyc-review/domain/repositories/kyc-review";
@@ -7,11 +8,15 @@ import { VerificationWorkSummaryEntity } from "@/features/kyc-review/domain/enti
 import { VerificationWorkStatus } from "@/features/kyc-review/domain/enums/verification-work-status";
 
 export class ListVerificationWorksUseCaseParams {
-  constructor(public readonly status?: VerificationWorkStatus) {}
+  constructor(
+    public readonly status?: VerificationWorkStatus,
+    public readonly page?: number,
+    public readonly limit?: number,
+  ) {}
 }
 
 export class ListVerificationWorksUseCase
-  implements UseCase<DataState<VerificationWorkSummaryEntity[]>, ListVerificationWorksUseCaseParams>
+  implements UseCase<DataState<PaginatedData<VerificationWorkSummaryEntity>>, ListVerificationWorksUseCaseParams>
 {
   constructor(
     private readonly kycReviewRepository: KycReviewRepository,
@@ -20,13 +25,16 @@ export class ListVerificationWorksUseCase
 
   public async execute(
     params: ListVerificationWorksUseCaseParams,
-  ): Promise<DataState<VerificationWorkSummaryEntity[]>> {
+  ): Promise<DataState<PaginatedData<VerificationWorkSummaryEntity>>> {
     try {
       const session = await this.sessionRepository.retrieve();
       if (session instanceof DataFailed) throw session.error;
       if (!session.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      const result = await this.kycReviewRepository.listWorks({ status: params.status }, session.data);
+      const result = await this.kycReviewRepository.listWorks(
+        { status: params.status, page: params.page, limit: params.limit },
+        session.data,
+      );
       if (result instanceof DataFailed) throw result.error;
 
       return result;

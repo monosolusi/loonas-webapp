@@ -2,13 +2,14 @@
 
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { useParams } from "next/navigation";
-import { useGetOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-outgoing-invoice";
+import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
+import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 
 export function DownloadPdfButton() {
   const { id } = useParams<{ id: string }>();
-  const { invoice, loading } = useGetOutgoingInvoice({ id });
+  const { invoice, loading } = useGetInvoice({ id });
 
-  if (!invoice || loading) return null;
+  if (!invoice || loading || !(invoice instanceof OutgoingInvoiceEntity)) return null;
   const pdfUrl = invoice.pdf?.publicUrl;
   const fileName = invoice.pdf?.name ?? `${invoice.invoiceNumber ?? "invoice"}.pdf`;
 

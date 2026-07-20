@@ -7,9 +7,9 @@ export default function InvoicePayPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="flex flex-col space-y-4">
-        <div className="flex flex-1 flex-row justify-between space-x-4">
+        <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:justify-between sm:gap-0 sm:space-x-4">
           <LogoImage />
-          <div className="self-end">
+          <div className="sm:self-end">
             <PayButton />
           </div>
         </div>

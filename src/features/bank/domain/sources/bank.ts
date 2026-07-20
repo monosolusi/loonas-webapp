@@ -2,7 +2,6 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { BankModel } from "@/features/bank/data/models/bank";
 import { BankAccountModel } from "@/features/bank/data/models/bank-account";
 import { AccountInquiryResultModel } from "@/features/bank/data/models/account-inquiry-result";
-import { AccountBankAccountModel } from "@/features/account/data/models/account-bank-account";
 
 export interface BankService {
   /**
@@ -49,5 +48,5 @@ export interface BankService {
   createBankAccountForAccount(params: {
     bankId: string,
     accountNumber: string,
-  }, session: SessionEntity): Promise<AccountBankAccountModel>;
+  }, session: SessionEntity): Promise<void>;
 }

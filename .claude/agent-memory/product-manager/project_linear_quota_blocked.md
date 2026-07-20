@@ -7,7 +7,7 @@ metadata:
 
 **Fact**: On 2026-05-19, the `loonas` Linear workspace returned `Usage limit exceeded - You've exceeded the free issue limit for this workspace` on every `save_issue` create call. Reads still worked.
 
-**Cleared 2026-05-21**: `save_issue` create succeeded again (LNS-219 created during LNS-197 Phase 8 work-on-issue closeout). Either workspace was upgraded or quota was bumped. Not 100% sure of the trigger — just observed it works.
+**Cleared 2026-05-21**: `save_issue` create succeeded again (LNS-219 created during LNS-197 Phase 8 work-on-issue closeout). Either workspace was upgraded or quota was bumped. Not 100% sure of the trigger — just observed it works. Still working 2026-06-14 (LNS-385/386 created during LNS-384 Phase 8) — quota block confirmed durably lifted.
 
 **How to apply**:
 - Default to trying `save_issue` creates as normal.

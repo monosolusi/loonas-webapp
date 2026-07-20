@@ -113,7 +113,24 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   self-contained handler in `_payment-methods/{type}/`.
 - **Chrome page title**: when adding a new route under `(authenticated)/`, also add an entry to `ROUTE_MAP` in
   `src/app/(authenticated)/_components/header-title.tsx` — otherwise the chrome header silently falls back to
-  "Dashboard".
+  "Dashboard". `ROUTE_MAP` is keyed by **literal pathnames only** — it does NOT match `[param]` bracket keys
+  (`usePathname()` returns real ids, e.g. `/finance/journals/abc-123`, so a `"/finance/journals/[id]"` key never
+  matches and the title falls back). For a dynamic route, add a `segments[]`-based `if` block in the `useMemo`
+  (mirror `/accounts/:id`), not a bracket key.
+- **List-page header/toolbar standard**: every list/index page uses one layout. Heuristic: **action top-right,
+  filters bottom-left, search bottom-right.**
+  - **Row 1 — header**: `ListPageHeader` (`core/presentations/components/list-page-header.tsx`) for top-level pages,
+    or `DetailPageHeader` for `/settings/*` sub-pages. The primary create/add button ALWAYS goes in the header's
+    `action` slot (right) — **never in the toolbar**. It is a `PrimaryButton` with `className="w-full sm:w-auto"` and
+    the plus icon `<Image src="/assets/images/plus-icon-white-w16-h16.svg" alt="" width={16} height={16} />` (never a
+    Heroicons `PlusIcon`, never icon-less). Wrap in `<Link>` when it navigates; keep the `onClick` (no `Link`) when it
+    opens a dialog — and colocate the dialog + its open-state in the header component.
+  - **Row 2 — toolbar**: the shared `TableToolbar` (`core/presentations/components/table/table-toolbar.tsx`). Filters
+    (`DateRangePicker`, `FilterDropdown`, `TabFilter`, toggles) go in a LEFT group
+    (`<div className="flex flex-row flex-wrap items-center gap-3">…</div>`); search goes on the RIGHT and is ALWAYS the
+    shared `TableSearch` (`core/presentations/components/table/table-search.tsx`, `sm:w-[280px]`, right-pinned via
+    `sm:ml-auto`) — never an inline `TextInput` search copy, never a bespoke search box.
+  - **Row 3 (optional)**: active-filter `FilterPill` row below the toolbar.
 
 ### HTTP Requests
 
@@ -140,7 +157,7 @@ Custom `HttpRequest` class injects Clerk session headers:
 | `requireAccount` in `HttpRequest` config               | Removed — account resolution is implicit via JWT                                                                                                       |
 | `SelectedAccountProvider` context value                | Deprecated — provider only handles redirects; use `useGetCurrentAccount()` for account data                                                            |
 | `*-impl.tsx` monolith pattern (new code)               | Provider + split components pattern. Page composes provider + components, each component consumes context. Existing pages will be migrated gradually.  |
-| `InvoiceTableShell` (new code)                         | `TableToolbar`, `TableSearch`, `TableHeader`, `TableContainer` from `core/presentations/components/table/`. Existing pages will be migrated gradually. |
+| `InvoiceTableShell` (removed)                          | `TableContainer` + `TableHeader` + `TablePagination` from `core/presentations/components/table/`. Toolbar is a sibling above the container; header is the first child; pagination is the last child, gated `meta && meta.totalPages > 1`. |
 | Inline edit/delete icon buttons in tables (new code)   | `ActionMenu` from `core/presentations/components/action-menu.tsx` — consistent 3-dot action menu                                                       |
 | `ProductPhotoCard` standalone                          | Split into `ProductPhotoGrid` + `ProductPhotoDropzone` + `ProductPhotoUploadArea`                                                                      |
 
@@ -186,6 +203,8 @@ Directories use kebab-case. Components use kebab-case filenames.
 | `MiniToggle`    | `core/presentations/components/mini-toggle.tsx`    | Small toggle switch display                           |
 | `StatusChip`    | `core/presentations/components/status-chip.tsx`    | Status badges (success/warning/error/primary/neutral) |
 | `TablePagination` | `core/presentations/components/table/table-pagination.tsx` | Pagination controls; pairs with `TableContainer` + `TableHeader` |
+| `TableToolbar`  | `core/presentations/components/table/table-toolbar.tsx` | List-page toolbar row: filters left, search right (see List-page header/toolbar standard) |
+| `TableSearch`   | `core/presentations/components/table/table-search.tsx` | Standard list search input (`sm:w-[280px]`, right-pinned); use instead of inline `TextInput` search |
 
 ### Pagination
 
@@ -201,13 +220,30 @@ SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockI
 - Prettier: 2-space indent, 120 char width
 - `@typescript-eslint/no-explicit-any` is disabled
 - Domain layer must not import from presentation layers. Domain source interfaces (`domain/sources/`) may import data
-  models since they define the service contract that data layer implements.
+  models since they define the service contract that data layer implements. Conversely, **presentation**
+  (`presentations/`) and **domain** (`domain/entities/`, `domain/usecases/`) layers must **not** import from
+  `data/models/` — that exemption is `domain/sources/`-only; cross the seam via the Model's `toEntity()` into a domain
+  entity/type.
 - **Neutral palette diverges from Tailwind defaults**: `neutral-50` is `#FFFFFF` (pure white), not off-white. For
   visible-on-white chips/badges/borders, use `neutral-100` (`#D9DADA`) or darker. Check `src/app/globals.css` `@theme`
   for the canonical palette.
 
 ### Git
 
-- Branch naming: `features/{description}` for new features
+- Branch naming: prefix with `feat/`, `fix/`, `refactor/`, or `hotfix/` + `{description}` (e.g. `fix/exclude-pos-from-outgoing-invoices`). Do NOT use the legacy `features/` prefix.
 - Always create branches from `dev`
 - Commit style: Conventional Commits — `feat(scope):`, `fix(scope):`, `refactor(scope):`, `chore(scope):`
+
+## Design Context
+
+Design intent lives in two root files (source of truth for any UI/UX work; read before designing new screens):
+
+- **`PRODUCT.md`** — strategic: register (`product`), users (Indonesian SME owners + staff), the all-in-one merchant
+  OS purpose, brand personality (**trustworthy, precise, calm**), references (Mekari, Xero), anti-references, the 5
+  design principles, and the WCAG 2.1 AA bar.
+- **`DESIGN.md`** — visual: the "Calm Ledger" system. Lunas Blue (`#007BFF`) as the single accent, flat
+  border-not-shadow elevation, Manrope on a fixed rem scale, and the canonical component vocabulary. Machine-readable
+  tokens live in its YAML frontmatter; `.impeccable/design.json` is the live-mode sidecar.
+
+These are maintained via the `impeccable` skill (`/impeccable document` regenerates DESIGN.md; `/impeccable critique`
+/ `audit` / `polish` evaluate surfaces against this intent).

@@ -92,22 +92,6 @@ export default function SettingsPage() {
       description: "Kelola daftar bahan baku untuk resep produk olahan.",
       active: true,
     },
-    {
-      href: "/settings/fixed-costs",
-      iconSrc: "/assets/images/chart-icon-primary-300-w16-h16.svg",
-      title: "Biaya Tetap",
-      description: "Kelola jenis biaya tetap bulanan seperti sewa, gaji, dan listrik.",
-      active: true,
-      feature: "accounting",
-    },
-    {
-      href: "/settings/coa-mappings",
-      iconSrc: "/assets/images/chart-icon-primary-300-w16-h16.svg",
-      title: "Pemetaan Akun",
-      description: "Kelola pemetaan akun debit dan kredit untuk setiap jenis transaksi.",
-      active: true,
-      feature: "accounting",
-    },
   ];
 
   const visibleCategories = categories.filter((c) => !c.feature || account?.hasFeature(c.feature));

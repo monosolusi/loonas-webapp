@@ -18,13 +18,14 @@ type TimelineEvent = {
   description: string;
   timestamp: string | null;
   active: boolean;
+  tone?: "success" | "error";
 };
 
 export function InvoicePaymentStatusTimeline({ invoice }: InvoicePaymentStatusTimelineProps) {
   const events = buildEvents(invoice);
 
   return (
-    <div className="flex flex-col gap-y-1 rounded-lg border border-neutral-200 bg-white p-5">
+    <div className="flex flex-col gap-y-1 rounded-lg border border-neutral-200 bg-white p-6">
       <div className="text-sm font-semibold text-neutral-500">Riwayat status</div>
       <div className="flex flex-col pt-3">
         {events.map((event, idx) => (
@@ -36,13 +37,16 @@ export function InvoicePaymentStatusTimeline({ invoice }: InvoicePaymentStatusTi
 }
 
 function TimelineRow({ event, isLast }: { event: TimelineEvent; isLast: boolean }) {
+  const tone = event.tone ?? "success";
   return (
     <div className="flex flex-row gap-x-3">
       <div className="flex flex-col items-center">
         <div
           className={clsx(
             "size-2.5 shrink-0 rounded-full border-2",
-            event.active ? "border-success-500 bg-success-500" : "border-neutral-200 bg-white",
+            !event.active && "border-neutral-200 bg-white",
+            event.active && tone === "success" && "border-success-500 bg-success-500",
+            event.active && tone === "error" && "border-error-500 bg-error-500",
           )}
           aria-hidden
         />
@@ -50,10 +54,17 @@ function TimelineRow({ event, isLast }: { event: TimelineEvent; isLast: boolean 
       </div>
       <div className={clsx("flex flex-1 flex-col pb-4", isLast && "pb-0")}>
         <div className="flex flex-row items-baseline justify-between gap-x-3">
-          <span className={clsx("text-sm font-medium", event.active ? "text-neutral-500" : "text-neutral-300")}>
+          <span
+            className={clsx(
+              "text-sm font-medium",
+              !event.active && "text-neutral-300",
+              event.active && tone === "success" && "text-neutral-500",
+              event.active && tone === "error" && "text-error-500",
+            )}
+          >
             {event.title}
           </span>
-          <span className="shrink-0 text-xs tabular-nums text-neutral-300">{event.timestamp ?? "—"}</span>
+          <span className="shrink-0 text-xs text-neutral-300 tabular-nums">{event.timestamp ?? "—"}</span>
         </div>
         <span className="text-xs text-neutral-300">{event.description}</span>
       </div>
@@ -64,8 +75,7 @@ function TimelineRow({ event, isLast }: { event: TimelineEvent; isLast: boolean 
 function buildEvents(invoice: OutgoingInvoiceEntity): TimelineEvent[] {
   const kind = deriveInvoicePaymentStatusKind(invoice);
   const isQris = isInvoicePayInQris(invoice);
-  const qrisDetail =
-    invoice.payInDetail?.detail instanceof QrisPayInDetailEntity ? invoice.payInDetail.detail : null;
+  const qrisDetail = invoice.payInDetail?.detail instanceof QrisPayInDetailEntity ? invoice.payInDetail.detail : null;
   const expirationTime = qrisDetail?.expirationTime ?? null;
   const updatedTimestamp = invoice.updatedAt.isValid ? invoice.updatedAt : invoice.invoiceDate;
   const createdTimestamp = invoice.createdAt.isValid ? invoice.createdAt : invoice.invoiceDate;
@@ -73,6 +83,16 @@ function buildEvents(invoice: OutgoingInvoiceEntity): TimelineEvent[] {
   const events: TimelineEvent[] = [];
 
   if (isQris) {
+    const qrIssuedDescription = expirationTime
+      ? `QR diterbitkan · kedaluwarsa ${formatInvoiceTimeOnly(expirationTime)}`
+      : "QR diterbitkan";
+    const waitingEvent = (active: boolean): TimelineEvent => ({
+      title: "Menunggu pembayaran",
+      description: qrIssuedDescription,
+      timestamp: formatInvoiceTimeOnly(createdTimestamp),
+      active,
+    });
+
     if (kind === "paid") {
       events.push({
         title: "Pembayaran diterima",
@@ -80,14 +100,25 @@ function buildEvents(invoice: OutgoingInvoiceEntity): TimelineEvent[] {
         timestamp: formatInvoiceTimeOnly(updatedTimestamp),
         active: true,
       });
+      events.push(waitingEvent(false));
+    } else if (kind === "expired") {
       events.push({
-        title: "Menunggu pembayaran",
-        description: expirationTime
-          ? `QR diterbitkan · kedaluwarsa ${formatInvoiceTimeOnly(expirationTime)}`
-          : "QR diterbitkan",
-        timestamp: formatInvoiceTimeOnly(createdTimestamp),
-        active: false,
+        title: "QR kedaluwarsa",
+        description: "Pembayaran tidak diselesaikan pelanggan",
+        timestamp: formatInvoiceTimeOnly(expirationTime ?? updatedTimestamp),
+        active: true,
+        tone: "error",
       });
+      events.push(waitingEvent(false));
+    } else if (kind === "failed") {
+      events.push({
+        title: "Pembayaran gagal",
+        description: "Pembayaran QRIS tidak berhasil diproses",
+        timestamp: formatInvoiceTimeOnly(updatedTimestamp),
+        active: true,
+        tone: "error",
+      });
+      events.push(waitingEvent(false));
     } else {
       events.push({
         title: "Pembayaran diterima",
@@ -95,14 +126,7 @@ function buildEvents(invoice: OutgoingInvoiceEntity): TimelineEvent[] {
         timestamp: null,
         active: false,
       });
-      events.push({
-        title: "Menunggu pembayaran",
-        description: expirationTime
-          ? `QR diterbitkan · kedaluwarsa ${formatInvoiceTimeOnly(expirationTime)}`
-          : "QR diterbitkan",
-        timestamp: formatInvoiceTimeOnly(createdTimestamp),
-        active: true,
-      });
+      events.push(waitingEvent(true));
     }
   } else {
     events.push({

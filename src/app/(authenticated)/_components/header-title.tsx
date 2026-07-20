@@ -11,20 +11,27 @@ type RouteConfig = {
 // Static route mappings
 const ROUTE_MAP: Record<string, RouteConfig> = {
   "/home": { title: "Dashboard" },
+  "/accounting": { title: "Akuntansi", description: "Beranda Akuntansi" },
   "/accounts": { title: "Manajemen Akun" },
   "/invoices/incoming": { title: "Faktur Masukan" },
   "/invoices/incoming/create": { title: "Faktur Masukan" },
-  "/invoices/incoming/unpaid": { title: "Faktur Masukan" },
-  "/invoices/incoming/paid": { title: "Faktur Masukan" },
-  "/invoices/incoming/waiting-settlement": { title: "Faktur Masukan" },
   "/invoices/outgoing": { title: "Faktur Keluaran" },
   "/invoices/outgoing/create": { title: "Faktur Keluaran" },
-  "/invoices/outgoing/unpaid": { title: "Faktur Keluaran" },
   "/invoices/outgoing/overdue": { title: "Faktur Keluaran" },
-  "/invoices/outgoing/paid": { title: "Faktur Keluaran" },
-  "/invoices/outgoing/waiting-settlement": { title: "Faktur Keluaran" },
   "/settings": { title: "Pengaturan" },
   "/settings/bank-accounts": { title: "Pengaturan" },
+  "/accounting/tax-posture": { title: "Postur Pajak" },
+  "/accounting/fixed-costs": { title: "Biaya Tetap" },
+  "/accounting/fixed-cost-types": { title: "Jenis Biaya Tetap" },
+  "/accounting/reports": { title: "Laporan Keuangan" },
+  "/accounting/journals": { title: "Jurnal Umum" },
+  "/accounting/journals/new": { title: "Jurnal Baru" },
+  "/accounting/periods": { title: "Periode Akuntansi" },
+  "/accounting/opening-balance": { title: "Saldo Awal" },
+  "/accounting/pph-final": { title: "PPh Final UMKM" },
+  "/accounting/profitability": { title: "Profitabilitas Varian" },
+  "/accounting/accounts": { title: "Bagan Akun" },
+  "/accounting/mappings": { title: "Bagan Akun" },
 };
 
 export function HeaderTitle() {
@@ -52,6 +59,16 @@ export function HeaderTitle() {
     // /invoices/outgoing/:id
     if (segments[0] === "invoices" && segments[1] === "outgoing" && segments[2]) {
       return { title: "Faktur Keluaran", description: segments[2] };
+    }
+
+    // /accounting/journals/:id
+    if (segments[0] === "accounting" && segments[1] === "journals" && segments[2] && segments[2] !== "new") {
+      return { title: "Detail Jurnal" };
+    }
+
+    // /accounting/profitability/:productId/:variantId
+    if (segments[0] === "accounting" && segments[1] === "profitability" && segments[2] && segments[3]) {
+      return { title: "Profitabilitas Varian" };
     }
 
     // Fallback: find closest parent route

@@ -7,6 +7,8 @@ import { DistrictEntity } from "@/core/utilities/address/domain/entities/distric
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
 import { AccountType } from "@/features/account/domain/enums/account-type";
 import { MembershipEntity } from "@/features/account/domain/entities/membership";
+import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
+import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 
 type Metadata = { clerkId: string };
 
@@ -31,6 +33,8 @@ type PersonalAccountEntityConstructor = {
   membership?: MembershipEntity;
   role?: string;
   features?: string[];
+  latestStatus?: VerificationStatus;
+  verificationOutcome?: VerificationOutcome;
 };
 
 export class PersonalAccountEntity implements AbstractEntity {
@@ -54,6 +58,8 @@ export class PersonalAccountEntity implements AbstractEntity {
   public membership?: MembershipEntity;
   public role: string;
   public features: string[];
+  public latestStatus?: VerificationStatus;
+  public verificationOutcome?: VerificationOutcome;
 
   constructor(args: PersonalAccountEntityConstructor) {
     this.id = args.id;
@@ -76,6 +82,8 @@ export class PersonalAccountEntity implements AbstractEntity {
     this.membership = args.membership;
     this.role = args.role ?? "user";
     this.features = args.features ?? [];
+    this.latestStatus = args.latestStatus;
+    this.verificationOutcome = args.verificationOutcome;
   }
 
   public hasFeature(feature: string): boolean {

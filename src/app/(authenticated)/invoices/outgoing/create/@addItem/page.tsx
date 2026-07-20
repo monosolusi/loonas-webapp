@@ -62,7 +62,7 @@ export default function AddItemSection() {
           <h2 className="text-sm font-semibold text-neutral-500">Harga & Kuantitas</h2>
           <p className="text-xs text-neutral-200">Tentukan jumlah dan harga satuan item.</p>
         </div>
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <QtyInput />
           <PriceInput />
           <div className="col-span-2">
@@ -79,7 +79,7 @@ export default function AddItemSection() {
           <h2 className="text-sm font-semibold text-neutral-500">Diskon</h2>
           <p className="text-xs text-neutral-200">Opsional. Pilih jenis dan nilai diskon untuk item ini.</p>
         </div>
-        <div className="flex flex-row space-x-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-0 sm:space-x-3">
           <div className="flex-1">
             <DiscountTypeSelect />
           </div>
@@ -100,7 +100,7 @@ export default function AddItemSection() {
           </p>
         </div>
         <TaxTypeSelect />
-        <div className="flex flex-row space-x-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-0 sm:space-x-3">
           <div className="flex-1">
             <TaxInput />
           </div>
@@ -108,7 +108,7 @@ export default function AddItemSection() {
             <TaxBaseField />
           </div>
         </div>
-        <div className="flex flex-row items-end space-x-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-0 sm:space-x-3">
           <div className="flex-1">
             <TotalWithTaxField />
           </div>

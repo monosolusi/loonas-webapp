@@ -1,7 +1,6 @@
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
-import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
 import { useMemo } from "react";
 import clsx from "clsx";
 
@@ -24,17 +23,13 @@ const ACCOUNT_LABEL_STATUS_MAP: Record<string, string> = {
 };
 
 export function AccountStatusBadge(props: AccountStatusBadgeProps) {
-  const { verificationWork } = useGetAccountVerificationWork({ accountId: props.account.id });
-
   const { color, label } = useMemo(() => {
-    if (!verificationWork) return { color: "bg-neutral-300", label: "Memuat..." };
-
-    const key = `${verificationWork.latestStatus}.${verificationWork.verificationOutcome}`;
+    const key = `${props.account.latestStatus}.${props.account.verificationOutcome}`;
     return {
       color: ACCOUNT_STYLE_STATUS_MAP[key] ?? "bg-neutral-300",
       label: ACCOUNT_LABEL_STATUS_MAP[key] ?? "Status Tidak Diketahui",
     };
-  }, [verificationWork]);
+  }, [props.account.latestStatus, props.account.verificationOutcome]);
 
   return (
     <div className="flex flex-row items-center gap-x-2">

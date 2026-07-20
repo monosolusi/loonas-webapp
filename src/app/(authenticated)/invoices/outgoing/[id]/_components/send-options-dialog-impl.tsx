@@ -1,6 +1,7 @@
 "use client";
 
-import { useGetOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-outgoing-invoice";
+import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
+import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { useParams } from "next/navigation";
 import { useMemo } from "react";
 import { SendOptionsDialog } from "@/app/(authenticated)/invoices/_components/send-options-dialog";
@@ -15,11 +16,11 @@ interface SendOptionsDialogImplProps {
 
 export function SendOptionsDialogImpl(props: SendOptionsDialogImplProps) {
   const { id } = useParams<{ id: string }>();
-  const { invoice, loading } = useGetOutgoingInvoice({ id });
+  const { invoice, loading } = useGetInvoice({ id });
   const { trigger } = useSendInvoice();
 
   const availableChannels = useMemo(() => {
-    if (!invoice || loading) return [];
+    if (!invoice || loading || !(invoice instanceof OutgoingInvoiceEntity)) return [];
     return invoice.sendChannel;
   }, [invoice, loading]);
 
@@ -28,7 +29,7 @@ export function SendOptionsDialogImpl(props: SendOptionsDialogImplProps) {
     if (props.onCompleted) await props.onCompleted();
   };
 
-  if (!invoice || loading) return null;
+  if (!invoice || loading || !(invoice instanceof OutgoingInvoiceEntity)) return null;
   return (
     <SendOptionsDialog
       {...props}

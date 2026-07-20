@@ -9,6 +9,7 @@ import { ProductEntity } from "@/features/product/domain/entities/product";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useListProducts } from "@/features/product/presentations/hooks/use-list-products";
 import { useUpdateProduct } from "@/features/product/presentations/hooks/use-update-product";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 
 type ProductListContextValue = {
   products: ProductEntity[];
@@ -59,7 +60,7 @@ export function ProductListProvider({ children }: ProductListProviderProps) {
 
   const { products, meta, loading, error } = useListProducts({
     page,
-    limit: 10,
+    limit: DEFAULT_PAGE_SIZE,
     type: selectedTypes.length > 0 ? selectedTypes.join(",") : undefined,
     categoryIds: selectedCategories.length > 0 ? selectedCategories : undefined,
     search: searchQuery,

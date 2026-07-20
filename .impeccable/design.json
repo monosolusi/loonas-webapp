@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-14T00:00:00.000Z",
+  "title": "Design System: Loonas",
+  "extensions": {
+    "colorMeta": {
+      "lunas-blue": {
+        "role": "primary",
+        "displayName": "Lunas Blue",
+        "canonical": "#007BFF",
+        "tonalRamp": ["#001933", "#003A73", "#005ABB", "#007BFF", "#4CA2FF", "#99CAFF", "#CCE4FF", "#F0F7FF"]
+      },
+      "ledger-navy": {
+        "role": "primary",
+        "displayName": "Ledger Navy",
+        "canonical": "#001933",
+        "tonalRamp": ["#000C1A", "#001933", "#002B57", "#005ABB", "#007BFF", "#4CA2FF", "#99CAFF", "#F0F7FF"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#0D0E0E",
+        "tonalRamp": ["#0D0E0E", "#1B1B1B", "#323636", "#6B6E6E", "#BDBDBD", "#D9DADA", "#ECECEC", "#FAFAFA"]
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "#D9DADA",
+        "tonalRamp": ["#0D0E0E", "#1B1B1B", "#323636", "#6B6E6E", "#BDBDBD", "#D9DADA", "#ECECEC", "#FFFFFF"]
+      },
+      "success": {
+        "role": "success",
+        "displayName": "Settled Green",
+        "canonical": "#17B26A",
+        "tonalRamp": ["#054A2E", "#067647", "#079455", "#17B26A", "#47CD89", "#DCFAE6", "#ECFDF3", "#F6FEF9"]
+      },
+      "warning": {
+        "role": "warning",
+        "displayName": "Due Amber",
+        "canonical": "#F79009",
+        "tonalRamp": ["#7A3008", "#B54708", "#DC6803", "#F79009", "#FDB022", "#FFFAEB", "#FFFCF5", "#FFFDF8"]
+      },
+      "error": {
+        "role": "error",
+        "displayName": "Overdue Red",
+        "canonical": "#F04438",
+        "tonalRamp": ["#7A1710", "#B42318", "#D92D20", "#F04438", "#F97066", "#FEE4E2", "#FEF3F2", "#FFFBFA"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page titles (h1) only. Fixed 30px bold, tracking-tight. Never fluid." },
+      "title": { "displayName": "Title", "purpose": "Section-card and dialog headers; semibold at body size." },
+      "body": { "displayName": "Body", "purpose": "Default UI text, labels, inputs, table cells, card copy." },
+      "label": { "displayName": "Label", "purpose": "Table column headers and micro-labels. UPPERCASE tracked — the only earned uppercase." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "state-transition", "value": "200ms ease", "purpose": "Default for color/background state changes on buttons, nav items, inputs." },
+      { "name": "slide-in-right", "value": "slide-in-right 0.3s ease-out", "purpose": "Drawer/panel enter from the right." },
+      { "name": "slide-in-left", "value": "slide-in-left 0.3s ease-out", "purpose": "Drawer/panel enter from the left." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single primary commit action — Lunas Blue fill, white label, 44px tall.",
+      "html": "<button class=\"ds-btn-primary\">Bayar Sekarang</button>",
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; justify-content:center; gap:8px; height:44px; padding:0 14px; border:none; border-radius:8px; background:#007BFF; color:#FFFFFF; font-family:Manrope,system-ui,sans-serif; font-size:1rem; font-weight:600; line-height:1; cursor:pointer; transition:background .2s; } .ds-btn-primary:hover { background:#005ABB; } .ds-btn-primary:focus-visible { outline:none; box-shadow:0 0 0 2px rgba(0,123,255,.2); } .ds-btn-primary:disabled { background:#BDBDBD; opacity:.5; cursor:not-allowed; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline-primary",
+      "description": "The default secondary action — transparent fill, 2px Lunas Blue border, blue label.",
+      "html": "<button class=\"ds-btn-outline\">Batal</button>",
+      "css": ".ds-btn-outline { display:inline-flex; align-items:center; justify-content:center; gap:8px; height:44px; padding:0 14px; border:2px solid #007BFF; border-radius:8px; background:transparent; color:#007BFF; font-family:Manrope,system-ui,sans-serif; font-size:1rem; font-weight:600; line-height:1; cursor:pointer; transition:background .2s; } .ds-btn-outline:hover { background:rgba(0,123,255,.1); } .ds-btn-outline:focus-visible { outline:none; box-shadow:0 0 0 2px rgba(0,123,255,.2); } .ds-btn-outline:disabled { border-color:#BDBDBD; color:#BDBDBD; cursor:not-allowed; }"
+    },
+    {
+      "name": "Text Input (with Rp add-on)",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Labeled field with optional inline money/rate add-on; blue focus ring, Mist border at rest.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\">Nominal Tagihan</label><div class=\"ds-input\"><span class=\"ds-input-addon\">Rp</span><input class=\"ds-input-el\" placeholder=\"0\" /></div></div>",
+      "css": ".ds-field { display:flex; flex-direction:column; gap:8px; font-family:Manrope,system-ui,sans-serif; max-width:320px; } .ds-field-label { font-size:1rem; color:#0D0E0E; } .ds-input { display:flex; align-items:center; gap:12px; height:44px; padding:0 12px; border:1px solid #D9DADA; border-radius:8px; background:#FFFFFF; transition:border-color .2s, box-shadow .2s; } .ds-input:focus-within { border-color:#007BFF; box-shadow:0 0 0 2px rgba(0,123,255,.2); } .ds-input-addon { flex-shrink:0; color:#323636; font-size:1rem; } .ds-input-el { flex:1; min-width:0; border:none; outline:none; background:transparent; font-family:inherit; font-size:1rem; color:#0D0E0E; } .ds-input-el::placeholder { color:#BDBDBD; }"
+    },
+    {
+      "name": "Status Chip (Success)",
+      "kind": "chip",
+      "refersTo": "status-chip-success",
+      "description": "Financial state badge — pale tint background, deep-tone label, always paired with a word.",
+      "html": "<span class=\"ds-chip ds-chip-success\">Lunas</span>",
+      "css": ".ds-chip { display:inline-flex; align-items:center; border-radius:4px; padding:4px 10px; font-family:Manrope,system-ui,sans-serif; font-size:.75rem; font-weight:500; line-height:1; } .ds-chip-success { background:#F6FEF9; color:#067647; } .ds-chip-warning { background:#FFFCF5; color:#B54708; } .ds-chip-error { background:#FFFBFA; color:#B42318; }"
+    },
+    {
+      "name": "Navigation Item (Selected)",
+      "kind": "nav",
+      "refersTo": "nav-item-selected",
+      "description": "Sidebar row — Charcoal at rest, Lunas Blue tint + label when selected or hovered.",
+      "html": "<a class=\"ds-nav-item ds-nav-item--selected\"><svg viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M2 4.5h12M2 8h12M2 11.5h8\" stroke-linecap=\"round\"/></svg><span>Penjualan</span></a>",
+      "css": ".ds-nav-item { display:flex; align-items:center; gap:12px; width:240px; padding:12px; border-radius:6px; background:transparent; color:#323636; font-family:Manrope,system-ui,sans-serif; font-size:.875rem; font-weight:500; cursor:pointer; transition:background .2s, color .2s; text-decoration:none; } .ds-nav-item:hover { background:rgba(0,123,255,.2); color:#007BFF; } .ds-nav-item--selected { background:rgba(0,123,255,.1); color:#007BFF; }"
+    },
+    {
+      "name": "Currency Display",
+      "kind": "custom",
+      "refersTo": "section-card",
+      "description": "Signature money component — Indonesian-formatted rupiah, Rp prefix and dot thousand separators.",
+      "html": "<span class=\"ds-currency\">Rp 1.250.000</span>",
+      "css": ".ds-currency { font-family:Manrope,system-ui,sans-serif; font-size:1.5rem; font-weight:700; color:#0D0E0E; font-variant-numeric:tabular-nums; letter-spacing:-0.01em; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Calm Ledger",
+    "overview": "Loonas is bookkeeping made calm. The surface behaves like a well-kept ledger: every figure is legible and in its place, the page breathes with whitespace, and a single blue signal does all the pointing. An owner runs payments, invoicing, POS, stock, and the books out of one app — so the system's first job is to make twelve modules feel like one quiet, dependable product. The reference points are Mekari and Xero: blue-accented, generous with whitespace, clean cards and tables, data you never have to squint at. White cards sit on a near-white surface, divided by hairline borders, never by drop shadows or glass.",
+    "keyCharacteristics": [
+      "One quiet voice: Lunas Blue (#007BFF) is the only saturated color on most screens, reserved for action, selection, and 'pay attention.'",
+      "Flat by construction: depth is carried by 1px borders and tonal layering, never shadows.",
+      "A single typographic family (Manrope) tuned across a fixed rem scale — no fluid display type.",
+      "Money legibility is non-negotiable: Indonesian-formatted figures (Rp 1.250.000), always clear.",
+      "A 44px control rhythm (h-11) across every interactive element for calm vertical cadence and touch comfort."
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "Lunas Blue is the only saturated accent on a standard screen, and it never decorates — it marks the primary action, the current selection, or a focus ring. If two things on a screen are blue 'for emphasis,' one of them is wrong.", "section": "colors" },
+      { "name": "The Tint-and-Deep Rule", "body": "Financial status is always a pale-50 background under a -500 deep-tone label. Never a full-saturation -300 fill behind white text.", "section": "colors" },
+      { "name": "The Color-Is-Never-Alone Rule", "body": "Status must pair color with an icon or word. Red alone does not mean 'overdue' for a colorblind owner — the label does.", "section": "colors" },
+      { "name": "The Fixed-Scale Rule", "body": "Product type is sized in fixed rem, never clamp(). A heading that shrinks inside a sidebar looks broken, not responsive.", "section": "typography" },
+      { "name": "The One-Family Rule", "body": "Manrope carries everything. Reaching for a second typeface to 'add personality' is forbidden — personality here is restraint.", "section": "typography" },
+      { "name": "The Border-Not-Shadow Rule", "body": "Surfaces separate with a 1px Mist (#D9DADA) border, never a box-shadow. If a card needs a drop shadow to read, the layout has failed.", "section": "elevation" },
+      { "name": "The Ring-On-Focus-Only Rule", "body": "The blue focus ring is the system's sole glow. It appears on focus and nowhere else — no resting glows, no hover shadows, no ambient blur.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep Lunas Blue (#007BFF) as the single saturated accent — primary action, current selection, focus ring.",
+      "Do separate surfaces with a 1px Mist (#D9DADA) border on white-over-#FAFAFA; let tonal layering carry depth.",
+      "Do size every interactive control at 44px tall (h-11) and round it to 8px (rounded-lg).",
+      "Do render every rupiah value through CurrencyDisplay / NumberDisplay so it always reads Rp 1.250.000.",
+      "Do back financial status with a pale-50 tint under a deep-500 label, and always pair color with a word or icon.",
+      "Do keep Manrope as the only typeface, sized in fixed rem across the whole hierarchy."
+    ],
+    "donts": [
+      "Don't ship generic templated SaaS — cream/gray dashboards, identical icon-heading-text card grids, or hero-metric tiles with gradient accents.",
+      "Don't drift toward loud crypto/neon fintech: no dark-mode gradients, glassmorphism, glow, or decorative blur.",
+      "Don't rebuild a cluttered legacy ERP — no walls of fields with no hierarchy; progressive disclosure over density-for-its-own-sake.",
+      "Don't go consumer-toy: no oversized radii, emoji, bouncy/elastic motion, or pastel-everything.",
+      "Don't add a box-shadow to a card to make it read — fix the layout instead.",
+      "Don't use text-gray-* classes or invent a bg-primary-default token — use the neutral-* ramp and real primary-* steps.",
+      "Don't use clamp()/fluid type for product headings, and never use UPPERCASE tracked text as a section eyebrow.",
+      "Don't put a second saturated color next to Lunas Blue for emphasis, or use a full-saturation -300 fill behind white text for a status chip."
+    ]
+  }
+}

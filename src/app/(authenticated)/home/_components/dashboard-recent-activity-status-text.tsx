@@ -9,9 +9,9 @@ const statusConfig: Record<InvoiceStatusType, { label: string; className: string
   unpaid: { label: "Menunggu Pembayaran", className: "text-warning-500" },
   sent: { label: "Terkirim", className: "text-blue-500" },
   draft: { label: "Draft", className: "text-neutral-300" },
-  cancelled: { label: "Dibatalkan", className: "text-danger-500" },
-  expired: { label: "Kedaluwarsa", className: "text-danger-500" },
-  failed: { label: "Gagal", className: "text-danger-500" },
+  cancelled: { label: "Dibatalkan", className: "text-error-500" },
+  expired: { label: "Kedaluwarsa", className: "text-error-500" },
+  failed: { label: "Gagal", className: "text-error-500" },
 };
 
 interface DashboardRecentActivityStatusTextProps {

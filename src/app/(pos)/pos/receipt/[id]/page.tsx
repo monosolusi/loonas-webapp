@@ -15,11 +15,13 @@ export default function ReceiptPage(props: ReceiptPageProps) {
   const { id } = use(props.params);
 
   return (
-    <div className="flex h-full flex-col items-center gap-y-4 overflow-y-auto p-6">
-      <PosReceiptProvider id={id} loading={<PosReceiptLoading />} error={(err) => <ReceiptError error={err} />}>
-        <ReceiptCardContent />
+    <PosReceiptProvider id={id} loading={<PosReceiptLoading />} error={(err) => <ReceiptError error={err} />}>
+      <div className="flex h-full min-h-0 flex-col">
+        <div className="flex flex-1 flex-col items-center gap-y-6 overflow-y-auto p-6">
+          <ReceiptCardContent />
+        </div>
         <ReceiptActions />
-      </PosReceiptProvider>
-    </div>
+      </div>
+    </PosReceiptProvider>
   );
 }

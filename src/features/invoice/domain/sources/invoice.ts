@@ -48,6 +48,18 @@ export interface PaymentConfiguration {
   chargeFeeOn: ChargeFeeOn;
 }
 
+export interface UpdateOutgoingParams {
+  id: string;
+  recipient: PartnerEntity;
+  invoiceDate: DateTime;
+  dueDate: DateTime;
+  items: InvoiceItem[];
+  note?: string;
+  tnc?: string;
+  signature?: File;
+  paymentConfiguration: PaymentConfiguration[];
+}
+
 export interface CreateOutgoingParams {
   recipient: PartnerEntity;
   invoiceNumber: string;
@@ -61,10 +73,6 @@ export interface CreateOutgoingParams {
   sendChannel: NotificationChannel[];
 }
 
-
-export interface OutgoingInvoiceFilter {
-  id?: string;
-}
 
 export interface InvoiceSummaryFilter {
   type: InvoiceType;
@@ -119,8 +127,6 @@ export interface InvoiceService {
 
   createPosSale(params: CreatePosSaleServiceParams, session: SessionEntity): Promise<OutgoingInvoiceModel>;
 
-  getOutgoing(filter: OutgoingInvoiceFilter, session: SessionEntity): Promise<OutgoingInvoiceModel>;
-
   getPublicOutgoing(filter: { invoiceId: string }): Promise<PublicOutgoingInvoiceModel>;
 
   createPayInForOutgoingInvoice(params: {
@@ -129,7 +135,16 @@ export interface InvoiceService {
     paymentSchemeId?: string | null;
   }): Promise<PayInModel>;
 
-  send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void>;
+  send(
+    params: { id: string; sendChannel: NotificationChannel[]; idempotencyKey: string },
+    session: SessionEntity,
+  ): Promise<void>;
+
+  finalise(params: { id: string }, session: SessionEntity): Promise<OutgoingInvoiceModel>;
+
+  deleteOutgoing(params: { id: string }, session: SessionEntity): Promise<void>;
+
+  updateOutgoing(params: UpdateOutgoingParams, session: SessionEntity): Promise<void>;
 
   getTimeline(filter: { id: string }, session: SessionEntity): Promise<InvoiceTimelineModel>;
 

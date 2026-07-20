@@ -6,3 +6,20 @@
 - [Accounting bootstrap v1 locked plan](project_accounting_bootstrap_plan.md) — Branch B only, B15 resolver tooltips, tax tile copy, ManagedByLoonasBadge call, v1.1 extension rules
 - [Dashboard revamp LNS-227](project_dashboard_revamp.md) — bg-primary-50 period zone, accent semantics, chart x-axis rules, empty-state pattern, loading coordination
 - [Recent activity widget LNS-232](project_recent_activity_widget.md) — tab anatomy, scoping caption placement, POS row icon badge, empty-state copy, natural expansion decision
+- [Accounting surfaces IA + routes](project_accounting_surfaces_ia.md) — 7 net-new surfaces, nav IA split, Reports Hub tab decision, ROUTE_MAP additions, critical BE open questions
+- [KYC rejected escape hatch LNS-387](project_kyc_rejected_escape_hatch.md) — RejectedNextAction sibling pattern, div→button a11y upgrade, text-link weight for secondary escape actions
+- [Trial Balance + General Ledger viewers LNS-375](project_tb_gl_report_viewers.md) — inline drill-down decision, GL SummaryCard reuse, copy strings, tab routing architecture
+- [Laba Rugi + Arus Kas viewers LNS-374](project_laba_rugi_arus_kas_spec.md) — comparison column dash convention, non-cash disclosure placement, range default, empty body copy, tab-strip enablement needed
+- [Mark shape-dependent layout provisional](feedback_provisional_shape_dependent_layout.md) — when section structure depends on an unconfirmed schema, mark it PROVISIONAL and minimize speculative detail (additive to flagging the BE shape) (LNS-374, recurred LNS-376)
+- [Document-viewer conventions](feedback_document_viewer_conventions.md) — max-w-prose on article not card, leading-7 prose, <dl>-not-<table>, prose-shaped skeleton, neutral-100 divider caveat, "Per {date}" / "Catatan {ref}" SAK-EMKM copy (LNS-376)
+- [Journal-line editor LNS-364](project_journal_line_editor_spec.md) — 4-col grid, coerce money model, column-lock UX, balance indicator placement, add/remove affordances, a11y annotations
+- [Opening Balance copy LNS-344](project_lns344_opening_balance_copy.md) — Item A migration notice callout placement + copy; Item B 422 NORMAL_BALANCE_HINT two-case design, per-line list, accumulated-deficit path + CTA
+- [Tax Posture settings LNS-380](project_tax_posture_lns380.md) — stacked sections, StatusChip for is_pkp, null-triad defaults framing, 403 state, a11y open items for EL
+- [Accounting Periods page LNS-377](project_periods_page.md) — chip variants, hide-not-disable pattern, LoonasDialog+DialogFooter base (not ConfirmationDialog), inline error placement, PPh-Final 422 copy, Idempotency-Key on dialog open
+- [Manual Journal Entry page LNS-371](project_lns371_manual_journal_entry.md) — create form layout, 3-tier warning dialog severity, degenerate-zero guard, discard guard deferred, success flow
+- [Opening Balance Wizard LNS-379](project_lns379_opening_balance_wizard.md) — plain-category abstraction (no debit/credit exposed), U1–U4 resolutions, WizardSetupCard entry point, full state map
+- [Inline advisory below mutated row](feedback_inline_advisory_precedent.md) — must-persist compliance notice → dismissible inline panel below the row, not toast/banner (LNS-405)
+- [CoA Accounts page LNS-117](project_coa_accounts_page.md) — Daftar Akun modal pattern, seeded-hide decision, journal-line link degradation, Bagan Akun nav group
+- [Journal detail + reverse action LNS-372](project_lns372_journal_detail_reverse.md) — OQ-U1 ActionMenu decision, OQ-U2 disabled vs hidden CTA, inline warn-ack pattern, audit panel, ROUTE_MAP note
+- [Failed-postings retry LNS-457](project_lns457_failed_postings_retry.md) — reuse-button-as-retry, 2nd-failure escalation hint, count-guard copy, aria-live polite tier, verified contrast
+- [ServerError details-bag mechanism](project_error_details_bag_mechanism.md) — double-nested `.details.details`, err.message-leaks-raw-BE-text risk, provider-parity gotcha

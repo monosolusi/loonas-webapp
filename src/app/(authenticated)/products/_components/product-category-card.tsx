@@ -1,17 +1,17 @@
 import { SectionCard } from "@/core/presentations/components/section-card";
-import { SelectInput } from "@/core/presentations/components/select-input";
+import { SearchCombobox, SearchComboboxOption } from "@/core/presentations/components/search-combobox";
 import { ProductType, ProductTypeLabel, ProductTypeType } from "@/features/product/domain/enums/product-type";
 import { ProductionMode, ProductionModeLabel, ProductionModeType } from "@/features/product/domain/enums/production-mode";
 import { CategorySelect } from "@/app/(authenticated)/products/_components/category-select";
 
-const TYPE_OPTIONS = Object.values(ProductType).map((value) => ({
+const TYPE_OPTIONS: SearchComboboxOption[] = Object.values(ProductType).map((value) => ({
+  id: value,
   label: ProductTypeLabel[value as ProductTypeType],
-  value,
 }));
 
-const PRODUCTION_MODE_OPTIONS = Object.values(ProductionMode).map((value) => ({
+const PRODUCTION_MODE_OPTIONS: SearchComboboxOption[] = Object.values(ProductionMode).map((value) => ({
+  id: value,
   label: ProductionModeLabel[value as ProductionModeType],
-  value,
 }));
 
 const TYPE_TOOLTIP = (
@@ -60,6 +60,9 @@ export function ProductCategoryCard({
 }: ProductCategoryCardProps) {
   const isManufactured = type === ProductType.MANUFACTURED;
 
+  const selectedType = TYPE_OPTIONS.find((o) => o.id === type) ?? null;
+  const selectedMode = isManufactured ? (PRODUCTION_MODE_OPTIONS.find((o) => o.id === productionMode) ?? null) : null;
+
   const handleTypeChange = (newType: string) => {
     onTypeChange(newType);
     if (newType === ProductType.MANUFACTURED) {
@@ -72,15 +75,24 @@ export function ProductCategoryCard({
   return (
     <SectionCard title="Klasifikasi" iconSrc="/assets/images/box-icon-primary-300-w16-h16.svg">
       <div className="flex flex-col gap-y-4">
-        <SelectInput label="Tipe Produk" tooltip={TYPE_TOOLTIP} value={type} options={TYPE_OPTIONS} onChange={handleTypeChange} />
-        <SelectInput
+        <SearchCombobox
+          label="Tipe Produk"
+          tooltip={TYPE_TOOLTIP}
+          options={TYPE_OPTIONS}
+          value={selectedType}
+          onChange={(opt) => {
+            if (opt) handleTypeChange(opt.id);
+          }}
+          placeholder="Pilih tipe produk"
+        />
+        <SearchCombobox
           label="Mode Produksi"
           tooltip={PRODUCTION_MODE_TOOLTIP}
-          value={isManufactured ? (productionMode ?? "") : ""}
           options={PRODUCTION_MODE_OPTIONS}
-          onChange={(val) => onProductionModeChange(val || null)}
+          value={selectedMode}
+          onChange={(opt) => onProductionModeChange(opt ? opt.id : null)}
           disabled={!isManufactured}
-          placeholder={!isManufactured ? "Tidak Digunakan" : undefined}
+          placeholder={!isManufactured ? "Tidak Digunakan" : "Pilih mode produksi"}
         />
         <div className="flex flex-col gap-y-1">
           <span className="text-base">Kategori</span>

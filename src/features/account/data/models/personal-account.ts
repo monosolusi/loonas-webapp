@@ -8,6 +8,8 @@ import { CityModel } from "@/core/utilities/address/data/model/city";
 import { AbstractModel } from "@/core/resources/model";
 import { AccountType } from "@/features/account/domain/enums/account-type";
 import { MembershipModel } from "@/features/account/data/models/membership";
+import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
+import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 
 type Metadata = { clerkId: string };
 
@@ -32,6 +34,8 @@ type PersonalAccountModelConstructor = {
   membership?: MembershipModel;
   role?: string;
   features?: string[];
+  latestStatus?: VerificationStatus;
+  verificationOutcome?: VerificationOutcome;
 };
 
 export class PersonalAccountModel implements AbstractModel {
@@ -55,6 +59,8 @@ export class PersonalAccountModel implements AbstractModel {
   public readonly membership?: MembershipModel;
   public readonly role?: string;
   public readonly features?: string[];
+  public readonly latestStatus?: VerificationStatus;
+  public readonly verificationOutcome?: VerificationOutcome;
 
   constructor(args: PersonalAccountModelConstructor) {
     this.id = args.id;
@@ -77,6 +83,8 @@ export class PersonalAccountModel implements AbstractModel {
     this.membership = args.membership;
     this.role = args.role;
     this.features = args.features;
+    this.latestStatus = args.latestStatus;
+    this.verificationOutcome = args.verificationOutcome;
   }
 
   public static fromJson(data: Record<string, any>): PersonalAccountModel {
@@ -101,6 +109,8 @@ export class PersonalAccountModel implements AbstractModel {
       membership: data["membership"] ? MembershipModel.fromJson(data["membership"]) : undefined,
       role: data["role"],
       features: Array.isArray(data["features"]) ? data["features"] : [],
+      latestStatus: data["latest_status"],
+      verificationOutcome: data["verification_outcome"],
     });
   }
 
@@ -148,6 +158,8 @@ export class PersonalAccountModel implements AbstractModel {
       membership: this.membership?.toEntity(),
       role: this.role,
       features: this.features,
+      latestStatus: this.latestStatus,
+      verificationOutcome: this.verificationOutcome,
     });
   }
 }

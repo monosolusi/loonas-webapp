@@ -22,6 +22,8 @@ interface InvoiceItemTableProps {
     tax: number;
     total: number;
   }[];
+  /** Force the desktop table layout regardless of viewport — used by headless PDF rendering. */
+  forceDesktop?: boolean;
 }
 
 export function InvoiceItemTable(props: InvoiceItemTableProps) {
@@ -90,55 +92,65 @@ export function InvoiceItemTable(props: InvoiceItemTableProps) {
     }));
   }, [props.items]);
 
+  const table = (
+    <Table>
+      <TableHeader
+        items={[
+          { node: "Nama Produk", hideOnMobile: false },
+          { node: "Qty / Harga", hideOnMobile: false, className: "text-right" },
+          { node: "Diskon", hideOnMobile: false, className: "text-right" },
+          { node: "DPP", hideOnMobile: false, className: "text-right" },
+          { node: "Pajak", hideOnMobile: false, className: "text-right" },
+          { node: "Jumlah", hideOnMobile: false, className: "text-right" },
+        ]}
+      />
+      <TableBody items={formattedItems} />
+      <tfoot className="divide-y divide-neutral-200 bg-neutral-50">
+        <tr>
+          <td colSpan={5} className="px-3 pt-4 pb-2 text-right text-sm">
+            Dasar Pengenaan Pajak (DPP)
+          </td>
+          <td className="px-3 pt-4 pb-2 text-right text-sm">
+            {totalTaxBase === 0 ? "-" : <CurrencyDisplay value={totalTaxBase} />}
+          </td>
+        </tr>
+        <tr>
+          <td colSpan={5} className="px-3 py-2 text-right text-sm">
+            Total Pajak
+          </td>
+          <td className="px-3 py-2 text-right text-sm">
+            {totalTax === 0 ? "-" : <CurrencyDisplay value={totalTax} />}
+          </td>
+        </tr>
+        <tr>
+          <td colSpan={5} className="px-3 py-2 text-right text-sm">
+            Total Non-Pajak
+          </td>
+          <td className="px-3 py-2 text-right text-sm">
+            {nonTaxableAmount === 0 ? "-" : <CurrencyDisplay value={nonTaxableAmount} />}
+          </td>
+        </tr>
+        <tr>
+          <td colSpan={5} className="px-3 pt-2 pb-4 text-right text-sm">
+            Grand Total Faktur
+          </td>
+          <td className="px-3 pt-2 pb-4 text-right text-sm font-bold underline">
+            {totalAmount === 0 ? "-" : <CurrencyDisplay value={totalAmount} />}
+          </td>
+        </tr>
+      </tfoot>
+    </Table>
+  );
+
   return (
     <TableContainer className="rounded-sm shadow-none">
-      <Table>
-        <TableHeader
-          items={[
-            { node: "Nama Produk", hideOnMobile: false },
-            { node: "Qty / Harga", hideOnMobile: false, className: "text-right" },
-            { node: "Diskon", hideOnMobile: false, className: "text-right" },
-            { node: "DPP", hideOnMobile: false, className: "text-right" },
-            { node: "Pajak", hideOnMobile: false, className: "text-right" },
-            { node: "Jumlah", hideOnMobile: false, className: "text-right" },
-          ]}
-        />
-        <TableBody items={formattedItems} />
-        <tfoot className="divide-y divide-neutral-200 bg-neutral-50">
-          <tr>
-            <td colSpan={5} className="px-3 pt-4 pb-2 text-right text-sm">
-              Dasar Pengenaan Pajak (DPP)
-            </td>
-            <td className="px-3 pt-4 pb-2 text-right text-sm">
-              {totalTaxBase === 0 ? "-" : <CurrencyDisplay value={totalTaxBase} />}
-            </td>
-          </tr>
-          <tr>
-            <td colSpan={5} className="px-3 py-2 text-right text-sm">
-              Total Pajak
-            </td>
-            <td className="px-3 py-2 text-right text-sm">
-              {totalTax === 0 ? "-" : <CurrencyDisplay value={totalTax} />}
-            </td>
-          </tr>
-          <tr>
-            <td colSpan={5} className="px-3 py-2 text-right text-sm">
-              Total Non-Pajak
-            </td>
-            <td className="px-3 py-2 text-right text-sm">
-              {nonTaxableAmount === 0 ? "-" : <CurrencyDisplay value={nonTaxableAmount} />}
-            </td>
-          </tr>
-          <tr>
-            <td colSpan={5} className="px-3 pt-2 pb-4 text-right text-sm">
-              Grand Total Faktur
-            </td>
-            <td className="px-3 pt-2 pb-4 text-right text-sm font-bold underline">
-              {totalAmount === 0 ? "-" : <CurrencyDisplay value={totalAmount} />}
-            </td>
-          </tr>
-        </tfoot>
-      </Table>
+      {props.forceDesktop ? (
+        table
+      ) : (
+        <div className="overflow-x-auto">
+          <div className="min-w-[640px]">{table}</div>
+        </div>
+      )}
     </TableContainer>
   );
 }

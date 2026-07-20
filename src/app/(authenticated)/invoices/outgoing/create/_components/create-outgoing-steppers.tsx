@@ -46,7 +46,7 @@ export function CreateOutgoingSteppers() {
   }, [currentStep]);
 
   return (
-    <div className="w-[280px] shrink-0 border-r border-neutral-200 px-6 py-8">
+    <div className="hidden w-[280px] shrink-0 border-r border-neutral-200 px-6 py-8 lg:block">
       <div className="flex flex-col gap-y-1">
         <CreateInvoiceStepper
           title="Penerima"

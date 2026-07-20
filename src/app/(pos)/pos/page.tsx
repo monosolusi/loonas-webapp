@@ -11,8 +11,8 @@ export default function PosPage() {
   return (
     <RequireAccountBankAccount>
       <PosProvider>
-        {/* lg+ desktop: full two-column grid */}
-        <div className="grid h-full min-h-0 grid-cols-1 grid-rows-[minmax(0,1fr)] gap-6 overflow-hidden p-6 lg:grid-cols-[1fr_400px]">
+        {/* lg+ desktop: full two-column grid. Mobile: full-bleed single-column catalog. */}
+        <div className="grid h-full min-h-0 grid-cols-1 grid-rows-[minmax(0,1fr)] gap-6 overflow-hidden p-0 sm:p-4 lg:grid-cols-[1fr_400px] lg:p-6">
           <PosLeftPanel />
           {/* CartPanel hides itself on < lg via hidden lg:flex */}
           <CartPanel />

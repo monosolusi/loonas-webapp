@@ -4,11 +4,16 @@ import { useMemo, useState } from "react";
 import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
+import { InfoTooltip } from "@/core/presentations/components/info-tooltip";
 
 export type SearchComboboxOption = {
   id: string;
   label: string;
   description?: string;
+  /** Optional third line, rendered small/grey below `description`. */
+  caption?: string;
+  /** Extra text matched during filtering, in addition to `label` (e.g. SKU). */
+  keywords?: string;
 };
 
 type SearchComboboxBaseProps<T extends SearchComboboxOption> = {
@@ -20,6 +25,9 @@ type SearchComboboxBaseProps<T extends SearchComboboxOption> = {
   onCreateNew?: () => void;
   createNewLabel?: string;
   required?: boolean;
+  autoFocus?: boolean;
+  emptyMessage?: string;
+  tooltip?: React.ReactNode;
 };
 
 type SearchComboboxWithLabel<T extends SearchComboboxOption> = SearchComboboxBaseProps<T> & {
@@ -41,7 +49,10 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
 
   const filtered = useMemo(() => {
     if (!query) return props.options;
-    return props.options.filter((opt) => opt.label.toLowerCase().includes(query.toLowerCase()));
+    const q = query.toLowerCase();
+    return props.options.filter(
+      (opt) => opt.label.toLowerCase().includes(q) || (opt.keywords?.toLowerCase().includes(q) ?? false),
+    );
   }, [props.options, query]);
 
   return (
@@ -56,9 +67,10 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
       className={clsx("flex flex-col gap-2", props.disabled && "opacity-50")}
     >
       {!props.noLabel && (
-        <span className="text-base">
+        <span className="flex items-center gap-x-1.5 text-base">
           {props.label}
           {props.required && <span className="text-red-500"> *</span>}
+          {props.tooltip && <InfoTooltip text={props.tooltip} />}
         </span>
       )}
       <div className="relative">
@@ -73,6 +85,7 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
           onBlur={() => setQuery("")}
           displayValue={(opt: T | null) => opt?.label ?? ""}
           placeholder={props.placeholder}
+          autoFocus={props.autoFocus ?? false}
         />
         <ComboboxButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-hidden">
           <ChevronUpDownIcon className="size-5 text-neutral-200" aria-hidden="true" />
@@ -93,6 +106,9 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
                 {opt.description && (
                   <span className="group-data-focus:text-primary-200 text-sm text-neutral-200">{opt.description}</span>
                 )}
+                {opt.caption && (
+                  <span className="group-data-focus:text-primary-200 text-sm text-neutral-200">{opt.caption}</span>
+                )}
               </div>
               <span className="text-primary-300 absolute inset-y-0 right-0 hidden items-center pr-3 group-data-selected:flex">
                 <CheckIcon className="size-5" aria-hidden="true" />
@@ -100,7 +116,9 @@ export function SearchCombobox<T extends SearchComboboxOption>(props: SearchComb
             </ComboboxOption>
           ))}
 
-          {filtered.length === 0 && <div className="px-3 py-2 text-sm text-neutral-200">Tidak ditemukan</div>}
+          {filtered.length === 0 && (
+            <div className="px-3 py-2 text-sm text-neutral-200">{props.emptyMessage ?? "Tidak ditemukan"}</div>
+          )}
 
           {props.onCreateNew && (
             <button

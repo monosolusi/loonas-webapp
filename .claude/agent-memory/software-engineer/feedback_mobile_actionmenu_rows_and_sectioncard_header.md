@@ -1,0 +1,14 @@
+---
+name: feedback_mobile_actionmenu_rows_and_sectioncard_header
+description: MobileListCard pattern for action-only (non-nav) rows, and a SectionCard core-layer gap when headerAction is wide (e.g. many tabs) — both hit during LNS mobile-adapt epic, settings/accounts/internal/home scope.
+metadata:
+  type: feedback
+---
+
+1. **MobileListCard for action-only rows** (row has no detail page to navigate to — e.g. product categories, fixed-cost master list — just inline edit/delete): omit `href`/`onClick` (card renders as a plain non-interactive `div`), set `chevron={false}`, and put an `ActionMenu` in `trailingBottom` (or `trailingTop` if there's also a status/type badge, e.g. fixed-cost's "Produksi" chip goes in `trailingTop`, `ActionMenu` in `trailingBottom`). This differs from the nav-row case in the shared reference doc (`incoming-invoice-table.tsx`), which always sets `href` and lets `MobileListCard` wrap in a `Link`. `ActionMenu`'s `MenuButton` already calls `e.preventDefault()` on click specifically so it's also safe to nest inside an `href`-having `MobileListCard` (confirmed via existing desktop rows like `coa-account-row.tsx` that already nest `ActionMenu` inside a `Link` row) — so the action-only-vs-nav choice only affects whether you pass `href`, not whether `ActionMenu` is safe to nest.
+
+2. **`SectionCard` (`src/core/presentations/components/section-card.tsx`) header does not wrap or shrink on mobile** — its header row is `flex flex-row items-center gap-x-2 ... px-6 py-4` with `headerAction` wrapped in a bare `<div className="ml-auto">` (no `min-w-0`, no `flex-wrap`). When `headerAction` is something wide (e.g. a 4-tab `TabFilter`, like `DashboardRecentActivityTabs`), the row can overflow horizontally on a 320-360px viewport since `title` + `headerAction` never wrap. `SectionCard` is core — do not edit it from a page-scoped mobile-adapt task. Local mitigation: wrap the wide `headerAction` content in its own `max-w-[Npx] overflow-x-auto sm:max-w-none` div from the *calling* component (e.g. `dashboard-recent-activity-tabs.tsx`) so it scrolls within a capped width instead of blowing out the card header. Flag the root cause (SectionCard header needs `flex-wrap`/stacking below `sm`) to main/EL as a core-layer follow-up — it will recur on any other page pairing `SectionCard` + a multi-item `headerAction`.
+
+**Why:** LNS mobile-adapt epic (settings/accounts/internal/home scope) — `category-list-impl.tsx`/`fixed-cost-master-table.tsx` needed the action-only card variant; `dashboard-recent-activity-tabs.tsx` hit the SectionCard header overflow with its 4-tab `TabFilter`.
+
+**How to apply:** Check for action-only rows (no per-item detail page) before defaulting to the `href`-based nav-row card pattern. When a `SectionCard` `headerAction` is wider than a single button/badge, cap+scroll it locally rather than trying to fix the card itself.

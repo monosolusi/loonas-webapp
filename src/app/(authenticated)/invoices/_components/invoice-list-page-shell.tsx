@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
+import { ListPageHeader } from "@/core/presentations/components/list-page-header";
 
 interface InvoiceListPageShellProps {
   title: string;
@@ -17,15 +19,18 @@ export function InvoiceListPageShell({ title, description, createHref, statistic
 
   return (
     <div className="flex flex-col gap-y-6">
-      <div className="flex flex-row items-center justify-between">
-        <div className="flex flex-col gap-y-1">
-          <span className="text-2xl leading-8 font-bold tracking-tight">{title}</span>
-          <span className="text-sm leading-5">{description}</span>
-        </div>
-        <div className="flex">
-          <PrimaryButton label="Buat Faktur Baru" onClick={() => router.push(createHref)} />
-        </div>
-      </div>
+      <ListPageHeader
+        title={title}
+        subtitle={description}
+        action={
+          <PrimaryButton
+            label="Buat Faktur Baru"
+            onClick={() => router.push(createHref)}
+            leftIcon={<Image src="/assets/images/plus-icon-white-w16-h16.svg" alt="" width={16} height={16} />}
+            className="w-full sm:w-auto"
+          />
+        }
+      />
 
       {statistics}
 

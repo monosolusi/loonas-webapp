@@ -12,7 +12,7 @@ export function CheckoutStepMethod() {
   return (
     <div className="flex flex-1 flex-col overflow-y-auto">
       <div className="flex flex-col items-center px-6 pt-8 pb-2">
-        <div className="border-y border-neutral-100 px-10 py-4 text-center">
+        <div className="border-y border-neutral-100 px-6 py-4 text-center sm:px-10">
           <div className="text-xs font-medium tracking-wider text-neutral-400 uppercase">Total yang dibayar</div>
           <div className="mt-1 text-2xl font-bold tabular-nums text-neutral-500">
             <NumberDisplay value={total} suffix="IDR" />

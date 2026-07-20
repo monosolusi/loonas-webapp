@@ -5,7 +5,6 @@ import { AccountInquiryResultEntity } from "@/features/bank/domain/entities/acco
 import { BankAccountEntity } from "@/features/bank/domain/entities/bank-account";
 import { BankRepository } from "@/features/bank/domain/repositories/bank";
 import { BankEntity } from "@/features/bank/domain/entities/bank";
-import { AccountBankAccountEntity } from "@/features/account/domain/entities/account-bank-account";
 import { BankService } from "@/features/bank/domain/sources/bank";
 
 export class BankRepositoryImpl implements BankRepository {
@@ -17,9 +16,9 @@ export class BankRepositoryImpl implements BankRepository {
       accountNumber: string;
     },
     session: SessionEntity,
-  ): Promise<DataState<AccountBankAccountEntity>> {
+  ): Promise<DataState<void>> {
     try {
-      const bankAccount = await this.bankService.createBankAccountForAccount(
+      await this.bankService.createBankAccountForAccount(
         {
           bankId: params.bankId,
           accountNumber: params.accountNumber,
@@ -27,7 +26,7 @@ export class BankRepositoryImpl implements BankRepository {
         session,
       );
 
-      return new DataSuccess(bankAccount.toEntity());
+      return new DataSuccess<void>(undefined);
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

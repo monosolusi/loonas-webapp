@@ -6,7 +6,6 @@ import { Spinner } from "@/core/presentations/components/spinner";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { useDocumentVisible } from "@/core/presentations/hooks/use-document-visible";
 import { useCountdown } from "@/core/presentations/hooks/use-countdown";
-import { BusinessAccountEntity } from "@/features/account/domain/entities/business-account";
 import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { QrisPayInDetailEntity } from "@/features/invoice/domain/entities/pay-in-detail/qris-pay-in-detail";
@@ -18,19 +17,13 @@ import { QrisCreationFailed } from "@/app/(pos)/pos/_payment-methods/qris/qris-c
 import { QrisCountdownRow } from "@/app/(pos)/pos/_payment-methods/qris/qris-countdown-row";
 import { QrisExpiredPanel } from "@/app/(pos)/pos/_payment-methods/qris/qris-expired-panel";
 import { QrisPaidSplash } from "@/app/(pos)/pos/_payment-methods/qris/qris-paid-splash";
-import { QrisPaymentBox } from "@/app/(pos)/pos/_payment-methods/qris/qris-payment-box";
+import { QrisCard } from "@/core/presentations/components/qris-card";
 import { QrisPollingIndicator } from "@/app/(pos)/pos/_payment-methods/qris/qris-polling-indicator";
 import { QrisTotalRow } from "@/app/(pos)/pos/_payment-methods/qris/qris-total-row";
+import { resolveMerchantName } from "@/app/(pos)/pos/_payment-methods/qris/resolve-merchant-name";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 
 const POLL_INTERVAL_MS = 5000;
-
-function resolveMerchantName(account: ReturnType<typeof useGetCurrentAccount>["account"]): string {
-  if (!account) return "";
-  if (account instanceof BusinessAccountEntity) return account.company.name;
-  if ("fullName" in account && typeof account.fullName === "string") return account.fullName;
-  return "";
-}
 
 export function QrisConfirmStep() {
   const router = useRouter();
@@ -112,23 +105,31 @@ export function QrisConfirmStep() {
     prevQrisDetailIdRef.current = null;
   }, [isRegenerating, qrisDetail]);
 
+  // Latest guard values for the unmount-only abandonment toast, held in a ref so the
+  // effect depends only on the stable showToast: its cleanup runs on real unmount,
+  // never on detail-status transitions (the old [createFailed, detail?.status] deps
+  // re-ran the cleanup mid-flow and fired the toast twice).
+  const abandonStateRef = useRef({ pendingSaleId, createFailed, status: detail?.status ?? null });
+  abandonStateRef.current = { pendingSaleId, createFailed, status: detail?.status ?? null };
+
   // Abandonment toast on unmount when sale was still pending (cashier hit ✕).
   useEffect(() => {
     return () => {
+      const { pendingSaleId, createFailed, status } = abandonStateRef.current;
       if (wasPaidRef.current) return;
-      if (!createTriggeredRef.current) return;
+      if (pendingSaleId === null) return; // no sale created yet → nothing to abandon
       if (createFailed) return;
-      if (detail?.status === PayInStatus.EXPIRED) return;
+      if (status === PayInStatus.EXPIRED) return;
       showToast(
         {
-          title: "Pembayaran QRIS dibatalkan dari sisi kasir",
-          description: "Kode QR berlaku 15 menit dan akan hangus otomatis.",
+          title: "Transaksi QRIS masih menunggu pembayaran",
+          description: "Kode QR tetap aktif dan akan kedaluwarsa otomatis jika belum dibayar.",
           type: "warning",
         },
         "warning",
       );
     };
-  }, [createFailed, detail?.status, showToast]);
+  }, [showToast]);
 
   const handleRetry = useCallback(() => {
     createTriggeredRef.current = false;
@@ -154,7 +155,6 @@ export function QrisConfirmStep() {
   const status = detail?.status ?? null;
   const qrString = qrisDetail?.qrString ?? null;
   const expirationTime = qrisDetail?.expirationTime ?? null;
-  const payInDetailId = invoice?.payInDetail?.id ?? null;
   const payInId = qrisDetail?.id ?? null;
 
   // Warn once per payInId when PENDING_PAYMENT detail has no expirationTime.
@@ -197,20 +197,24 @@ export function QrisConfirmStep() {
     );
   }
 
-  if (status === PayInStatus.PENDING_PAYMENT && qrString && payInDetailId) {
+  if (status === PayInStatus.PENDING_PAYMENT && qrString && payInId) {
     return (
       <div className="scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto">
         <QrisTotalRow total={total} />
-        <div className="flex flex-col gap-y-4 px-6 py-6">
+        <div className="flex flex-col gap-y-4 px-4 py-6 sm:px-6">
           {expirationTime !== null && (
             <QrisCountdownRow expirationTime={expirationTime} status={status} />
           )}
           <div className="relative">
-            <QrisPaymentBox
-              qrString={qrString}
-              merchantName={merchantName}
-              payInDetailId={payInDetailId}
-            />
+            {/* QRCodeSVG renders at a fixed pixel size — it doesn't shrink with its container, so the
+                desktop size (256) overflows the panel's available width below `sm`. Render two sizes and
+                toggle visibility by breakpoint instead of scaling the SVG down on every screen. */}
+            <div className="hidden sm:block">
+              <QrisCard qrString={qrString} merchantName={merchantName} serialCode={payInId} size={256} />
+            </div>
+            <div className="sm:hidden">
+              <QrisCard qrString={qrString} merchantName={merchantName} serialCode={payInId} size={160} />
+            </div>
             {isFrozen && (
               <div className="absolute inset-0 z-20 flex items-center justify-center gap-x-2 rounded-lg bg-white/70">
                 <Spinner />
@@ -218,14 +222,14 @@ export function QrisConfirmStep() {
               </div>
             )}
           </div>
-          <div className="flex flex-row items-center justify-between gap-x-4">
+          <div className="flex flex-col items-stretch gap-y-3 sm:flex-row sm:items-center sm:justify-between sm:gap-x-4">
             <QrisPollingIndicator />
             <SecondaryButton
               outlined
               label="Cek status sekarang"
               onClick={handleManualRefresh}
               loading={manualRefreshing}
-              className="w-auto"
+              className="w-full sm:w-auto"
             />
           </div>
         </div>

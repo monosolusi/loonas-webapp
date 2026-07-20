@@ -50,6 +50,18 @@ export interface InvoiceRepositoryFilterParams {
   includes?: string;
 }
 
+export interface UpdateOutgoingParams {
+  id: string;
+  recipient: PartnerEntity;
+  invoiceDate: DateTime;
+  dueDate: DateTime;
+  items: InvoiceItem[];
+  note?: string;
+  tnc?: string;
+  signature?: File;
+  paymentConfiguration: PaymentConfiguration[];
+}
+
 export interface CreateOutgoingParams {
   recipient: PartnerEntity;
   invoiceNumber: string;
@@ -63,10 +75,6 @@ export interface CreateOutgoingParams {
   sendChannel: NotificationChannel[];
 }
 
-
-export interface OutgoingInvoiceFilter {
-  id?: string;
-}
 
 export interface InvoiceSummaryRepoFilter {
   type: InvoiceType;
@@ -118,8 +126,6 @@ export interface InvoiceRepository {
 
   createPosSale(params: CreatePosSaleRepoParams, session: SessionEntity): Promise<DataState<OutgoingInvoiceEntity>>;
 
-  getOutgoing(filter: OutgoingInvoiceFilter, session: SessionEntity): Promise<DataState<OutgoingInvoiceEntity>>;
-
   getPublicOutgoing(filter: { invoiceId: string }): Promise<DataState<PublicOutgoingInvoiceEntity>>;
 
   createPayInForOutgoingInvoice(params: {
@@ -128,7 +134,16 @@ export interface InvoiceRepository {
     paymentSchemeId?: string | null;
   }): Promise<DataState<PayInEntity>>;
 
-  send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<DataState<boolean>>;
+  send(
+    params: { id: string; sendChannel: NotificationChannel[]; idempotencyKey: string },
+    session: SessionEntity,
+  ): Promise<DataState<boolean>>;
+
+  finalise(params: { id: string }, session: SessionEntity): Promise<DataState<OutgoingInvoiceEntity>>;
+
+  deleteOutgoing(params: { id: string }, session: SessionEntity): Promise<DataState<boolean>>;
+
+  updateOutgoing(params: UpdateOutgoingParams, session: SessionEntity): Promise<DataState<boolean>>;
 
   getPayInDetail(
     params: { invoice: { id: string } },

@@ -6,13 +6,16 @@ import clsx from "clsx";
 import { resolveLabel, TZ } from "@/core/presentations/components/date-range-picker-presets";
 import { InvoiceType } from "@/features/invoice/domain/enums/invoice-type";
 import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
-import { InvoiceListItemEntity } from "@/features/invoice/domain/types/invoice-list-item";
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
+import type { UseListInvoicesParams } from "@/features/invoice/presentations/hooks/use-list-invoices.types";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { useDashboardRange } from "@/app/(authenticated)/home/_providers/dashboard-range-provider";
 import { SectionCard } from "@/core/presentations/components/section-card";
+import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { DashboardRecentActivityColumnHeader } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-column-header";
 import { DashboardRecentActivityTabs, ActivityTab } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-tabs";
 import { DashboardRecentActivityRow } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-row";
+import { DashboardRecentActivityCard } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-card";
 import { DashboardRecentActivityLoading } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-loading";
 import { DashboardRecentActivityError } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-error";
 import { DashboardRecentActivityEmpty } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-empty";
@@ -25,8 +28,17 @@ const EMPTY_COPY: Record<ActivityTab, string> = {
   outgoing: "Belum ada faktur keluar pada periode ini",
 };
 
+// "all" carries no type/channel filter, so the backend returns every invoice type interleaved.
+const TAB_FILTER: Record<ActivityTab, Pick<UseListInvoicesParams, "type" | "channel">> = {
+  all: {},
+  pos: { channel: InvoiceChannel.POS },
+  incoming: { type: InvoiceType.INCOMING },
+  outgoing: { type: InvoiceType.OUTGOING, channel: InvoiceChannel.INVOICE },
+};
+
 export function DashboardRecentActivity() {
   const [activeTab, setActiveTab] = useState<ActivityTab>("all");
+  const [page, setPage] = useState(1);
   const { from, to } = useDashboardRange();
 
   const [hasPeriodChanged, setHasPeriodChanged] = useState(false);
@@ -55,14 +67,19 @@ export function DashboardRecentActivity() {
     setLiveMessage(`Aktivitas diperbarui untuk periode: ${periodLabel}`);
   }, [hasPeriodChanged, periodLabel]);
 
-  const posResult = useListInvoices({ channel: InvoiceChannel.POS, limit: 10, from, to });
-  const incomingResult = useListInvoices({ type: InvoiceType.INCOMING, limit: 10, from, to });
-  const outgoingResult = useListInvoices({ type: InvoiceType.OUTGOING, channel: InvoiceChannel.INVOICE, limit: 10, from, to });
+  const { invoices, meta, loading, error } = useListInvoices({
+    ...TAB_FILTER[activeTab],
+    page,
+    limit: DEFAULT_PAGE_SIZE,
+    from,
+    to,
+  });
 
   const handleTabChange = useCallback(
     (next: ActivityTab) => {
       if (next !== activeTab) {
         track("recent_activity_tab_switched", { from_tab: activeTab, to_tab: next });
+        setPage(1);
       }
       setActiveTab(next);
     },
@@ -77,6 +94,7 @@ export function DashboardRecentActivity() {
     }
     if (prevRangeRef.current.from === from && prevRangeRef.current.to === to) return;
     prevRangeRef.current = { from, to };
+    setPage(1);
     track("recent_activity_period_changed", { tab: activeTab, from_date: from, to_date: to });
   }, [from, to, activeTab]);
 
@@ -85,69 +103,35 @@ export function DashboardRecentActivity() {
     [activeTab, handleTabChange],
   );
 
-  const derivedState = useMemo(() => {
-    if (activeTab === "all") {
-      const loading = posResult.loading || incomingResult.loading || outgoingResult.loading;
-      const error = posResult.error ?? incomingResult.error ?? outgoingResult.error;
-      if (loading) return { loading: true, error: null, rows: null } as const;
-      if (error) return { loading: false, error, rows: null } as const;
-
-      const merged: InvoiceListItemEntity[] = [
-        ...(posResult.invoices ?? []),
-        ...(incomingResult.invoices ?? []),
-        ...(outgoingResult.invoices ?? []),
-      ];
-      const rows = merged
-        .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis())
-        .slice(0, 10);
-      return { loading: false, error: null, rows } as const;
-    }
-
-    if (activeTab === "pos") {
-      if (posResult.loading) return { loading: true, error: null, rows: null } as const;
-      if (posResult.error) return { loading: false, error: posResult.error, rows: null } as const;
-
-      const rows = (posResult.invoices ?? [])
-        .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis())
-        .slice(0, 10);
-      return { loading: false, error: null, rows } as const;
-    }
-
-    if (activeTab === "incoming") {
-      if (incomingResult.loading) return { loading: true, error: null, rows: null } as const;
-      if (incomingResult.error) return { loading: false, error: incomingResult.error, rows: null } as const;
-      return { loading: false, error: null, rows: incomingResult.invoices ?? [] } as const;
-    }
-
-    // outgoing
-    if (outgoingResult.loading) return { loading: true, error: null, rows: null } as const;
-    if (outgoingResult.error) return { loading: false, error: outgoingResult.error, rows: null } as const;
-    return { loading: false, error: null, rows: outgoingResult.invoices ?? [] } as const;
-  }, [activeTab, posResult, incomingResult, outgoingResult]);
+  // Preserve "most recent first" within the page — a no-op when the backend already orders desc.
+  const rows = useMemo(
+    () => (invoices ?? []).slice().sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis()),
+    [invoices],
+  );
 
   const emptyStateSeenRef = useRef<Set<string>>(new Set());
   useEffect(() => {
-    if (derivedState.loading) return;
-    if (derivedState.error) return;
-    if (derivedState.rows.length !== 0) return;
+    if (loading) return;
+    if (error) return;
+    if (rows.length !== 0) return;
     const key = `${activeTab}|${from}|${to}`;
     if (emptyStateSeenRef.current.has(key)) return;
     emptyStateSeenRef.current.add(key);
     track("recent_activity_empty_state_shown", { tab: activeTab, from_date: from, to_date: to });
-  }, [derivedState, activeTab, from, to]);
+  }, [loading, error, rows, activeTab, from, to]);
 
   return (
     <>
-      {derivedState.loading ? (
+      {loading ? (
         <DashboardRecentActivityLoading tabs={tabs} periodCaptionVisible={hasPeriodChanged} periodLabel={periodLabel} />
-      ) : derivedState.error ? (
+      ) : error ? (
         <DashboardRecentActivityError
           tabs={tabs}
           periodCaptionVisible={hasPeriodChanged}
           periodLabel={periodLabel}
           message="Gagal memuat data aktivitas."
         />
-      ) : derivedState.rows.length === 0 ? (
+      ) : rows.length === 0 ? (
         <DashboardRecentActivityEmpty
           tabs={tabs}
           periodCaptionVisible={hasPeriodChanged}
@@ -160,11 +144,30 @@ export function DashboardRecentActivity() {
             {`Periode: ${periodLabel}`}
           </div>
           <DashboardRecentActivityColumnHeader />
-          <div role="tabpanel" aria-labelledby={`activity-tab-${activeTab}`}>
-            {derivedState.rows.map((inv, index) => (
-              <DashboardRecentActivityRow key={inv.id} invoice={inv} tab={activeTab} position={index} />
-            ))}
+          <div role="tabpanel" aria-label="Daftar aktivitas terbaru">
+            {/* Desktop: grid rows (lg and up) */}
+            <div className="hidden lg:block">
+              {rows.map((inv, index) => (
+                <DashboardRecentActivityRow key={inv.id} invoice={inv} tab={activeTab} position={index} />
+              ))}
+            </div>
+
+            {/* Mobile: stacked cards (below lg) */}
+            <div className="lg:hidden">
+              {rows.map((inv, index) => (
+                <DashboardRecentActivityCard key={inv.id} invoice={inv} tab={activeTab} position={index} />
+              ))}
+            </div>
           </div>
+          {meta && meta.totalPages > 1 && (
+            <TablePagination
+              displayedCount={rows.length}
+              meta={meta}
+              currentPage={page}
+              onPageChange={setPage}
+              countLabel="aktivitas"
+            />
+          )}
         </SectionCard>
       )}
       <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">

@@ -21,7 +21,11 @@ export function StatusBanner(props: StatusBannerProps) {
 
   return (
     <div
-      className={clsx("relative flex flex-row items-center justify-between overflow-hidden rounded-lg border p-6", styles.border, styles.bg)}
+      className={clsx(
+        "relative flex flex-col gap-y-4 overflow-hidden rounded-lg border p-6 sm:flex-row sm:items-center sm:justify-between sm:gap-y-0",
+        styles.border,
+        styles.bg,
+      )}
     >
       {/* Decorative blur */}
       <div className="absolute right-0 top-[-16px] size-32 rounded-full bg-white/10 blur-[24px]" />
@@ -33,7 +37,7 @@ export function StatusBanner(props: StatusBannerProps) {
       </div>
 
       {/* Right: Total Amount */}
-      <div className="flex flex-col gap-y-1 text-right">
+      <div className="flex flex-col gap-y-1 sm:text-right">
         <div className="text-xs leading-4 font-semibold tracking-wide uppercase opacity-70">
           Total Nominal
         </div>

@@ -11,6 +11,7 @@ import { useAddItem } from "@/app/(authenticated)/invoices/outgoing/create/@item
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { CreateInvoiceSendOptionsDialogImpl } from "@/app/(authenticated)/invoices/outgoing/create/@review/_components/send-options-dialog-impl";
+import { EditInvoiceSaveButtonImpl } from "@/app/(authenticated)/invoices/outgoing/create/_components/edit-invoice-save-button-impl";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 
 const OUTGOING_STEP_MAP: OutgoingStep[] = [
@@ -34,6 +35,7 @@ export function CreateOutgoingActionBar() {
     updateInvoiceItem,
     editingItemIndex,
     setEditingItemIndex,
+    isEditMode,
   } = useCreateOutgoingInvoice();
   const { create, loading: createPartnerLoading } = useCreateNewPartnerProvider();
   const addItemCtx = useAddItem();
@@ -135,6 +137,7 @@ export function CreateOutgoingActionBar() {
       case "payment-configuration":
         return <PrimaryButton label="Selanjutnya" disabled={!isPaymentConfigStepClean} onClick={goToNextStep} />;
       case "review-and-send":
+        if (isEditMode) return <EditInvoiceSaveButtonImpl />;
         return (
           <>
             <PrimaryButton label="Kirim Faktur" disabled={isSendDisabled} onClick={() => setDialogOpen(true)} />
@@ -151,7 +154,7 @@ export function CreateOutgoingActionBar() {
   })();
 
   return (
-    <div className="flex flex-row items-center justify-between border-t border-t-neutral-200 p-6">
+    <div className="sticky bottom-0 z-10 flex flex-row items-center justify-between gap-3 border-t border-t-neutral-200 bg-white px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:static lg:gap-0 lg:px-6 lg:py-6 lg:pb-6">
       <div className="flex">{leftButton}</div>
       <div className="flex">{rightButton}</div>
     </div>

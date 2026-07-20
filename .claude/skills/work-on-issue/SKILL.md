@@ -1,6 +1,6 @@
 ---
 name: work-on-issue
-description: Orchestrate end-to-end delivery of a Linear issue across the full agent chain — PM consults CPO/EL/UI, EL plans and spawns SWE, QA + architecture-reviewer verify the implementation, EL summarises, and PM moves the Linear issue to "In Review". Use when the user wants to work on a Linear issue from intake to ready-for-review.
+description: Orchestrate end-to-end delivery of a Linear issue across the full agent chain — PM moves the issue to "In Progress" on pickup, consults CPO/EL/UI, EL plans and spawns SWE, QA + architecture-reviewer verify the implementation, EL summarises, the PR opens, PM then moves the issue to "In Review", and every participating agent reflects on its own lane (per-agent /learn triage of what to preserve vs discard). Use when the user wants to work on a Linear issue from intake to ready-for-review.
 argument-hint: <Linear issue key or URL> (e.g. LOO-142 or https://linear.app/.../LOO-142)
 ---
 
@@ -9,16 +9,25 @@ argument-hint: <Linear issue key or URL> (e.g. LOO-142 or https://linear.app/...
 End-to-end orchestration of a Linear issue through the existing agent chain:
 
 ```
-PM ──► (CPO, UI, EL consults) ──► EL plan ──► SWE implement
+PM intake → Linear "In Progress" ──► (CPO, UI, EL consults) ──► EL plan ──► SWE implement
                                                 │
                                                 ▼
                                   QA + architecture-reviewer
                                                 │
                                                 ▼
-                                           EL summary
+                                    EL summary + BE re-validate
                                                 │
                                                 ▼
-                                  PM verifies → Linear "In Review"
+                                       PM verifies criteria
+                                                │
+                                                ▼
+                                     SWE commit → EL open PR
+                                                │
+                                                ▼
+                                PM → Linear "In Review" (after PR)
+                                                │
+                                                ▼
+                        per-agent reflection → /learn triage (always)
 ```
 
 The orchestrator (`claude`) is the conductor — it never short-circuits a step or absorbs a specialist's lane. Agents communicate only through the orchestrator.
@@ -53,6 +62,8 @@ The orchestrator (`claude`) is the conductor — it never short-circuits a step 
 Dispatch `product-manager` with the issue key. PM must:
 
 - Read the Linear issue via Linear MCP (`get_issue`, `list_comments`).
+- **Scan for overlapping sibling work before scoping.** `list_issues` on the issue's project (sorted by `updatedAt`) and check `get_issue(includeRelations)` for related/duplicate links — look for in-flight or recently-merged sibling tickets touching the same theme/files. If a sibling already delivers part of this ticket's scope, flag it to the orchestrator so EL can `gh pr list` / grep open + recently-merged PRs touching the same files BEFORE SWE starts, and the ticket is scoped down to the non-overlapping remainder. A batch-filed epic (multiple cleanup tickets in one project) is the high-risk case. **Why:** LNS-402 — sibling LNS-404 merged mid-run and had already delivered LNS-402's part (b); it surfaced only as a PR merge conflict after the redundant work was committed and the PR opened.
+- **Move the Linear issue to "In Progress"** to signal pickup, so the board reflects active work the moment the chain starts. PM looks up the team's "In Progress" status via Linear MCP (`save_issue` with the resolved `stateId`) — do NOT hardcode an ID. If the issue is already "In Progress" (e.g. resuming an existing branch), leave it untouched.
 - Surface ambiguities; if any business clarification is genuinely blocking, relay it back to the user via the orchestrator (do not invent answers).
 - Produce a PRD covering: problem, goals, non-goals, user stories, acceptance criteria, edge cases, open questions grouped by audience (CPO / UI / EL).
 
@@ -102,7 +113,7 @@ After SWE reports completion, the orchestrator launches **two parallel** verific
 Spawn the `qa` agent (NOT `general-purpose`) with a self-contained QA brief:
 
 - Run `npx tsc --noEmit` and `npm run lint`; report any failure.
-- Use the `/restart-server` skill (or a free port) to boot the dev server.
+- Boot the dev server on a free port (e.g. `npm run dev`; kill any existing port-3000 listener first).
 - Browser-smoke the changed flow at **1280×720** (per user preference). Cover golden path + the acceptance criteria from PM's PRD.
 - Look for regressions in adjacent flows the change might touch.
 - Produce a QA report: pass/fail per acceptance-criterion, screenshots/observations for failures.
@@ -133,33 +144,74 @@ After EL signs off in Phase 6 but **before** PM is dispatched, the orchestrator 
 
 This step is mandatory, not optional. The BE may have shipped contract changes since EL's initial planning, and silent drift is the #1 cause of post-merge regressions. Skip this step and PM will move a broken implementation to "In Review".
 
-## Phase 8 — PM verification & Linear move
+## Phase 8 — PM verification
 
 Once EL confirms contract alignment, dispatch `product-manager` with EL's summary. PM:
 
 - Cross-checks EL's summary against the original Linear acceptance criteria.
-- If acceptance criteria are met, moves the Linear issue to the **"In Review"** state via Linear MCP (`save_issue` with the appropriate `stateId`). PM must look up the team's "In Review" status — do NOT hardcode an ID.
-- Posts a Linear comment summarising what shipped + branch name (for the human reviewer).
+- If acceptance criteria are met, signals "ready for PR" back to the orchestrator — but does **not** move Linear state here. The "In Review" move is deferred to Phase 9, *after* the PR opens, because GitHub's PR-open integration auto-maps the issue to "In Progress" and would clobber an early "In Review". Moving to "In Review" before the PR exists is the #1 source of Linear↔GitHub state drift.
 - If anything is missing, PM kicks back to EL with a gap list and the loop returns to Phase 4/5.
 
-## Phase 9 — Commit + PR
+## Phase 9 — Commit, PR, then Linear "In Review"
 
-After PM moves the issue to "In Review", the orchestrator runs the commit + PR phase:
+After PM verifies the implementation in Phase 8, the orchestrator runs the commit + PR phase:
 
-1. **Dispatch `software-engineer`** with a "commit your work in logical chunks" brief. Multiple commits are expected — one per logical unit (e.g., model narrowing, hook extraction, plugin component, fix-loop revisions). Conventional Commits per `CLAUDE.md` (`feat(scope):`, `fix(scope):`, `refactor(scope):`, `chore(scope):`). SWE commits locally; does NOT push.
+1. **Dispatch `software-engineer`** with a "commit your work in logical chunks" brief. Multiple commits are expected — one per logical unit (e.g., model narrowing, hook extraction, plugin component, fix-loop revisions). Conventional Commits per `CLAUDE.md` (`feat(scope):`, `fix(scope):`, `refactor(scope):`, `chore(scope):`). SWE commits locally; does NOT push. **Stage explicit code paths only — never `git add -A` / `git add .`.** Agents (notably EL during BE re-validation) may leave durable agent-memory/reflection artifacts under `.claude/` in the working tree mid-run; those must NOT enter the feature PR — they belong in the Phase-10 chore commit. The SWE brief must list the exact source paths to stage and confirm `git status` shows only intended source files committed, with any `.claude/` changes left uncommitted. (LNS-415: three EL agent-memory files were in the working tree at commit time; PM caught the risk and the explicit-path staging kept the feature PR code-only.)
 2. **Dispatch `engineer-lead`** with an "open PR" brief. EL invokes the `/github-pr` skill, which pushes the branch and creates the PR against `dev`.
+3. **Dispatch `product-manager`** to move the Linear issue to **"In Review"** — now that the PR exists. PM looks up the team's "In Review" status via Linear MCP (`save_issue` with the resolved `stateId`; do NOT hardcode an ID) and posts a Linear comment summarising what shipped + the PR link + branch name (for the human reviewer). Doing this *after* the PR opens is deliberate: GitHub's integration moves the issue to "In Progress" on PR-open, so PM's "In Review" must land last to stick.
 
-The orchestrator NEVER runs `git commit` or `gh pr create` directly — those belong to SWE and EL respectively.
+The orchestrator NEVER runs `git commit` or `gh pr create` directly — those belong to SWE and EL respectively. Linear state moves are PM's alone.
+
+## Phase 10 — Per-agent reflection (always run)
+
+The work isn't finished when the PR opens. A run that taught the chain something and then forgot it will re-learn the same lesson on the next issue — so every run ends with a reflection pass. This phase always runs; it is the chain's only mechanism for getting better over time.
+
+Reflect **per agent, never as one blended whole-session triage.** A correction aimed at SWE's commit habit belongs in the SWE agent file; a gap in PM's Linear handling belongs in PM's. A single mixed table loses the signal of *which role* needs hardening and tends to produce vague, misrouted learnings. Each role is also the best judge of what — in its own behaviour — was a one-off versus a durable rule, which is exactly the judgment `/learn` triage asks for.
+
+### Decide who has something to reflect on
+
+Reflection always runs, but a full agent round-trip is only worth spending where the lane hit friction. For each agent that participated in this run (PM, UI, EL, SWE, QA, architecture-reviewer — include CPO only if it was actually consulted), the orchestrator asks: did this lane see a correction, a kickback, a re-run, or a gap the orchestrator had to fill? If the lane ran clean, record it as "no learnings" and move on — don't spend a round-trip confirming nothing. Dispatch a reflection only for the agents that hit friction.
+
+### Dispatch the reflections
+
+Dispatch the friction-hitting agents **in parallel** (single message, multiple Agent calls) — each reflection is independent. Subagents are stateless, so each reflection brief must carry the context the agent needs to reflect well:
+
+- The issue key + one-line scope.
+- That agent's own outputs and decisions during this run.
+- The specific friction the orchestrator observed for that agent (e.g. "QA was re-run because the first pass missed the empty-state regression", "PM had to be reminded to move Linear state only after the PR opened, not before").
+- A pointer to the `/learn` skill's triage criteria — the same preserve-vs-discard logic and destination routing, applied to **this agent's lane only**.
+
+Each agent returns a **per-agent triage table** — one row per candidate learning from its own lane, and nothing from anyone else's:
+
+```
+| # | Candidate (1-line) | Signal | Preserve? | Destination | Proposed diff (summary) |
+```
+
+`Preserve?` is yes/no following the `/learn` recommendation. `Destination` is normally the agent's **own** agent file (`.claude/agents/{agent}.md`) for behavioural hardening, or memory / CLAUDE.md / a skill when the triage criteria point elsewhere. Agents **propose only** — they never write durable files themselves.
+
+### Consolidate, confirm, apply
+
+The orchestrator then:
+
+1. Consolidates the per-agent tables, keeping them grouped by agent.
+2. Reads each target file and drops rows whose rule is already captured verbatim; flags any row that conflicts with existing text rather than silently overwriting.
+3. Presents the consolidated plan to the user and waits for confirmation. Persistent writes to agent / skill / CLAUDE.md files change every future run, so this gate holds even in autonomous mode — treat it like a destructive action. High-stakes rows (changing a hard agent constraint, rewriting a skill section) need explicit per-row confirmation; low-stakes memory rows can be bulk-approved.
+4. Applies confirmed writes — surgical `Edit` on existing files; for memory, follow the auto-memory rules (new `name.md` with frontmatter + a one-line `MEMORY.md` index entry). Discarded rows are simply dropped.
+5. Summarises what landed, grouped by agent and destination.
+
+Inherit the `/learn` guardrails: reflect on **this run only** (no `git log`, no cross-session expansion); **update existing files only** — if a learning warrants a brand-new agent or skill, surface it as a recommendation for the user to file separately, never create it here; never silently overwrite a rule the new learning contradicts.
 
 ## Rules
 
 - **Never bypass an agent's lane.** Orchestrator does not write the PRD, the plan, or the code. Orchestrator does not call Linear directly — that is PM only. Orchestrator does not run `git commit` or `gh pr create` — SWE and EL respectively own those in Phase 9.
 - **Parallelise where independent.** Phase 2 consults and Phase 5 verifications must be dispatched in a single message with multiple Agent calls.
 - **SWE commits, EL opens PR.** In Phase 9, SWE commits its work in logical chunks (multiple commits expected — one per logical unit, Conventional Commits style). EL then opens the PR via the `/github-pr` skill. The orchestrator dispatches, but never runs git/gh tooling itself.
+- **PM owns Linear state, and order matters.** PM moves the issue to "In Progress" on pickup (Phase 1) and to "In Review" only *after* the PR opens (Phase 9). Never move to "In Review" before the PR exists — GitHub's PR-open integration auto-maps the issue to "In Progress" and clobbers an early "In Review", leaving the board out of sync.
 - **BE-shape questions: EL reads OpenAPI spec; BE-behavior questions go through the user.** EL has `WebFetch` read access to `https://dev-api.loonas.id/openapi.json` and uses it for contract validation (field names, enums, request/response shapes). Questions about BE *behavior* not visible in the schema (auth nuances, business rules, race conditions, undocumented constraints) still get relayed to the user. PM / UI / CPO / SWE / architecture-reviewer have no BE access at all — they always flag.
 - **Stop on genuine forks.** Pause for user input only on (a) blocking business clarification PM cannot resolve, (b) destructive actions, (c) BE-relay questions. Otherwise execute autonomously.
 - **Match the existing presentation-layer directory** (singular `presentation/` vs plural `presentations/`) per feature — SWE follows the feature's local convention.
 - **Use Linear skills for any new sub-issue creation.** If PM needs to file a sub-bug or tech-debt spinout during the workflow, use `/linear-bug` or `/linear-techdebt`.
+- **Always reflect, per agent.** Every run ends with Phase 10: each agent that hit friction reflects on its OWN lane and proposes a preserve-vs-discard triage (following `/learn`); the orchestrator consolidates, confirms with the user, and applies the writes. Never collapse this into one whole-session reflection, and never skip the phase — an un-reflected run silently re-learns the same lessons next issue.
 
 ## Output (orchestrator → user)
 
@@ -174,9 +226,10 @@ QA: pass | fail({n} items)
 Architecture: pass | fail({n} items)
 EL verdict: accepted | iterated x{n}
 BE contract: re-validated against live OpenAPI spec | mismatch found
-Linear state: moved to "In Review" at {timestamp}
+Linear state: "In Progress" on pickup → "In Review" after PR at {timestamp}
 Commits: {n} commits by SWE
 PR: #{n} → dev
+Reflection: {n} learnings preserved across {m} agents (or "none — all lanes ran clean")
 Next: awaiting human reviewer.
 ```
 

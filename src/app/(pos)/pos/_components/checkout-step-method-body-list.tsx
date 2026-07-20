@@ -26,7 +26,7 @@ export function CheckoutStepMethodBodyList({ methods, onSelect }: CheckoutStepMe
   const isSingle = sorted.length === 1;
 
   return (
-    <div className={clsx("grid gap-4 px-6 pt-6 pb-8", isSingle ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2")}>
+    <div className={clsx("grid gap-4 px-4 pt-6 pb-8 sm:px-6", isSingle ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2")}>
       {sorted.map((method) => {
         const gateway = method.paymentGateway;
         const hasHandler = getPaymentMethodHandler(gateway.type) !== null;

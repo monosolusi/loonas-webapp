@@ -291,6 +291,12 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     }
   }, [checkoutStep, items.length]);
 
+  // Entering the wizard closes the mobile full-screen order-review sheet so the
+  // checkout panel takes over cleanly.
+  useEffect(() => {
+    if (checkoutStep !== null) setDrawerOpen(false);
+  }, [checkoutStep]);
+
   const handleStockErrorDetails = useCallback(
     (details: Record<string, any>) => {
       const rawItems = details["items"];

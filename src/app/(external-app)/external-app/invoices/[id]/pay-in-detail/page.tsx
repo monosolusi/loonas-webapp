@@ -52,13 +52,13 @@ export default function PayInDetailPage() {
               Silahkan membayar sesuai dengan instruksi yang diberikan di bawah ini.
             </p>
           </div>
-          <div className="flex flex-row space-x-4">
-            <div className="flex-2">
+          <div className="flex flex-col gap-4 lg:flex-row lg:gap-0 lg:space-x-4">
+            <div className="lg:flex-2">
               <CreditCardFullRedirectPayInDetail />
               <VirtualAccountPayInDetail />
               <QrisPayInDetail />
             </div>
-            <div className="flex-1">
+            <div className="lg:flex-1">
               <PaymentSummaryImpl />
             </div>
           </div>
