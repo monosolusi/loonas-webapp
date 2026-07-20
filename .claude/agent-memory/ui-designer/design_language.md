@@ -64,3 +64,15 @@ metadata:
 - error-100=#FEE4E2, error-500=#B42318
 - success-100=#DCFAE6, success-500=#067647
 - primary-300=#007BFF
+- Lightest tint fills (chips, callouts, severity blocks): `primary-50` (#F0F7FF), `success-50`, `warning-50`, `error-50` — plus `neutral-50` = #FFFFFF (white). These `-50` tokens are the canonical pale fills.
+
+## Token verification rule
+- Before naming ANY color token in a spec, verify it exists in `globals.css @theme` (or the DESIGN.md YAML frontmatter) — grep it first. This project's lightest tint suffix is `-50`; there are NO `-pale`, `-light`, or `-muted` suffix tokens. A wrong primary token name forces EL/SWE to remap and is a silent spec defect. (LNS-371: spec named `warning-pale`/`error-pale`, which don't exist → remapped to `warning-50`/`error-50`.)
+
+## 16×16 sidebar icon family — authoring conventions (LNS-459)
+Established while replacing 5 shared `chart-icon` uses in `accounting-navigation-menu.tsx` with distinct icons (`book-icon`, `coins-icon`, `percent-icon`, `list-tree-icon`, `report-icon`).
+- All existing family members (`chart-icon`, `box-icon`, `dashboard-icon`, `gear-icon`, `wallet-icon`, `dollar-icon`, `clock-icon`, `document-icon`, `people-icon`, `invoice-in/out-icon`) live in `public/assets/images/`, filename pattern `{name}-icon-{neutral-300|primary-300}-w16-h16.svg` — the two variants differ ONLY in `stroke` color (`#323636` neutral / `#007BFF` primary); no hover-state asset exists because hover only tints the nav-item background (`bg-primary-300/20`), never the icon color (confirmed against `NavigationGroup`/`NavigationItem`).
+- **Never a native `<circle>`/`<ellipse>` element.** Every circular shape in the whole family (clock-icon, dollar-icon) is a hand-authored 4-arc cubic-Bézier `<path>`. Formula for a circle at `(cx,cy)` radius `r`: control offset `k = r × 0.55228`. Starting at top `(cx, cy-r)`, clockwise: `C(cx+k,cy-r)(cx+r,cy-k)(cx+r,cy) C(cx+r,cy+k)(cx+k,cy+r)(cx,cy+r) C(cx-k,cy+r)(cx-r,cy+k)(cx-r,cy) C(cx-r,cy-k)(cx-k,cy-r)(cx,cy-r) Z`. Verified digit-for-digit against `clock-icon-primary-300-w16-h16.svg`'s real path before relying on it.
+- **Rounded corners come from `stroke-linejoin="round"` on sharp right-angle polylines**, not from `rx`/`ry` radii — `box-icon`/`chart-icon`/`list-tree-icon`/`report-icon` are all plain orthogonal paths that render soft purely from the mandated linecap/linejoin.
+- Content bounding box sits inset ~1.33–2.67px from the 16×16 edge across the family (a 12-unit grid inside the 16-unit viewBox, i.e. multiples of 16/12 ≈ 1.333). Snap new icon coordinates to this grid (0, 1.333, 2.667, 4, 5.333, 6.667, 8, 9.333, 10.667, 12, 13.333, 14.667, 16) for visual harmony with the rest of the set.
+- **Family coherence tactic:** spread new icons across the family's existing shape vocabulary (circle-based / orthogonal-line / organic-curve) rather than letting them cluster into one silhouette class — makes a same-glance scan easier and avoids two new icons reading as variants of each other.

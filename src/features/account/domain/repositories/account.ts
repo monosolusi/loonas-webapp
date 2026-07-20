@@ -56,10 +56,7 @@ export interface AccountRepository {
 
   createBusiness(params: CreateBusinessParams, session: SessionEntity): Promise<DataState<BusinessAccountEntity>>;
 
-  retrieveVerificationWork(
-    accountId: string,
-    session: SessionEntity,
-  ): Promise<DataState<AccountVerificationWorkEntity>>;
+  retrieveVerificationWork(session: SessionEntity): Promise<DataState<AccountVerificationWorkEntity>>;
 
   list(session: SessionEntity): Promise<DataState<AccountTypeEntity[]>>;
 

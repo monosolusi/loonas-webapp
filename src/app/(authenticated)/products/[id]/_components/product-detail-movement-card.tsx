@@ -33,14 +33,16 @@ export function ProductDetailMovementCard() {
 
   return (
     <SectionCard title="Riwayat Pergerakan Stok" iconSrc="/assets/images/chart-icon-primary-300-w16-h16.svg">
-      <div className="-mx-6 -mb-6">
-        <div className="grid grid-cols-[1fr_1fr_0.8fr_1.5fr] gap-x-4 border-b border-neutral-100 bg-neutral-50 px-4 py-2">
-          <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Tanggal</span>
-          <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Tipe</span>
-          <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Jumlah</span>
-          <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Catatan</span>
+      <div className="-mx-6 -mb-6 overflow-x-auto">
+        <div className="min-w-[560px]">
+          <div className="grid grid-cols-[1fr_1fr_0.8fr_1.5fr] gap-x-4 border-b border-neutral-100 bg-neutral-50 px-4 py-2">
+            <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Tanggal</span>
+            <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Tipe</span>
+            <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Jumlah</span>
+            <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Catatan</span>
+          </div>
+          <StockMovementTable stockItemId={firstStockItemId} limit={5} />
         </div>
-        <StockMovementTable stockItemId={firstStockItemId} limit={5} />
       </div>
     </SectionCard>
   );

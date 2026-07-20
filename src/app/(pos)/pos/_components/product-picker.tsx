@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
@@ -42,6 +42,15 @@ export function ProductPicker() {
   useEffect(() => {
     setHighlight(0);
   }, [visibleRows.length, isDrilldown]);
+
+  // Auto-focus the search only where a physical keyboard is expected (desktop),
+  // so mobile doesn't pop the on-screen keyboard on load and cover the catalog.
+  const searchRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(min-width: 1024px)").matches) return;
+    searchRef.current?.querySelector("input")?.focus();
+  }, [isDrilldown]);
 
   const activate = (idx: number) => {
     const row = visibleRows[idx];
@@ -86,8 +95,8 @@ export function ProductPicker() {
   const error = !isDrilldown && productsState.status === "error" ? productsState.error : null;
 
   return (
-    <div className="flex h-full flex-col rounded-lg border border-neutral-200 bg-white">
-      <div className="flex flex-col gap-y-3 border-b border-b-neutral-100 px-4 pt-4 pb-3">
+    <div className="flex h-full flex-col border-neutral-200 bg-white lg:rounded-lg lg:border">
+      <div ref={searchRef} className="flex flex-col gap-y-3 border-b border-b-neutral-100 px-4 pt-4 pb-3">
         <TextInput
           key={isDrilldown ? "drilldown" : "main"}
           label=""
@@ -95,7 +104,6 @@ export function ProductPicker() {
           value={search}
           onChange={setSearch}
           onKeyDown={onKeyDown}
-          autoFocus
           leftIcon={<MagnifyingGlassIcon className="size-5 text-neutral-300" />}
         />
         {isDrilldown && drilldownProduct && (
@@ -122,7 +130,7 @@ export function ProductPicker() {
         />
       </div>
 
-      <div className="border-t border-t-neutral-100 px-4 py-2 text-xs text-neutral-300">
+      <div className="hidden border-t border-t-neutral-100 px-4 py-2 text-xs text-neutral-300 lg:block">
         ↑↓ pilih · ⏎ tambah · esc {isDrilldown ? "kembali" : "batal"}
       </div>
     </div>

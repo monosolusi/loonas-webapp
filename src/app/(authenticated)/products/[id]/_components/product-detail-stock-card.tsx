@@ -34,23 +34,25 @@ export function ProductDetailStockCard() {
   return (
     <>
       <SectionCard title="Stok" iconSrc="/assets/images/box-icon-primary-300-w16-h16.svg">
-        <div className="-mx-6 -mb-6">
-          <div className="grid grid-cols-[1fr_0.8fr_0.8fr_0.6fr_40px] gap-x-4 border-b border-neutral-100 bg-neutral-50 px-4 py-2">
-            <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Varian</span>
-            <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Stok</span>
-            <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Min Stok</span>
-            <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Status</span>
-            <span />
-          </div>
-          {variantStockItems.length > 0 ? (
-            variantStockItems.map((item) => (
-              <ProductDetailStockRow key={item.id} stockItem={item} onEditMinStock={setEditingItem} />
-            ))
-          ) : (
-            <div className="flex items-center justify-center py-8">
-              <span className="text-sm text-neutral-300">Belum ada data stok</span>
+        <div className="-mx-6 -mb-6 overflow-x-auto">
+          <div className="min-w-[560px]">
+            <div className="grid grid-cols-[1fr_0.8fr_0.8fr_0.6fr_40px] gap-x-4 border-b border-neutral-100 bg-neutral-50 px-4 py-2">
+              <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Varian</span>
+              <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Stok</span>
+              <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Min Stok</span>
+              <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Status</span>
+              <span />
             </div>
-          )}
+            {variantStockItems.length > 0 ? (
+              variantStockItems.map((item) => (
+                <ProductDetailStockRow key={item.id} stockItem={item} onEditMinStock={setEditingItem} />
+              ))
+            ) : (
+              <div className="flex items-center justify-center py-8">
+                <span className="text-sm text-neutral-300">Belum ada data stok</span>
+              </div>
+            )}
+          </div>
         </div>
       </SectionCard>
       <StockMinStockDialog stockItem={editingItem} onClose={() => setEditingItem(null)} />

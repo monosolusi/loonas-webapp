@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { ListPageHeader } from "@/core/presentations/components/list-page-header";
 import { AccountCard } from "@/app/(authenticated)/accounts/_components/account-card";
 import { InvitationCard } from "@/app/(authenticated)/accounts/_components/invitation-card";
 import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
@@ -19,12 +20,10 @@ export default function AccountManagementPage() {
 
   return (
     <div className="flex flex-col gap-y-8">
-      <div className="flex flex-col gap-y-2">
-        <div className="text-3xl leading-9 font-bold tracking-tight">Daftar Akun</div>
-        <div className="leading-6 text-neutral-300">
-          Lihat ringkasan dan kelola semua akun yang terhubung dengan profil Anda di sini.
-        </div>
-      </div>
+      <ListPageHeader
+        title="Daftar Akun"
+        subtitle="Lihat ringkasan dan kelola semua akun yang terhubung dengan profil Anda di sini."
+      />
 
       {pendingInvitations.length > 0 && (
         <div className="flex flex-col gap-y-4">

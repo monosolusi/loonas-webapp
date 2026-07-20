@@ -9,7 +9,7 @@ import { SessionRepositoryImpl } from "@/features/authentication/data/repositori
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { CoaMappingRepositoryImpl } from "@/features/accounting/data/repositories/coa-mapping";
 import { CoaMappingServiceImpl } from "@/features/accounting/data/sources/coa-mapping";
-import { ListCoaMappingsUseCase, ListCoaMappingsUseCaseParams } from "@/features/accounting/domain/usecases/list-coa-mappings.usecases";
+import { ListCoaMappingsUseCase } from "@/features/accounting/domain/usecases/list-coa-mappings.usecases";
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import {
   ListCoaMappingFetcherParams,
@@ -28,13 +28,11 @@ async function ListCoaMappingFetcher([_, params]: [string, ListCoaMappingFetcher
   const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const repo = new CoaMappingRepositoryImpl(new CoaMappingServiceImpl(new HttpRequest()));
   const uc = new ListCoaMappingsUseCase(repo, sessionRepo);
-  const result = await uc.execute(
-    new ListCoaMappingsUseCaseParams({
-      page: params.page,
-      limit: params.limit,
-      entityType: params.entityType,
-    }),
-  );
+  const result = await uc.execute({
+    page: params.page,
+    limit: params.limit,
+    entityType: params.entityType,
+  });
   if (result instanceof DataFailed) throw result.error;
   if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
   return result.data;

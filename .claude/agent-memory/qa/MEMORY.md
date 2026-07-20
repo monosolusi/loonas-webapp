@@ -1,1 +1,3 @@
-- [QA Patterns](qa-patterns.md) — Recurring build warnings, CI ticket scope rules, build perf baseline, JSON validity gate, Playwright session/backend patterns, SWR key isolation
+- [QA Patterns](qa-patterns.md) — Recurring build warnings, CI ticket scope rules, build perf baseline, JSON validity gate, Playwright session/backend patterns, SWR key isolation, mid-edit race guard, dialog-split focus-trap check, shared component move consumer grep, error-branch refresh:null pattern
+- [LNS-457 no-.env Clerk keyless race](project_lns457_env_no_dotenv_clerk_keyless.md) — loonas-webapp-2 has no .env; keyless-mode races 2 client redirects, blocks ALL (authenticated) routes headlessly, route-mocking is a dead end here
+- [LNS-457 close-period failed-postings map](project_lns457_close_period_failed_postings.md) — source-level verification map for PERIOD_HAS_FAILED_POSTINGS 422 across both close-period dialogs, all ACs traced to exact lines

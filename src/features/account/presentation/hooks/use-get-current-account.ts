@@ -12,6 +12,7 @@ import { HttpRequest } from "@/core/helpers/http-request";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { GetCurrentAccountUseCase } from "@/features/account/domain/usecases/get-current-account.usecase";
+import { ACCOUNT_SWR_KEYS } from "@/features/account/presentation/constants/swr-keys";
 
 const INITIAL_STATE: UseGetCurrentAccountReturnValue = {
   account: null,
@@ -20,7 +21,7 @@ const INITIAL_STATE: UseGetCurrentAccountReturnValue = {
   refresh: null,
 };
 
-async function GetCurrentAccount([_, params]: [string, GetAccountFetcherParams]) {
+async function GetCurrentAccountFetcher([_, params]: [string, GetAccountFetcherParams]) {
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const accountRepository = new AccountRepositoryImpl(new AccountServiceImpl(new HttpRequest()));
   const get = new GetCurrentAccountUseCase(accountRepository, sessionRepository);
@@ -32,7 +33,7 @@ async function GetCurrentAccount([_, params]: [string, GetAccountFetcherParams])
 
 export function useGetCurrentAccount(): UseGetCurrentAccountReturnValue {
   const clerk = useClerk();
-  const { data, isLoading, error, mutate } = useSWR(["get-current-account", { clerk }], GetCurrentAccount);
+  const { data, isLoading, error, mutate } = useSWR([ACCOUNT_SWR_KEYS.GET_CURRENT_ACCOUNT, { clerk }], GetCurrentAccountFetcher);
 
   if (isLoading) return INITIAL_STATE;
   if (error) return Object.assign({}, INITIAL_STATE, { error, loading: false });

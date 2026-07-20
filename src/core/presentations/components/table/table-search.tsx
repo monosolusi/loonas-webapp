@@ -11,8 +11,10 @@ type TableSearchProps = {
 };
 
 export function TableSearch({ value, onChange, placeholder = "Cari..." }: TableSearchProps) {
+  // Standard: search is always right-pinned in the toolbar row. `sm:ml-auto` keeps it
+  // right even when it is the sole toolbar control (no left-hand filters).
   return (
-    <div className="w-[280px]">
+    <div className="w-full sm:ml-auto sm:w-[280px]">
       <TextInput
         label=""
         placeholder={placeholder}

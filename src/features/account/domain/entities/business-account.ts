@@ -2,6 +2,8 @@ import { AbstractEntity } from "@/core/resources/entity";
 import { DateTime } from "luxon";
 import { AccountType } from "@/features/account/domain/enums/account-type";
 import { MembershipEntity } from "@/features/account/domain/entities/membership";
+import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
+import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 
 type Metadata = { clerkId: string };
 
@@ -31,6 +33,8 @@ type BusinessAccountEntityConstructor = {
   membership?: MembershipEntity;
   role?: string;
   features?: string[];
+  latestStatus?: VerificationStatus;
+  verificationOutcome?: VerificationOutcome;
 };
 
 export class BusinessAccountEntity implements AbstractEntity {
@@ -44,6 +48,8 @@ export class BusinessAccountEntity implements AbstractEntity {
   public membership?: MembershipEntity;
   public role: string;
   public features: string[];
+  public latestStatus?: VerificationStatus;
+  public verificationOutcome?: VerificationOutcome;
 
   constructor(args: BusinessAccountEntityConstructor) {
     this.id = args.id;
@@ -56,6 +62,8 @@ export class BusinessAccountEntity implements AbstractEntity {
     this.membership = args.membership;
     this.role = args.role ?? "user";
     this.features = args.features ?? [];
+    this.latestStatus = args.latestStatus;
+    this.verificationOutcome = args.verificationOutcome;
   }
 
   public hasFeature(feature: string): boolean {

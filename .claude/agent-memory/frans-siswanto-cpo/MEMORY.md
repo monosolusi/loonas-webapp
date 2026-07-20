@@ -1,2 +1,0 @@
-- [Terminology lock — Struk + POS Bahasa lexicon](terminology_lock_struk.md) — Project-wide: "Struk" not "Resi"; Total/Bayar Tunai/Bayar QRIS/Kembalian/WIB-WITA-WIT. Ratified LNS-199.
-- [Analytics posture — LNS-239](project_analytics_posture_lns239.md) — PostHog EU, opaque IDs only, redacted routes, full capture, legitimate-interest basis + 3 PDP guardrails.

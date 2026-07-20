@@ -1,7 +1,7 @@
 import { HttpRequest } from "@/core/helpers/http-request";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { FixedCostModel } from "@/features/fixed-cost/data/models/fixed-cost";
-import { FixedCostService, ListFixedCostsServiceResult } from "@/features/fixed-cost/domain/sources/fixed-cost";
+import { FixedCostService, ListFixedCostsServiceResult, CreateFixedCostServiceParams, UpdateFixedCostServiceParams } from "@/features/fixed-cost/domain/sources/fixed-cost";
 import { ListFixedCostsParams } from "@/features/fixed-cost/domain/repositories/fixed-cost";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
@@ -40,12 +40,12 @@ export class FixedCostServiceImpl implements FixedCostService {
     }
   }
 
-  public async create(name: string, session: SessionEntity): Promise<FixedCostModel> {
+  public async create(params: CreateFixedCostServiceParams, session: SessionEntity): Promise<FixedCostModel> {
     try {
       const result = await this.http.request({
         path: "/accounting/fixed-costs",
         method: "POST",
-        body: { name },
+        body: { name: params.name, category: params.category },
         session,
       });
       return FixedCostModel.fromJson(result);
@@ -55,12 +55,12 @@ export class FixedCostServiceImpl implements FixedCostService {
     }
   }
 
-  public async update(id: string, name: string, session: SessionEntity): Promise<FixedCostModel> {
+  public async update(params: UpdateFixedCostServiceParams, session: SessionEntity): Promise<FixedCostModel> {
     try {
       const result = await this.http.request({
-        path: `/accounting/fixed-costs/${id}`,
+        path: `/accounting/fixed-costs/${params.id}`,
         method: "PUT",
-        body: { name },
+        body: { name: params.name, category: params.category },
         session,
       });
       return FixedCostModel.fromJson(result);

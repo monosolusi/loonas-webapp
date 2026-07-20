@@ -55,7 +55,7 @@ export interface AccountService {
 
   createBusiness(params: CreateBusinessParams, session: SessionEntity): Promise<BusinessAccountModel>;
 
-  retrieveVerificationWork(accountId: string, session: SessionEntity): Promise<AccountVerificationWorkModel>;
+  retrieveVerificationWork(session: SessionEntity): Promise<AccountVerificationWorkModel>;
 
   list(session: SessionEntity): Promise<AccountTypeModel[]>;
 

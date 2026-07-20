@@ -10,7 +10,7 @@ type AccountCardProps = {
 
 export function AccountCard(props: AccountCardProps) {
   return (
-    <div className="flex w-[256px] flex-col gap-y-6 rounded-lg border border-neutral-200 bg-white p-6">
+    <div className="flex w-full flex-col gap-y-6 rounded-lg border border-neutral-200 bg-white p-6 sm:w-[256px]">
       <AccountCardIcon account={props.account} />
 
       <div className="flex flex-col gap-y-1">

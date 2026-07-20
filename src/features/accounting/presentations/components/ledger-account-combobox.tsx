@@ -6,7 +6,7 @@ import {
   SearchComboboxOption,
 } from "@/core/presentations/components/search-combobox";
 import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledger-account";
-import { useListLedgerAccounts } from "@/features/accounting/presentations/hooks/use-list-ledger-accounts";
+import { useListAllLedgerAccounts } from "@/features/accounting/presentations/hooks/use-list-all-ledger-accounts";
 
 type LedgerAccountOption = SearchComboboxOption & { entity: LedgerAccountEntity };
 
@@ -18,21 +18,25 @@ type LedgerAccountComboboxProps = {
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
+  excludeIds?: string[];
+  filter?: (account: LedgerAccountEntity) => boolean;
 };
 
 export function LedgerAccountCombobox(props: LedgerAccountComboboxProps) {
-  const { accounts, loading } = useListLedgerAccounts({ limit: 500 });
+  const { accounts, loading } = useListAllLedgerAccounts();
 
-  const options = useMemo<LedgerAccountOption[]>(
-    () =>
-      accounts.map((a) => ({
+  const options = useMemo<LedgerAccountOption[]>(() => {
+    const excluded = new Set(props.excludeIds ?? []);
+    return (accounts ?? [])
+      .filter((a) => !excluded.has(a.id))
+      .filter((a) => (props.filter ? props.filter(a) : true))
+      .map((a) => ({
         id: a.id,
         label: `${a.code} — ${a.name}`,
         description: a.type,
         entity: a,
-      })),
-    [accounts],
-  );
+      }));
+  }, [accounts, props.excludeIds, props.filter]);
 
   const selected = useMemo<LedgerAccountOption | null>(() => {
     if (!props.value) return null;

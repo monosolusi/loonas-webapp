@@ -129,15 +129,12 @@ export class AccountServiceImpl implements AccountService {
     }
   }
 
-  public async retrieveVerificationWork(
-    accountId: string,
-    session: SessionEntity,
-  ): Promise<AccountVerificationWorkModel> {
+  public async retrieveVerificationWork(session: SessionEntity): Promise<AccountVerificationWorkModel> {
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      const url = `${baseUrl}/accounts/${accountId}/verification-works`;
+      const url = `${baseUrl}/accounts/verification-works`;
       const headers = { Authorization: `Bearer ${session.accessToken}` };
       const response = await fetch(url, { headers });
 

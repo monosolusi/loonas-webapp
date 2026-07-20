@@ -4,9 +4,9 @@ import { NotificationBell } from "@/features/notification/presentations/componen
 
 export function Header() {
   return (
-    <div className="flex flex-row items-center justify-between border-b border-b-neutral-200 px-6 py-2">
+    <div className="flex flex-row items-center justify-between border-b border-b-neutral-200 px-4 py-2 sm:px-6">
       <HeaderTitle />
-      <div className="flex flex-row items-center gap-x-6">
+      <div className="flex flex-row items-center gap-x-3 sm:gap-x-6">
         <NotificationBell />
         <div className="h-6 w-[2px] bg-neutral-200"></div>
         <HeaderAccountMenu />

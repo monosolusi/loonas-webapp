@@ -5,6 +5,7 @@ import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { RawMaterialEntity } from "@/features/raw-material/domain/entities/raw-material";
 import { useListRawMaterials } from "@/features/raw-material/presentations/hooks/use-list-raw-materials";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 
 type RawMaterialMasterContextValue = {
   rawMaterials: RawMaterialEntity[];
@@ -41,7 +42,7 @@ export function RawMaterialMasterProvider({ children }: RawMaterialMasterProvide
   const debouncedSearch = useDebounce(search.trim(), 500);
   const searchQuery = debouncedSearch.length >= 2 ? debouncedSearch : undefined;
 
-  const { rawMaterials, meta, loading } = useListRawMaterials({ page, limit: 10, search: searchQuery });
+  const { rawMaterials, meta, loading } = useListRawMaterials({ page, limit: DEFAULT_PAGE_SIZE, search: searchQuery });
 
   return (
     <RawMaterialMasterContext.Provider

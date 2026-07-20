@@ -1,16 +1,17 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useGetOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-outgoing-invoice";
+import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
+import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-invoice-status";
 import Image from "next/image";
 
 export function PaymentLinkImpl() {
   const { id } = useParams<{ id: string }>();
-  const { invoice, loading } = useGetOutgoingInvoice({ id });
+  const { invoice, loading } = useGetInvoice({ id });
 
-  if (loading || !invoice || !invoice.paymentUrl) return null;
+  if (loading || !invoice || !(invoice instanceof OutgoingInvoiceEntity) || !invoice.paymentUrl) return null;
   if (invoice.status === OutgoingInvoiceStatus.DRAFT) return null;
 
   const handleCopy = () => {

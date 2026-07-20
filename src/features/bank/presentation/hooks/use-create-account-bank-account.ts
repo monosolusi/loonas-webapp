@@ -4,8 +4,6 @@ import { ClerkSessionService } from "@/features/authentication/data/sources/cler
 import { SessionRepositoryImpl } from "@/features/authentication/data/repositories/session";
 import { BankServiceImpl } from "@/features/bank/data/sources/bank";
 import { BankRepositoryImpl } from "@/features/bank/data/repositories/bank";
-import { AccountBankAccountEntity } from "@/features/account/domain/entities/account-bank-account";
-import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { DataFailed } from "@/core/resources/data-state";
 import {
   CreateAccountBankAccountUseCase,
@@ -22,7 +20,7 @@ type CreateAccountBankAccountParams = Record<string, unknown> & {
 async function createAccountBankAccountFetcher(
   _: string,
   { arg }: { arg: CreateAccountBankAccountParams & { clerk: ReturnType<typeof useClerk> } },
-): Promise<AccountBankAccountEntity> {
+): Promise<void> {
   const sessionService = new ClerkSessionService({ clerk: arg.clerk });
   const sessionRepository = new SessionRepositoryImpl(sessionService);
   const bankService = new BankServiceImpl();
@@ -35,8 +33,6 @@ async function createAccountBankAccountFetcher(
 
   const result = await create.execute(createParams);
   if (result instanceof DataFailed) throw result.error;
-  if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-  return result.data;
 }
 
 export function useCreateAccountBankAccount() {

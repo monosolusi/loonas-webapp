@@ -9,7 +9,7 @@ type WaitingResultTimelineItemProps = {
 };
 
 export function WaitingResultTimelineItem(props: WaitingResultTimelineItemProps) {
-  const { verificationWork } = useGetAccountVerificationWork({ accountId: props.account.id });
+  const { verificationWork } = useGetAccountVerificationWork({ enabled: props.account.id });
 
   if (verificationWork?.latestStatus === VerificationStatus.COMPLETED) return null;
   return (

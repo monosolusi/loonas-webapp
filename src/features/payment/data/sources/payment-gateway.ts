@@ -116,7 +116,7 @@ export class PaymentGatewayServiceImpl implements PaymentGatewayService {
         throw new ServerError(ErrorCodes.INVALID_INSTANCE);
       }
 
-      return data.map(item => PaymentGatewayModel.fromJson(item));
+      return data.map((item: any) => PaymentGatewayModel.fromJson(item));
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

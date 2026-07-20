@@ -15,6 +15,7 @@ import { AccountRepositoryImpl } from "@/features/account/data/repositories/acco
 import { HttpRequest } from "@/core/helpers/http-request";
 import { AccountServiceImpl } from "@/features/account/data/sources/account";
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
+import { ACCOUNT_SWR_KEYS } from "@/features/account/presentation/constants/swr-keys";
 
 type CreateBusinessAccountProps = {
   company: {
@@ -61,7 +62,7 @@ async function CreateBusinessAccountFetcher(_: string, { arg }: { arg: CreateBus
 
 export function useCreateBusinessAccount() {
   const clerk = useClerk();
-  const { trigger, ...rest } = useSWRMutation("create-business-account", CreateBusinessAccountFetcher);
+  const { trigger, ...rest } = useSWRMutation(ACCOUNT_SWR_KEYS.CREATE_BUSINESS_ACCOUNT, CreateBusinessAccountFetcher);
 
   // Wrapper trigger yang otomatis inject getToken dari Clerk
   const wrappedTrigger = (data: CreateBusinessAccountProps) => trigger({ ...data, clerk });

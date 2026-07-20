@@ -1,11 +1,12 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import { DateTime } from "luxon";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { PurchaseEntity } from "@/features/purchasing/domain/entities/purchase";
 import { useListPurchases } from "@/features/purchasing/presentations/hooks/use-list-purchases";
+import { usePurchaseRange } from "@/app/(authenticated)/purchasing/_providers/purchase-range-provider";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 
 type PurchaseListContextValue = {
   purchases: PurchaseEntity[];
@@ -13,13 +14,9 @@ type PurchaseListContextValue = {
   loading: boolean;
   page: number;
   search: string;
-  dateFrom: DateTime | undefined;
-  dateTo: DateTime | undefined;
   deletingItem: PurchaseEntity | null;
   setPage: (page: number) => void;
   setSearch: (value: string) => void;
-  setDateFrom: (value: DateTime | undefined) => void;
-  setDateTo: (value: DateTime | undefined) => void;
   setDeletingItem: (item: PurchaseEntity | null) => void;
 };
 
@@ -36,10 +33,10 @@ type PurchaseListProviderProps = {
 };
 
 export function PurchaseListProvider({ children }: PurchaseListProviderProps) {
+  const { from, to } = usePurchaseRange();
+
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [dateFrom, setDateFrom] = useState<DateTime | undefined>(undefined);
-  const [dateTo, setDateTo] = useState<DateTime | undefined>(undefined);
   const [deletingItem, setDeletingItem] = useState<PurchaseEntity | null>(null);
 
   const debouncedSearch = useDebounce(search.trim(), 500);
@@ -47,10 +44,10 @@ export function PurchaseListProvider({ children }: PurchaseListProviderProps) {
 
   const result = useListPurchases({
     search: searchQuery,
-    dateFrom: dateFrom?.toISODate() ?? undefined,
-    dateTo: dateTo?.toISODate() ?? undefined,
+    dateFrom: from,
+    dateTo: to,
     page,
-    limit: 10,
+    limit: DEFAULT_PAGE_SIZE,
   });
 
   const purchases = result.purchases ?? [];
@@ -64,13 +61,9 @@ export function PurchaseListProvider({ children }: PurchaseListProviderProps) {
         loading: result.loading,
         page,
         search,
-        dateFrom,
-        dateTo,
         deletingItem,
         setPage,
         setSearch,
-        setDateFrom,
-        setDateTo,
         setDeletingItem,
       }}
     >

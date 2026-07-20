@@ -23,7 +23,7 @@ export function ProductionListTable() {
       empty={records.length === 0 && !loading}
       emptyMessage="Belum ada catatan produksi. Catat produksi pertama Anda."
     >
-      <TableHeader className="grid-cols-[1fr_1.5fr_0.6fr_1fr_48px] gap-x-4" columns={COLUMNS} />
+      <TableHeader className="grid-cols-[1fr_1.5fr_0.6fr_1fr_48px] gap-x-4" columns={COLUMNS} hideOnMobile />
       {records.map((record) => (
         <ProductionListRow key={record.id} record={record} />
       ))}

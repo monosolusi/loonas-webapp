@@ -1,15 +1,16 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useGetOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-outgoing-invoice";
+import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
+import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { OutgoingRecipientInfo } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/outgoing-recipient-info";
 
 export function OutgoingRecipientInfoImpl() {
   const { id } = useParams<{ id: string }>();
-  const { invoice, loading } = useGetOutgoingInvoice({ id });
+  const { invoice, loading } = useGetInvoice({ id });
 
-  if (loading || !invoice) {
+  if (loading || !invoice || !(invoice instanceof OutgoingInvoiceEntity)) {
     return (
       <SectionCard title="Informasi Penerima" iconSrc="/assets/images/person-icon-primary-300-w16-h16.svg">
         <div className="flex flex-col gap-y-5">

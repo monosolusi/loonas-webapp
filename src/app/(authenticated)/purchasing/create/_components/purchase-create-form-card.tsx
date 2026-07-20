@@ -25,7 +25,7 @@ export function PurchaseCreateFormCard() {
   return (
     <SectionCard title="Detail Pembelian" iconSrc="/assets/images/box-icon-primary-300-w16-h16.svg">
       <div className="flex flex-col gap-y-6">
-        <div className="grid grid-cols-2 gap-x-4">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
           <DatePickerInput label="Tanggal" value={date} onChange={setDate} required />
           <TextInput label="Catatan" placeholder="Opsional" value={note} onChange={setNote} />
         </div>
@@ -33,16 +33,21 @@ export function PurchaseCreateFormCard() {
         <div className="flex flex-col gap-y-2">
           <span className="text-sm font-medium text-neutral-500">Item Pembelian</span>
           <div className="-mx-6 -mb-6">
-            <div className="grid grid-cols-[2fr_1fr_1fr_1fr_40px] gap-x-3 border-b border-neutral-100 bg-neutral-50 px-4 py-2">
-              <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Item</span>
-              <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Jumlah</span>
-              <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Harga Satuan</span>
-              <span className="text-right text-xs font-medium tracking-wider text-neutral-300 uppercase">Total</span>
-              <span />
+            {/* Wide item matrix: keep desktop column widths, scroll horizontally on narrow screens. */}
+            <div className="overflow-x-auto">
+              <div className="min-w-[640px]">
+                <div className="grid grid-cols-[2fr_1fr_1fr_1fr_40px] gap-x-3 border-b border-neutral-100 bg-neutral-50 px-4 py-2">
+                  <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Item</span>
+                  <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Jumlah</span>
+                  <span className="text-xs font-medium tracking-wider text-neutral-300 uppercase">Harga Satuan</span>
+                  <span className="text-right text-xs font-medium tracking-wider text-neutral-300 uppercase">Total</span>
+                  <span />
+                </div>
+                {items.map((item) => (
+                  <PurchaseItemRow key={item.key} item={item} excludeIds={excludeIds} />
+                ))}
+              </div>
             </div>
-            {items.map((item) => (
-              <PurchaseItemRow key={item.key} item={item} excludeIds={excludeIds} />
-            ))}
             <div className="flex flex-row items-center justify-between border-t border-neutral-100 px-4 py-3">
               <div className="flex">
                 <SecondaryButton outlined label="+ Tambah Item" onClick={addItem} />

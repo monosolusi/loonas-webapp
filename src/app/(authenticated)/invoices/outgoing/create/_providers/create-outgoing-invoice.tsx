@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { PartnerEntity } from "@/features/partner/domain/entities/partner";
 import { DateTime } from "luxon";
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { PaymentGatewayEntity } from "@/features/payment/domain/entities/payment-gateway";
 import { ChargeFeeOn } from "@/features/invoice/domain/enums/charge-fee-on";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
+import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
+import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 
 export type OutgoingStep =
   | "select-recipient"
@@ -36,6 +39,15 @@ interface PaymentConfiguration {
   chargeFeeOn: ChargeFeeOn;
 }
 
+// Seed used to re-hydrate the payment step when editing a draft. The invoice's payment_method
+// snapshot does not expose the original gateway id, so the enabled/fee state is matched back to
+// the live gateway list by title (best-effort); the submitted ids always come from the live list.
+export interface EditPaymentConfigSeed {
+  title: string;
+  isEnabled: boolean;
+  chargeFeeOn: ChargeFeeOn;
+}
+
 interface CreateOutgoingInvoiceContextProps {
   currentStep: OutgoingStep;
   setCurrentStep?: React.Dispatch<React.SetStateAction<OutgoingStep>>;
@@ -52,6 +64,9 @@ interface CreateOutgoingInvoiceContextProps {
   isInvoiceDetailsStepClean: boolean;
   isPaymentConfigStepClean: boolean;
   editingItemIndex: number | null;
+  editingInvoiceId?: string;
+  isEditMode: boolean;
+  editInitialPaymentConfig: EditPaymentConfigSeed[];
   setEditingItemIndex?: React.Dispatch<React.SetStateAction<number | null>>;
   setPaymentConfiguration?: React.Dispatch<React.SetStateAction<PaymentConfiguration[]>>;
   setSignature?: React.Dispatch<React.SetStateAction<File | null>>;
@@ -62,6 +77,8 @@ interface CreateOutgoingInvoiceContextProps {
   setInvoiceDate?: React.Dispatch<React.SetStateAction<DateTime>>;
   setInvoiceNumber?: React.Dispatch<React.SetStateAction<string>>;
   setRecipient?: React.Dispatch<React.SetStateAction<PartnerEntity | undefined>>;
+  setEditingInvoiceId?: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setEditInitialPaymentConfig?: React.Dispatch<React.SetStateAction<EditPaymentConfigSeed[]>>;
   addInvoiceItem?: (item: InvoiceItem) => void;
   updateInvoiceItem?: (params: { index: number; newData: InvoiceItem }) => void;
   deleteInvoiceItem?: (params: { index: number }) => void;
@@ -81,6 +98,8 @@ const CreateOutgoingInvoiceContext = React.createContext<CreateOutgoingInvoiceCo
   isInvoiceDetailsStepClean: false,
   isPaymentConfigStepClean: false,
   editingItemIndex: null,
+  isEditMode: false,
+  editInitialPaymentConfig: [],
 });
 
 export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProviderProps) {
@@ -95,6 +114,10 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
   const [signature, setSignature] = useState<File | null>(null);
   const [paymentConfiguration, setPaymentConfiguration] = useState<PaymentConfiguration[]>([]);
   const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
+  const [editingInvoiceId, setEditingInvoiceId] = useState<string>();
+  const [editInitialPaymentConfig, setEditInitialPaymentConfig] = useState<EditPaymentConfigSeed[]>([]);
+
+  const isEditMode = !!editingInvoiceId;
 
   const isRecipientStepClean = useMemo(() => {
     return !!recipient;
@@ -165,6 +188,9 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
         isInvoiceDetailsStepClean,
         isPaymentConfigStepClean,
         editingItemIndex,
+        editingInvoiceId,
+        isEditMode,
+        editInitialPaymentConfig,
         setEditingItemIndex,
         setPaymentConfiguration,
         signature,
@@ -176,14 +202,107 @@ export function CreateOutgoingInvoiceProvider(props: CreateOutgoingInvoiceProvid
         setInvoiceDate,
         setInvoiceNumber,
         setRecipient,
+        setEditingInvoiceId,
+        setEditInitialPaymentConfig,
         addInvoiceItem,
         updateInvoiceItem,
         deleteInvoiceItem,
       }}
     >
+      <Suspense fallback={null}>
+        <DraftPrefill />
+      </Suspense>
       {props.children}
     </CreateOutgoingInvoiceContext.Provider>
   );
+}
+
+// Reads `?draftId` and, when present, switches the wizard into edit mode and prefills it from the
+// draft. Rendered inside the provider so it can populate the context. Wrapped in Suspense by the
+// provider because it uses useSearchParams().
+function DraftPrefill() {
+  const searchParams = useSearchParams();
+  const draftId = searchParams.get("draftId") ?? undefined;
+  const { setEditingInvoiceId } = useCreateOutgoingInvoice();
+
+  useEffect(() => {
+    setEditingInvoiceId?.(draftId);
+  }, [draftId, setEditingInvoiceId]);
+
+  if (!draftId) return null;
+  return <DraftPrefillInner draftId={draftId} />;
+}
+
+function DraftPrefillInner({ draftId }: { draftId: string }) {
+  const { invoice, loading } = useGetInvoice({ id: draftId });
+  const {
+    setRecipient,
+    setInvoiceNumber,
+    setInvoiceDate,
+    setDueDate,
+    setItems,
+    setNote,
+    setTnc,
+    setEditInitialPaymentConfig,
+  } = useCreateOutgoingInvoice();
+  const prefilled = useRef(false);
+
+  useEffect(() => {
+    if (prefilled.current || loading || !invoice || !(invoice instanceof OutgoingInvoiceEntity)) return;
+    prefilled.current = true;
+
+    const now = DateTime.now().setZone("Asia/Jakarta");
+    const recipient = invoice.recipient;
+    setRecipient?.(
+      new PartnerEntity(
+        recipient.originalId ?? recipient.id,
+        recipient.fullName,
+        recipient.email ?? "",
+        recipient.phoneNumber ?? "",
+        now,
+        now,
+      ),
+    );
+    setInvoiceNumber?.(invoice.invoiceNumber);
+    setInvoiceDate?.(invoice.invoiceDate);
+    setDueDate?.(invoice.dueDate);
+    setItems?.(
+      invoice.items.map((item) => ({
+        name: item.name,
+        description: item.description,
+        qty: item.qty,
+        price: item.price,
+        taxType: item.taxType,
+        tax: item.tax,
+        taxBase: item.taxBase,
+        discountType: item.discountType ?? DiscountType.NO_DISCOUNT,
+        discount: item.discount ?? 0,
+        total: item.total,
+      })),
+    );
+    setNote?.(invoice.note ?? "");
+    setTnc?.(invoice.tnc ?? "");
+    setEditInitialPaymentConfig?.(
+      invoice.paymentConfiguration.map((config) => ({
+        title: config.paymentMethod.title,
+        isEnabled: config.isEnabled,
+        chargeFeeOn: config.chargeFeeOn,
+      })),
+    );
+  }, [
+    invoice,
+    loading,
+    setRecipient,
+    setInvoiceNumber,
+    setInvoiceDate,
+    setDueDate,
+    setItems,
+    setNote,
+    setTnc,
+    setEditInitialPaymentConfig,
+  ]);
+
+  return null;
 }
 
 export function useCreateOutgoingInvoice() {

@@ -9,7 +9,11 @@ import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-
 import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel";
 import { PaymentRequestStatus } from "@/features/payment/domain/enums/payment-request";
 import { IDRFormatter } from "@/core/utilities/currency/domain/formatters/idr-formatter";
-import { deriveInvoicePaymentStatusKind } from "@/features/invoice/presentations/components/invoice-payment-helpers";
+import {
+  deriveInvoicePaymentStatusKind,
+  formatPayInMethodLabel,
+  InvoicePaymentStatusKind,
+} from "@/features/invoice/presentations/components/invoice-payment-helpers";
 import { DashboardRecentActivityIcon } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-icon";
 import {
   DashboardRecentActivityStatusText,
@@ -19,17 +23,18 @@ import { DateTime } from "luxon";
 import { track } from "@/core/analytics";
 import type { ActivityTab } from "@/app/(authenticated)/home/_components/dashboard-recent-activity-tabs";
 
-type ActivityKind = "pos" | "incoming" | "outgoing";
+export type ActivityKind = "pos" | "incoming" | "outgoing";
 
-const DESTINATION_TEMPLATE: Record<ActivityKind, string> = {
+export const DESTINATION_TEMPLATE: Record<ActivityKind, string> = {
   pos: "/sales/pos/:id",
   incoming: "/invoices/incoming/:id",
   outgoing: "/invoices/outgoing/:id",
 };
 
-type ActivityRowView = {
+export type ActivityRowView = {
   kind: ActivityKind;
   partyName: string;
+  paymentMethod: string;
   total: number;
   status: InvoiceStatusType;
   href: string;
@@ -63,11 +68,25 @@ function mapStatus(status: InvoiceStatus): InvoiceStatusType {
   }
 }
 
-function toActivityView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): ActivityRowView {
+function mapPosPaymentKind(kind: InvoicePaymentStatusKind): InvoiceStatusType {
+  switch (kind) {
+    case "paid":
+      return "paid";
+    case "expired":
+      return "expired";
+    case "failed":
+      return "failed";
+    default:
+      return "unpaid";
+  }
+}
+
+export function toActivityView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): ActivityRowView {
   if (inv instanceof IncomingInvoiceEntity) {
     return {
       kind: "incoming",
       partyName: inv.receiver.name,
+      paymentMethod: inv.paymentMethod.title,
       total: inv.total,
       status: mapStatus(inv.status),
       href: `/invoices/incoming/${inv.id}`,
@@ -78,8 +97,9 @@ function toActivityView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): Act
     return {
       kind: "pos",
       partyName: inv.invoiceNumber,
+      paymentMethod: formatPayInMethodLabel(inv.payInDetail?.detail?.type),
       total: inv.summary.total,
-      status: deriveInvoicePaymentStatusKind(inv) === "paid" ? "paid" : "unpaid",
+      status: mapPosPaymentKind(deriveInvoicePaymentStatusKind(inv)),
       href: `/sales/pos/${inv.id}`,
       createdAt: inv.createdAt,
     };
@@ -87,13 +107,13 @@ function toActivityView(inv: IncomingInvoiceEntity | OutgoingInvoiceEntity): Act
   return {
     kind: "outgoing",
     partyName: inv.recipient.fullName,
+    paymentMethod: formatPayInMethodLabel(inv.payInDetail?.detail?.type),
     total: inv.summary.total,
     status: mapStatus(inv.status),
     href: `/invoices/outgoing/${inv.id}`,
     createdAt: inv.createdAt,
   };
 }
-
 
 interface DashboardRecentActivityRowProps {
   invoice: IncomingInvoiceEntity | OutgoingInvoiceEntity;
@@ -126,9 +146,9 @@ export function DashboardRecentActivityRow({ invoice, tab, position }: Dashboard
         }
       }}
       className={clsx(
-        "grid cursor-pointer grid-cols-[2fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0",
+        "grid cursor-pointer grid-cols-[2fr_1fr_1fr_1fr] items-center border-b border-l-4 border-neutral-100 border-l-transparent px-6 py-4 last:border-b-0",
         "hover:border-l-primary-300 hover:bg-primary-50",
-        "focus:outline-none focus-visible:border-l-primary-300 focus-visible:bg-primary-50",
+        "focus-visible:border-l-primary-300 focus-visible:bg-primary-50 focus:outline-none",
       )}
     >
       <div className="flex items-center gap-2">
@@ -138,6 +158,8 @@ export function DashboardRecentActivityRow({ invoice, tab, position }: Dashboard
           <span className="text-xs leading-4 text-neutral-300">{view.createdAt.setLocale("id").toRelative()}</span>
         </div>
       </div>
+
+      <span className="truncate text-sm leading-5 text-neutral-400">{view.paymentMethod}</span>
 
       <span className="text-sm leading-5 font-semibold text-neutral-500">{IDRFormatter.toCurrency(view.total)}</span>
 

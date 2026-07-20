@@ -1,59 +1,93 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
+import { TableContainer } from "@/core/presentations/components/table/table-container";
+import { TableHeader } from "@/core/presentations/components/table/table-header";
+import { TabFilter } from "@/core/presentations/components/tab-filter";
 import { useListVerificationWorks } from "@/features/kyc-review/presentations/hooks/use-list-verification-works";
 import { VerificationWorkStatus } from "@/features/kyc-review/domain/enums/verification-work-status";
 import { KycWorkRow, KycWorkTable } from "@/features/kyc-review/presentations/components/kyc-work-table";
+import { KycWorkSearchInput } from "@/features/kyc-review/presentations/components/kyc-work-search-input";
 
-interface KycWorkTableImplProps {
-  status?: VerificationWorkStatus;
-}
+const TAB_LABELS = ["Semua", "Menunggu", "Diproses", "Selesai", "Ditolak"] as const;
+const statusMap: (VerificationWorkStatus | undefined)[] = [
+  undefined,
+  VerificationWorkStatus.IN_QUEUE,
+  VerificationWorkStatus.PROCESSING,
+  VerificationWorkStatus.DONE,
+  VerificationWorkStatus.FAILED,
+];
 
-function TableSkeleton() {
-  return (
-    <div className="overflow-hidden rounded-xl border border-neutral-100">
-      <div className="grid grid-cols-[1.5fr_1.5fr_1fr_1fr_1.5fr_1.5fr] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Nama Akun</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Email</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tipe</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Status</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Peninjau</span>
-        <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Tanggal</span>
+// Default to "Menunggu" (IN_QUEUE) — the reviewer queue that needs action.
+const DEFAULT_TAB_INDEX = 1;
+
+export function KycWorkTableImpl() {
+  const router = useRouter();
+
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState(DEFAULT_TAB_INDEX);
+
+  const resolvedStatus = statusMap[activeTab];
+
+  const { works, meta, loading, error } = useListVerificationWorks({
+    status: resolvedStatus,
+    page,
+    limit: DEFAULT_PAGE_SIZE,
+  });
+
+  const handleTabChange = (index: number) => {
+    setActiveTab(index);
+    setSearch("");
+    setPage(1);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  const toolbar = (
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:overflow-visible sm:px-0">
+        <TabFilter tabs={TAB_LABELS} selectedIndex={activeTab} onChange={handleTabChange} />
       </div>
-      {[0, 1, 2].map((i) => (
-        <div
-          key={i}
-          className="grid animate-pulse grid-cols-[1.5fr_1.5fr_1fr_1fr_1.5fr_1.5fr] items-center border-b border-neutral-100 px-6 py-4 last:border-b-0"
-        >
-          <div className="h-4 w-3/4 rounded bg-neutral-100" />
-          <div className="h-4 w-2/3 rounded bg-neutral-100" />
-          <div className="h-4 w-1/2 rounded bg-neutral-100" />
-          <div className="h-5 w-16 rounded-sm bg-neutral-100" />
-          <div className="h-4 w-2/3 rounded bg-neutral-100" />
-          <div className="h-4 w-2/3 rounded bg-neutral-100" />
-        </div>
-      ))}
+
+      <KycWorkSearchInput value={search} onChange={handleSearchChange} placeholder="Filter halaman ini..." />
     </div>
   );
-}
 
-export function KycWorkTableImpl({ status }: KycWorkTableImplProps) {
-  const router = useRouter();
-  const { works, loading, error } = useListVerificationWorks({ status });
+  const header = (
+    <TableHeader
+      columns={[
+        { label: "Nama Akun" },
+        { label: "Email" },
+        { label: "Tipe" },
+        { label: "Status" },
+        { label: "Peninjau" },
+        { label: "Tanggal" },
+      ]}
+      className="grid-cols-[1.5fr_1.5fr_1fr_1fr_1.5fr_1.5fr]"
+      hideOnMobile
+    />
+  );
 
-  if (loading) return <TableSkeleton />;
+  const hasData = !loading && !error && works && meta;
 
-  if (error) {
-    return (
-      <div className="overflow-hidden rounded-xl border border-neutral-100">
-        <div className="flex items-center justify-center py-12">
-          <span className="text-sm text-neutral-300">Gagal memuat data verifikasi.</span>
-        </div>
-      </div>
-    );
-  }
+  const filteredWorks = hasData
+    ? search
+      ? works.filter((work) => {
+          const query = search.toLowerCase();
+          const matchesName = work.account.fullName.toLowerCase().includes(query);
+          const matchesEmail = work.user.email.toLowerCase().includes(query);
+          return matchesName || matchesEmail;
+        })
+      : works
+    : [];
 
-  const rows: KycWorkRow[] = (works ?? []).map((work) => ({
+  const rows: KycWorkRow[] = filteredWorks.map((work) => ({
     id: work.id,
     accountName: work.account.fullName,
     accountType: work.account.type,
@@ -63,5 +97,28 @@ export function KycWorkTableImpl({ status }: KycWorkTableImplProps) {
     executorEmail: work.executorEmail,
   }));
 
-  return <KycWorkTable rows={rows} onRowClick={(id) => router.push(`/internal/kyc/${id}`)} />;
+  return (
+    <div className="flex flex-col gap-y-4">
+      {toolbar}
+
+      <TableContainer
+        loading={loading}
+        error={!!error}
+        empty={works?.length === 0}
+        emptyMessage="Tidak ada data verifikasi."
+        filteredEmpty={!!search && rows.length === 0}
+      >
+        {header}
+        {hasData && (
+          <KycWorkTable
+            rows={rows}
+            meta={meta}
+            currentPage={page}
+            onPageChange={setPage}
+            onRowClick={(id) => router.push(`/internal/kyc/${id}`)}
+          />
+        )}
+      </TableContainer>
+    </div>
+  );
 }

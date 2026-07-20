@@ -28,6 +28,9 @@ async function SendInvoiceFetcher(_: string, { arg }: { arg: SendInvoiceFetcherP
   const sendParams = new SendInvoiceUseCaseParams({
     invoice: { id: arg.invoice.id },
     sendChannel: arg.sendChannel,
+    // Fresh key per send attempt. The backend caches every response (incl. 4xx/5xx)
+    // for 24h keyed on this value, so a retry must use a new key — hence per-call.
+    idempotencyKey: crypto.randomUUID(),
   });
 
   const result = await send.execute(sendParams);

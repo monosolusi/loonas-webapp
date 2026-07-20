@@ -5,13 +5,13 @@ import { InvoiceDetailModel } from "@/features/invoice/data/types/invoice-detail
 import {
   CashFlowFilter,
   CreateOutgoingParams,
+  UpdateOutgoingParams,
   CreatePosSaleServiceParams,
   InvoiceService,
   InvoiceServiceFilter,
   InvoiceServiceFilterParams,
   InvoiceSummaryFilter,
   ListInvoicesServiceFilter,
-  OutgoingInvoiceFilter,
 } from "@/features/invoice/domain/sources/invoice";
 import { InvoiceSummaryModel } from "@/features/invoice/data/models/invoice-summary";
 import { CashFlowModel } from "@/features/invoice/data/models/cash-flow";
@@ -50,14 +50,23 @@ export class InvoiceServiceImpl implements InvoiceService {
       if (filter.includes) searchParams.include = filter.includes;
       if (filter.filter) searchParams.filter = filter.filter;
       if (filter.from && filter.to) {
-        searchParams.from = filter.from;
-        searchParams.to = filter.to;
+        searchParams.start_date = filter.from;
+        searchParams.end_date = filter.to;
       }
 
       const result = await this.http.request({ path, method, searchParams, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      const data = (result.data as Record<string, any>[]).map((item) => this.parseInvoiceListItem(item));
+      // Dedupe by id: the backend list query can fan out duplicate rows for an
+      // invoice with multiple related records (pay-ins / payment-methods / items),
+      // which otherwise collides React keys in every list consumer. First wins.
+      const parsed = (result.data as Record<string, any>[]).map((item) => this.parseInvoiceListItem(item));
+      const seen = new Set<string>();
+      const data = parsed.filter((item) => {
+        if (seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      });
       const meta = PaginationMetaModel.fromJson(result.meta);
 
       return { data, meta };
@@ -123,12 +132,67 @@ export class InvoiceServiceImpl implements InvoiceService {
     }
   }
 
-  public async send(params: { id: string; sendChannel: NotificationChannel[] }, session: SessionEntity): Promise<void> {
+  public async send(
+    params: { id: string; sendChannel: NotificationChannel[]; idempotencyKey: string },
+    session: SessionEntity,
+  ): Promise<void> {
     const path = `/invoices/outgoing/${params.id}/send`;
     const body = { channels: params.sendChannel };
     const method = "POST";
 
+    await this.http.request(
+      { path, method, body, session },
+      { headers: { "Idempotency-Key": params.idempotencyKey } },
+    );
+  }
+
+  public async deleteOutgoing(params: { id: string }, session: SessionEntity): Promise<void> {
+    const path = `/invoices/outgoing/${params.id}`;
+    const method = "DELETE";
+
+    await this.http.request({ path, method, session });
+  }
+
+  public async updateOutgoing(params: UpdateOutgoingParams, session: SessionEntity): Promise<void> {
+    const path = `/invoices/outgoing/${params.id}`;
+    const method = "PUT";
+    // `invoice_number` and `send_channel` are not editable and must NOT be sent — the API rejects them.
+    const body = {
+      recipient_id: params.recipient.id,
+      invoice_date: params.invoiceDate.toISO(),
+      due_date: params.dueDate.toISO(),
+      items: params.items.map((item) => ({
+        name: item.name,
+        description: item.description,
+        qty: item.qty,
+        price: item.price,
+        tax_type: item.taxType,
+        tax_base: item.taxBase,
+        tax: item.tax,
+        discount_type: item.discountType,
+        discount: item.discount,
+        total: item.total,
+      })),
+      note: params.note,
+      tnc: params.tnc,
+      payment_configuration: params.paymentConfiguration.map((config) => ({
+        payment_method_id: config.paymentMethod.id,
+        is_enabled: config.isEnabled,
+        charge_fee_on: config.chargeFeeOn,
+      })),
+    };
+
     await this.http.request({ path, method, body, session });
+
+    if (params.signature) {
+      const signaturePath = `/invoices/outgoing/${params.id}/signature`;
+      const signatureBody = new FormData();
+      signatureBody.append("signature", params.signature);
+      await this.http.request(
+        { path: signaturePath, method: "POST", body: signatureBody, session },
+        { contentType: undefined },
+      );
+    }
   }
 
   public async createPayInForOutgoingInvoice(params: {
@@ -147,8 +211,9 @@ export class InvoiceServiceImpl implements InvoiceService {
     const result = await this.http.request({ path, method, body }, config);
 
     if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-    if (!result.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-    return PayInModel.fromJson(result);
+    const data = result;
+    if (!data?.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+    return PayInModel.fromJson(data);
   }
 
   public async getPublicOutgoing(filter: { invoiceId: string }): Promise<PublicOutgoingInvoiceModel> {
@@ -158,35 +223,6 @@ export class InvoiceServiceImpl implements InvoiceService {
     const config = { requireAuth: false };
     const result = await this.http.request({ path, method }, config);
     return PublicOutgoingInvoiceModel.fromJson(result);
-  }
-
-  public async getOutgoing(filter: OutgoingInvoiceFilter, session: SessionEntity): Promise<OutgoingInvoiceModel> {
-    if (!filter.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
-    const path = `/invoices/outgoing/${filter.id}`;
-    const method = "GET";
-    const result = await this.http.request({ path, method, session });
-    if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
-    if (!result.items) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-    if (!result.recipient) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-    if (!result.summary) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-
-    if (result.signature) result.signature = FileModel.fromJson(result.signature);
-    if (result.pdf) result.pdf = FileModel.fromJson(result.pdf);
-    result.items = result.items.map(InvoiceItemModel.fromJson);
-    result.recipient = InvoiceRecipientModel.fromJson(result.recipient);
-    result.summary = InvoiceItemSummaryModel.fromJson(result.summary);
-    result.sender = InvoiceSenderModel.fromJson(result.sender);
-
-    return OutgoingInvoiceModel.fromJson(result, {
-      items: result.items,
-      recipient: result.recipient,
-      signature: result.signature,
-      summary: result.summary,
-      sender: result.sender,
-      pdf: result.pdf,
-    });
   }
 
   public async createOutgoing(params: CreateOutgoingParams, session: SessionEntity): Promise<OutgoingInvoiceModel> {
@@ -222,17 +258,17 @@ export class InvoiceServiceImpl implements InvoiceService {
 
       const result = await this.http.request({ path, method, body, session });
       if (!result) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-      if (!result.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+      const data = result;
+      if (!data.id) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      // Now we will upload the signature
-      let signature: FileModel | undefined;
+      // Upload the signature (fire-and-forget — the finalise response / detail re-fetch carries it).
       if (params.signature) {
-        const signaturePath = `/invoices/outgoing/${result.id}/signature`;
+        const signaturePath = `/invoices/outgoing/${data.id}/signature`;
         const signatureMethod = "POST";
         const signatureBody = new FormData();
         signatureBody.append("signature", params.signature);
 
-        const signatureResult = await this.http.request(
+        await this.http.request(
           {
             path: signaturePath,
             method: signatureMethod,
@@ -241,27 +277,30 @@ export class InvoiceServiceImpl implements InvoiceService {
           },
           { contentType: undefined },
         );
-
-        if (!signatureResult) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
-        signature = FileModel.fromJson(signatureResult);
       }
 
-      const finaliseResult = await this.finaliseOutgoing(result.id, session);
-
-      // Generate InvoiceItemModel[] from result.items
-      const items = finaliseResult.items.map(InvoiceItemModel.fromJson);
-      const recipient = InvoiceRecipientModel.fromJson(finaliseResult.recipient);
-      const summary = InvoiceItemSummaryModel.fromJson(finaliseResult.summary);
-      const sender = InvoiceSenderModel.fromJson(finaliseResult.sender);
-
-      let pdf: FileModel | undefined;
-      if (finaliseResult.pdf) pdf = FileModel.fromJson(finaliseResult.pdf);
-
-      return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature, summary, sender, pdf });
+      return await this.finalise({ id: data.id }, session);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
     }
+  }
+
+  public async finalise(params: { id: string }, session: SessionEntity): Promise<OutgoingInvoiceModel> {
+    const finaliseResult = await this.finaliseOutgoing(params.id, session);
+
+    const items = finaliseResult.items.map(InvoiceItemModel.fromJson);
+    const recipient = InvoiceRecipientModel.fromJson(finaliseResult.recipient);
+    const summary = InvoiceItemSummaryModel.fromJson(finaliseResult.summary);
+    const sender = InvoiceSenderModel.fromJson(finaliseResult.sender);
+
+    // Signature (if present) is carried by the invoice detail re-fetch, matching createOutgoing's original behavior.
+    let signature: FileModel | undefined;
+
+    let pdf: FileModel | undefined;
+    if (finaliseResult.pdf) pdf = FileModel.fromJson(finaliseResult.pdf);
+
+    return OutgoingInvoiceModel.fromJson(finaliseResult, { items, recipient, signature, summary, sender, pdf });
   }
 
   private async finaliseOutgoing(invoiceId: string, session: SessionEntity, maxRetries = 3): Promise<any> {

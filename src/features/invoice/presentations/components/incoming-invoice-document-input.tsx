@@ -56,53 +56,53 @@ export function IncomingInvoiceDocumentInput(props: IncomingInvoiceDocumentInput
       {/*  Invoice Value */}
       <CurrencyInput value={props.invoice.amount} onChange={onAmountChange} />
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-5">
-        <div className="flex-1">
-          <TextInput
-            label="Nomor Faktur"
-            type="text"
-            placeholder="INV-001/..."
-            leftIcon={
-              <Image
-                src="/assets/images/hashtag-icon-neutral-400-w16-h16.svg"
-                alt="hashtag icon"
-                width={16}
-                height={16}
-              />
-            }
-            value={props.invoice.invoiceNumber}
-            onChange={onInvoiceNumberChange}
-            required
-          />
+      <div className="flex flex-col gap-y-5">
+        <TextInput
+          label="Nomor Faktur"
+          type="text"
+          placeholder="INV-001/..."
+          leftIcon={
+            <Image
+              src="/assets/images/hashtag-icon-neutral-400-w16-h16.svg"
+              alt="hashtag icon"
+              width={16}
+              height={16}
+            />
+          }
+          value={props.invoice.invoiceNumber}
+          onChange={onInvoiceNumberChange}
+          required
+        />
+
+        <div className="flex flex-row gap-x-5">
+          <div className="flex-1">
+            <DatePickerInput
+              label="Tanggal Faktur"
+              value={props.invoice.invoiceDate}
+              onChange={onInvoiceDateChange}
+              required
+            />
+          </div>
+          <div className="flex-1">
+            <DatePickerInput label="Tanggal Jatuh Tempo" value={props.invoice.dueDate} onChange={onDueDateChange} />
+          </div>
         </div>
-        <div className="flex-1">
-          <DatePickerInput
-            label="Tanggal Faktur"
-            value={props.invoice.invoiceDate}
-            onChange={onInvoiceDateChange}
-            required
-          />
-        </div>
-        <div className="flex-1">
-          <DatePickerInput label="Tanggal Jatuh Tempo" value={props.invoice.dueDate} onChange={onDueDateChange} />
-        </div>
-        <div className="flex-1">
-          <TextInput
-            label="Keterangan"
-            type="text"
-            placeholder="Cth. Pembayaran DP 50%"
-            leftIcon={
-              <Image
-                src="/assets/images/document-icon-neutral-400-w16-h16.svg"
-                alt="document icon"
-                width={16}
-                height={16}
-              />
-            }
-            value={props.invoice.note}
-            onChange={onNoteChange}
-          />
-        </div>
+
+        <TextInput
+          label="Keterangan"
+          type="text"
+          placeholder="Cth. Pembayaran DP 50%"
+          leftIcon={
+            <Image
+              src="/assets/images/document-icon-neutral-400-w16-h16.svg"
+              alt="document icon"
+              width={16}
+              height={16}
+            />
+          }
+          value={props.invoice.note}
+          onChange={onNoteChange}
+        />
       </div>
 
       <FileUploadInput

@@ -1,6 +1,5 @@
 import { UseCase } from "@/core/resources/use-case";
 import { DataFailed, DataState } from "@/core/resources/data-state";
-import { AccountBankAccountEntity } from "@/features/account/domain/entities/account-bank-account";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { SessionRepository } from "@/features/authentication/domain/repositories/session";
 import { BankRepository } from "@/features/bank/domain/repositories/bank";
@@ -21,14 +20,14 @@ export class CreateAccountBankAccountUseCaseParams {
 }
 
 export class CreateAccountBankAccountUseCase
-  implements UseCase<DataState<AccountBankAccountEntity>, CreateAccountBankAccountUseCaseParams>
+  implements UseCase<DataState<void>, CreateAccountBankAccountUseCaseParams>
 {
   constructor(
     public readonly bankRepository: BankRepository,
     public readonly sessionRepository: SessionRepository,
   ) {}
 
-  public async execute(params: CreateAccountBankAccountUseCaseParams): Promise<DataState<AccountBankAccountEntity>> {
+  public async execute(params: CreateAccountBankAccountUseCaseParams): Promise<DataState<void>> {
     try {
       const session = await this.sessionRepository.retrieve();
       if (session instanceof DataFailed) return session;
@@ -43,7 +42,6 @@ export class CreateAccountBankAccountUseCase
       );
 
       if (cBankAccount instanceof DataFailed) throw cBankAccount.error;
-      if (!cBankAccount.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
       return cBankAccount;
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
