@@ -18,7 +18,7 @@ export function PosTopBarNavLink({ href, label, exact = false }: PosTopBarNavLin
     <Link
       href={href}
       className={clsx(
-        "flex h-9 items-center rounded-md px-3 text-sm font-medium transition-colors",
+        "flex h-9 items-center rounded-md px-2 text-sm font-medium transition-colors sm:px-3",
         active ? "bg-primary-300/10 text-primary-300" : "text-neutral-400 hover:bg-neutral-50 hover:text-neutral-500",
       )}
     >

@@ -10,7 +10,7 @@ export function OutgoingInvoiceStatisticsImpl() {
 
   if (loading || !summary) {
     return (
-      <div className="flex flex-row gap-x-4">
+      <div className="flex flex-col gap-4 sm:flex-row">
         <StatisticCardSkeleton />
         <StatisticCardSkeleton />
         <StatisticCardSkeleton />
@@ -19,14 +19,14 @@ export function OutgoingInvoiceStatisticsImpl() {
   }
 
   return (
-    <div className="flex flex-row gap-x-4">
+    <div className="flex flex-col gap-4 sm:flex-row">
       <StatisticCard
         label="Belum Dibayar"
         value={IDRFormatter.toCurrency(summary.unpaidAmount)}
         subtitle={`${summary.unpaidCount} faktur menunggu`}
         iconSrc="/assets/images/circle-dollar-sign-icon-warning-300-w20-h20.svg"
         theme="warning"
-        href="/invoices/outgoing/unpaid"
+        href="/invoices/outgoing?status=unpaid"
         count={summary.unpaidCount}
       />
       <StatisticCard
@@ -36,7 +36,7 @@ export function OutgoingInvoiceStatisticsImpl() {
         iconSrc="/assets/images/clock-icon-primary-300-w16-h16.svg"
         iconSize={16}
         theme="primary"
-        href="/invoices/outgoing/waiting-settlement"
+        href="/invoices/outgoing?status=waiting_settlement"
         count={summary.waitingSettlementCount}
       />
       <StatisticCard
@@ -45,7 +45,7 @@ export function OutgoingInvoiceStatisticsImpl() {
         subtitle="Pembayaran selesai"
         iconSrc="/assets/images/check-icon-success-300-w40-h40.svg"
         theme="success"
-        href="/invoices/outgoing/paid"
+        href="/invoices/outgoing?status=paid"
         count={summary.paidCount}
       />
     </div>

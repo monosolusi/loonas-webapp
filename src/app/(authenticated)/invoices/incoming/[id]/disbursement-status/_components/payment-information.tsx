@@ -25,8 +25,8 @@ export function PaymentInformation(props: PaymentInformationProps) {
       title="Informasi Pembayaran"
       bodyClassName="p-0"
     >
-      <div className="flex flex-row">
-        <div className="flex flex-1 flex-col gap-y-4 border-r border-r-neutral-100 p-6">
+      <div className="flex flex-col sm:flex-row">
+        <div className="flex flex-1 flex-col gap-y-4 border-b border-b-neutral-100 p-6 sm:border-r sm:border-b-0 sm:border-r-neutral-100">
           <InfoField label="Metode Bayar" value={props.paymentMethod} />
           <InfoField label="Waktu Transaksi" value={props.transactionDate} />
           <InfoField label="Client" value={props.client} />

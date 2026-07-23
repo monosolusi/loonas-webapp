@@ -9,7 +9,7 @@ type WaitNextActionProps = {
 };
 
 export function WaitNextAction(props: WaitNextActionProps) {
-  const { verificationWork } = useGetAccountVerificationWork({ accountId: props.account.id });
+  const { verificationWork } = useGetAccountVerificationWork({ enabled: props.account.id });
 
   if (verificationWork?.latestStatus === VerificationStatus.COMPLETED) return null;
   return (

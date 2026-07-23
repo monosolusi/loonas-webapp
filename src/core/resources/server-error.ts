@@ -388,6 +388,135 @@ export class ErrorCodes {
     message: "Metode pembayaran ini belum didukung di POS.",
   };
 
+  public static readonly NORMAL_BALANCE_HINT: ErrorStructureType = {
+    code: "NORMAL_BALANCE_HINT",
+    httpCode: 422,
+    message: "Beberapa akun diisi pada sisi debit/kredit yang salah.",
+  };
+
+  public static readonly PERIOD_NOT_FOUND: ErrorStructureType = {
+    code: "PERIOD_NOT_FOUND",
+    httpCode: 404,
+    message: "Periode tidak ditemukan.",
+  };
+
+  public static readonly PERIOD_CLOSED: ErrorStructureType = {
+    code: "PERIOD_CLOSED",
+    httpCode: 409,
+    message: "Periode untuk tanggal ini sudah ditutup.",
+  };
+
+  public static readonly PERIOD_ALREADY_CLOSED: ErrorStructureType = {
+    code: "PERIOD_ALREADY_CLOSED",
+    httpCode: 409,
+    message: "Periode ini sudah terkunci.",
+  };
+
+  public static readonly PERIOD_NOT_CLOSED: ErrorStructureType = {
+    code: "PERIOD_NOT_CLOSED",
+    httpCode: 409,
+    message: "Periode ini masih terbuka.",
+  };
+
+  public static readonly PERIOD_NOT_DRAINED: ErrorStructureType = {
+    code: "PERIOD_NOT_DRAINED",
+    httpCode: 422,
+    message:
+      "Periode belum bisa dikunci. Pastikan semua proses pencatatan sudah selesai, dan untuk wajib pajak PPh Final, entri PPh Final (akun 8110) sudah diposting sebelum batas setor.",
+  };
+
+  public static readonly PPH_FINAL_NOT_POSTED: ErrorStructureType = {
+    code: "PPH_FINAL_NOT_POSTED",
+    httpCode: 422,
+    message:
+      "Periode belum bisa dikunci. Jurnal PPh Final UMKM (akun 8110) belum diposting dan batas setor sudah lewat. Posting jurnal PPh Final lalu coba lagi.",
+  };
+
+  public static readonly PERIOD_HAS_FAILED_POSTINGS: ErrorStructureType = {
+    code: "PERIOD_HAS_FAILED_POSTINGS",
+    httpCode: 422,
+    message:
+      "Periode belum bisa dikunci. Ada transaksi yang gagal tercatat ke pembukuan dan perlu diselesaikan sebelum periode ini bisa ditutup.",
+  };
+
+  public static readonly IDEMPOTENCY_KEY_REQUIRED: ErrorStructureType = {
+    code: "IDEMPOTENCY_KEY_REQUIRED",
+    httpCode: 400,
+    message: "Terjadi gangguan teknis. Silakan coba lagi.",
+  };
+
+  public static readonly SEEDED_ACCOUNT_IMMUTABLE_FIELDS: ErrorStructureType = {
+    code: "SEEDED_ACCOUNT_IMMUTABLE_FIELDS",
+    httpCode: 409,
+    message: "Kode dan tipe akun bawaan tidak dapat diubah untuk menjaga integritas jurnal.",
+  };
+
+  public static readonly ACCOUNT_HAS_JOURNAL_LINES: ErrorStructureType = {
+    code: "ACCOUNT_HAS_JOURNAL_LINES",
+    httpCode: 409,
+    message: "Akun ini memiliki baris jurnal yang terkait. Hapus atau pindahkan entri jurnal terkait terlebih dahulu.",
+  };
+
+  public static readonly ACCOUNT_REFERENCED_BY_MAPPING: ErrorStructureType = {
+    code: "ACCOUNT_REFERENCED_BY_MAPPING",
+    httpCode: 409,
+    message: "Akun ini digunakan dalam Pemetaan Akun. Perbarui pemetaan akun terlebih dahulu sebelum menghapus akun ini.",
+  };
+
+  public static readonly CODE_RESERVED: ErrorStructureType = {
+    code: "CODE_RESERVED",
+    httpCode: 400,
+    message: "Kode ini termasuk dalam rentang yang dicadangkan sistem. Pilih kode lain.",
+  };
+
+  public static readonly MONTHLY_PERIODS_NOT_CLOSED: ErrorStructureType = {
+    code: "MONTHLY_PERIODS_NOT_CLOSED",
+    httpCode: 409,
+    message: "Masih ada periode bulanan yang terbuka. Tutup semua periode bulan terlebih dahulu sebelum menutup tahun.",
+  };
+
+  public static readonly YEAR_ALREADY_CLOSED: ErrorStructureType = {
+    code: "YEAR_ALREADY_CLOSED",
+    httpCode: 409,
+    message: "Tahun ini sudah ditutup. Gunakan buka kembali tahun untuk mengubahnya.",
+  };
+
+  public static readonly YEAR_NOT_CLOSED: ErrorStructureType = {
+    code: "YEAR_NOT_CLOSED",
+    httpCode: 409,
+    message: "Tahun ini belum ditutup, jadi tidak dapat dibuka kembali.",
+  };
+
+  public static readonly YEAR_UNLOCK_TOKEN_MISMATCH: ErrorStructureType = {
+    code: "YEAR_UNLOCK_TOKEN_MISMATCH",
+    httpCode: 422,
+    message: "Token konfirmasi tidak cocok. Muat ulang halaman lalu coba lagi.",
+  };
+
+  public static readonly YEAR_CLOSE_BOUNDARY_INVALID: ErrorStructureType = {
+    code: "YEAR_CLOSE_BOUNDARY_INVALID",
+    httpCode: 422,
+    message: "Periode tahun ini belum lengkap (Januari–Desember). Hubungi tim dukungan.",
+  };
+
+  public static readonly RETAINED_EARNINGS_ACCOUNT_INVALID: ErrorStructureType = {
+    code: "RETAINED_EARNINGS_ACCOUNT_INVALID",
+    httpCode: 422,
+    message: "Akun Saldo Laba Ditahan tidak valid. Pilih akun ekuitas yang benar.",
+  };
+
+  public static readonly PERIOD_REOPEN_REASON_REQUIRED: ErrorStructureType = {
+    code: "PERIOD_REOPEN_REASON_REQUIRED",
+    httpCode: 400,
+    message: "Alasan minimal 10 karakter.",
+  };
+
+  public static readonly FEATURE_NOT_AVAILABLE: ErrorStructureType = {
+    code: "FEATURE_NOT_AVAILABLE",
+    httpCode: 403,
+    message: "Fitur ini belum tersedia untuk akun Anda.",
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }

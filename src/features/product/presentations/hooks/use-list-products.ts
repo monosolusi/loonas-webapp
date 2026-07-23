@@ -21,17 +21,15 @@ type UseListProductsParams = {
   search?: string;
 };
 
-type FetcherParams = {
-  clerk: ReturnType<typeof useClerk>;
-  params: UseListProductsParams;
-};
-
-async function ListProductsFetcher([_, fetcherParams]: [string, FetcherParams]) {
-  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: fetcherParams.clerk }));
+async function ListProductsFetcher(
+  [_, fetcherParams]: [string, UseListProductsParams],
+  clerk: ReturnType<typeof useClerk>,
+) {
+  const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk }));
   const productRepository = new ProductRepositoryImpl(new ProductServiceImpl(new HttpRequest()));
   const listProducts = new ListProductsUseCase(productRepository, sessionRepository);
 
-  const result = await listProducts.execute(new ListProductsUseCaseParams(fetcherParams.params));
+  const result = await listProducts.execute(new ListProductsUseCaseParams(fetcherParams));
   if (result instanceof DataFailed) throw result.error;
   if (!result.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
@@ -48,8 +46,9 @@ type UseListProductsReturnType = {
 export function useListProducts(params: UseListProductsParams = {}): UseListProductsReturnType {
   const clerk = useClerk();
   const { data, isLoading, error } = useSWR(
-    [PRODUCT_SWR_KEYS.LIST_PRODUCTS, { clerk, params }],
-    ListProductsFetcher,
+    [PRODUCT_SWR_KEYS.LIST_PRODUCTS, params],
+    (key) => ListProductsFetcher(key, clerk),
+    { revalidateOnFocus: false, revalidateOnReconnect: false },
   );
 
   return {

@@ -42,7 +42,7 @@ export function InvitationCard({ account }: InvitationCardProps) {
 
   if (responded) {
     return (
-      <div className="flex w-[256px] flex-col items-center justify-center gap-y-2 rounded-lg border border-neutral-200 bg-neutral-50 p-6">
+      <div className="flex w-full flex-col items-center justify-center gap-y-2 rounded-lg border border-neutral-200 bg-neutral-50 p-6 sm:w-[256px]">
         <p className="text-sm font-medium text-neutral-300">
           {responded === InviteAction.ACCEPT ? "Undangan diterima" : "Undangan ditolak"}
         </p>
@@ -51,7 +51,7 @@ export function InvitationCard({ account }: InvitationCardProps) {
   }
 
   return (
-    <div className="flex w-[256px] flex-col gap-y-5 rounded-lg border border-warning-300/30 bg-warning-300/5 p-6">
+    <div className="flex w-full flex-col gap-y-5 rounded-lg border border-warning-300/30 bg-warning-300/5 p-6 sm:w-[256px]">
       {/* Header */}
       <div className="flex flex-row items-start justify-between">
         <div className={clsx("flex size-12 items-center justify-center rounded-lg border shadow-sm", colorClass)}>

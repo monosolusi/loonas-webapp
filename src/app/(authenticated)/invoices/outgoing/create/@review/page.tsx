@@ -20,8 +20,10 @@ export default function ReviewSection() {
             </p>
           </div>
         </div>
-        <div className="mt-4 flex flex-1 flex-row space-x-4">
-          <InvoicePreviewImpl />
+        <div className="-mx-4 mt-4 flex flex-1 flex-row space-x-4 overflow-x-auto px-4 sm:mx-0 sm:overflow-visible sm:px-0">
+          <div className="min-w-[640px] flex-1 sm:min-w-0">
+            <InvoicePreviewImpl />
+          </div>
         </div>
       </div>
     </>

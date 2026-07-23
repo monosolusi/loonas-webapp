@@ -30,7 +30,9 @@ export function StockItemCombobox({ value, onChange, excludeIds = [] }: StockIte
         return {
           id: item.id,
           label: item.itemName,
-          description: isFinishedGoods && item.variantName ? item.variantName : undefined,
+          description: item.sku ?? undefined,
+          caption: isFinishedGoods && item.variantName ? item.variantName : undefined,
+          keywords: item.sku ?? undefined,
           rawMaterialId: item.rawMaterial?.id ?? null,
           variantId: item.variant?.id ?? null,
           unit: item.rawMaterial?.unit ?? null,

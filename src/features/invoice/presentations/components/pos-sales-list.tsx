@@ -9,8 +9,7 @@ import { InvoiceChannel } from "@/features/invoice/domain/enums/invoice-channel"
 import { useListInvoices } from "@/features/invoice/presentations/hooks/use-list-invoices";
 import { PosSalesError } from "@/features/invoice/presentations/components/pos-sales-error";
 import { PosSalesTableRow } from "@/features/invoice/presentations/components/pos-sales-table-row";
-
-const PAGE_SIZE = 25;
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 
 const COLUMNS = [
   { label: "No. Struk" },
@@ -31,7 +30,7 @@ type PosSalesListProps = {
 
 export function PosSalesList({ onSelectSale }: PosSalesListProps) {
   const [page, setPage] = useState(1);
-  const state = useListInvoices({ channel: InvoiceChannel.POS, page, limit: PAGE_SIZE });
+  const state = useListInvoices({ channel: InvoiceChannel.POS, page, limit: DEFAULT_PAGE_SIZE });
 
   if (state.error) return <PosSalesError error={state.error} />;
 
@@ -45,7 +44,7 @@ export function PosSalesList({ onSelectSale }: PosSalesListProps) {
       empty={!state.loading && posInvoices.length === 0}
       emptyMessage="Belum ada transaksi POS."
     >
-      <TableHeader className={GRID_COLUMNS_CLASS} columns={COLUMNS} />
+      <TableHeader className={GRID_COLUMNS_CLASS} columns={COLUMNS} hideOnMobile />
       {posInvoices.map((invoice) => (
         <PosSalesTableRow key={invoice.id} invoice={invoice} onClick={onSelectSale} />
       ))}

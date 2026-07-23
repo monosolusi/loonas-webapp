@@ -8,10 +8,12 @@ import { NotificationChannel } from "@/features/notification/domain/enums/notifi
 export class SendInvoiceUseCaseParams {
   public readonly invoice: { id: string };
   public readonly sendChannel: NotificationChannel[];
+  public readonly idempotencyKey: string;
 
-  constructor(args: { invoice: { id: string }; sendChannel: NotificationChannel[] }) {
+  constructor(args: { invoice: { id: string }; sendChannel: NotificationChannel[]; idempotencyKey: string }) {
     this.invoice = args.invoice;
     this.sendChannel = args.sendChannel;
+    this.idempotencyKey = args.idempotencyKey;
     Object.freeze(this);
   }
 }
@@ -28,7 +30,10 @@ export class SendInvoiceUseCase implements UseCase<DataState<boolean>, SendInvoi
       if (session instanceof DataFailed) throw session.error;
       if (!session.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      return this.invoiceRepository.send({ id: params.invoice.id, sendChannel: params.sendChannel }, session.data);
+      return this.invoiceRepository.send(
+        { id: params.invoice.id, sendChannel: params.sendChannel, idempotencyKey: params.idempotencyKey },
+        session.data,
+      );
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

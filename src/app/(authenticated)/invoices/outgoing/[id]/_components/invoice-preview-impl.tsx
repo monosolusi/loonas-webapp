@@ -1,15 +1,16 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useGetOutgoingInvoice } from "@/features/invoice/presentations/hooks/use-get-outgoing-invoice";
+import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
+import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { InvoicePreview } from "@/app/(authenticated)/invoices/_components/invoice-preview";
 import { SectionCard } from "@/core/presentations/components/section-card";
 
 export function InvoicePreviewImpl() {
   const { id } = useParams<{ id: string }>();
-  const { invoice, loading } = useGetOutgoingInvoice({ id });
+  const { invoice, loading } = useGetInvoice({ id });
 
-  if (!invoice || loading) {
+  if (!invoice || loading || !(invoice instanceof OutgoingInvoiceEntity)) {
     return (
       <SectionCard title="Pratinjau Faktur" iconSrc="/assets/images/wallet-icon-primary-300-w16-h16.svg">
         <div className="flex flex-col gap-y-4">

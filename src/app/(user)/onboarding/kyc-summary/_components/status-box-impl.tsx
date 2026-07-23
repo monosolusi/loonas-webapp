@@ -20,7 +20,7 @@ const STATUS_MAP: Record<PossibleStatus, StatusBoxStatus> = {
 };
 
 export function StatusBoxImpl(props: StatusBoxImplProps) {
-  const { verificationWork } = useGetAccountVerificationWork({ accountId: props.account.id });
+  const { verificationWork } = useGetAccountVerificationWork({ enabled: props.account.id });
 
   const status = useMemo(() => {
     if (!verificationWork) return null;

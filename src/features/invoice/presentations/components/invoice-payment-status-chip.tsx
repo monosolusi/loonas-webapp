@@ -11,5 +11,7 @@ type InvoicePaymentStatusChipProps = {
 export function InvoicePaymentStatusChip({ invoice }: InvoicePaymentStatusChipProps) {
   const kind = deriveInvoicePaymentStatusKind(invoice);
   if (kind === "paid") return <StatusChip label="Lunas" variant="success" compact />;
+  if (kind === "expired") return <StatusChip label="Kedaluwarsa" variant="error" compact />;
+  if (kind === "failed") return <StatusChip label="Gagal" variant="error" compact />;
   return <StatusChip label="Menunggu" variant="warning" compact />;
 }

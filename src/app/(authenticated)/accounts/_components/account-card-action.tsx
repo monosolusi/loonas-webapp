@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { useCallback, useMemo } from "react";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
-import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
 import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
 import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
 import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
@@ -11,7 +10,7 @@ type AccountCardActionProps = {
   account: AccountTypeEntity;
 };
 
-type ActionState = "current" | "approved" | "disabled" | "loading";
+type ActionState = "current" | "approved" | "disabled";
 
 const ACTION_CONFIG: Record<
   ActionState,
@@ -38,30 +37,21 @@ const ACTION_CONFIG: Record<
     className: "bg-white border-neutral-200 opacity-50 cursor-not-allowed",
     disabled: true,
   },
-  loading: {
-    label: "Memuat...",
-    icon: "/assets/images/arrow-tailed-right-icon-neutral-500-w16-h16.svg",
-    alt: "Arrow Right Icon",
-    className: "bg-white border-neutral-200 opacity-50 cursor-not-allowed",
-    disabled: true,
-  },
 };
 
 export function AccountCardAction(props: AccountCardActionProps) {
-  const { verificationWork } = useGetAccountVerificationWork({ accountId: props.account.id });
   const { account: currentAccount } = useGetCurrentAccount();
   const { isLoaded, setActive } = useOrganizationList();
 
   const actionState = useMemo((): ActionState => {
-    if (!verificationWork) return "loading";
     if (currentAccount?.id === props.account.id) return "current";
 
-    const { latestStatus, verificationOutcome } = verificationWork;
+    const { latestStatus, verificationOutcome } = props.account;
     const isApproved =
       latestStatus === VerificationStatus.COMPLETED && verificationOutcome === VerificationOutcome.APPROVED;
 
     return isApproved ? "approved" : "disabled";
-  }, [verificationWork, currentAccount, props.account.id]);
+  }, [props.account.latestStatus, props.account.verificationOutcome, currentAccount, props.account.id]);
 
   const config = ACTION_CONFIG[actionState];
 

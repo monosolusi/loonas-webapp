@@ -9,7 +9,7 @@ type AccountTypeCardProps = {
 };
 
 export function AccountTypeCard(props: AccountTypeCardProps) {
-  const { verificationWork } = useGetAccountVerificationWork({ accountId: props.account.id });
+  const { verificationWork } = useGetAccountVerificationWork({ enabled: props.account.id });
 
   const accountType = useMemo(() => {
     if (!verificationWork) return "";

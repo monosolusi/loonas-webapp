@@ -1,7 +1,6 @@
 export const INVOICE_SWR_KEYS = {
   LIST_INVOICES: "list-invoices",
   GET_INVOICE: "get-invoice",
-  GET_OUTGOING_INVOICE: "get-outgoing-invoice",
   GET_PUBLIC_OUTGOING_INVOICE: "get-public-outgoing-invoice",
   GET_PUBLIC_PAY_IN_DETAIL_FOR_OUTGOING_INVOICE: "get-public-pay-in-detail-for-outgoing-invoice",
   GET_CASH_FLOW: "get-cash-flow",
@@ -12,4 +11,7 @@ export const INVOICE_SWR_KEYS = {
   CREATE_OUTGOING_INVOICE_PAY_IN: "create-outgoing-invoice-pay-in",
   CREATE_POS_SALE: "create-pos-sale",
   SEND_INVOICE: "send-invoice",
+  FINALISE_INVOICE: "finalise-invoice",
+  DELETE_INVOICE: "delete-invoice",
+  UPDATE_INVOICE: "update-invoice",
 } as const;

@@ -43,46 +43,51 @@ export function VariantTable({ variants, onChange }: VariantTableProps) {
 
   return (
     <div className="flex flex-col gap-y-3">
-      <div className={clsx("grid gap-x-3 px-1", showRemove ? "grid-cols-[1fr_1fr_1fr_36px]" : "grid-cols-3")}>
-        <span className="text-xs font-medium text-neutral-300">Nama Varian *</span>
-        <span className="text-xs font-medium text-neutral-300">SKU</span>
-        <span className="text-xs font-medium text-neutral-300">Harga *</span>
-        {showRemove && <span />}
-      </div>
-      {variants.map((row, index) => (
-        <div key={row.key} className={clsx("grid gap-x-3", showRemove ? "grid-cols-[1fr_1fr_1fr_36px]" : "grid-cols-3")}>
-          <TextInput
-            label=""
-            placeholder="Nama varian"
-            value={row.name}
-            onChange={(value) => updateField(index, "name", value)}
-          />
-          <TextInput
-            label=""
-            placeholder="SKU varian"
-            value={row.sku}
-            onChange={(value) => updateField(index, "sku", value)}
-          />
-          <CurrencyInput
-            label=""
-            placeholder="0"
-            value={row.price}
-            onChange={(value) => updatePrice(index, value)}
-            leftIcon={null}
-            leftAddOn="Rp"
-            required={false}
-          />
-          {showRemove && (
-            <button
-              type="button"
-              onClick={() => removeRow(index)}
-              className="flex size-9 items-center justify-center self-center rounded-lg text-neutral-200 transition-colors hover:bg-red-50 hover:text-red-500"
-            >
-              <Image src="/assets/images/trash-icon-neutral-400-w16-h16.svg" alt="remove" width={16} height={16} />
-            </button>
-          )}
+      {/* Wide pricing matrix: keep desktop column widths, scroll horizontally on narrow screens. */}
+      <div className="-mx-1 overflow-x-auto px-1">
+        <div className="flex min-w-[560px] flex-col gap-y-3">
+          <div className={clsx("grid gap-x-3 px-1", showRemove ? "grid-cols-[1fr_1fr_1fr_36px]" : "grid-cols-3")}>
+            <span className="text-xs font-medium text-neutral-300">Nama Varian *</span>
+            <span className="text-xs font-medium text-neutral-300">SKU</span>
+            <span className="text-xs font-medium text-neutral-300">Harga *</span>
+            {showRemove && <span />}
+          </div>
+          {variants.map((row, index) => (
+            <div key={row.key} className={clsx("grid gap-x-3", showRemove ? "grid-cols-[1fr_1fr_1fr_36px]" : "grid-cols-3")}>
+              <TextInput
+                label=""
+                placeholder="Nama varian"
+                value={row.name}
+                onChange={(value) => updateField(index, "name", value)}
+              />
+              <TextInput
+                label=""
+                placeholder="SKU varian"
+                value={row.sku}
+                onChange={(value) => updateField(index, "sku", value)}
+              />
+              <CurrencyInput
+                label=""
+                placeholder="0"
+                value={row.price}
+                onChange={(value) => updatePrice(index, value)}
+                leftIcon={null}
+                leftAddOn="Rp"
+                required={false}
+              />
+              {showRemove && (
+                <button
+                  type="button"
+                  onClick={() => removeRow(index)}
+                  className="flex size-9 items-center justify-center self-center rounded-lg text-neutral-200 transition-colors hover:bg-red-50 hover:text-red-500"
+                >
+                  <Image src="/assets/images/trash-icon-neutral-400-w16-h16.svg" alt="remove" width={16} height={16} />
+                </button>
+              )}
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
       <button
         type="button"
         onClick={addRow}

@@ -9,7 +9,7 @@ type ApprovedTimelineItemProps = {
 };
 
 export function ApprovedTimelineItem(props: ApprovedTimelineItemProps) {
-  const { verificationWork } = useGetAccountVerificationWork({ accountId: props.account.id });
+  const { verificationWork } = useGetAccountVerificationWork({ enabled: props.account.id });
 
   if (verificationWork?.verificationOutcome !== VerificationOutcome.APPROVED) return null;
   return (

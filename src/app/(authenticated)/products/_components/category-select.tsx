@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
-import { SelectInput } from "@/core/presentations/components/select-input";
+import { SearchCombobox } from "@/core/presentations/components/search-combobox";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
@@ -41,24 +41,21 @@ export function CategorySelect({ value, onChange }: CategorySelectProps) {
     return <div className="h-11 animate-pulse rounded-lg bg-neutral-100" />;
   }
 
+  const options = categories.map((cat) => ({ id: cat.id, label: cat.name }));
+  const selected = options.find((opt) => opt.id === value) ?? null;
+
   return (
     <>
-      <div className="flex flex-col gap-y-3">
-        <SelectInput
-          noLabel
-          value={value ?? ""}
-          onChange={(val) => onChange(val || undefined)}
-          placeholder="Tanpa kategori"
-          options={categories.map((cat) => ({ label: cat.name, value: cat.id }))}
-        />
-        <button
-          type="button"
-          onClick={() => setDialogOpen(true)}
-          className="self-start text-sm font-medium text-primary-300 transition-colors hover:text-primary-300/80"
-        >
-          + Buat kategori baru
-        </button>
-      </div>
+      <SearchCombobox
+        noLabel
+        options={options}
+        value={selected}
+        onChange={(opt) => onChange(opt?.id ?? undefined)}
+        placeholder="Tanpa kategori"
+        emptyMessage="Belum ada kategori"
+        onCreateNew={() => setDialogOpen(true)}
+        createNewLabel="+ Buat kategori baru"
+      />
 
       <LoonasDialog title="Buat Kategori Baru" width="sm" open={dialogOpen} onClose={() => { setDialogOpen(false); setNewName(""); }}>
         <div className="mt-2 flex flex-col gap-y-4">

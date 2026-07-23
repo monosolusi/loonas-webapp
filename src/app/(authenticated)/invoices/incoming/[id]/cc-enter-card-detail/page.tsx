@@ -33,13 +33,15 @@ export default function EnterCardDetailPage() {
       </div>
 
       <div className="rounded-lg border border-neutral-200">
-        <div className="flex flex-row">
-          {/*  Left - Progress */}
-          <CreateIncomingSteppers currentStep="payment" />
+        <div className="flex flex-col lg:flex-row">
+          {/*  Left - Progress (desktop only; the wizard rail is a fixed width, not meant to reflow) */}
+          <div className="hidden lg:block">
+            <CreateIncomingSteppers currentStep="payment" />
+          </div>
 
           {/*  Right - Content */}
           <div className="flex flex-1 flex-col">
-            <div className="flex-1 px-12 py-8">
+            <div className="flex-1 px-4 py-6 lg:px-12 lg:py-8">
               <div className="flex flex-col gap-y-6">
                 {/* Title & Description */}
                 <div className="flex flex-col">
@@ -47,7 +49,7 @@ export default function EnterCardDetailPage() {
                 </div>
 
                 {/*  Detail Kartu Kredit */}
-                <div className="flex flex-col gap-y-8 rounded-lg border border-neutral-100 bg-white p-6">
+                <div className="flex flex-col gap-y-8 rounded-lg border border-neutral-100 bg-white p-4 sm:p-6">
                   {/* Title */}
                   <div className="flex flex-row items-center gap-x-2">
                     <Image
@@ -73,7 +75,7 @@ export default function EnterCardDetailPage() {
             </div>
 
             {/*  Action Buttons */}
-            <div className="flex flex-row items-center justify-between border-t border-t-neutral-200 p-6">
+            <div className="flex flex-row items-center justify-between border-t border-t-neutral-200 p-4 sm:p-6">
               <div className="flex"></div>
               <div className="flex"></div>
             </div>

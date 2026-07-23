@@ -5,10 +5,10 @@ type ProductFormLayoutProps = {
 
 export function ProductFormLayout({ left, right }: ProductFormLayoutProps) {
   return (
-    <div className="flex flex-row gap-x-6">
-      <div className="flex min-w-0 flex-1 flex-col gap-y-6">{left}</div>
-      <div className="w-[280px] shrink-0">
-        <div className="sticky top-8 flex flex-col gap-y-6">{right}</div>
+    <div className="flex flex-col gap-6 lg:flex-row lg:gap-x-6">
+      <div className="flex min-w-0 flex-col gap-y-6 lg:flex-1">{left}</div>
+      <div className="lg:w-[280px] lg:shrink-0">
+        <div className="flex flex-col gap-y-6 lg:sticky lg:top-8">{right}</div>
       </div>
     </div>
   );

@@ -170,7 +170,7 @@ export class PartnerServiceImpl implements PartnerService {
       const data = await response.json();
       if (!data || !Array.isArray(data)) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      return data.map((item) => PartnerModel.fromJson(item));
+      return data.map((item: any) => PartnerModel.fromJson(item));
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

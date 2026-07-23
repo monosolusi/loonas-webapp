@@ -23,7 +23,7 @@ export function PurchaseListTable() {
       empty={purchases.length === 0 && !loading}
       emptyMessage="Belum ada pembelian. Catat pembelian pertama Anda."
     >
-      <TableHeader className="grid-cols-[1fr_1.5fr_0.6fr_1fr_48px] gap-x-4" columns={COLUMNS} />
+      <TableHeader className="grid-cols-[1fr_1.5fr_0.6fr_1fr_48px] gap-x-4" columns={COLUMNS} hideOnMobile />
       {purchases.map((purchase) => (
         <PurchaseListRow key={purchase.id} purchase={purchase} />
       ))}

@@ -6,17 +6,22 @@ import { PayInType } from "@/features/invoice/domain/enums/pay-in-type";
 import { CashPayInDetailEntity } from "@/features/invoice/domain/entities/pay-in-detail/cash-pay-in-detail";
 import { QrisPayInDetailEntity } from "@/features/invoice/domain/entities/pay-in-detail/qris-pay-in-detail";
 
-export type InvoicePaymentStatusKind = "paid" | "pending";
+export type InvoicePaymentStatusKind = "paid" | "pending" | "expired" | "failed";
 export type InvoiceSettlementKind = "settled" | "settling" | "na";
 
 /**
  * Cashier-facing "did we receive the customer's payment?" signal.
  * Reads pay_in_detail.detail.status directly. Cash is atomically PAID; QRIS
- * flips PENDING_PAYMENT → PAID via webhook. Any other status (or null) is
- * treated defensively as pending.
+ * flips PENDING_PAYMENT → PAID via webhook, or lands on EXPIRED / FAILED as
+ * distinct terminal states. Any remaining status (PENDING_CREATION,
+ * PENDING_PAYMENT, or null) is treated defensively as pending.
  */
 export function deriveInvoicePaymentStatusKind(invoice: OutgoingInvoiceEntity): InvoicePaymentStatusKind {
-  return invoice.payInDetail?.detail?.status === PayInStatus.PAID ? "paid" : "pending";
+  const status = invoice.payInDetail?.detail?.status;
+  if (status === PayInStatus.PAID) return "paid";
+  if (status === PayInStatus.EXPIRED) return "expired";
+  if (status === PayInStatus.FAILED) return "failed";
+  return "pending";
 }
 
 /**

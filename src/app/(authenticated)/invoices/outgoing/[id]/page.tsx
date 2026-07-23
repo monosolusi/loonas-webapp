@@ -4,11 +4,13 @@ import { useParams } from "next/navigation";
 import { useGetInvoice } from "@/features/invoice/presentations/hooks/use-get-invoice";
 import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoing-invoice";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
+import { TransactionTimelineImpl } from "@/features/invoice/presentations/components/transaction-timeline-impl";
 import { InvoicePreviewImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/invoice-preview-impl";
 import { ErrorDisplayImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/error-display-impl";
 import { SendInvoiceButton } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/send-invoice-button";
 import { DownloadPdfButton } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/download-pdf-button";
 import { OutgoingInvoiceSummaryImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/outgoing-invoice-summary-impl";
+import { DraftActionCardImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/draft-action-card-impl";
 import { OutgoingRecipientInfoImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/outgoing-recipient-info-impl";
 import { PaymentLinkImpl } from "@/app/(authenticated)/invoices/outgoing/[id]/_components/payment-link-impl";
 import { FilteredInvoicePageShell } from "@/app/(authenticated)/invoices/_components/filtered-invoice-page-shell";
@@ -51,15 +53,17 @@ function OutgoingInvoiceDetail({ id }: { id: string }) {
       />
 
       {!loading && invoice instanceof OutgoingInvoiceEntity && (
-        <div className="flex flex-row gap-x-6">
-          {/* Left column */}
-          <div className="flex flex-2 flex-col gap-y-6">
+        <div className="flex flex-col gap-6 lg:flex-row lg:gap-x-6">
+          {/* Left column — invoice width. Status sits on top, above the invoice. */}
+          <div className="flex flex-col gap-y-6 lg:flex-2">
+            <TransactionTimelineImpl id={id} />
             <ErrorDisplayImpl />
             <InvoicePreviewImpl />
           </div>
-          {/* Right column */}
-          <div className="flex flex-1 flex-col gap-y-6">
+          {/* Right column — summary & actions rise to the top alongside the status. */}
+          <div className="flex flex-col gap-y-6 lg:flex-1">
             <OutgoingInvoiceSummaryImpl />
+            <DraftActionCardImpl />
             <OutgoingRecipientInfoImpl />
             <div className="flex flex-col gap-y-2">
               <SendInvoiceButton />

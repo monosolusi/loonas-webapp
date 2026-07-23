@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { XMarkIcon } from "@heroicons/react/16/solid";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
@@ -13,10 +12,16 @@ import { ConfirmationDialog } from "@/core/presentations/components/confirmation
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
-import { InvoiceTableShell } from "@/app/(authenticated)/invoices/_components/invoice-table-shell";
+import { TableContainer } from "@/core/presentations/components/table/table-container";
+import { TableHeader } from "@/core/presentations/components/table/table-header";
 import { TablePagination } from "@/core/presentations/components/table/table-pagination";
+import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
+import { TableSearch } from "@/core/presentations/components/table/table-search";
+import { MobileListCard } from "@/core/presentations/components/table/mobile-list-card";
+import { ActionMenu } from "@/core/presentations/components/action-menu";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useListProductCategoriesPaginated } from "@/features/product/presentations/hooks/use-list-product-categories-paginated";
+import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { useCreateProductCategory } from "@/features/product/presentations/hooks/use-create-product-category";
 import { useUpdateProductCategory } from "@/features/product/presentations/hooks/use-update-product-category";
 import { useDeleteProductCategory } from "@/features/product/presentations/hooks/use-delete-product-category";
@@ -29,7 +34,7 @@ export function CategoryListImpl() {
   const searchQuery = debouncedSearch.length >= 2 ? debouncedSearch : undefined;
   const { categories, meta, loading } = useListProductCategoriesPaginated({
     page,
-    limit: 10,
+    limit: DEFAULT_PAGE_SIZE,
     search: searchQuery,
   });
 
@@ -95,84 +100,100 @@ export function CategoryListImpl() {
   };
 
   const toolbar = (
-    <div className="flex flex-row items-center justify-between">
-      <div className="w-[280px]">
-        <TextInput
-          label=""
-          placeholder="Cari kategori..."
-          value={search}
-          onChange={setSearch}
-          leftIcon={<Image src="/assets/images/search-icon-neutral-400-w20-h20.svg" alt="" width={20} height={20} />}
-          rightIcon={
-            search ? (
-              <button
-                type="button"
-                onClick={() => setSearch("")}
-                className="flex items-center justify-center text-neutral-200 hover:text-neutral-400"
-              >
-                <XMarkIcon className="size-4" />
-              </button>
-            ) : undefined
-          }
-        />
-      </div>
-      <div className="flex">
-        <PrimaryButton
-          label="Tambah Kategori"
-          leftIcon={<Image src="/assets/images/plus-icon-white-w16-h16.svg" alt="" width={16} height={16} />}
-          onClick={openCreate}
-        />
-      </div>
-    </div>
+    <TableToolbar>
+      <TableSearch value={search} onChange={setSearch} placeholder="Cari kategori..." />
+    </TableToolbar>
+  );
+
+  const createButton = (
+    <PrimaryButton
+      label="Tambah Kategori"
+      leftIcon={<Image src="/assets/images/plus-icon-white-w16-h16.svg" alt="" width={16} height={16} />}
+      onClick={openCreate}
+      className="w-full sm:w-auto"
+    />
   );
 
   const header = (
-    <div className="grid grid-cols-[1fr_120px] border-b border-neutral-100 bg-neutral-50 px-6 py-3">
-      <span className="text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Nama Kategori</span>
-      <span className="text-right text-xs leading-4 font-medium tracking-wider text-neutral-300 uppercase">Aksi</span>
-    </div>
+    <TableHeader
+      columns={[
+        { label: "Nama Kategori" },
+        { label: "Aksi", align: "right" },
+      ]}
+      className="grid-cols-[1fr_120px]"
+      hideOnMobile
+    />
   );
 
   return (
     <div className="flex flex-col gap-y-6">
-      <DetailPageHeader backHref="/settings" title="Kategori Produk" subtitle={meta ? `${meta.total} kategori` : "Memuat..."} />
+      <DetailPageHeader
+        backHref="/settings"
+        title="Kategori Produk"
+        subtitle={meta ? `${meta.total} kategori` : "Memuat..."}
+        action={createButton}
+      />
 
-      <InvoiceTableShell
-        toolbar={toolbar}
-        header={header}
+      {toolbar}
+
+      <TableContainer
         loading={loading}
         error={false}
         empty={categories.length === 0 && !loading}
         emptyMessage="Belum ada kategori. Tambahkan kategori pertama Anda."
       >
-        {categories.map((category) => (
-          <div
-            key={category.id}
-            className="grid grid-cols-[1fr_120px] items-center border-b border-neutral-100 px-6 py-4 last:border-b-0"
-          >
-            <span className="text-sm font-medium text-neutral-500">{category.name}</span>
-            <div className="flex flex-row items-center justify-end gap-x-2">
-              <button
-                type="button"
-                onClick={() => openEdit(category)}
-                className="flex size-8 items-center justify-center rounded-lg text-neutral-200 transition-colors hover:bg-neutral-50 hover:text-neutral-400"
-              >
-                <Image src="/assets/images/edit-icon-neutral-400-w16-h16.svg" alt="edit" width={16} height={16} />
-              </button>
-              <button
-                type="button"
-                onClick={() => setDeletingCategory(category)}
-                className="flex size-8 items-center justify-center rounded-lg text-neutral-200 transition-colors hover:bg-red-50 hover:text-red-500"
-              >
-                <Image src="/assets/images/trash-icon-neutral-400-w16-h16.svg" alt="delete" width={16} height={16} />
-              </button>
+        {header}
+
+        {/* Desktop: grid rows (lg and up) */}
+        <div className="hidden lg:block">
+          {categories.map((category) => (
+            <div
+              key={category.id}
+              className="grid grid-cols-[1fr_120px] items-center border-b border-neutral-100 px-6 py-4 last:border-b-0"
+            >
+              <span className="text-sm font-medium text-neutral-500">{category.name}</span>
+              <div className="flex flex-row items-center justify-end gap-x-2">
+                <button
+                  type="button"
+                  onClick={() => openEdit(category)}
+                  className="flex size-8 items-center justify-center rounded-lg text-neutral-200 transition-colors hover:bg-neutral-50 hover:text-neutral-400"
+                >
+                  <Image src="/assets/images/edit-icon-neutral-400-w16-h16.svg" alt="edit" width={16} height={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDeletingCategory(category)}
+                  className="flex size-8 items-center justify-center rounded-lg text-neutral-200 transition-colors hover:bg-red-50 hover:text-red-500"
+                >
+                  <Image src="/assets/images/trash-icon-neutral-400-w16-h16.svg" alt="delete" width={16} height={16} />
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+
+        {/* Mobile: stacked cards (below lg) */}
+        <div className="lg:hidden">
+          {categories.map((category) => (
+            <MobileListCard
+              key={category.id}
+              title={category.name}
+              chevron={false}
+              trailingBottom={
+                <ActionMenu
+                  options={[
+                    { label: "Ubah", onClick: () => openEdit(category) },
+                    { label: "Hapus", onClick: () => setDeletingCategory(category), variant: "danger" },
+                  ]}
+                />
+              }
+            />
+          ))}
+        </div>
         {meta && meta.totalPages > 1 && (
           <TablePagination displayedCount={categories.length} meta={meta} currentPage={page} onPageChange={setPage} />
         )}
-      </InvoiceTableShell>
+      </TableContainer>
 
       {/* Create Dialog */}
       <LoonasDialog
