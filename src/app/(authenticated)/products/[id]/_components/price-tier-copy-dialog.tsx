@@ -92,9 +92,12 @@ export function PriceTierCopyDialog() {
         return;
       }
 
-      // The copy is transactional, so a rejection means nothing changed anywhere. Say so
-      // explicitly rather than leaving the merchant to guess which variants were written.
-      setFormError(`Tidak ada varian yang diubah. ${info.message}`);
+      // The copy is transactional, so a domain rejection means nothing changed anywhere.
+      // Say so explicitly rather than leaving the merchant to guess which variants were
+      // written. The no-variants case already implies it, so it is not prefixed.
+      setFormError(
+        info.kind === "schedule-invalid" ? `Tidak ada varian yang diubah. ${info.message}` : info.message,
+      );
       setOffendingVariants(info.kind === "schedule-invalid" ? info.offendingVariants : []);
     }
   };
