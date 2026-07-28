@@ -4,36 +4,38 @@ import { memo } from "react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/16/solid";
 import { ActionMenu } from "@/core/presentations/components/action-menu";
 import { NumberDisplay } from "@/core/presentations/components/number-display";
-import { CartItem } from "@/app/(pos)/pos/_providers/pos-provider.types";
+import { StatusChip } from "@/core/presentations/components/status-chip";
+import { CartLine } from "@/app/(pos)/pos/_providers/pos-provider.types";
 import { usePosCart } from "@/app/(pos)/pos/_providers/pos-provider";
 
 type CartItemRowProps = {
-  item: CartItem;
+  item: CartLine;
 };
 
 function CartItemRowInner({ item }: CartItemRowProps) {
-  const { updateQty, removeItem, stockErrors } = usePosCart();
+  const { updateQty, removeItem, stockErrors, priceMismatch } = usePosCart();
   const beStockError = stockErrors.get(item.variantId) ?? null;
+  const pricingError = priceMismatch?.variantId === item.variantId ? priceMismatch : null;
 
   // Cart-side real-time warning: qty exceeds the snapshot taken at add-time.
   const localOverLimit =
     item.availableQtySnapshot !== null && item.qty > item.availableQtySnapshot ? item.availableQtySnapshot : null;
 
   const displayName = item.variantName ? `${item.productName} · ${item.variantName}` : item.productName;
-  const lineTotal = item.unitPrice * item.qty;
 
   return (
     <div className="flex flex-col gap-y-1 border-b border-b-neutral-100 px-4 py-3 last:border-b-0">
       <div className="flex flex-row items-baseline gap-x-3">
         <span className="line-clamp-2 flex-1 text-sm leading-5 text-neutral-500">{displayName}</span>
         <span className="shrink-0 text-sm leading-5 font-semibold tabular-nums text-neutral-500">
-          Rp <NumberDisplay value={lineTotal} />
+          Rp <NumberDisplay value={item.preview.estimatedLineAmount} />
         </span>
       </div>
       <div className="flex flex-row items-center gap-x-3">
         <span className="text-xs leading-4 tabular-nums text-neutral-300">
-          <NumberDisplay value={item.unitPrice} /> ×
+          <NumberDisplay value={item.preview.estimatedUnitPrice} /> ×
         </span>
+        {item.preview.isTiered && <StatusChip label="Grosir" variant="primary" compact />}
         <div className="flex flex-row items-center gap-x-1">
           <button
             type="button"
@@ -73,6 +75,12 @@ function CartItemRowInner({ item }: CartItemRowProps) {
       {!beStockError && localOverLimit !== null && (
         <span className="text-xs leading-4 font-medium text-warning-300">
           ⚠ Stok tersisa {localOverLimit}
+        </span>
+      )}
+      {pricingError && (
+        <span className="text-xs leading-4 font-medium text-error-300">
+          ⚠ Harga berubah: <NumberDisplay value={pricingError.submittedUnitPrice} /> →{" "}
+          <NumberDisplay value={pricingError.resolvedUnitPrice} />
         </span>
       )}
     </div>
