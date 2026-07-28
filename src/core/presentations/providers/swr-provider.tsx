@@ -13,8 +13,10 @@ export function SWRProvider(props: SWRProviderProps) {
   const router = useRouter();
   const { trigger: triggerSignOut } = useSignOut();
 
+  const TERMINAL_ERROR_CODES = [ErrorCodes.RESOURCE_EXPIRED.code, ErrorCodes.NOT_FOUND.code];
+
   const shouldRetryOnError = (error: Error) => {
-    if (error instanceof ServerError) return error.code !== ErrorCodes.RESOURCE_EXPIRED.code;
+    if (error instanceof ServerError) return !TERMINAL_ERROR_CODES.includes(error.code);
     else return true;
   };
 
