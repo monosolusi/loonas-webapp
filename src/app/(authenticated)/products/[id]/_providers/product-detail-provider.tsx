@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { useToast } from "@/core/presentations/hooks/use-toast";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { ProductEntity } from "@/features/product/domain/entities/product";
 import { UpdateProductParams } from "@/features/product/domain/repositories/product";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
@@ -153,7 +154,15 @@ export function ProductDetailProvider({ id, children }: ProductDetailProviderPro
 
       await revalidateSWRKey(PRODUCT_SWR_KEYS.GET_PRODUCT, PRODUCT_SWR_KEYS.LIST_PRODUCTS);
       showToast("Perubahan berhasil disimpan");
-    } catch {
+    } catch (err) {
+      // LNS-489: a product or variant vanished mid-save. The backend deliberately does not
+      // say which case it is — refetch and let server state be the answer.
+      if (err instanceof ServerError && (err.code === ErrorCodes.NOT_FOUND.code || err.httpCode === 404)) {
+        await revalidateSWRKey(PRODUCT_SWR_KEYS.GET_PRODUCT, PRODUCT_SWR_KEYS.LIST_PRODUCTS);
+        setHydratedVersion(null);
+        showToast("Produk atau varian sudah tidak ada. Data dimuat ulang.", "error");
+        return;
+      }
       showToast("Gagal menyimpan perubahan", "error");
     }
   };
