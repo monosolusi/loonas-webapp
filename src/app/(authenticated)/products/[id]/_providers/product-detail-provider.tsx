@@ -15,6 +15,10 @@ import { useAddVariant } from "@/features/product/presentations/hooks/use-add-va
 import { useUpdateVariant } from "@/features/product/presentations/hooks/use-update-variant";
 import { useDeleteVariant } from "@/features/product/presentations/hooks/use-delete-variant";
 import { useProductFormState } from "@/features/product/presentations/hooks/use-product-form-state";
+import {
+  parseVariantPriceBelowTier,
+  VariantPriceBelowTierRejection,
+} from "@/features/product/presentations/helpers/price-tier-error";
 import { syncVariants, isVariantChanged } from "@/app/(authenticated)/products/[id]/_utils/sync-variants";
 
 type ProductDetailContextValue = {
@@ -27,6 +31,8 @@ type ProductDetailContextValue = {
   deletedPhotoIds: string[];
   setDeletedPhotoIds: React.Dispatch<React.SetStateAction<string[]>>;
   handleSave: () => Promise<void>;
+  priceGuardRejection: VariantPriceBelowTierRejection | null;
+  dismissPriceGuard: () => void;
 };
 
 const ProductDetailContext = createContext<ProductDetailContextValue | null>(null);
@@ -58,6 +64,7 @@ export function ProductDetailProvider({ id, children }: ProductDetailProviderPro
   const form = useProductFormState();
   const [deletedPhotoIds, setDeletedPhotoIds] = useState<string[]>([]);
   const [hydratedVersion, setHydratedVersion] = useState<string | null>(null);
+  const [priceGuardRejection, setPriceGuardRejection] = useState<VariantPriceBelowTierRejection | null>(null);
 
   // Hydration
   const productVersion = product ? `${product.id}:${product.updatedAt}` : null;
@@ -155,6 +162,21 @@ export function ProductDetailProvider({ id, children }: ProductDetailProviderPro
       await revalidateSWRKey(PRODUCT_SWR_KEYS.GET_PRODUCT, PRODUCT_SWR_KEYS.LIST_PRODUCTS);
       showToast("Perubahan berhasil disimpan");
     } catch (err) {
+      // LNS-564: the base price was lowered below a tier this variant already has. Show
+      // every offending tier, then re-hydrate so the on-screen price reverts to server
+      // truth — the rejected value must not linger in the form as if it had been saved.
+      const priceRejection = parseVariantPriceBelowTier(err);
+      if (priceRejection) {
+        setPriceGuardRejection(priceRejection);
+        setHydratedVersion(null);
+        try {
+          await revalidateSWRKey(PRODUCT_SWR_KEYS.GET_PRODUCT, PRODUCT_SWR_KEYS.LIST_PRODUCTS);
+        } catch {
+          // The dialog already carries the explanation.
+        }
+        return;
+      }
+
       const isNotFound = err instanceof ServerError && (err.code === ErrorCodes.NOT_FOUND.code || err.httpCode === 404);
 
       if (!isNotFound) {
@@ -180,7 +202,19 @@ export function ProductDetailProvider({ id, children }: ProductDetailProviderPro
 
   return (
     <ProductDetailContext.Provider
-      value={{ id, product, loading, form, hasChanges, isUpdating, deletedPhotoIds, setDeletedPhotoIds, handleSave }}
+      value={{
+        id,
+        product,
+        loading,
+        form,
+        hasChanges,
+        isUpdating,
+        deletedPhotoIds,
+        setDeletedPhotoIds,
+        handleSave,
+        priceGuardRejection,
+        dismissPriceGuard: () => setPriceGuardRejection(null),
+      }}
     >
       {children}
     </ProductDetailContext.Provider>

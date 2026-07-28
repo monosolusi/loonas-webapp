@@ -15,6 +15,11 @@ import { ProductDetailRecipeWarning } from "@/app/(authenticated)/products/[id]/
 import { ProductDetailStockCard } from "@/app/(authenticated)/products/[id]/_components/product-detail-stock-card";
 import { ProductDetailMovementCard } from "@/app/(authenticated)/products/[id]/_components/product-detail-movement-card";
 import { ProductDetailProductionCard } from "@/app/(authenticated)/products/[id]/_components/product-detail-production-card";
+import { PriceTierProvider } from "@/app/(authenticated)/products/[id]/_providers/price-tier-provider";
+import { ProductDetailPriceTierCard } from "@/app/(authenticated)/products/[id]/_components/product-detail-price-tier-card";
+import { PriceTierEditDialog } from "@/app/(authenticated)/products/[id]/_components/price-tier-edit-dialog";
+import { PriceTierCopyDialog } from "@/app/(authenticated)/products/[id]/_components/price-tier-copy-dialog";
+import { ProductDetailPriceGuardDialog } from "@/app/(authenticated)/products/[id]/_components/product-detail-price-guard-dialog";
 
 type ProductDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -26,28 +31,35 @@ function ProductDetailContent() {
   if (loading || !product) return <ProductDetailSkeleton />;
 
   return (
-    <div className="flex flex-col gap-y-6">
-      <ProductDetailHeader />
-      <ProductDetailRecipeWarning />
-      <div className="flex flex-col gap-6 lg:flex-row lg:gap-x-6">
-        <div className="flex min-w-0 flex-col gap-y-6 lg:flex-1">
-          <ProductDetailInfoCard />
-          <ProductDetailVariantCard />
-          <ProductDetailRecipeCard />
-          <ProductDetailStockCard />
-          <ProductDetailMovementCard />
-          <ProductDetailProductionCard />
-        </div>
-        <div className="lg:w-[280px] lg:shrink-0">
-          <div className="flex flex-col gap-y-6 lg:sticky lg:top-8">
-            <ProductDetailStatusCard />
-            <ProductDetailCategoryCard />
-            <ProductDetailSaveButton />
-            <ProductDetailDeleteButton />
+    <PriceTierProvider>
+      <div className="flex flex-col gap-y-6">
+        <ProductDetailHeader />
+        <ProductDetailRecipeWarning />
+        <div className="flex flex-col gap-6 lg:flex-row lg:gap-x-6">
+          <div className="flex min-w-0 flex-col gap-y-6 lg:flex-1">
+            <ProductDetailInfoCard />
+            <ProductDetailVariantCard />
+            <ProductDetailPriceTierCard />
+            <ProductDetailRecipeCard />
+            <ProductDetailStockCard />
+            <ProductDetailMovementCard />
+            <ProductDetailProductionCard />
+          </div>
+          <div className="lg:w-[280px] lg:shrink-0">
+            <div className="flex flex-col gap-y-6 lg:sticky lg:top-8">
+              <ProductDetailStatusCard />
+              <ProductDetailCategoryCard />
+              <ProductDetailSaveButton />
+              <ProductDetailDeleteButton />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <PriceTierEditDialog />
+      <PriceTierCopyDialog />
+      <ProductDetailPriceGuardDialog />
+    </PriceTierProvider>
   );
 }
 

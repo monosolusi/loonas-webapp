@@ -58,6 +58,11 @@ export function QrisConfirmStep() {
     [invoiceState],
   );
   const detail = useMemo(() => invoice?.payInDetail?.detail ?? null, [invoice]);
+
+  // Once the sale exists the server's summary is authoritative; `total` is only the
+  // pre-submit estimate. This is the amount the CUSTOMER reads off the QR screen, so it
+  // must never stay on a client-computed figure after a 201.
+  const displayTotal = invoice?.summary?.total ?? total;
   const qrisDetail = useMemo(() => (detail instanceof QrisPayInDetailEntity ? detail : null), [detail]);
 
   const triggerCreate = useCallback(async () => {
@@ -173,7 +178,7 @@ export function QrisConfirmStep() {
   if (createFailed) {
     return (
       <div className="scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto">
-        <QrisTotalRow total={total} />
+        <QrisTotalRow total={displayTotal} />
         <QrisCreationFailed onRetry={handleRetry} onChangeMethod={changePaymentMethod} />
       </div>
     );
@@ -182,8 +187,8 @@ export function QrisConfirmStep() {
   if (status === PayInStatus.PAID) {
     return (
       <div className="scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto">
-        <QrisTotalRow total={total} />
-        <QrisPaidSplash total={total} />
+        <QrisTotalRow total={displayTotal} />
+        <QrisPaidSplash total={displayTotal} />
       </div>
     );
   }
@@ -191,7 +196,7 @@ export function QrisConfirmStep() {
   if (status === PayInStatus.EXPIRED) {
     return (
       <div className="scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto">
-        <QrisTotalRow total={total} />
+        <QrisTotalRow total={displayTotal} />
         <QrisExpiredPanel onRegenerate={handleRegenerate} isRegenerating={isRegenerating} />
       </div>
     );
@@ -200,7 +205,7 @@ export function QrisConfirmStep() {
   if (status === PayInStatus.PENDING_PAYMENT && qrString && payInId) {
     return (
       <div className="scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto">
-        <QrisTotalRow total={total} />
+        <QrisTotalRow total={displayTotal} />
         <div className="flex flex-col gap-y-4 px-4 py-6 sm:px-6">
           {expirationTime !== null && (
             <QrisCountdownRow expirationTime={expirationTime} status={status} />
@@ -239,7 +244,7 @@ export function QrisConfirmStep() {
 
   return (
     <div className="scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto">
-      <QrisTotalRow total={total} />
+      <QrisTotalRow total={displayTotal} />
       <QrisCreatingState />
     </div>
   );

@@ -1,5 +1,6 @@
 import { AbstractEntity } from "@/core/resources/entity";
 import { UnavailableReason } from "@/features/product/domain/enums/unavailable-reason";
+import { PriceTierScheduleEntity } from "@/features/product/domain/entities/price-tier-schedule";
 
 type VariantForSaleEntityConstructor = {
   id: string;
@@ -10,6 +11,7 @@ type VariantForSaleEntityConstructor = {
   unavailableReason: UnavailableReason | null;
   currentStock: number | null;
   maxMakeable: number | null;
+  priceTierSchedule: PriceTierScheduleEntity | null;
 };
 
 export class VariantForSaleEntity implements AbstractEntity {
@@ -21,6 +23,8 @@ export class VariantForSaleEntity implements AbstractEntity {
   public readonly unavailableReason: UnavailableReason | null;
   public readonly currentStock: number | null;
   public readonly maxMakeable: number | null;
+  /** See VariantEntity.priceTierSchedule — `null` means not hydrated, not "no tiers". */
+  public readonly priceTierSchedule: PriceTierScheduleEntity | null;
 
   constructor(args: VariantForSaleEntityConstructor) {
     this.id = args.id;
@@ -31,5 +35,6 @@ export class VariantForSaleEntity implements AbstractEntity {
     this.unavailableReason = args.unavailableReason;
     this.currentStock = args.currentStock;
     this.maxMakeable = args.maxMakeable;
+    this.priceTierSchedule = args.priceTierSchedule;
   }
 }

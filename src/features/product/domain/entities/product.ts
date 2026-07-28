@@ -61,6 +61,21 @@ export class ProductEntity implements AbstractEntity {
     return this.variants.length > 1 || (this.variants.length === 1 && !this.variants[0].isDefault);
   }
 
+  /**
+   * How many variants carry at least one grosir tier.
+   *
+   * Three-state on purpose:
+   * - `null` — no variant carries a hydrated schedule, i.e. this read path does not
+   *   expose them. Says NOTHING about whether tiers exist; render no tier affordance.
+   * - `0`    — hydrated, and no variant has tiers. Flat-priced.
+   * - `> 0`  — that many variants have a schedule.
+   */
+  public get tieredVariantCount(): number | null {
+    const hydrated = this.variants.filter((variant) => variant.priceTierSchedule !== null);
+    if (hydrated.length === 0) return null;
+    return hydrated.filter((variant) => variant.priceTierSchedule!.hasTiers).length;
+  }
+
   public get priceRange(): { min: number; max: number } {
     if (this.variants.length === 0) return { min: 0, max: 0 };
     const prices = this.variants.map((v) => v.price);
