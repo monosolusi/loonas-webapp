@@ -8,6 +8,7 @@ import { ProductType } from "@/features/product/domain/enums/product-type";
 import { ProductionMode } from "@/features/product/domain/enums/production-mode";
 import { useListProductionRecords } from "@/features/production/presentations/hooks/use-list-production-records";
 import { useProductDetail } from "@/app/(authenticated)/products/[id]/_providers/product-detail-provider";
+import { ProductDetailProductionError } from "@/app/(authenticated)/products/[id]/_components/product-detail-production-error";
 
 export function ProductDetailProductionCard() {
   const { product } = useProductDetail();
@@ -21,7 +22,8 @@ export function ProductDetailProductionCard() {
 
   if (!isManufacturedBatch || !product) return null;
   if (result.loading) return null;
-  if (!result.records || result.records.length === 0) return null;
+  if (result.error) return <ProductDetailProductionError error={result.error} onRetry={() => result.refresh()} />;
+  if (result.records.length === 0) return null;
 
   return (
     <SectionCard title="Riwayat Produksi" iconSrc="/assets/images/chart-icon-primary-300-w16-h16.svg">

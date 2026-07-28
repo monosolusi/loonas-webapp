@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { useToast } from "@/core/presentations/hooks/use-toast";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { ProductEntity } from "@/features/product/domain/entities/product";
 import { UpdateProductParams } from "@/features/product/domain/repositories/product";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
@@ -153,8 +154,27 @@ export function ProductDetailProvider({ id, children }: ProductDetailProviderPro
 
       await revalidateSWRKey(PRODUCT_SWR_KEYS.GET_PRODUCT, PRODUCT_SWR_KEYS.LIST_PRODUCTS);
       showToast("Perubahan berhasil disimpan");
-    } catch {
-      showToast("Gagal menyimpan perubahan", "error");
+    } catch (err) {
+      const isNotFound = err instanceof ServerError && (err.code === ErrorCodes.NOT_FOUND.code || err.httpCode === 404);
+
+      if (!isNotFound) {
+        showToast("Gagal menyimpan perubahan", "error");
+        return;
+      }
+
+      // LNS-489: a product or variant vanished mid-save. The backend deliberately does not
+      // say which case it is — tell the user first, then refetch so server state is the answer.
+      setHydratedVersion(null);
+      showToast("Produk atau varian sudah tidak ada. Data dimuat ulang.", "error");
+
+      // Best-effort: if the product itself is gone this revalidation 404s too (revalidateSWRKey
+      // triggers a refetch, not a cache write, and rethrows on a failed fetch). It must never be
+      // able to swallow the toast or the re-hydration reset above.
+      try {
+        await revalidateSWRKey(PRODUCT_SWR_KEYS.GET_PRODUCT, PRODUCT_SWR_KEYS.LIST_PRODUCTS);
+      } catch {
+        // Nothing to recover to — the user has already been told.
+      }
     }
   };
 
