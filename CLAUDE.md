@@ -73,6 +73,14 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **Type guards**: `domain/guards/` contains `instanceof` checks for discriminating entity types
 - **SectionCard**: Standard card component (`rounded-lg`, `border-neutral-200`, icon header) for detail pages
 - **Skeleton loading**: Loading states use `animate-pulse` placeholder divs inside `SectionCard`
+- **Fetch-error state inside a card**: when a `SectionCard`-scoped fetch fails, render a sibling error component
+  (`{noun}-error.tsx`) rather than collapsing to `null` — a hidden card is indistinguishable from an empty one.
+  Canonical shape (see `accounting/profitability/[productId]/[variantId]/_components/cogs-block-error.tsx`):
+  `flex flex-col items-center gap-y-3 py-4` inside the card, `ExclamationCircleIcon` from `@heroicons/react/20/solid`
+  at `size-5 text-error-300`, and a `SecondaryButton outlined className="h-11" label="Coba Lagi"` wired to the hook's
+  `refresh`. Do **not** copy the full-page error pattern (`receipt-error.tsx`) for an in-card error — that one is
+  page-scoped and carries a navigation action. Omit the retry button when the error is terminal (a `NOT_FOUND` will
+  never succeed on retry). `SectionCard` already applies `p-6` to its body, so the inner block only needs `py-4`.
 - **Interactive element height**: All interactive elements (buttons, inputs, selects, custom controls) use `h-11` (44px)
   for consistent vertical rhythm. Exception: icon-only action buttons (edit, delete) in tables use `size-8` (32px).
 - **Account resolution**: Backend resolves account from Clerk JWT `orgId` (set via `setActive({ organization })`).
@@ -82,6 +90,12 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   single object: `list({ search, page }, session)`, `update({ id, name, status }, session)`.
 - **SWR key management**: SWR keys defined as constants in `presentations/constants/swr-keys.ts`. Use
   `revalidateSWRKey()` to invalidate cache after mutations. Hooks use these constants, never hardcoded strings.
+- **`revalidateSWRKey()` can reject — never `await` it unguarded inside a `catch`**: it wraps SWR's global
+  `mutate(filter)`, which triggers a **refetch**, not a cache write, and `internalMutate` defaults to
+  `throwOnError: true`. If the refetch fails (e.g. recovering from a 404 — the entity is still gone), the `await`
+  throws and everything after it is skipped. In an error-recovery path, show the toast and set state **first**
+  (synchronous, cannot fail), then attempt the revalidation inside its own `try {} catch {}`. On the success path
+  it is fine unguarded, since the surrounding `catch` already handles it.
 - **UseCase params independence**: Use case param types are defined in the use case file itself. Use cases MUST NOT
   import param types from repositories or sources. The use case defines its own params, then maps to repo params
   internally.

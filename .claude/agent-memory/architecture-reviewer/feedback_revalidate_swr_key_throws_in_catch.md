@@ -1,0 +1,14 @@
+---
+name: revalidate-swr-key-throws-in-catch
+description: revalidateSWRKey() can itself reject (SWR mutate defaults to throwOnError:true) — flag unguarded awaits of it inside error-recovery catch blocks, especially when recovering from the same resource-not-found error being revalidated
+metadata:
+  type: feedback
+---
+
+`revalidateSWRKey()` (`core/helpers/revalidate-swr-key.ts`) is a thin wrapper over SWR's global `mutate(filterFn)`, which triggers a **refetch**, not a cache write. Confirmed via Context7 (`/vercel/swr`, `/vercel/swr-site`): SWR's `mutate()` defaults to `throwOnError: true` — if the underlying fetcher throws during that revalidation, the promise `mutate()` returns *rejects*.
+
+**Why this matters for review**: when a catch block calls `await revalidateSWRKey(SOME_KEY)` as part of recovering from an error on that same resource (e.g. "the entity is gone, so refetch it to resync UI state"), and the underlying cause is still true (the entity is still gone), the refetch's fetcher throws the *same* error again, and the recovery `await` itself rejects. Any code after it (state resets, toasts, user-facing error surfacing) silently never runs, and the rejection escapes as unhandled unless the caller has its own outer catch.
+
+Found in LNS-489 (`product-detail-provider.tsx` `handleSave`'s new NOT_FOUND catch branch): `await revalidateSWRKey(PRODUCT_SWR_KEYS.GET_PRODUCT, ...)` followed by `setHydratedVersion(null)` + a recovery toast — in the "whole product deleted" case (not just a variant), the GET_PRODUCT refetch throws NOT_FOUND again, so the toast and reset never fire. Flagged as a Major/blocking finding since it defeated the fix in its highest-value case.
+
+**How to apply**: whenever reviewing a catch block that calls `revalidateSWRKey(...)` (or any bare global `mutate()`/bound `mutate()` without `{ throwOnError: false }`) as part of *recovering from* an error tied to that same key, check whether the revalidation can plausibly re-trigger the same failure. If so, and nothing downstream is guarded, flag it — the recovery path needs its own try/catch (or `throwOnError: false`) so user-facing recovery (toast, state reset) always fires regardless of whether the resync itself succeeds. This is a correctness/reliability finding, not a layer-boundary violation — rate Major, not Blocker, but treat as blocking for merge if it defeats the PR's stated purpose.
