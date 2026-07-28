@@ -517,6 +517,24 @@ export class ErrorCodes {
     message: "Fitur ini belum tersedia untuk akun Anda.",
   };
 
+  public static readonly PRICE_TIER_SCHEDULE_INVALID: ErrorStructureType = {
+    code: "PRICE_TIER_SCHEDULE_INVALID",
+    httpCode: 422,
+    message: "Skema harga grosir tidak valid.",
+  };
+
+  public static readonly VARIANT_PRICE_BELOW_TIER: ErrorStructureType = {
+    code: "VARIANT_PRICE_BELOW_TIER",
+    httpCode: 422,
+    message: "Harga dasar tidak boleh lebih rendah dari harga grosir yang aktif.",
+  };
+
+  public static readonly UNIT_PRICE_MISMATCH: ErrorStructureType = {
+    code: "UNIT_PRICE_MISMATCH",
+    httpCode: 422,
+    message: "Harga yang dikirim tidak sesuai dengan harga yang dihitung server. Transaksi tidak tercatat.",
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }

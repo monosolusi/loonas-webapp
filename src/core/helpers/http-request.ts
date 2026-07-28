@@ -67,16 +67,40 @@ export class HttpRequest {
       const data = await response.json();
       if (!data) throw new ServerError(ErrorCodes.UNKNOWN, { code: response.status });
 
+      // Some endpoints return a FLAT error body: the discriminating fields sit alongside
+      // `code`/`message` with no `details` envelope at all (e.g. PRICE_TIER_SCHEDULE_INVALID
+      // carries `reason` + `min_qty`, UNIT_PRICE_MISMATCH carries `line_index`). Forward every
+      // remaining top-level key so those callers can read them, while still nesting `details`
+      // exactly where existing callers expect it (e.g. `serverError.details.details.lines`).
+      const flatFields: Record<string, any> = {};
+      if (typeof data === "object" && !Array.isArray(data)) {
+        for (const [key, value] of Object.entries(data)) {
+          if (key === "code" || key === "message" || key === "details") continue;
+          flatFields[key] = value;
+        }
+      }
+
+      // The transport status, so callers can tell "the server responded and rejected" from
+      // "we never heard back". That distinction is load-bearing for idempotent retries: a
+      // 4xx means the key is bound to a cached failure and a retry needs a fresh one, while
+      // a network failure may still have been processed — rotating there would double-charge.
       const ErrorCode = ErrorCodes.find(data.code);
       if (ErrorCode) {
-        // Forward the server's `details` payload so callers can read e.g. `serverError.details.details.lines`
         throw new ServerError(ErrorCode, {
+          ...flatFields,
           ...(data.message ? { message: data.message } : {}),
           details: data.details,
+          status: response.status,
         });
       }
 
-      throw new ServerError(ErrorCodes.UNKNOWN, { code: data.code, message: data.message, details: data.details });
+      throw new ServerError(ErrorCodes.UNKNOWN, {
+        ...flatFields,
+        code: data.code,
+        message: data.message,
+        details: data.details,
+        status: response.status,
+      });
     }
 
     const text = await response.text();
