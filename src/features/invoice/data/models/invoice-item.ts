@@ -3,6 +3,23 @@ import { InvoiceItemEntity } from "@/features/invoice/domain/entities/invoice-it
 import { TaxType } from "@/features/tax/domain/enums/tax-type";
 import { AbstractModel } from "@/core/resources/model";
 import { DiscountType } from "@/features/invoice/domain/enums/discount-type";
+import { PriceSource, PriceSourceType } from "@/features/invoice/domain/enums/price-source";
+
+const PRICE_SOURCE_VALUES = new Set<string>(Object.values(PriceSource));
+
+function parsePriceSource(value: unknown): PriceSourceType | null {
+  return typeof value === "string" && PRICE_SOURCE_VALUES.has(value) ? (value as PriceSourceType) : null;
+}
+
+/**
+ * Nullable number parse that preserves absent/null rather than coercing.
+ *
+ * Never `Number(...)` for these fields: `Number(null)` is 0, which would render a
+ * "min. 0" bracket on a base-priced line, and `Number(undefined)` is NaN.
+ */
+function parseNullableNumber(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
 
 interface InvoiceItemModelConstructor {
   id: string;
@@ -16,6 +33,10 @@ interface InvoiceItemModelConstructor {
   discountType?: DiscountType;
   discount?: number;
   total: number;
+  amountBeforeTax: number | null;
+  priceSource: PriceSourceType | null;
+  appliedTierMinQty: number | null;
+  listPrice: number | null;
   createdAt: DateTime;
   updatedAt: DateTime;
   deletedAt?: DateTime;
@@ -33,6 +54,10 @@ export class InvoiceItemModel implements AbstractModel {
   public discountType?: DiscountType;
   public discount?: number;
   public total: number;
+  public amountBeforeTax: number | null;
+  public priceSource: PriceSourceType | null;
+  public appliedTierMinQty: number | null;
+  public listPrice: number | null;
   public createdAt: DateTime;
   public updatedAt: DateTime;
   public deletedAt?: DateTime;
@@ -49,6 +74,10 @@ export class InvoiceItemModel implements AbstractModel {
     this.discountType = args.discountType;
     this.discount = args.discount;
     this.total = args.total;
+    this.amountBeforeTax = args.amountBeforeTax;
+    this.priceSource = args.priceSource;
+    this.appliedTierMinQty = args.appliedTierMinQty;
+    this.listPrice = args.listPrice;
     this.createdAt = args.createdAt;
     this.updatedAt = args.updatedAt;
     this.deletedAt = args.deletedAt;
@@ -67,6 +96,10 @@ export class InvoiceItemModel implements AbstractModel {
       discountType: data.discount_type,
       discount: data.discount,
       total: data.total,
+      amountBeforeTax: parseNullableNumber(data.amount_before_tax),
+      priceSource: parsePriceSource(data.price_source),
+      appliedTierMinQty: parseNullableNumber(data.applied_tier_min_qty),
+      listPrice: parseNullableNumber(data.list_price),
       createdAt: DateTime.fromJSDate(data.created_at),
       updatedAt: DateTime.fromJSDate(data.updated_at),
       deletedAt: data.deleted_at ? DateTime.fromJSDate(data.deleted_at) : undefined,
@@ -86,6 +119,10 @@ export class InvoiceItemModel implements AbstractModel {
       discountType: this.discountType,
       discount: this.discount,
       total: this.total,
+      amountBeforeTax: this.amountBeforeTax,
+      priceSource: this.priceSource,
+      appliedTierMinQty: this.appliedTierMinQty,
+      listPrice: this.listPrice,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,
