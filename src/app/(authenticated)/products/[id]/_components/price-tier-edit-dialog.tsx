@@ -78,12 +78,22 @@ export function PriceTierEditDialog() {
       });
       showToast(isClearing ? "Harga grosir dihapus" : "Harga grosir berhasil disimpan", "success");
       closeEditor();
-      await revalidateSWRKey(
-        PRODUCT_SWR_KEYS.GET_PRICE_TIERS,
-        PRODUCT_SWR_KEYS.GET_PRODUCT,
-        PRODUCT_SWR_KEYS.LIST_PRODUCTS,
-        PRODUCT_SWR_KEYS.LIST_PRODUCTS_FOR_SALE,
-      );
+
+      // Guarded separately, not left to the outer catch: the save already succeeded and
+      // the dialog is already closed. A rejecting refetch reaching the mutation-error
+      // classifier below would contradict the success toast, and the state it sets would
+      // land after the close-reset effect and resurface as a stale banner next open.
+      try {
+        await revalidateSWRKey(
+          PRODUCT_SWR_KEYS.GET_PRICE_TIERS,
+          PRODUCT_SWR_KEYS.GET_PRODUCT,
+          PRODUCT_SWR_KEYS.LIST_PRODUCTS,
+          PRODUCT_SWR_KEYS.LIST_PRODUCTS_FOR_SALE,
+        );
+      } catch {
+        // The write landed; the next read will catch up on its own.
+      }
+      return;
     } catch (err) {
       const info = describePriceTierError(err, "variant");
 

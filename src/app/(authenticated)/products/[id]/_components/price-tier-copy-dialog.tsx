@@ -72,12 +72,20 @@ export function PriceTierCopyDialog() {
       // The count comes from the response's variant_ids, never from the local variant list.
       showToast(`Harga grosir diterapkan ke ${result.updatedCount} varian`, "success");
       closeCopy();
-      await revalidateSWRKey(
-        PRODUCT_SWR_KEYS.GET_PRICE_TIERS,
-        PRODUCT_SWR_KEYS.GET_PRODUCT,
-        PRODUCT_SWR_KEYS.LIST_PRODUCTS,
-        PRODUCT_SWR_KEYS.LIST_PRODUCTS_FOR_SALE,
-      );
+
+      // Guarded separately — see the note in price-tier-edit-dialog: the copy already
+      // succeeded, so a rejecting refetch must not be classified as a copy failure.
+      try {
+        await revalidateSWRKey(
+          PRODUCT_SWR_KEYS.GET_PRICE_TIERS,
+          PRODUCT_SWR_KEYS.GET_PRODUCT,
+          PRODUCT_SWR_KEYS.LIST_PRODUCTS,
+          PRODUCT_SWR_KEYS.LIST_PRODUCTS_FOR_SALE,
+        );
+      } catch {
+        // The write landed; the next read will catch up on its own.
+      }
+      return;
     } catch (err) {
       const info = describePriceTierError(err, "copy");
 

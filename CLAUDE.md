@@ -9,11 +9,17 @@ npm run dev          # Start dev server (Next.js + Turbopack)
 npm run build        # Production build
 npm run lint         # ESLint
 npm run typecheck    # Type-check (tsc --noEmit) — use to verify after edits
+npm run test         # Vitest (node environment, pure units only)
 ```
 
-No test framework is configured. Verify changes with `npm run typecheck` and `npm run lint`.
+Verify changes with `npm run typecheck`, `npm run lint` and `npm run test`.
 
-**CI gate** (`.github/workflows/ci.yml`): runs `lint → typecheck → build` on PRs to `dev`/`main`. Node version pinned via `.nvmrc` (currently 20.20.2, engines `>=20.19.4`).
+Tests are **pure units only** — parsers, domain calculations, payload construction. There is
+no DOM, Clerk or network harness, so anything needing a rendered tree or a live session is
+verified by manual smoke instead. Suites are `src/**/*.test.ts` next to the code they cover.
+
+**CI gate** (`.github/workflows/ci.yml`): runs `lint → typecheck → test → build` on PRs to
+`dev`/`main`/`release/**`. Node version pinned via `.nvmrc` (currently 20.20.2, engines `>=20.19.4`).
 
 ## Tech Stack
 
@@ -42,7 +48,7 @@ src/
 │   ├── (pos)/                        # Cashier POS shell + payment-method plugins (see _payment-methods/PLUGIN_PATTERN.md)
 │   └── (external-app)/              # Public external routes
 ├── features/{feature}/               # Feature modules
-│   ├── domain/                       # Entities, guards, types, enums, repository interfaces, use cases, factories
+│   ├── domain/                       # Entities, guards, types, enums, repository interfaces, use cases, factories, helpers
 │   ├── data/                         # Repository impls, services (sources), models, types
 │   └── presentations/                # hooks/, components/, providers/
 └── core/                             # Shared utilities, base classes, global components
@@ -69,6 +75,11 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **Hook return types**: Discriminated unions (`InitialState | LoadedState | ErrorState`)
 - **ServerError + ErrorCodes**: Centralized error registry with Indonesian messages
 - **Factory pattern**: `PayInDetailFactory` etc. for polymorphic creation
+- **`domain/helpers/`**: pure, stateless calculations over domain entities — no DI, no
+  repository, no `DataState`, no imports from `data/` or `presentations/`. Use when logic is
+  domain knowledge but belongs to no single entity (see
+  `features/product/domain/helpers/price-tier-preview.ts`). Anything that needs a repository
+  is a use case instead.
 - **Impl components**: `*-impl.tsx` files are smart components that fetch data and pass to presentational siblings
 - **Type guards**: `domain/guards/` contains `instanceof` checks for discriminating entity types
 - **SectionCard**: Standard card component (`rounded-lg`, `border-neutral-200`, icon header) for detail pages

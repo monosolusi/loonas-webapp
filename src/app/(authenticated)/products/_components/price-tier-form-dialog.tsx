@@ -17,6 +17,7 @@ import { PriceTierModeRadio } from "@/app/(authenticated)/products/_components/p
 import { PriceTierRow } from "@/app/(authenticated)/products/_components/price-tier-row";
 import { PriceTierErrorBlock } from "@/app/(authenticated)/products/_components/price-tier-error-block";
 import { PriceTierLoadError } from "@/app/(authenticated)/products/_components/price-tier-load-error";
+import { PriceTierFormSkeleton } from "@/app/(authenticated)/products/_components/price-tier-form-skeleton";
 
 type PriceTierFormDialogProps = {
   open: boolean;
@@ -58,11 +59,7 @@ export function PriceTierFormDialog(props: PriceTierFormDialogProps) {
         {props.loadError ? (
           <PriceTierLoadError error={props.loadError} onRetry={props.onRetryLoad} />
         ) : props.loading ? (
-          <div className="flex flex-col gap-y-3">
-            <div className="h-24 animate-pulse rounded-lg bg-neutral-100" />
-            <div className="h-11 animate-pulse rounded-lg bg-neutral-100" />
-            <div className="h-11 animate-pulse rounded-lg bg-neutral-100" />
-          </div>
+          <PriceTierFormSkeleton />
         ) : (
           <>
             <PriceTierModeRadio
