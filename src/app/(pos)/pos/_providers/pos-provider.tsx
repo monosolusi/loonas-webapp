@@ -14,6 +14,7 @@ import { PaymentMethodEntity } from "@/features/pos/domain/entities/payment-meth
 import { useListPaymentMethods } from "@/features/pos/presentations/hooks/use-list-payment-methods";
 import { useCreatePosSale } from "@/features/invoice/presentations/hooks/use-create-pos-sale";
 import { parseUnitPriceMismatch } from "@/features/invoice/presentations/helpers/unit-price-mismatch";
+import { shouldRotateIdempotencyKey } from "@/features/invoice/presentations/helpers/idempotency-rotation";
 import { POS_SWR_KEYS } from "@/features/pos/presentations/constants/swr-keys";
 import { getPaymentMethodHandler } from "@/app/(pos)/pos/_payment-methods/registry";
 import { MOCK_PAYMENT_METHODS, USE_MOCK_PAYMENT_METHODS } from "@/app/(pos)/pos/_dev/mock-payment-methods";
@@ -445,11 +446,9 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
           return null;
         }
 
-        // The server responded and rejected, so the key is now bound to a cached failure
-        // and any retry needs a fresh one. 5xx and network failures are deliberately
-        // excluded: there the request may still have been processed, and rotating would
-        // turn a retry into a duplicate sale.
-        if (status !== null && status >= 400 && status < 500) {
+        // 4xx only — see shouldRotateIdempotencyKey for why a 5xx or network failure
+        // must keep the key.
+        if (shouldRotateIdempotencyKey(status, code)) {
           idempotencyKeyRef.current = crypto.randomUUID();
         }
 
