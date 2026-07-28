@@ -22,7 +22,11 @@ export class PriceTierScheduleEntity implements AbstractEntity {
     this.tiers = args.tiers;
   }
 
-  public get isFlatPriced(): boolean {
-    return this.tiers.length === 0;
+  public get hasTiers(): boolean {
+    return this.tiers.length > 0;
+  }
+
+  public get tierCount(): number {
+    return this.tiers.length;
   }
 }

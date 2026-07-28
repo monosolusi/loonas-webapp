@@ -141,6 +141,29 @@ export function describePriceTierError(err: unknown, context: PriceTierErrorCont
   return { kind: "unknown", message: err.message ?? "Terjadi kesalahan. Silakan coba lagi." };
 }
 
+export type VariantPriceBelowTierRejection = {
+  offendingTiers: OffendingTier[];
+  newPrice: number | null;
+};
+
+/**
+ * Recognises the 422 raised when a variant's base price is lowered below a live tier.
+ *
+ * Fused predicate + parse: there is deliberately no separate `isVariantPriceBelowTier()`
+ * for a caller to use without the parse, so the two cannot drift. Returns `null` for any
+ * other error, which is what lets the caller fall through to its existing handling.
+ */
+export function parseVariantPriceBelowTier(err: unknown): VariantPriceBelowTierRejection | null {
+  if (!(err instanceof ServerError)) return null;
+  if (err.code !== ErrorCodes.VARIANT_PRICE_BELOW_TIER.code) return null;
+
+  const details: Record<string, any> = err.details ?? {};
+  return {
+    offendingTiers: parseOffendingTiers(details["offending_tiers"]),
+    newPrice: typeof details["new_price"] === "number" ? details["new_price"] : null,
+  };
+}
+
 /** Renders `offending_variants` as one line per variant, for AC-12. */
 export function formatOffendingVariant(variant: OffendingVariant): string {
   return `${variant.name || "Varian tanpa nama"} — ${formatRupiah(variant.price)}`;
