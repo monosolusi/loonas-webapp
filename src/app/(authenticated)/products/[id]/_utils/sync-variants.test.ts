@@ -53,9 +53,9 @@ function row(key: string, args: { name?: string; sku?: string; price?: number } 
   return { key, name: args.name ?? "", sku: args.sku ?? "", price: args.price ?? 0 };
 }
 
-// Hand-rolled recorder, not vi.fn() — the repo has zero vi.fn() usage (precedent:
-// idempotency-rotation.test.ts). toHaveBeenCalledWith uses toEqual semantics, which ignore
-// undefined-valued keys, so several of these cases read `calls` directly instead.
+// Hand-rolled recorder, not vi.fn() (precedent: idempotency-rotation.test.ts) — vi.fn()'s
+// toHaveBeenCalledWith uses toEqual semantics, which ignore undefined-valued keys, so several
+// of these cases read `calls` directly instead.
 function recorder() {
   const calls = {
     adds: [] as { productId: string; name: string; sku?: string; price: number }[],
