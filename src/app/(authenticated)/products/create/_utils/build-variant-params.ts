@@ -11,8 +11,9 @@ import type { RecipeRow } from "@/app/(authenticated)/products/_components/recip
 const DEFAULT_VARIANT_KEY = "default";
 
 /**
- * The variant row(s) the form currently represents, or `null`-free single source of truth for
- * both the variant table and the recipe card.
+ * The variant row(s) the form currently represents in its current mode — the single source of
+ * truth consumed by the recipe card (via `variantRows` on context) and by `buildVariantParams`
+ * below when it builds the submit body.
  *
  * LNS-572: single-price mode is not a separate shape, it is exactly one `VariantFormRow` named
  * "Default" — this is the create-page counterpart to `ProductEntity.defaultVariant` on the detail
