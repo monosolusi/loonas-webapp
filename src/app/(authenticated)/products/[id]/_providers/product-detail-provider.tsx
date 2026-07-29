@@ -118,7 +118,7 @@ export function ProductDetailProvider({ id, children }: ProductDetailProviderPro
 
   // Save orchestration
   const handleSave = async () => {
-    if (isUpdating || !product) return;
+    if (isUpdating || !product || !form.isValid()) return;
     try {
       const updateParams: { id: string } & UpdateProductParams = {
         id,
