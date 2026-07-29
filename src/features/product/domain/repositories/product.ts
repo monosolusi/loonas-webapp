@@ -51,13 +51,13 @@ export type ListProductsForSaleResult = {
 
 export type AddVariantParams = {
   name: string;
-  sku?: string;
+  sku?: string | null;
   price: number;
 };
 
 export type UpdateVariantParams = {
   name?: string;
-  sku?: string;
+  sku?: string | null;
   price?: number;
 };
 

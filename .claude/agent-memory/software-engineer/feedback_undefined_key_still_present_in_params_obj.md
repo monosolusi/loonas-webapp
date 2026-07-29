@@ -25,3 +25,8 @@ prove the wire-level omission.
 house idiom in `idempotency-rotation.test.ts`) against a call site using `field: value || undefined`,
 assert `.field === undefined` (and/or `JSON.stringify` if the wire-level omission itself is the AC) —
 do not assert `"field" in obj` as a proxy for "omitted," it will always be true.
+
+**Follow-up (LNS-573):** the `undefined`-drop this memory documents turned out to be a real production
+bug on the update path specifically — see [[feedback_partial_update_clear_needs_explicit_null]]. The
+`|| undefined` fallback is fine for a create/POST call site (nothing to leave unchanged) but silently
+defeats "clear the field" on a PUT with partial-update semantics; that path needs `|| null` instead.
