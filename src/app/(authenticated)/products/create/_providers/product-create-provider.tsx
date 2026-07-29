@@ -1,20 +1,22 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { ProductType } from "@/features/product/domain/enums/product-type";
-import { DEFAULT_VARIANT_NAME } from "@/features/product/domain/constants/default-variant";
 import { PRODUCT_SWR_KEYS } from "@/features/product/presentations/constants/swr-keys";
 import { useCreateProduct } from "@/features/product/presentations/hooks/use-create-product";
 import { useUploadProductPhoto } from "@/features/product/presentations/hooks/use-upload-product-photo";
 import { useProductFormState } from "@/features/product/presentations/hooks/use-product-form-state";
 import { RecipeRow } from "@/app/(authenticated)/products/_components/recipe-form-dialog";
+import { VariantFormRow } from "@/app/(authenticated)/products/_components/variant-table";
+import { buildVariantParams, resolveVariantRows } from "@/app/(authenticated)/products/create/_utils/build-variant-params";
 
 type ProductCreateContextValue = {
   form: ReturnType<typeof useProductFormState>;
   isMutating: boolean;
+  variantRows: VariantFormRow[];
   recipes: Map<string, RecipeRow[]>;
   setVariantRecipe: (variantKey: string, items: RecipeRow[]) => void;
   getVariantRecipe: (variantKey: string) => RecipeRow[];
@@ -45,6 +47,11 @@ export function ProductCreateProvider({ children }: ProductCreateProviderProps) 
 
   const isMutating = isCreating || isUploading;
 
+  const variantRows = useMemo(
+    () => resolveVariantRows({ hasVariants: form.hasVariants, variants: form.variants, singlePrice: form.singlePrice }),
+    [form.hasVariants, form.variants, form.singlePrice],
+  );
+
   const setVariantRecipe = (variantKey: string, items: RecipeRow[]) => {
     setRecipes((prev) => new Map(prev).set(variantKey, items));
   };
@@ -58,24 +65,7 @@ export function ProductCreateProvider({ children }: ProductCreateProviderProps) 
 
     const isManufactured = form.type === ProductType.MANUFACTURED;
 
-    const variantParams = form.hasVariants
-      ? form.variants.map((v) => {
-          const variant: { name: string; sku?: string; price: number; recipe?: { rawMaterialId: string; quantity: number }[] } = {
-            name: v.name.trim(),
-            sku: v.sku.trim() || undefined,
-            price: v.price,
-          };
-          if (isManufactured) {
-            const recipeItems = recipes.get(v.key);
-            if (recipeItems && recipeItems.length > 0) {
-              variant.recipe = recipeItems
-                .filter((r) => r.rawMaterial && r.quantity > 0)
-                .map((r) => ({ rawMaterialId: r.rawMaterial!.id, quantity: r.quantity }));
-            }
-          }
-          return variant;
-        })
-      : [{ name: DEFAULT_VARIANT_NAME, price: form.singlePrice }];
+    const variantParams = buildVariantParams({ rows: variantRows, isManufactured, recipes });
 
     try {
       const product = await createProduct({
@@ -107,7 +97,7 @@ export function ProductCreateProvider({ children }: ProductCreateProviderProps) 
 
   return (
     <ProductCreateContext.Provider
-      value={{ form, isMutating, recipes, setVariantRecipe, getVariantRecipe, handleSubmit }}
+      value={{ form, isMutating, variantRows, recipes, setVariantRecipe, getVariantRecipe, handleSubmit }}
     >
       {children}
     </ProductCreateContext.Provider>

@@ -17,6 +17,11 @@ Verify changes with `npm run typecheck`, `npm run lint` and `npm run test`.
 Tests are **pure units only** — parsers, domain calculations, payload construction. There is
 no DOM, Clerk or network harness, so anything needing a rendered tree or a live session is
 verified by manual smoke instead. Suites are `src/**/*.test.ts` next to the code they cover.
+The include glob matches `.test.ts` only and the environment is `node`, so logic that lives inside a
+`.tsx` provider or component is **unreachable by the suite**. To cover it, first extract it to a plain
+`.ts` module — no JSX, no React imports — under the page's `_utils/`, then colocate the `.test.ts`
+beside it. Precedents: `products/create/_utils/build-variant-params.ts` (payload construction, LNS-572)
+and `products/[id]/_utils/sync-variants.ts` (mutation planning, LNS-570).
 
 **CI gate** (`.github/workflows/ci.yml`): runs `lint → typecheck → test → build` on PRs to
 `dev`/`main`/`release/**`. Node version pinned via `.nvmrc` (currently 20.20.2, engines `>=20.19.4`).
@@ -147,6 +152,17 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   not apply, hide the *control* (`hideVariantToggle`) or change the *state*; do not fork the value between the
   renderer and the writer. When you fix one instance of this, grep for the twin — the create and detail pages
   share these cards and the same divergence usually exists on both.
+- **A synthetic form row needs exactly one owner module**: when "single-price" (or any no-real-row-yet) mode is
+  represented by an invented `VariantFormRow`, one module mints it *and* is the only module that reads its key
+  back. `product-create-recipe-card.tsx` minted `{ key: "default", … }` for the recipe editor while
+  `handleSubmit` built its own copy for the payload — the two agreed by coincidence, not by contract, and the
+  payload copy never read the recipes Map, so a recipe entered on a product without variants was silently
+  discarded (LNS-572). Fix by **collapsing the branch, not patching it**: resolve the rows once
+  (`create/_utils/build-variant-params.ts::resolveVariantRows`), then map that single list to the payload with
+  no second per-mode fork. A builder that still reads `hasVariants ? … : …` will drift again — the branch you
+  don't touch is the one that rots. Keep the sentinel key module-private, as `NEW_SINGLE_VARIANT_KEY` in
+  `[id]/_utils/sync-variants.ts` does; if two modules need it, that is the signal to move the derivation, not
+  to export the constant.
 - **Interface Segregation (repositories)**: When a feature has distinct sub-resources (e.g., master + entries), split
   into separate repository/source interfaces, implementations, and files. Each concern gets its own file:
   `fixed-cost.ts` (master) + `fixed-cost-entry.ts` (entries).

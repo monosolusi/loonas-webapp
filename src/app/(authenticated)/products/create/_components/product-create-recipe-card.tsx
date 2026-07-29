@@ -10,7 +10,7 @@ import { RecipeVariantRow } from "@/app/(authenticated)/products/_components/rec
 import { RecipeFormDialog, RecipeFormVariant, RecipeRow } from "@/app/(authenticated)/products/_components/recipe-form-dialog";
 
 export function ProductCreateRecipeCard() {
-  const { form, getVariantRecipe, setVariantRecipe } = useProductCreate();
+  const { form, variantRows, getVariantRecipe, setVariantRecipe } = useProductCreate();
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [formVariant, setRecipeFormVariant] = useState<RecipeFormVariant | null>(null);
@@ -19,13 +19,12 @@ export function ProductCreateRecipeCard() {
 
   if (form.type !== ProductType.MANUFACTURED) return null;
 
-  const variants = form.hasVariants ? form.variants : [{ key: "default", name: "Default", sku: "", price: form.singlePrice }];
-  const isSingleVariant = variants.length <= 1;
-  const variantNames = variants.map((v) => v.name);
-  const displayVariants = applyAll ? [variants[0]] : variants;
+  const isSingleVariant = variantRows.length <= 1;
+  const variantNames = variantRows.map((v) => v.name);
+  const displayVariants = applyAll ? [variantRows[0]] : variantRows;
 
   const handleToggleApplyAll = (checked: boolean) => {
-    if (checked && variants.length > 1) {
+    if (checked && variantRows.length > 1) {
       setApplyAllDialogOpen(true);
     } else {
       setApplyAll(checked);
@@ -41,7 +40,7 @@ export function ProductCreateRecipeCard() {
     if (!formVariant) return;
 
     if (applyAll) {
-      for (const v of variants) {
+      for (const v of variantRows) {
         setVariantRecipe(v.key, items);
       }
     } else {
