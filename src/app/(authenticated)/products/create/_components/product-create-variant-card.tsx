@@ -9,7 +9,7 @@ export function ProductCreateVariantCard() {
 
   return (
     <ProductVariantCard
-      hasVariants={form.type !== ProductType.SERVICE && form.hasVariants}
+      hasVariants={form.hasVariants}
       singlePrice={form.singlePrice}
       variants={form.variants}
       onHasVariantsChange={form.setHasVariants}
