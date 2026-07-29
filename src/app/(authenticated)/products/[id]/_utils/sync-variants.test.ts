@@ -58,17 +58,23 @@ function row(key: string, args: { name?: string; sku?: string; price?: number } 
 // of these cases read `calls` directly instead.
 function recorder() {
   const calls = {
-    adds: [] as { productId: string; name: string; sku?: string; price: number }[],
-    updates: [] as { productId: string; variantId: string; name: string; sku?: string; price: number }[],
+    adds: [] as { productId: string; name: string; sku?: string | null; price: number }[],
+    updates: [] as { productId: string; variantId: string; name: string; sku?: string | null; price: number }[],
     deletes: [] as { productId: string; variantId: string }[],
   };
 
   return {
     calls,
-    addVariant: async (params: { productId: string; name: string; sku?: string; price: number }) => {
+    addVariant: async (params: { productId: string; name: string; sku?: string | null; price: number }) => {
       calls.adds.push(params);
     },
-    updateVariant: async (params: { productId: string; variantId: string; name: string; sku?: string; price: number }) => {
+    updateVariant: async (params: {
+      productId: string;
+      variantId: string;
+      name: string;
+      sku?: string | null;
+      price: number;
+    }) => {
       calls.updates.push(params);
     },
     deleteVariant: async (params: { productId: string; variantId: string }) => {
@@ -137,7 +143,7 @@ describe("syncVariants — single-price mode, existing Default variant", () => {
     expect(calls.updates[0].sku).toBe("SKU-A");
   });
 
-  it("sends sku: undefined (dropped by JSON serialization) when the server variant has no SKU", async () => {
+  it("sends sku: null (survives JSON serialization) when the server variant has no SKU", async () => {
     const existing = variant({ id: "v-1", sku: null, price: 70_000 });
     const { calls, addVariant, updateVariant, deleteVariant } = recorder();
 
@@ -151,12 +157,10 @@ describe("syncVariants — single-price mode, existing Default variant", () => {
       deleteVariant,
     });
 
-    // The `sku` key is always a literal property in the call params (`sku: v.sku.trim() ||
-    // undefined`), so `"sku" in obj` is always true regardless of value — the omission that
-    // matters is at the JSON-serialization boundary, which strips undefined-valued keys. That
-    // is exactly why this suite reads `.sku` directly instead of a toEqual-based matcher.
-    expect(calls.updates[0].sku).toBeUndefined();
-    expect(JSON.stringify(calls.updates[0])).not.toContain("sku");
+    // LNS-573: `sku: v.sku.trim() || null` sends an explicit `null` rather than `undefined`, so
+    // the key survives JSON.stringify instead of being silently dropped by the serializer.
+    expect(calls.updates[0].sku).toBeNull();
+    expect(JSON.stringify(calls.updates[0])).toContain('"sku":null');
   });
 
   it("produces byte-identical plans whether the server SKU is null or an empty string", async () => {
@@ -389,7 +393,7 @@ describe("syncVariants — multi-variant mode", () => {
     expect(calls.deletes).toHaveLength(0);
   });
 
-  it("trims name and SKU on add and update, and sends undefined for a whitespace-only SKU", async () => {
+  it("trims name and SKU on add and update, and sends null for a whitespace-only SKU", async () => {
     const existing = variant({ id: "v-1", name: "Kecil", sku: "SKU-A", price: 60_000 });
     const currentVariants: VariantFormRow[] = [
       row("v-1", { name: "  Kecil Sekali  ", sku: "   ", price: 60_000 }),
@@ -409,7 +413,7 @@ describe("syncVariants — multi-variant mode", () => {
     });
 
     expect(calls.updates[0].name).toBe("Kecil Sekali");
-    expect(calls.updates[0].sku).toBeUndefined();
+    expect(calls.updates[0].sku).toBeNull();
     expect(calls.adds[0].name).toBe("Baru");
     expect(calls.adds[0].sku).toBe("SKU-C");
   });
@@ -434,6 +438,132 @@ describe("syncVariants — multi-variant mode", () => {
     // byte-identical to what's already stored. Pre-existing, not introduced by this fix.
     expect(calls.updates).toHaveLength(1);
     expect(calls.updates[0].name).toBe("Kecil");
+  });
+});
+
+describe("syncVariants — LNS-573 SKU clear/set", () => {
+  it("AC1: clears a populated SKU on a multi-variant row, sending sku: null that survives serialization", async () => {
+    const existing = variant({ id: "v-1", name: "Kecil", sku: "SKU-A", price: 60_000 });
+    const currentVariants: VariantFormRow[] = [row("v-1", { name: "Kecil", sku: "", price: 60_000 })];
+
+    const { calls, addVariant, updateVariant, deleteVariant } = recorder();
+
+    await syncVariants({
+      product: product([existing]),
+      formHasVariants: true,
+      variants: currentVariants,
+      singlePrice: 0,
+      addVariant,
+      updateVariant,
+      deleteVariant,
+    });
+
+    expect(calls.updates).toHaveLength(1);
+    expect(calls.updates[0].sku).toBeNull();
+    expect(JSON.stringify(calls.updates[0])).toContain('"sku":null');
+  });
+
+  it("AC2: setting a SKU on a variant that had none sends the trimmed string", async () => {
+    const existing = variant({ id: "v-1", name: "Kecil", sku: null, price: 60_000 });
+    const currentVariants: VariantFormRow[] = [row("v-1", { name: "Kecil", sku: "  SKU-NEW  ", price: 60_000 })];
+
+    const { calls, addVariant, updateVariant, deleteVariant } = recorder();
+
+    await syncVariants({
+      product: product([existing]),
+      formHasVariants: true,
+      variants: currentVariants,
+      singlePrice: 0,
+      addVariant,
+      updateVariant,
+      deleteVariant,
+    });
+
+    expect(calls.updates).toHaveLength(1);
+    expect(calls.updates[0].sku).toBe("SKU-NEW");
+  });
+
+  it("AC3: replacing a non-empty SKU with a different non-empty SKU sends the new string", async () => {
+    const existing = variant({ id: "v-1", name: "Kecil", sku: "SKU-OLD", price: 60_000 });
+    const currentVariants: VariantFormRow[] = [row("v-1", { name: "Kecil", sku: "SKU-NEW", price: 60_000 })];
+
+    const { calls, addVariant, updateVariant, deleteVariant } = recorder();
+
+    await syncVariants({
+      product: product([existing]),
+      formHasVariants: true,
+      variants: currentVariants,
+      singlePrice: 0,
+      addVariant,
+      updateVariant,
+      deleteVariant,
+    });
+
+    expect(calls.updates).toHaveLength(1);
+    expect(calls.updates[0].sku).toBe("SKU-NEW");
+  });
+
+  it("AC4: a price-only edit on a SKU-bearing row still sends the existing SKU string, never null", async () => {
+    const existing = variant({ id: "v-1", name: "Kecil", sku: "SKU-A", price: 60_000 });
+    const currentVariants: VariantFormRow[] = [row("v-1", { name: "Kecil", sku: "SKU-A", price: 65_000 })];
+
+    const { calls, addVariant, updateVariant, deleteVariant } = recorder();
+
+    await syncVariants({
+      product: product([existing]),
+      formHasVariants: true,
+      variants: currentVariants,
+      singlePrice: 0,
+      addVariant,
+      updateVariant,
+      deleteVariant,
+    });
+
+    expect(calls.updates).toHaveLength(1);
+    expect(calls.updates[0].sku).toBe("SKU-A");
+  });
+
+  it("AC4: a name-only edit on a SKU-bearing row still sends the existing SKU string, never null", async () => {
+    const existing = variant({ id: "v-1", name: "Kecil", sku: "SKU-A", price: 60_000 });
+    const currentVariants: VariantFormRow[] = [row("v-1", { name: "Kecil Sekali", sku: "SKU-A", price: 60_000 })];
+
+    const { calls, addVariant, updateVariant, deleteVariant } = recorder();
+
+    await syncVariants({
+      product: product([existing]),
+      formHasVariants: true,
+      variants: currentVariants,
+      singlePrice: 0,
+      addVariant,
+      updateVariant,
+      deleteVariant,
+    });
+
+    expect(calls.updates).toHaveLength(1);
+    expect(calls.updates[0].sku).toBe("SKU-A");
+  });
+
+  it("AC5: adding a new variant with no SKU sends null (BE-equivalent to omitting)", async () => {
+    const existing = variant({ id: "v-1", name: "Kecil", sku: "SKU-A", price: 60_000 });
+    const currentVariants: VariantFormRow[] = [
+      row("v-1", { name: "Kecil", sku: "SKU-A", price: 60_000 }),
+      row("new-row", { name: "Baru", sku: "", price: 50_000 }),
+    ];
+
+    const { calls, addVariant, updateVariant, deleteVariant } = recorder();
+
+    await syncVariants({
+      product: product([existing]),
+      formHasVariants: true,
+      variants: currentVariants,
+      singlePrice: 0,
+      addVariant,
+      updateVariant,
+      deleteVariant,
+    });
+
+    expect(calls.adds).toHaveLength(1);
+    expect(calls.adds[0].sku).toBeNull();
   });
 });
 
