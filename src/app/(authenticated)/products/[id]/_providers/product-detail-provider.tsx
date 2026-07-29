@@ -148,11 +148,10 @@ export function ProductDetailProvider({ id, children }: ProductDetailProviderPro
           }
         })(),
         syncVariants({
-          productId: id,
-          hasVariants: form.hasVariants,
+          product,
+          formHasVariants: form.hasVariants,
           variants: form.variants,
           singlePrice: form.singlePrice,
-          originalVariants: product.variants,
           addVariant,
           updateVariant,
           deleteVariant,
