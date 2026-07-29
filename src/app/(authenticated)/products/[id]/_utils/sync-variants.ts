@@ -19,7 +19,14 @@ const NEW_SINGLE_VARIANT_KEY = "new-default-variant";
  * variant-scoped sub-resources. Seeding name and SKU from `existing` is required, not tidiness:
  * `isVariantChanged` compares `local.sku !== (original.sku ?? "")`, so a hardcoded `sku: ""` would
  * report a phantom diff on any variant with a SKU — firing a PUT on an untouched save, and sending
- * that PUT with `sku` omitted since the body sends `sku.trim() || undefined`.
+ * that PUT with `sku` explicitly cleared to `null` since the body sends `sku.trim() || null`.
+ *
+ * This seeding invariant became load-bearing as of LNS-573 — before that fix, `sku: undefined`
+ * was silently dropped by JSON.stringify, so a phantom-diffed PUT still reached the server with
+ * the SKU key absent and the SKU survived (a wasteful no-op PUT, not data loss). Since LNS-573
+ * made `updateVariant` send an explicit `sku: null` for the cleared case, the same phantom diff
+ * now destroys the SKU on the server. A future edit to this function that reintroduces a
+ * hardcoded `sku: ""` would turn a defensive nicety back into silent SKU loss.
  */
 function singlePriceRow(existing: VariantEntity | null, singlePrice: number): VariantFormRow {
   if (!existing) {
@@ -33,12 +40,12 @@ type SyncVariantsParams = {
   formHasVariants: boolean;
   variants: VariantFormRow[];
   singlePrice: number;
-  addVariant: (params: { productId: string; name: string; sku?: string; price: number }) => Promise<unknown>;
+  addVariant: (params: { productId: string; name: string; sku?: string | null; price: number }) => Promise<unknown>;
   updateVariant: (params: {
     productId: string;
     variantId: string;
     name: string;
-    sku?: string;
+    sku?: string | null;
     price: number;
   }) => Promise<unknown>;
   deleteVariant: (params: { productId: string; variantId: string }) => Promise<unknown>;
@@ -76,7 +83,7 @@ export async function syncVariants({
         productId: product.id,
         variantId: v.key,
         name: v.name.trim(),
-        sku: v.sku.trim() || undefined,
+        sku: v.sku.trim() || null,
         price: v.price,
       }),
     ),
@@ -84,7 +91,7 @@ export async function syncVariants({
       addVariant({
         productId: product.id,
         name: v.name.trim(),
-        sku: v.sku.trim() || undefined,
+        sku: v.sku.trim() || null,
         price: v.price,
       }),
     ),
