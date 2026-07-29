@@ -203,6 +203,33 @@ Custom `HttpRequest` class injects Clerk session headers:
 - `FetchConfig` supports `requireAuth` (default `true`), `contentType`, and `headers` — no account-level config
 - Services that bypass `HttpRequest` (manual `fetch`) must still set `Authorization` header manually
 
+**Partial-update PUTs: `undefined` omits, `null` clears — never conflate them.** `HttpRequest`
+serialises with `JSON.stringify`, which **silently drops `undefined`-valued keys**. On a partial-update
+endpoint an absent key means "leave unchanged", so `sku: value || undefined` in a request body does not
+clear a field — it preserves the old one, reports success, and the stale value returns on the next
+refetch. That was LNS-573. To clear a nullable field, send an explicit `null`; widen the param type to
+`string | null` rather than reaching for `undefined`. Note most Loonas write endpoints reject `""` with a
+400, so an empty form input must be converted, not forwarded.
+
+Two rules follow, and both are load-bearing:
+
+- **Build partial-update bodies explicitly; never `body: params` passthrough.** Passthrough is exactly how
+  key-omission became an accident of the serializer rather than an intentional encoding. Follow
+  `ProductServiceImpl.update` / `updateVariant`: `if (params.x !== undefined) body["x"] = params.x`. A
+  `POST` create may stay passthrough when it needs no key renaming or nesting — comment the asymmetry so
+  it does not read as an oversight.
+- **Test the serialized payload, not the params object.** `expect(obj.sku).toBeUndefined()` passes whether
+  the bug is present or not, because the key is a literal property either way; only
+  `JSON.stringify(body)` reveals whether it survives the wire. Mock `HttpRequest.request` with a `vi.fn()`
+  that captures `params.body` and assert on the stringified result — see
+  `features/invoice/data/sources/create-pos-sale-body.test.ts` and
+  `features/product/data/sources/product.test.ts`.
+
+The `""` → `null` conversion belongs in the **app layer that owns the form buffer** (e.g.
+`products/[id]/_utils/sync-variants.ts`), not the service: `""` is a presentation fact about an emptied
+text input, `null` is the domain fact. Use one fallback expression across every path that builds the same
+value — forking `|| null` on update and `|| undefined` on create recreates the LNS-572 drift.
+
 ### Deprecated — Do Not Use
 
 | Deprecated                                             | Replacement                                                                                                                                            |
