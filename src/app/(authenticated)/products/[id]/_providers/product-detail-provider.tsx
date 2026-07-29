@@ -118,7 +118,7 @@ export function ProductDetailProvider({ id, children }: ProductDetailProviderPro
 
   // Save orchestration
   const handleSave = async () => {
-    if (isUpdating || !product) return;
+    if (isUpdating || !product || !form.isValid()) return;
     try {
       const updateParams: { id: string } & UpdateProductParams = {
         id,
@@ -148,11 +148,10 @@ export function ProductDetailProvider({ id, children }: ProductDetailProviderPro
           }
         })(),
         syncVariants({
-          productId: id,
-          hasVariants: form.hasVariants,
+          product,
+          formHasVariants: form.hasVariants,
           variants: form.variants,
           singlePrice: form.singlePrice,
-          originalVariants: product.variants,
           addVariant,
           updateVariant,
           deleteVariant,

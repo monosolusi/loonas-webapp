@@ -69,6 +69,14 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **Presentation layer naming**: Older features use `presentation/` (singular), newer ones use `presentations/` (
   plural). Match the existing directory name when adding to a feature.
 - **Entity immutability**: All entity properties must be `public readonly`. Models are also `public readonly`.
+- **Derived-invariant getters**: when a getter expresses the complement or a refinement of an existing one,
+  derive it FROM that getter instead of restating its predicate. `ProductEntity.defaultVariant` is
+  `if (this.hasVariants) return null; return this.variants[0] ?? null;` — not a re-spelled
+  `length === 1 && variants[0].isDefault`. Restating the clauses creates two rules that can drift; deriving
+  makes drift structurally impossible. LNS-570 was exactly this drift: a caller hand-rolled its own copy of
+  "is this product single-priced?", disagreed with the entity, and silently destroyed variant-scoped
+  sub-resources on every save. If you catch yourself re-deriving an entity rule at a call site, the rule
+  belongs on the entity.
 - **Model nested references**: When a model has nested objects from API, use actual Model classes (e.g.,
   `RawMaterialModel`, `VariantModel`) with their `fromJson()`, not plain objects. `toEntity()` maps to domain types.
 - **DataState pattern**: Use cases return `DataSuccess<T>` or `DataFailed` instead of throwing
@@ -79,7 +87,13 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   repository, no `DataState`, no imports from `data/` or `presentations/`. Use when logic is
   domain knowledge but belongs to no single entity (see
   `features/product/domain/helpers/price-tier-preview.ts`). Anything that needs a repository
-  is a use case instead.
+  is a use case instead. **Injected I/O callbacks disqualify it too**: a function that fires
+  mutations through passed-in trigger functions is orchestration, not calculation, no matter how
+  pure its signature looks — it stays in the app layer (see
+  `app/(authenticated)/products/[id]/_utils/sync-variants.ts`). A second disqualifier is the input
+  type: if the function's primary input is a form/edit-buffer type owned by `_components/`, moving it
+  into `domain/` would force a domain-side mirror of a presentation type. Extract only the genuinely
+  domain-owned fact (usually onto the entity) and leave the rest where its collaborators live.
 - **Impl components**: `*-impl.tsx` files are smart components that fetch data and pass to presentational siblings
 - **Type guards**: `domain/guards/` contains `instanceof` checks for discriminating entity types
 - **SectionCard**: Standard card component (`rounded-lg`, `border-neutral-200`, icon header) for detail pages
@@ -126,6 +140,13 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   Page does not wrap children in a single content component — each component is self-contained.
 - **Component architecture**: One component per file. Use `useMemo` for computed/derived data. No conditional rendering
   of multiple states in return — split into separate components instead (e.g., loading, empty, list components).
+- **Displayed mode and saved mode must be the same expression**: never mask a form value for display while the
+  save path reads the raw one. `hasVariants={form.type !== ProductType.SERVICE && form.hasVariants}` passed a
+  masked value to the card while `syncVariants` / `handleSubmit` read the unmasked `form.hasVariants`, so the
+  UI showed one editor and the request wrote the other — edits silently discarded (LNS-570). If a mode should
+  not apply, hide the *control* (`hideVariantToggle`) or change the *state*; do not fork the value between the
+  renderer and the writer. When you fix one instance of this, grep for the twin — the create and detail pages
+  share these cards and the same divergence usually exists on both.
 - **Interface Segregation (repositories)**: When a feature has distinct sub-resources (e.g., master + entries), split
   into separate repository/source interfaces, implementations, and files. Each concern gets its own file:
   `fixed-cost.ts` (master) + `fixed-cost-entry.ts` (entries).
