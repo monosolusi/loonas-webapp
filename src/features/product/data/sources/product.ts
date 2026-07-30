@@ -224,6 +224,11 @@ export class ProductServiceImpl implements ProductService {
 
   public async addVariant(productId: string, params: AddVariantParams, session: SessionEntity): Promise<void> {
     try {
+      // Passthrough, unlike updateVariant: POST is a create, not a partial update, so there is no
+      // "omitted vs null" distinction to encode here — the backend treats a null/omitted sku the
+      // same way on create. Also unlike create() above, AddVariantParams needs no key renaming or
+      // nesting (no recipe, no category), so there is nothing left for explicit body construction
+      // to do — this is a genuine leaf passthrough, not a second unexplained shortcut.
       await this.http.request({
         path: `/products/${productId}/variants`,
         method: "POST",
@@ -243,10 +248,20 @@ export class ProductServiceImpl implements ProductService {
     session: SessionEntity,
   ): Promise<void> {
     try {
+      // Explicit body construction, not passthrough — this PUT is a partial update where an
+      // omitted key means "leave unchanged" and an explicit `null` means "clear". `params` must
+      // never be forwarded as-is: JSON.stringify silently drops undefined-valued keys, which is
+      // what caused LNS-573 (a cleared SKU never reached the request body). Encode each field's
+      // presence explicitly instead of relying on serialization to do it by accident.
+      const body: Record<string, any> = {};
+      if (params.name !== undefined) body["name"] = params.name;
+      if (params.sku !== undefined) body["sku"] = params.sku;
+      if (params.price !== undefined) body["price"] = params.price;
+
       await this.http.request({
         path: `/products/${productId}/variants/${variantId}`,
         method: "PUT",
-        body: params,
+        body,
         session,
       });
     } catch (err) {

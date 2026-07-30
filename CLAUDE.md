@@ -9,11 +9,22 @@ npm run dev          # Start dev server (Next.js + Turbopack)
 npm run build        # Production build
 npm run lint         # ESLint
 npm run typecheck    # Type-check (tsc --noEmit) — use to verify after edits
+npm run test         # Vitest (node environment, pure units only)
 ```
 
-No test framework is configured. Verify changes with `npm run typecheck` and `npm run lint`.
+Verify changes with `npm run typecheck`, `npm run lint` and `npm run test`.
 
-**CI gate** (`.github/workflows/ci.yml`): runs `lint → typecheck → build` on PRs to `dev`/`main`. Node version pinned via `.nvmrc` (currently 20.20.2, engines `>=20.19.4`).
+Tests are **pure units only** — parsers, domain calculations, payload construction. There is
+no DOM, Clerk or network harness, so anything needing a rendered tree or a live session is
+verified by manual smoke instead. Suites are `src/**/*.test.ts` next to the code they cover.
+The include glob matches `.test.ts` only and the environment is `node`, so logic that lives inside a
+`.tsx` provider or component is **unreachable by the suite**. To cover it, first extract it to a plain
+`.ts` module — no JSX, no React imports — under the page's `_utils/`, then colocate the `.test.ts`
+beside it. Precedents: `products/create/_utils/build-variant-params.ts` (payload construction, LNS-572)
+and `products/[id]/_utils/sync-variants.ts` (mutation planning, LNS-570).
+
+**CI gate** (`.github/workflows/ci.yml`): runs `lint → typecheck → test → build` on PRs to
+`dev`/`main`/`release/**`. Node version pinned via `.nvmrc` (currently 20.20.2, engines `>=20.19.4`).
 
 ## Tech Stack
 
@@ -42,7 +53,7 @@ src/
 │   ├── (pos)/                        # Cashier POS shell + payment-method plugins (see _payment-methods/PLUGIN_PATTERN.md)
 │   └── (external-app)/              # Public external routes
 ├── features/{feature}/               # Feature modules
-│   ├── domain/                       # Entities, guards, types, enums, repository interfaces, use cases, factories
+│   ├── domain/                       # Entities, guards, types, enums, repository interfaces, use cases, factories, helpers
 │   ├── data/                         # Repository impls, services (sources), models, types
 │   └── presentations/                # hooks/, components/, providers/
 └── core/                             # Shared utilities, base classes, global components
@@ -63,16 +74,43 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **Presentation layer naming**: Older features use `presentation/` (singular), newer ones use `presentations/` (
   plural). Match the existing directory name when adding to a feature.
 - **Entity immutability**: All entity properties must be `public readonly`. Models are also `public readonly`.
+- **Derived-invariant getters**: when a getter expresses the complement or a refinement of an existing one,
+  derive it FROM that getter instead of restating its predicate. `ProductEntity.defaultVariant` is
+  `if (this.hasVariants) return null; return this.variants[0] ?? null;` — not a re-spelled
+  `length === 1 && variants[0].isDefault`. Restating the clauses creates two rules that can drift; deriving
+  makes drift structurally impossible. LNS-570 was exactly this drift: a caller hand-rolled its own copy of
+  "is this product single-priced?", disagreed with the entity, and silently destroyed variant-scoped
+  sub-resources on every save. If you catch yourself re-deriving an entity rule at a call site, the rule
+  belongs on the entity.
 - **Model nested references**: When a model has nested objects from API, use actual Model classes (e.g.,
   `RawMaterialModel`, `VariantModel`) with their `fromJson()`, not plain objects. `toEntity()` maps to domain types.
 - **DataState pattern**: Use cases return `DataSuccess<T>` or `DataFailed` instead of throwing
 - **Hook return types**: Discriminated unions (`InitialState | LoadedState | ErrorState`)
 - **ServerError + ErrorCodes**: Centralized error registry with Indonesian messages
 - **Factory pattern**: `PayInDetailFactory` etc. for polymorphic creation
+- **`domain/helpers/`**: pure, stateless calculations over domain entities — no DI, no
+  repository, no `DataState`, no imports from `data/` or `presentations/`. Use when logic is
+  domain knowledge but belongs to no single entity (see
+  `features/product/domain/helpers/price-tier-preview.ts`). Anything that needs a repository
+  is a use case instead. **Injected I/O callbacks disqualify it too**: a function that fires
+  mutations through passed-in trigger functions is orchestration, not calculation, no matter how
+  pure its signature looks — it stays in the app layer (see
+  `app/(authenticated)/products/[id]/_utils/sync-variants.ts`). A second disqualifier is the input
+  type: if the function's primary input is a form/edit-buffer type owned by `_components/`, moving it
+  into `domain/` would force a domain-side mirror of a presentation type. Extract only the genuinely
+  domain-owned fact (usually onto the entity) and leave the rest where its collaborators live.
 - **Impl components**: `*-impl.tsx` files are smart components that fetch data and pass to presentational siblings
 - **Type guards**: `domain/guards/` contains `instanceof` checks for discriminating entity types
 - **SectionCard**: Standard card component (`rounded-lg`, `border-neutral-200`, icon header) for detail pages
 - **Skeleton loading**: Loading states use `animate-pulse` placeholder divs inside `SectionCard`
+- **Fetch-error state inside a card**: when a `SectionCard`-scoped fetch fails, render a sibling error component
+  (`{noun}-error.tsx`) rather than collapsing to `null` — a hidden card is indistinguishable from an empty one.
+  Canonical shape (see `accounting/profitability/[productId]/[variantId]/_components/cogs-block-error.tsx`):
+  `flex flex-col items-center gap-y-3 py-4` inside the card, `ExclamationCircleIcon` from `@heroicons/react/20/solid`
+  at `size-5 text-error-300`, and a `SecondaryButton outlined className="h-11" label="Coba Lagi"` wired to the hook's
+  `refresh`. Do **not** copy the full-page error pattern (`receipt-error.tsx`) for an in-card error — that one is
+  page-scoped and carries a navigation action. Omit the retry button when the error is terminal (a `NOT_FOUND` will
+  never succeed on retry). `SectionCard` already applies `p-6` to its body, so the inner block only needs `py-4`.
 - **Interactive element height**: All interactive elements (buttons, inputs, selects, custom controls) use `h-11` (44px)
   for consistent vertical rhythm. Exception: icon-only action buttons (edit, delete) in tables use `size-8` (32px).
 - **Account resolution**: Backend resolves account from Clerk JWT `orgId` (set via `setActive({ organization })`).
@@ -82,6 +120,12 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   single object: `list({ search, page }, session)`, `update({ id, name, status }, session)`.
 - **SWR key management**: SWR keys defined as constants in `presentations/constants/swr-keys.ts`. Use
   `revalidateSWRKey()` to invalidate cache after mutations. Hooks use these constants, never hardcoded strings.
+- **`revalidateSWRKey()` can reject — never `await` it unguarded inside a `catch`**: it wraps SWR's global
+  `mutate(filter)`, which triggers a **refetch**, not a cache write, and `internalMutate` defaults to
+  `throwOnError: true`. If the refetch fails (e.g. recovering from a 404 — the entity is still gone), the `await`
+  throws and everything after it is skipped. In an error-recovery path, show the toast and set state **first**
+  (synchronous, cannot fail), then attempt the revalidation inside its own `try {} catch {}`. On the success path
+  it is fine unguarded, since the surrounding `catch` already handles it.
 - **UseCase params independence**: Use case param types are defined in the use case file itself. Use cases MUST NOT
   import param types from repositories or sources. The use case defines its own params, then maps to repo params
   internally.
@@ -101,6 +145,24 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   Page does not wrap children in a single content component — each component is self-contained.
 - **Component architecture**: One component per file. Use `useMemo` for computed/derived data. No conditional rendering
   of multiple states in return — split into separate components instead (e.g., loading, empty, list components).
+- **Displayed mode and saved mode must be the same expression**: never mask a form value for display while the
+  save path reads the raw one. `hasVariants={form.type !== ProductType.SERVICE && form.hasVariants}` passed a
+  masked value to the card while `syncVariants` / `handleSubmit` read the unmasked `form.hasVariants`, so the
+  UI showed one editor and the request wrote the other — edits silently discarded (LNS-570). If a mode should
+  not apply, hide the *control* (`hideVariantToggle`) or change the *state*; do not fork the value between the
+  renderer and the writer. When you fix one instance of this, grep for the twin — the create and detail pages
+  share these cards and the same divergence usually exists on both.
+- **A synthetic form row needs exactly one owner module**: when "single-price" (or any no-real-row-yet) mode is
+  represented by an invented `VariantFormRow`, one module mints it *and* is the only module that reads its key
+  back. `product-create-recipe-card.tsx` minted `{ key: "default", … }` for the recipe editor while
+  `handleSubmit` built its own copy for the payload — the two agreed by coincidence, not by contract, and the
+  payload copy never read the recipes Map, so a recipe entered on a product without variants was silently
+  discarded (LNS-572). Fix by **collapsing the branch, not patching it**: resolve the rows once
+  (`create/_utils/build-variant-params.ts::resolveVariantRows`), then map that single list to the payload with
+  no second per-mode fork. A builder that still reads `hasVariants ? … : …` will drift again — the branch you
+  don't touch is the one that rots. Keep the sentinel key module-private, as `NEW_SINGLE_VARIANT_KEY` in
+  `[id]/_utils/sync-variants.ts` does; if two modules need it, that is the signal to move the derivation, not
+  to export the constant.
 - **Interface Segregation (repositories)**: When a feature has distinct sub-resources (e.g., master + entries), split
   into separate repository/source interfaces, implementations, and files. Each concern gets its own file:
   `fixed-cost.ts` (master) + `fixed-cost-entry.ts` (entries).
@@ -140,6 +202,33 @@ Custom `HttpRequest` class injects Clerk session headers:
 - Base URL from `NEXT_PUBLIC_BASE_API_URL`
 - `FetchConfig` supports `requireAuth` (default `true`), `contentType`, and `headers` — no account-level config
 - Services that bypass `HttpRequest` (manual `fetch`) must still set `Authorization` header manually
+
+**Partial-update PUTs: `undefined` omits, `null` clears — never conflate them.** `HttpRequest`
+serialises with `JSON.stringify`, which **silently drops `undefined`-valued keys**. On a partial-update
+endpoint an absent key means "leave unchanged", so `sku: value || undefined` in a request body does not
+clear a field — it preserves the old one, reports success, and the stale value returns on the next
+refetch. That was LNS-573. To clear a nullable field, send an explicit `null`; widen the param type to
+`string | null` rather than reaching for `undefined`. Note most Loonas write endpoints reject `""` with a
+400, so an empty form input must be converted, not forwarded.
+
+Two rules follow, and both are load-bearing:
+
+- **Build partial-update bodies explicitly; never `body: params` passthrough.** Passthrough is exactly how
+  key-omission became an accident of the serializer rather than an intentional encoding. Follow
+  `ProductServiceImpl.update` / `updateVariant`: `if (params.x !== undefined) body["x"] = params.x`. A
+  `POST` create may stay passthrough when it needs no key renaming or nesting — comment the asymmetry so
+  it does not read as an oversight.
+- **Test the serialized payload, not the params object.** `expect(obj.sku).toBeUndefined()` passes whether
+  the bug is present or not, because the key is a literal property either way; only
+  `JSON.stringify(body)` reveals whether it survives the wire. Mock `HttpRequest.request` with a `vi.fn()`
+  that captures `params.body` and assert on the stringified result — see
+  `features/invoice/data/sources/create-pos-sale-body.test.ts` and
+  `features/product/data/sources/product.test.ts`.
+
+The `""` → `null` conversion belongs in the **app layer that owns the form buffer** (e.g.
+`products/[id]/_utils/sync-variants.ts`), not the service: `""` is a presentation fact about an emptied
+text input, `null` is the domain fact. Use one fallback expression across every path that builds the same
+value — forking `|| null` on update and `|| undefined` on create recreates the LNS-572 drift.
 
 ### Deprecated — Do Not Use
 

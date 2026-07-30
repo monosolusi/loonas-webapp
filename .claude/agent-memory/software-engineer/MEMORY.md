@@ -27,6 +27,8 @@
 - [Mobile ActionMenu rows + SectionCard header gap](feedback_mobile_actionmenu_rows_and_sectioncard_header.md) — action-only MobileListCard rows (no href, chevron=false, ActionMenu in trailing slot); SectionCard headerAction overflows on mobile when wide (core gap, cap+scroll locally)
 - [Mobile fixed-px children](feedback_mobile_fixed_px_children.md) — components taking a pixel-number prop (e.g. QrisCard's `size` → QRCodeSVG) don't shrink with a fluid wrapper; dual-render two sizes by breakpoint instead of computing one shrunk value (POS QRIS mobile-adapt)
 - [Mobile-adapt finance periodic scope](feedback_mobile_adapt_finance_periodic_scope.md) — toolbar flex-wrap > col/row toggle; TabFilter needs explicit width under items-start parents; 3+ control rows exceed MobileListCard's 2 slots; UUID reference rows need wrap+truncate
+- [`field: value || undefined` key is always present](feedback_undefined_key_still_present_in_params_obj.md) — `"key" in obj` is always true for this pattern; assert `.field === undefined` + JSON.stringify, not "in" (LNS-570)
+- [Partial-update clear needs explicit null](feedback_partial_update_clear_needs_explicit_null.md) — on a PUT with omitted=unchanged/null=clear semantics, `|| undefined` silently defeats clearing; use `|| null` + build body explicitly, never passthrough (LNS-573)
 
 ## Project
 

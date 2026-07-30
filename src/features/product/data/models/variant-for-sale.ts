@@ -1,6 +1,7 @@
 import { AbstractModel } from "@/core/resources/model";
 import { VariantForSaleEntity } from "@/features/product/domain/entities/variant-for-sale";
 import { UnavailableReason } from "@/features/product/domain/enums/unavailable-reason";
+import { PriceTierScheduleModel } from "@/features/product/data/models/price-tier-schedule";
 
 type VariantForSaleModelConstructor = {
   id: string;
@@ -11,6 +12,7 @@ type VariantForSaleModelConstructor = {
   unavailableReason: UnavailableReason | null;
   currentStock: number | null;
   maxMakeable: number | null;
+  priceTierSchedule: PriceTierScheduleModel | null;
 };
 
 const REASON_VALUES = new Set<string>(Object.values(UnavailableReason));
@@ -29,6 +31,7 @@ export class VariantForSaleModel implements AbstractModel {
   public readonly unavailableReason: UnavailableReason | null;
   public readonly currentStock: number | null;
   public readonly maxMakeable: number | null;
+  public readonly priceTierSchedule: PriceTierScheduleModel | null;
 
   constructor(args: VariantForSaleModelConstructor) {
     this.id = args.id;
@@ -39,6 +42,7 @@ export class VariantForSaleModel implements AbstractModel {
     this.unavailableReason = args.unavailableReason;
     this.currentStock = args.currentStock;
     this.maxMakeable = args.maxMakeable;
+    this.priceTierSchedule = args.priceTierSchedule;
   }
 
   public static fromJson(data: Record<string, any>): VariantForSaleModel {
@@ -51,6 +55,8 @@ export class VariantForSaleModel implements AbstractModel {
       unavailableReason: parseUnavailableReason(data["unavailable_reason"]),
       currentStock: typeof data["current_stock"] === "number" ? data["current_stock"] : null,
       maxMakeable: typeof data["max_makeable"] === "number" ? data["max_makeable"] : null,
+      // Routed through the same parser as VariantModel so the two mappers cannot diverge.
+      priceTierSchedule: PriceTierScheduleModel.fromVariantJson(data),
     });
   }
 
@@ -64,6 +70,7 @@ export class VariantForSaleModel implements AbstractModel {
       unavailableReason: this.unavailableReason,
       currentStock: this.currentStock,
       maxMakeable: this.maxMakeable,
+      priceTierSchedule: this.priceTierSchedule?.toEntity() ?? null,
     });
   }
 }

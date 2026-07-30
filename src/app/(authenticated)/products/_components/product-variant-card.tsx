@@ -16,6 +16,7 @@ type ProductVariantCardProps = {
   onSinglePriceChange: (price: number) => void;
   onVariantsChange: (variants: VariantFormRow[]) => void;
   hideVariantToggle?: boolean;
+  defaultVariantSeed?: { key: string; sku: string };
 };
 
 export function ProductVariantCard({
@@ -26,6 +27,7 @@ export function ProductVariantCard({
   onSinglePriceChange,
   onVariantsChange,
   hideVariantToggle,
+  defaultVariantSeed,
 }: ProductVariantCardProps) {
   const [disableDialogOpen, setDisableDialogOpen] = useState(false);
 
@@ -37,8 +39,21 @@ export function ProductVariantCard({
       setDisableDialogOpen(true);
       return;
     }
-    if (enabled && singlePrice > 0) {
-      onVariantsChange([{ key: crypto.randomUUID(), name: "", sku: "", price: singlePrice }]);
+    // LNS-570: when a Default variant exists on the server, row 1 MUST carry its id — its grosir
+    // tiers and recipe hang off that id, and a fresh crypto.randomUUID() plans the toggle as
+    // delete-then-add and destroys both. Seeded unconditionally when the variant exists, not only
+    // when singlePrice > 0: a zero price is no reason to orphan a recipe. `name` is deliberately
+    // left blank so the merchant must name the variant — saving it as "Default" would make the
+    // product read back as single-price on the next hydration.
+    if (enabled && (singlePrice > 0 || defaultVariantSeed)) {
+      onVariantsChange([
+        {
+          key: defaultVariantSeed?.key ?? crypto.randomUUID(),
+          name: "",
+          sku: defaultVariantSeed?.sku ?? "",
+          price: singlePrice,
+        },
+      ]);
     }
     if (!enabled && variants.length > 0 && variants[0].price > 0) {
       onSinglePriceChange(variants[0].price);

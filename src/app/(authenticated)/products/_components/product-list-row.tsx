@@ -67,7 +67,13 @@ export function ProductListRow({ product, stockMap }: ProductListRowProps) {
             </span>
           </div>
         </div>
-        <span className="text-right text-sm leading-5 font-semibold text-neutral-500">{product.displayPrice}</span>
+        <div className="flex flex-col items-end">
+          <span className="text-sm leading-5 font-semibold text-neutral-500">{product.displayPrice}</span>
+          {/* null = not hydrated -> render nothing; 0 = hydrated and flat -> nothing extra. */}
+          {product.tieredVariantCount !== null && product.tieredVariantCount > 0 && (
+            <span className="text-primary-300 text-xs leading-4">Harga grosir</span>
+          )}
+        </div>
         <ProductStockCell totalStock={stock?.totalStock ?? null} />
         <span className="text-sm leading-5 text-neutral-400">{product.category?.name ?? "-"}</span>
         <div className="flex flex-col">

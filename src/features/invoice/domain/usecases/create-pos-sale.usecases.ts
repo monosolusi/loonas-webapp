@@ -9,7 +9,6 @@ import { InvoiceRepository } from "@/features/invoice/domain/repositories/invoic
 export type CreatePosSaleUseCaseItem = {
   variantId: string;
   quantity: number;
-  unitPrice: number;
   discount: number;
 };
 
