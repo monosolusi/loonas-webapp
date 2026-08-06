@@ -2,13 +2,17 @@
 
 import { useMemo, useState } from "react";
 import { SectionCard } from "@/core/presentations/components/section-card";
-import { ActionMenu } from "@/core/presentations/components/action-menu";
+import { ActionMenu, ActionMenuOption } from "@/core/presentations/components/action-menu";
 import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item";
 import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type";
 import { useListStockItems } from "@/features/inventory/presentations/hooks/use-list-stock-items";
-import { useRawMaterialDetail } from "@/app/(authenticated)/settings/raw-materials/[id]/_providers/raw-material-detail-provider";
+import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
 import { MinStockDialog } from "@/features/inventory/presentations/components/min-stock-dialog";
+import { StockAdjustmentDialog } from "@/features/inventory/presentations/components/stock-adjustment-dialog";
+import { useRawMaterialDetail } from "@/app/(authenticated)/settings/raw-materials/[id]/_providers/raw-material-detail-provider";
+
+const INVENTORY_ADJUSTMENT_FEATURE = "inventory_adjustment";
 
 function stockStatusLabel(stockItem: StockItemEntity): { label: string; color: string } {
   if (stockItem.minStock === null) return { label: "Min stok belum diatur", color: "text-neutral-300" };
@@ -18,8 +22,12 @@ function stockStatusLabel(stockItem: StockItemEntity): { label: string; color: s
 
 export function RawMaterialDetailStockCard() {
   const { rawMaterial } = useRawMaterialDetail();
+  const { account } = useGetCurrentAccount();
   const stockResult = useListStockItems({ type: StockItemType.RAW_MATERIAL, limit: 100 });
   const [editingItem, setEditingItem] = useState<StockItemEntity | null>(null);
+  const [adjustingItem, setAdjustingItem] = useState<StockItemEntity | null>(null);
+
+  const canAdjust = account?.hasFeature(INVENTORY_ADJUSTMENT_FEATURE) ?? false;
 
   const stockItem = useMemo(() => {
     if (!stockResult.stockItems) return null;
@@ -30,14 +38,17 @@ export function RawMaterialDetailStockCard() {
 
   const status = stockStatusLabel(stockItem);
 
+  const menuOptions: ActionMenuOption[] = [{ label: "Atur Stok Minimum", onClick: () => setEditingItem(stockItem) }];
+  if (canAdjust) {
+    menuOptions.push({ label: "Sesuaikan Stok", onClick: () => setAdjustingItem(stockItem) });
+  }
+
   return (
     <>
       <SectionCard
         title="Stok"
         iconSrc="/assets/images/box-icon-primary-300-w16-h16.svg"
-        headerAction={
-          <ActionMenu options={[{ label: "Atur Stok Minimum", onClick: () => setEditingItem(stockItem) }]} />
-        }
+        headerAction={<ActionMenu options={menuOptions} />}
       >
         <div className="flex flex-col gap-y-4">
           <div className="flex flex-row items-center justify-between">
@@ -59,6 +70,9 @@ export function RawMaterialDetailStockCard() {
         </div>
       </SectionCard>
       <MinStockDialog stockItem={editingItem} onClose={() => setEditingItem(null)} />
+      {canAdjust && (
+        <StockAdjustmentDialog stockItem={adjustingItem} onClose={() => setAdjustingItem(null)} />
+      )}
     </>
   );
 }
