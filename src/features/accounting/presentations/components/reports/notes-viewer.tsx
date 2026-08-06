@@ -1,3 +1,11 @@
+/**
+ * LNS-637: all CALK notes render read-only. Notes carrying `requiresTenantConfirmation` (note #2,
+ * Kebijakan Akuntansi) must NEVER gain an edit / dismiss / suppress / replace affordance — note #2
+ * carries a mandated SAK EMKM ¶6.3 departure disclosure (substituted server-side by LNS-631) that a
+ * merchant must not strip from a statutory document. See `NoteEntity.isReadOnly` for the domain
+ * invariant. The mode-dependent gate (allow standard-copy edit, forbid departure-copy edit) waits
+ * on a BE discriminator field; do not add any editable affordance here until that ships.
+ */
 import { NotesReportEntity } from "@/features/accounting/domain/entities/notes";
 import { NoteText } from "@/features/accounting/presentations/components/reports/note-text";
 import { NoteLineItems } from "@/features/accounting/presentations/components/reports/note-line-items";
