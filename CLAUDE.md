@@ -129,6 +129,11 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **UseCase params independence**: Use case param types are defined in the use case file itself. Use cases MUST NOT
   import param types from repositories or sources. The use case defines its own params, then maps to repo params
   internally.
+- **Source owns its params (LNS-402)**: `domain/sources/*.ts` define their own `*ServiceParams` types locally and
+  MUST NOT import param types from `domain/repositories/`. The repository keeps its own params; the use case maps
+  between repo and service params. Mirrors Use-Case params independence one layer down — when adding a source, check
+  its siblings follow the same ownership and fold any repo-owned stragglers in the same PR (same defect class,
+  adjacent path).
 - **UseCase workflow**: `execute()` should read like a clean workflow — delegate to private methods. Common pattern:
   `resolveSession()` as private method that throws on failure, then private action methods that call repository.
 - **Provider pattern (feature-level)**: When a feature needs shared state across components, extract to a provider in
@@ -202,6 +207,11 @@ Custom `HttpRequest` class injects Clerk session headers:
 - Base URL from `NEXT_PUBLIC_BASE_API_URL`
 - `FetchConfig` supports `requireAuth` (default `true`), `contentType`, and `headers` — no account-level config
 - Services that bypass `HttpRequest` (manual `fetch`) must still set `Authorization` header manually
+
+**Idempotency key minted at the orchestration layer**: the `Idempotency-Key` is generated once per submit attempt in
+the dialog/handler that owns form state (`crypto.randomUUID()` in `handleSubmit`), then threaded
+`trigger → use case → repo → source → Idempotency-Key header`. Never minted in the service/source layer (the
+LNS-117 anti-pattern) — the service only forwards what it's given. Fresh key per attempt, stable within an attempt.
 
 **Partial-update PUTs: `undefined` omits, `null` clears — never conflate them.** `HttpRequest`
 serialises with `JSON.stringify`, which **silently drops `undefined`-valued keys**. On a partial-update
