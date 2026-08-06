@@ -26,9 +26,10 @@ describe("NoteEntity.isReadOnly", () => {
     expect(note.isReadOnly).toBe(false);
   });
 
-  it("is read-only for note #2 regardless of which mode the backend rendered (guard is blanket until the BE discriminator ships)", () => {
-    // Both standard-policy and departure-disclosure modes carry requiresTenantConfirmation: true
-    // today; the blanket guard treats both as read-only until the BE discriminator lands.
+  it("pins the blanket read-only behavior until the BE discriminator ships (LNS-660)", () => {
+    // isReadOnly does not (and cannot) distinguish standard-policy copy from departure copy —
+    // there is no discriminator field on the live contract yet, by design. The guard is
+    // intentionally blanket across both BE modes today; the mode-dependent gate waits on LNS-660.
     const note = buildNote({ noteNumber: 2, requiresTenantConfirmation: true, text: "any copy" });
     expect(note.isReadOnly).toBe(true);
   });
