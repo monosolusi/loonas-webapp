@@ -77,6 +77,7 @@ const ACCOUNTING_NAV_GROUPS: AccountingNavGroup[] = [
     items: [
       { href: "/accounting/periods", label: "Periode Akuntansi" },
       { href: "/accounting/reports", label: "Laporan Keuangan" },
+      { href: "/accounting/reports/cost-valuation-gaps", label: "HPP Belum Tercatat" },
     ],
   },
 ];
