@@ -1,10 +1,9 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { DateTime } from "luxon";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { ServerError } from "@/core/resources/server-error";
-import { ReportShellState } from "@/features/accounting/presentations/types/report-shell.types";
 import { CostValuationGapRowEntity } from "@/features/accounting/domain/entities/cost-valuation-gap";
 import { useListCostValuationGaps } from "@/features/accounting/presentations/hooks/use-list-cost-valuation-gaps";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
@@ -21,9 +20,7 @@ type CostValuationGapsContextValue = {
   rows: CostValuationGapRowEntity[];
   meta: PaginationMeta | null;
   loading: boolean;
-  isLoadingPage: boolean;
   error: ServerError | null;
-  shellState: ReportShellState;
   onRetry: () => void;
 };
 
@@ -80,20 +77,10 @@ export function CostValuationGapsProvider({ children }: CostValuationGapsProvide
     setPage(newPage);
   }, []);
 
-  const hasData = hookResult.data !== null;
-  const hookError = hookResult.error ?? null;
-
-  const shellState = useMemo((): ReportShellState => {
-    if (hookError && !hasData) return "error";
-    if (hasData) return "success";
-    return "loading";
-  }, [hookError, hasData]);
-
   const rows = hookResult.data?.rows ?? [];
   const meta = hookResult.data?.meta ?? null;
 
   const loading = hookResult.loading;
-  const isLoadingPage = hookResult.isLoadingPage;
 
   const onRetry = useCallback(() => {
     hookResult.refresh?.();
@@ -111,9 +98,7 @@ export function CostValuationGapsProvider({ children }: CostValuationGapsProvide
         rows,
         meta,
         loading,
-        isLoadingPage,
-        error: hookError,
-        shellState,
+        error: hookResult.error ?? null,
         onRetry,
       }}
     >

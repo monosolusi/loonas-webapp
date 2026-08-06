@@ -14,6 +14,7 @@ import { useCostValuationGapsProvider } from "@/app/(authenticated)/accounting/r
 import { CostValuationGapRow } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_components/cost-valuation-gap-row";
 import { CostValuationGapMobileCard } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_components/cost-valuation-gap-mobile-card";
 import { CostValuationGapsAccessDenied } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_components/cost-valuation-gaps-access-denied";
+import { CostValuationGapsError } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_components/cost-valuation-gaps-error";
 
 export function CostValuationGapsView() {
   const {
@@ -27,12 +28,15 @@ export function CostValuationGapsView() {
     meta,
     loading,
     error,
+    onRetry,
   } = useCostValuationGapsProvider();
 
   // 403 FORBIDDEN from the API → feature unavailable, not a generic failure.
   if (error !== null && error.code === ErrorCodes.FORBIDDEN.code) {
     return <CostValuationGapsAccessDenied />;
   }
+
+  const hasNon403Error = error !== null;
 
   const header = (
     <TableHeader
@@ -80,31 +84,34 @@ export function CostValuationGapsView() {
         </div>
       </TableToolbar>
 
-      <TableContainer
-        loading={loading}
-        error={error !== null}
-        empty={rows.length === 0 && !loading && error === null}
-        emptyMessage="Belum ada HPP yang belum tercatat."
-        scrollable
-      >
-        {header}
-        {rows.map((row) => (
-          <Fragment key={`${row.gapKind}-${row.subjectId}`}>
-            <CostValuationGapRow row={row} />
-            <div className="lg:hidden">
-              <CostValuationGapMobileCard row={row} />
-            </div>
-          </Fragment>
-        ))}
-        {meta && meta.totalPages > 1 && (
-          <TablePagination
-            displayedCount={rows.length}
-            meta={meta}
-            currentPage={page}
-            onPageChange={onPageChange}
-          />
-        )}
-      </TableContainer>
+      {hasNon403Error ? (
+        <CostValuationGapsError onRetry={onRetry} />
+      ) : (
+        <TableContainer
+          loading={loading}
+          empty={rows.length === 0 && !loading}
+          emptyMessage="Belum ada HPP yang belum tercatat."
+          scrollable
+        >
+          {header}
+          {rows.map((row) => (
+            <Fragment key={`${row.gapKind}-${row.subjectId}`}>
+              <CostValuationGapRow row={row} />
+              <div className="lg:hidden">
+                <CostValuationGapMobileCard row={row} />
+              </div>
+            </Fragment>
+          ))}
+          {meta && meta.totalPages > 1 && (
+            <TablePagination
+              displayedCount={rows.length}
+              meta={meta}
+              currentPage={page}
+              onPageChange={onPageChange}
+            />
+          )}
+        </TableContainer>
+      )}
     </div>
   );
 }
