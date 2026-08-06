@@ -203,6 +203,13 @@ Custom `HttpRequest` class injects Clerk session headers:
 - `FetchConfig` supports `requireAuth` (default `true`), `contentType`, and `headers` — no account-level config
 - Services that bypass `HttpRequest` (manual `fetch`) must still set `Authorization` header manually
 
+**The BE contract is the live `dev-api openapi`, not a PR or ticket.** Fetch
+`dev-api.loonas.id/openapi.json` to confirm a field/endpoint is live before modeling it; trust the
+deployed schemas over BE PR or ticket prose. Never pre-add a field to a Model (`data/models/`) or
+Entity (`domain/entities/`) for a BE contract that hasn't shipped to dev-api — that invents a
+contract the backend hasn't committed to (the LNS-637 FE guard deliberately omitted a discriminator
+field that LNS-631 had not added).
+
 **Partial-update PUTs: `undefined` omits, `null` clears — never conflate them.** `HttpRequest`
 serialises with `JSON.stringify`, which **silently drops `undefined`-valued keys**. On a partial-update
 endpoint an absent key means "leave unchanged", so `sku: value || undefined` in a request body does not
