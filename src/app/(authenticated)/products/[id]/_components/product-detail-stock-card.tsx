@@ -7,9 +7,13 @@ import { ProductionMode } from "@/features/product/domain/enums/production-mode"
 import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item";
 import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type";
 import { useListStockItems } from "@/features/inventory/presentations/hooks/use-list-stock-items";
+import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
+import { StockAdjustmentDialog } from "@/features/inventory/presentations/components/stock-adjustment-dialog";
 import { useProductDetail } from "@/app/(authenticated)/products/[id]/_providers/product-detail-provider";
 import { ProductDetailStockRow } from "@/app/(authenticated)/products/[id]/_components/product-detail-stock-row";
 import { StockMinStockDialog } from "@/app/(authenticated)/products/[id]/_components/stock-min-stock-dialog";
+
+const INVENTORY_ADJUSTMENT_FEATURE = "inventory_adjustment";
 
 function hasFinishedGoodsStock(type: string, productionMode: string | null): boolean {
   if (type === ProductType.SERVICE) return false;
@@ -19,8 +23,12 @@ function hasFinishedGoodsStock(type: string, productionMode: string | null): boo
 
 export function ProductDetailStockCard() {
   const { product } = useProductDetail();
+  const { account } = useGetCurrentAccount();
   const stockResult = useListStockItems({ type: StockItemType.FINISHED_GOODS, limit: 100 });
   const [editingItem, setEditingItem] = useState<StockItemEntity | null>(null);
+  const [adjustingItem, setAdjustingItem] = useState<StockItemEntity | null>(null);
+
+  const canAdjust = account?.hasFeature(INVENTORY_ADJUSTMENT_FEATURE) ?? false;
 
   const variantStockItems = useMemo(() => {
     if (!product || !stockResult.stockItems) return [];
@@ -45,7 +53,13 @@ export function ProductDetailStockCard() {
             </div>
             {variantStockItems.length > 0 ? (
               variantStockItems.map((item) => (
-                <ProductDetailStockRow key={item.id} stockItem={item} onEditMinStock={setEditingItem} />
+                <ProductDetailStockRow
+                  key={item.id}
+                  stockItem={item}
+                  onEditMinStock={setEditingItem}
+                  onAdjustStock={canAdjust ? setAdjustingItem : undefined}
+                  canAdjust={canAdjust}
+                />
               ))
             ) : (
               <div className="flex items-center justify-center py-8">
@@ -56,6 +70,9 @@ export function ProductDetailStockCard() {
         </div>
       </SectionCard>
       <StockMinStockDialog stockItem={editingItem} onClose={() => setEditingItem(null)} />
+      {canAdjust && (
+        <StockAdjustmentDialog stockItem={adjustingItem} onClose={() => setAdjustingItem(null)} />
+      )}
     </>
   );
 }
