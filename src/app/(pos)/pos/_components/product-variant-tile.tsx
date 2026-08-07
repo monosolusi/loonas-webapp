@@ -6,6 +6,7 @@ import { StatusChip } from "@/core/presentations/components/status-chip";
 import { VariantForSaleEntity } from "@/features/product/domain/entities/variant-for-sale";
 import { StockHint } from "@/app/(pos)/pos/_components/stock-hint";
 import { UnavailableBadge } from "@/app/(pos)/pos/_components/unavailable-badge";
+import { OutOfStockBadge } from "@/app/(pos)/pos/_components/out-of-stock-badge";
 import { VariantTierSummary } from "@/app/(pos)/pos/_components/variant-tier-summary";
 
 type ProductVariantTileProps = {
@@ -32,6 +33,8 @@ export function ProductVariantTile({ variant, qtyInCart, onClick }: ProductVaria
         <span className="line-clamp-2 flex-1 text-sm leading-5 text-neutral-500">{variant.name}</span>
         {/* StatusChip renders a span; Chip renders a button and would nest inside this tile. */}
         {variant.priceTierSchedule?.hasTiers && <StatusChip label="Grosir" variant="primary" compact />}
+        {/* Safe to render unconditionally — returns null unless stock_status is OUT_OF_STOCK. */}
+        <OutOfStockBadge status={variant.stockStatus} />
       </div>
       {unavailable ? (
         variant.unavailableReason ? <UnavailableBadge reason={variant.unavailableReason} /> : null
