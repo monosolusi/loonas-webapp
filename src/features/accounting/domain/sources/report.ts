@@ -1,5 +1,18 @@
 import { PaginationMeta } from "@/core/resources/paginated";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
+import { CostValuationGapRowModel } from "@/features/accounting/data/models/cost-valuation-gap";
+
+export type ListCostValuationGapsParams = {
+  readonly from?: string;
+  readonly to?: string;
+  readonly page?: number;
+  readonly limit?: number;
+};
+
+export type ListCostValuationGapsServiceResult = {
+  readonly data: CostValuationGapRowModel[];
+  readonly meta: PaginationMeta;
+};
 
 export type ListTrialBalanceLinesParams = {
   readonly accountId: string;
@@ -70,4 +83,8 @@ export interface ReportService {
     params: ListTrialBalanceLinesParams,
     session: SessionEntity,
   ): Promise<ListTrialBalanceLinesServiceResult>;
+  listCostValuationGaps(
+    params: ListCostValuationGapsParams,
+    session: SessionEntity,
+  ): Promise<ListCostValuationGapsServiceResult>;
 }

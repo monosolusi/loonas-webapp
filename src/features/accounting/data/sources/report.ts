@@ -17,7 +17,10 @@ import {
   GetNotesServiceResult,
   ListTrialBalanceLinesParams,
   ListTrialBalanceLinesServiceResult,
+  ListCostValuationGapsParams,
+  ListCostValuationGapsServiceResult,
 } from "@/features/accounting/domain/sources/report";
+import { CostValuationGapRowModel } from "@/features/accounting/data/models/cost-valuation-gap";
 
 export class ReportServiceImpl implements ReportService {
   constructor(private readonly http: HttpRequest) {}
@@ -198,6 +201,45 @@ export class ReportServiceImpl implements ReportService {
         counterparts: result.counterparts ?? [],
         meta,
       };
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async listCostValuationGaps(
+    params: ListCostValuationGapsParams,
+    session: SessionEntity,
+  ): Promise<ListCostValuationGapsServiceResult> {
+    try {
+      const searchParams: Record<string, any> = {};
+      // Both-or-neither: only send the date pair when both are present.
+      if (params.from !== undefined && params.to !== undefined) {
+        searchParams["start_date"] = params.from;
+        searchParams["end_date"] = params.to;
+      }
+      if (params.page !== undefined) searchParams["page"] = String(params.page);
+      if (params.limit !== undefined) searchParams["limit"] = String(params.limit);
+
+      const result = await this.http.request({
+        path: "/accounting/reports/cost-valuation-gaps",
+        method: "GET",
+        searchParams,
+        session,
+      });
+
+      if (!result?.data) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
+
+      const meta: ListCostValuationGapsServiceResult["meta"] = {
+        page: result.meta?.page ?? 1,
+        limit: result.meta?.limit ?? 25,
+        total: result.meta?.total ?? 0,
+        totalPages: result.meta?.total_pages ?? 1,
+      };
+
+      const rows = (result.data as Record<string, any>[]).map(CostValuationGapRowModel.fromJson);
+
+      return { data: rows, meta };
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

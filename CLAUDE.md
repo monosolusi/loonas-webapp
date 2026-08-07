@@ -81,7 +81,12 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   makes drift structurally impossible. LNS-570 was exactly this drift: a caller hand-rolled its own copy of
   "is this product single-priced?", disagreed with the entity, and silently destroyed variant-scoped
   sub-resources on every save. If you catch yourself re-deriving an entity rule at a call site, the rule
-  belongs on the entity.
+  belongs on the entity. Corollary: if you introduce a domain getter, route the presentation through it —
+  do not leave it unused while a helper re-derives the same predicate from the underlying field. An unused
+  getter plus a parallel helper is a drift surface even when both reference the same constant today, because
+  a future change to one will not reach the other. LNS-608 arch-review caught `VariantForSaleEntity.isOutOfStock`
+  sitting unused while `outOfStockBadgeProps(status)` re-derived `stockStatus === OUT_OF_STOCK`; the fix routed
+  `OutOfStockBadge` through `isOutOfStock: boolean` and deleted the helper.
 - **Model nested references**: When a model has nested objects from API, use actual Model classes (e.g.,
   `RawMaterialModel`, `VariantModel`) with their `fromJson()`, not plain objects. `toEntity()` maps to domain types.
 - **DataState pattern**: Use cases return `DataSuccess<T>` or `DataFailed` instead of throwing
@@ -129,6 +134,11 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **UseCase params independence**: Use case param types are defined in the use case file itself. Use cases MUST NOT
   import param types from repositories or sources. The use case defines its own params, then maps to repo params
   internally.
+- **Source owns its params (LNS-402)**: `domain/sources/*.ts` define their own `*ServiceParams` types locally and
+  MUST NOT import param types from `domain/repositories/`. The repository keeps its own params; the use case maps
+  between repo and service params. Mirrors Use-Case params independence one layer down — when adding a source, check
+  its siblings follow the same ownership and fold any repo-owned stragglers in the same PR (same defect class,
+  adjacent path).
 - **UseCase workflow**: `execute()` should read like a clean workflow — delegate to private methods. Common pattern:
   `resolveSession()` as private method that throws on failure, then private action methods that call repository.
 - **Provider pattern (feature-level)**: When a feature needs shared state across components, extract to a provider in
@@ -141,6 +151,11 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   need null checks.
 - **Provider data locality**: Provider only hosts data shared across multiple components. If data is used by only one
   component, that component fetches it locally.
+- **Preserve invariants when narrowing a mutation-clear callback**: when a cart-mutation callback that cleared
+  multiple error maps is narrowed to one concern (e.g. `clearStockErrorFor` → `clearPriceMismatch` after removing the
+  stock-error map), the renamed callback must still fire on every `addItem` / `updateQty` / `removeItem` path that
+  previously called it — otherwise the remaining concern (a stale `UNIT_PRICE_MISMATCH` marker) survives a cart edit.
+  LNS-608 preserved this on all three mutation paths.
 - **Component context rule**: When a component needs context data, it consumes context itself inside `_components/`.
   Page does not wrap children in a single content component — each component is self-contained.
 - **Component architecture**: One component per file. Use `useMemo` for computed/derived data. No conditional rendering
@@ -170,6 +185,12 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   page), extract a display component (props-based, no context) and create separate implementation components that
   consume their respective providers. Display component naming: `{noun}-form-dialog.tsx`. Implementation naming:
   `{noun}-edit-dialog.tsx`.
+- **Advisory display field vs hard-gate field**: when the BE exposes an advisory display field alongside a
+  hard-gate field (e.g. `ProductForSaleVariant.stock_status` advisory vs `is_available` hard-gate), consume the
+  advisory field for display and the hard-gate field for sellability — never re-derive the server-owned predicate
+  from the advisory field or from raw quantities (`current_stock` / `max_makeable`). The server owns the
+  availability call; duplicating it in the FE invites drift. LNS-608: `stock_status` drives the "Habis" badge,
+  `is_available` drives `disabled` / addable.
 - **POS payment methods**: plugin pattern — see `src/app/(pos)/pos/_payment-methods/PLUGIN_PATTERN.md` before adding or
   modifying a payment method. The wizard chrome (header, step layout, transitions) is method-agnostic; each method is a
   self-contained handler in `_payment-methods/{type}/`.
@@ -193,6 +214,13 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
     shared `TableSearch` (`core/presentations/components/table/table-search.tsx`, `sm:w-[280px]`, right-pinned via
     `sm:ml-auto`) — never an inline `TextInput` search copy, never a bespoke search box.
   - **Row 3 (optional)**: active-filter `FilterPill` row below the toolbar.
+- **Optional date-range reports must not use the shared `DateRangeProvider`**: `DateRangeProvider`
+  (`core/presentations/providers/date-range-provider.tsx`) ALWAYS defaults to month-to-date and has no "no filter"
+  state. For reports/lists where the date range is OPTIONAL and omitting both `start_date`/`end_date` returns ALL data
+  (the both-or-neither rule), manage `{ from: Date | undefined; to: Date | undefined }` locally in the page-level
+  provider (buku-besar style — `accounting/reports/_providers/buku-besar-provider.tsx`), defaulting both to
+  `undefined` (= no filter). Enforce both-or-neither at pick-commit (ignore partial picks) and provide a
+  "clear / semua periode" affordance back to the unfiltered state. (LNS-640)
 
 ### HTTP Requests
 
@@ -202,6 +230,15 @@ Custom `HttpRequest` class injects Clerk session headers:
 - Base URL from `NEXT_PUBLIC_BASE_API_URL`
 - `FetchConfig` supports `requireAuth` (default `true`), `contentType`, and `headers` — no account-level config
 - Services that bypass `HttpRequest` (manual `fetch`) must still set `Authorization` header manually
+
+**Idempotency key minted at the orchestration layer**: the `Idempotency-Key` is generated in the dialog/handler that
+owns form state (`crypto.randomUUID()`), then threaded `trigger → use case → repo → source → Idempotency-Key
+header`. Never minted in the service/source layer (the LNS-117 anti-pattern) — the service only forwards what it's
+given. **Reuse the key across retries** until a definitive 4xx, then rotate — gate rotation with
+`shouldRotateIdempotencyKey(httpStatus, code)` (`features/invoice/presentations/helpers/idempotency-rotation.ts`,
+as `pos-provider` does). A fresh key per attempt is unsafe: a lost 5xx/network response may have already been
+processed server-side, and a new key lets the server record a second adjustment (duplicate stock decrement). Mint
+once per logical attempt, reuse on retry, rotate only when the helper says so.
 
 **The BE contract is the live `dev-api openapi`, not a PR or ticket.** Fetch
 `dev-api.loonas.id/openapi.json` to confirm a field/endpoint is live before modeling it; trust the
@@ -231,6 +268,13 @@ Two rules follow, and both are load-bearing:
   that captures `params.body` and assert on the stringified result — see
   `features/invoice/data/sources/create-pos-sale-body.test.ts` and
   `features/product/data/sources/product.test.ts`.
+
+**Dead error-code removal — branch and constant, not just the branch.** When a BE error code becomes
+unreachable (confirmed absent from `dev-api.loonas.id/openapi.json`), remove the FE runtime handler **and**
+the now-unreferenced shared `ErrorCodes` constant, not just the handler. LNS-608: `POST /pos/sales` can no
+longer return `INSUFFICIENT_STOCK`, so the `pos-provider` handler, `handleStockErrorDetails`,
+`StockErrorEntry`, **and** `ErrorCodes.INSUFFICIENT_STOCK` in `core/resources/server-error.ts` were all
+removed — leaving the dead constant is exactly the "removed rather than left as dead code" intent.
 
 The `""` → `null` conversion belongs in the **app layer that owns the form buffer** (e.g.
 `products/[id]/_utils/sync-variants.ts`), not the service: `""` is a presentation fact about an emptied
@@ -323,6 +367,14 @@ SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockI
 - **Neutral palette diverges from Tailwind defaults**: `neutral-50` is `#FFFFFF` (pure white), not off-white. For
   visible-on-white chips/badges/borders, use `neutral-100` (`#D9DADA`) or darker. Check `src/app/globals.css` `@theme`
   for the canonical palette.
+- **Nullable API fields where `null` = unclassified/unknown render distinctly — never as `0` or `Rp 0`**: when a row
+  field is nullable and `null` means the system has NOT classified/measured it (not that it found zero), render `null`
+  as an em-dash (`—`, `text-neutral-200`) or "Belum diklasifikasi" — NEVER `0`. Same for nullable money:
+  `correcting_amount: null` is the ordinary case, never `Rp 0`; `current_wac: null` → em-dash. Do not pass nullable
+  values to `NumberDisplay` (no null handling) — gate first: `value != null ? <BalanceDisplay value={value}/> : <span className="text-neutral-200">—</span>`. A per-row quantity in a row-specific `unit` (pieces vs grams) is meaningful
+  WITHIN that row only — never total/subtotal/aggregate it across rows (a count like `meta.total` is fine). Extract
+  these render-decisions to a pure `_utils/*.ts` with a colocated `.test.ts` (mirror
+  `accounting/reports/cost-valuation-gaps/_utils/classify-row.ts`). (LNS-640)
 
 ### Git
 

@@ -8,6 +8,7 @@ import { TrialBalanceReportEntity } from "@/features/accounting/domain/entities/
 import { TrialBalanceLineEntity } from "@/features/accounting/domain/entities/trial-balance-line";
 import { GeneralLedgerReportEntity } from "@/features/accounting/domain/entities/general-ledger";
 import { NotesReportEntity } from "@/features/accounting/domain/entities/notes";
+import { CostValuationGapRowEntity } from "@/features/accounting/domain/entities/cost-valuation-gap";
 
 export type GetBalanceSheetRepoParams = {
   readonly asOf: string;
@@ -51,6 +52,13 @@ export type ListTrialBalanceLinesRepoParams = {
   readonly limit?: number;
 };
 
+export type ListCostValuationGapsRepoParams = {
+  readonly from?: string;
+  readonly to?: string;
+  readonly page?: number;
+  readonly limit?: number;
+};
+
 export type BalanceSheetReportData = BalanceSheetReportEntity;
 export type IncomeStatementReportData = IncomeStatementReportEntity;
 export type CashFlowReportData = CashFlowReportEntity;
@@ -62,6 +70,10 @@ export type GeneralLedgerReportData = {
 export type TrialBalanceLinesData = {
   readonly lines: TrialBalanceLineEntity[];
   readonly counterparts: TrialBalanceLineEntity[];
+  readonly meta: PaginationMeta;
+};
+export type CostValuationGapsData = {
+  readonly rows: CostValuationGapRowEntity[];
   readonly meta: PaginationMeta;
 };
 export type NotesReportData = NotesReportEntity;
@@ -83,4 +95,8 @@ export interface ReportRepository {
     params: ListTrialBalanceLinesRepoParams,
     session: SessionEntity,
   ): Promise<DataState<TrialBalanceLinesData>>;
+  listCostValuationGaps(
+    params: ListCostValuationGapsRepoParams,
+    session: SessionEntity,
+  ): Promise<DataState<CostValuationGapsData>>;
 }

@@ -1,5 +1,6 @@
 import { AbstractEntity } from "@/core/resources/entity";
 import { UnavailableReason } from "@/features/product/domain/enums/unavailable-reason";
+import { StockStatus } from "@/features/product/domain/enums/stock-status";
 import { PriceTierScheduleEntity } from "@/features/product/domain/entities/price-tier-schedule";
 
 type VariantForSaleEntityConstructor = {
@@ -9,6 +10,7 @@ type VariantForSaleEntityConstructor = {
   price: number;
   isAvailable: boolean;
   unavailableReason: UnavailableReason | null;
+  stockStatus: StockStatus;
   currentStock: number | null;
   maxMakeable: number | null;
   priceTierSchedule: PriceTierScheduleEntity | null;
@@ -21,6 +23,7 @@ export class VariantForSaleEntity implements AbstractEntity {
   public readonly price: number;
   public readonly isAvailable: boolean;
   public readonly unavailableReason: UnavailableReason | null;
+  public readonly stockStatus: StockStatus;
   public readonly currentStock: number | null;
   public readonly maxMakeable: number | null;
   /** See VariantEntity.priceTierSchedule — `null` means not hydrated, not "no tiers". */
@@ -33,8 +36,14 @@ export class VariantForSaleEntity implements AbstractEntity {
     this.price = args.price;
     this.isAvailable = args.isAvailable;
     this.unavailableReason = args.unavailableReason;
+    this.stockStatus = args.stockStatus;
     this.currentStock = args.currentStock;
     this.maxMakeable = args.maxMakeable;
     this.priceTierSchedule = args.priceTierSchedule;
+  }
+
+  /** Advisory out-of-stock flag derived from `stockStatus` — display only, never gates saleability. */
+  public get isOutOfStock(): boolean {
+    return this.stockStatus === StockStatus.OUT_OF_STOCK;
   }
 }

@@ -4,15 +4,15 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { StockMovementModel } from "@/features/inventory/data/models/stock-movement";
 import {
   StockMovementService,
+  ListStockMovementsServiceParams,
   ListStockMovementsServiceResult,
 } from "@/features/inventory/domain/sources/stock-movement";
-import { ListStockMovementsParams } from "@/features/inventory/domain/repositories/stock-movement";
 
 export class StockMovementServiceImpl implements StockMovementService {
   constructor(private readonly http: HttpRequest) {}
 
   public async list(
-    params: ListStockMovementsParams,
+    params: ListStockMovementsServiceParams,
     session: SessionEntity,
   ): Promise<ListStockMovementsServiceResult> {
     try {

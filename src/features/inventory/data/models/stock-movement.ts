@@ -1,4 +1,5 @@
 import { AbstractModel } from "@/core/resources/model";
+import { StockItemModel } from "@/features/inventory/data/models/stock-item";
 import { StockMovementEntity } from "@/features/inventory/domain/entities/stock-movement";
 
 type StockMovementModelConstructor = {
@@ -10,6 +11,9 @@ type StockMovementModelConstructor = {
   note: string | null;
   stockItemId: string;
   createdAt: string;
+  reason: string | null;
+  effectiveAt: string;
+  stockItem: StockItemModel | null;
 };
 
 export class StockMovementModel implements AbstractModel {
@@ -21,6 +25,9 @@ export class StockMovementModel implements AbstractModel {
   public readonly note: string | null;
   public readonly stockItemId: string;
   public readonly createdAt: string;
+  public readonly reason: string | null;
+  public readonly effectiveAt: string;
+  public readonly stockItem: StockItemModel | null;
 
   constructor(args: StockMovementModelConstructor) {
     this.id = args.id;
@@ -31,9 +38,13 @@ export class StockMovementModel implements AbstractModel {
     this.note = args.note;
     this.stockItemId = args.stockItemId;
     this.createdAt = args.createdAt;
+    this.reason = args.reason;
+    this.effectiveAt = args.effectiveAt;
+    this.stockItem = args.stockItem;
   }
 
   public static fromJson(data: Record<string, any>): StockMovementModel {
+    const stockItem = data["stock_item"] ? StockItemModel.fromJson(data["stock_item"]) : null;
     return new StockMovementModel({
       id: data["id"],
       type: data["type"],
@@ -41,8 +52,11 @@ export class StockMovementModel implements AbstractModel {
       referenceType: data["reference_type"] ?? null,
       referenceId: data["reference_id"] ?? null,
       note: data["note"] ?? null,
-      stockItemId: data["stock_item"]?.["id"] ?? "",
+      stockItemId: stockItem?.id ?? data["stock_item"]?.["id"] ?? "",
       createdAt: data["created_at"] ?? "",
+      reason: data["reason"] ?? null,
+      effectiveAt: data["effective_at"] ?? data["created_at"] ?? "",
+      stockItem,
     });
   }
 
@@ -56,6 +70,9 @@ export class StockMovementModel implements AbstractModel {
       note: this.note,
       stockItemId: this.stockItemId,
       createdAt: this.createdAt,
+      reason: this.reason,
+      effectiveAt: this.effectiveAt,
+      stockItem: this.stockItem?.toEntity() ?? null,
     });
   }
 }
