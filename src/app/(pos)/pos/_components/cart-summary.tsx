@@ -12,7 +12,7 @@ type CartSummaryProps = {
 };
 
 export function CartSummary({ showCta = true }: CartSummaryProps) {
-  const { total, hasCartWarnings } = usePosCart();
+  const { total } = usePosCart();
   const { checkoutStep } = usePosUI();
 
   const inWizard = checkoutStep !== null;
@@ -25,10 +25,6 @@ export function CartSummary({ showCta = true }: CartSummaryProps) {
           <NumberDisplay value={total} suffix="IDR" />
         </span>
       </div>
-
-      {hasCartWarnings && !inWizard && (
-        <span className="text-xs text-warning-300">⚠ Beberapa item melebihi stok — periksa keranjang</span>
-      )}
 
       {showCta && (inWizard ? <CartSummaryInWizardBanner /> : <CartSummaryBayarButton />)}
     </div>

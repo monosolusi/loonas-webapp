@@ -23,19 +23,11 @@ export type CartItem = {
   /** Schedule snapshot at add-time; `null` when the read did not hydrate one. */
   priceTierSchedule: PriceTierScheduleEntity | null;
   qty: number;
-  /** Snapshot of available qty at add-time; null = unbounded (service). Used for cart-side warning. */
-  availableQtySnapshot: number | null;
 };
 
 /** A cart item decorated with its display-only price estimate. */
 export type CartLine = CartItem & {
   readonly preview: PriceTierPreviewResult;
-};
-
-export type StockErrorEntry = {
-  available: number;
-  requested: number;
-  variantName: string;
 };
 
 /**
@@ -72,11 +64,6 @@ export type PosCartValue = {
   updateQty: (productId: string, variantId: string, qty: number) => void;
   removeItem: (productId: string, variantId: string) => void;
   clearCart: () => void;
-  /** True when any cart row's qty exceeds its availableQtySnapshot. Disables Bayar. */
-  hasCartWarnings: boolean;
-
-  // Stock errors (from BE INSUFFICIENT_STOCK response)
-  stockErrors: Map<string, StockErrorEntry>;
 
   /** Set when a sale was rejected with 422 UNIT_PRICE_MISMATCH. Nothing was recorded. */
   priceMismatch: PriceMismatchEntry | null;
