@@ -214,6 +214,13 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
     shared `TableSearch` (`core/presentations/components/table/table-search.tsx`, `sm:w-[280px]`, right-pinned via
     `sm:ml-auto`) — never an inline `TextInput` search copy, never a bespoke search box.
   - **Row 3 (optional)**: active-filter `FilterPill` row below the toolbar.
+- **Optional date-range reports must not use the shared `DateRangeProvider`**: `DateRangeProvider`
+  (`core/presentations/providers/date-range-provider.tsx`) ALWAYS defaults to month-to-date and has no "no filter"
+  state. For reports/lists where the date range is OPTIONAL and omitting both `start_date`/`end_date` returns ALL data
+  (the both-or-neither rule), manage `{ from: Date | undefined; to: Date | undefined }` locally in the page-level
+  provider (buku-besar style — `accounting/reports/_providers/buku-besar-provider.tsx`), defaulting both to
+  `undefined` (= no filter). Enforce both-or-neither at pick-commit (ignore partial picks) and provide a
+  "clear / semua periode" affordance back to the unfiltered state. (LNS-640)
 
 ### HTTP Requests
 
@@ -353,6 +360,14 @@ SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockI
 - **Neutral palette diverges from Tailwind defaults**: `neutral-50` is `#FFFFFF` (pure white), not off-white. For
   visible-on-white chips/badges/borders, use `neutral-100` (`#D9DADA`) or darker. Check `src/app/globals.css` `@theme`
   for the canonical palette.
+- **Nullable API fields where `null` = unclassified/unknown render distinctly — never as `0` or `Rp 0`**: when a row
+  field is nullable and `null` means the system has NOT classified/measured it (not that it found zero), render `null`
+  as an em-dash (`—`, `text-neutral-200`) or "Belum diklasifikasi" — NEVER `0`. Same for nullable money:
+  `correcting_amount: null` is the ordinary case, never `Rp 0`; `current_wac: null` → em-dash. Do not pass nullable
+  values to `NumberDisplay` (no null handling) — gate first: `value != null ? <BalanceDisplay value={value}/> : <span className="text-neutral-200">—</span>`. A per-row quantity in a row-specific `unit` (pieces vs grams) is meaningful
+  WITHIN that row only — never total/subtotal/aggregate it across rows (a count like `meta.total` is fine). Extract
+  these render-decisions to a pure `_utils/*.ts` with a colocated `.test.ts` (mirror
+  `accounting/reports/cost-valuation-gaps/_utils/classify-row.ts`). (LNS-640)
 
 ### Git
 

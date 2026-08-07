@@ -24,6 +24,7 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/accounting/fixed-costs": { title: "Biaya Tetap" },
   "/accounting/fixed-cost-types": { title: "Jenis Biaya Tetap" },
   "/accounting/reports": { title: "Laporan Keuangan" },
+  "/accounting/reports/cost-valuation-gaps": { title: "HPP Belum Tercatat" },
   "/accounting/journals": { title: "Jurnal Umum" },
   "/accounting/journals/new": { title: "Jurnal Baru" },
   "/accounting/periods": { title: "Periode Akuntansi" },
