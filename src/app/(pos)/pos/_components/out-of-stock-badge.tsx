@@ -1,19 +1,17 @@
 import { StatusChip } from "@/core/presentations/components/status-chip";
-import { StockStatus } from "@/features/product/domain/enums/stock-status";
-import { outOfStockBadgeProps } from "@/app/(pos)/pos/_components/availability-helpers";
 
 type OutOfStockBadgeProps = {
-  status: StockStatus;
+  isOutOfStock: boolean;
 };
 
 /**
- * Advisory "Habis" badge for a variant whose `stock_status` is `OUT_OF_STOCK`. The variant
- * remains sellable, so this is a warning chip on an enabled control — distinct from
- * `UnavailableBadge`, which marks unsellable misconfiguration. Returns null for every other
- * `stock_status`, so it is safe to render unconditionally on the available path.
+ * Advisory "Habis" badge for an out-of-stock variant. The variant remains sellable, so this
+ * is a warning chip on an enabled control — distinct from `UnavailableBadge`, which marks
+ * unsellable misconfiguration. The predicate comes from `VariantForSaleEntity.isOutOfStock`
+ * (display only, never gates saleability); returns null otherwise, so it is safe to render
+ * unconditionally on the available path.
  */
-export function OutOfStockBadge({ status }: OutOfStockBadgeProps) {
-  const badge = outOfStockBadgeProps(status);
-  if (!badge) return null;
-  return <StatusChip label={badge.label} variant={badge.variant} compact />;
+export function OutOfStockBadge({ isOutOfStock }: OutOfStockBadgeProps) {
+  if (!isOutOfStock) return null;
+  return <StatusChip label="Habis" variant="warning" compact />;
 }

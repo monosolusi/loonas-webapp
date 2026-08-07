@@ -47,7 +47,7 @@ export function ProductPickerRow({ product, active, onClick }: ProductPickerRowP
           <PriceRangeDisplay min={min} max={max} />
           {singleVariant && (
             <>
-              <OutOfStockBadge status={singleVariant.stockStatus} />
+              <OutOfStockBadge isOutOfStock={singleVariant.isOutOfStock} />
               <StockHint available={singleVariant.currentStock ?? singleVariant.maxMakeable} />
             </>
           )}

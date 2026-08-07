@@ -1,6 +1,5 @@
 import { StatusChipVariant } from "@/core/presentations/components/status-chip";
 import { UnavailableReason } from "@/features/product/domain/enums/unavailable-reason";
-import { StockStatus } from "@/features/product/domain/enums/stock-status";
 
 const SHORT_LABELS: Record<UnavailableReason, string> = {
   STOCK_NOT_REGISTERED: "Setup",
@@ -20,15 +19,6 @@ export function unavailableShortLabel(reason: UnavailableReason): string {
 
 export function unavailableChipVariant(reason: UnavailableReason): StatusChipVariant {
   return VARIANTS[reason];
-}
-
-// Out-of-stock is an advisory signal carried by `stock_status`, not an availability gate — the
-// variant stays sellable, so its badge is a warning chip shown on an enabled control, visually
-// distinct from the red error chip + disabled state used for the unsellable misconfiguration
-// reasons above. Only `OUT_OF_STOCK` renders a badge; the other statuses render nothing.
-export function outOfStockBadgeProps(status: StockStatus): { label: string; variant: StatusChipVariant } | null {
-  if (status !== StockStatus.OUT_OF_STOCK) return null;
-  return { label: "Habis", variant: "warning" };
 }
 
 /** Threshold below which a low-stock dot is shown next to the price. */

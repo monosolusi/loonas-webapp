@@ -33,8 +33,8 @@ export function ProductVariantTile({ variant, qtyInCart, onClick }: ProductVaria
         <span className="line-clamp-2 flex-1 text-sm leading-5 text-neutral-500">{variant.name}</span>
         {/* StatusChip renders a span; Chip renders a button and would nest inside this tile. */}
         {variant.priceTierSchedule?.hasTiers && <StatusChip label="Grosir" variant="primary" compact />}
-        {/* Safe to render unconditionally — returns null unless stock_status is OUT_OF_STOCK. */}
-        <OutOfStockBadge status={variant.stockStatus} />
+        {/* Safe to render unconditionally — returns null unless the variant is out of stock. */}
+        <OutOfStockBadge isOutOfStock={variant.isOutOfStock} />
       </div>
       {unavailable ? (
         variant.unavailableReason ? <UnavailableBadge reason={variant.unavailableReason} /> : null

@@ -61,7 +61,7 @@ export function ProductTile({ product, qtyInCart, onClick }: ProductTileProps) {
           </span>
           {singleVariant ? (
             <div className="flex flex-row items-center gap-x-1.5">
-              <OutOfStockBadge status={singleVariant.stockStatus} />
+              <OutOfStockBadge isOutOfStock={singleVariant.isOutOfStock} />
               <StockHint available={singleVariant.currentStock ?? singleVariant.maxMakeable} />
             </div>
           ) : product.hasMultipleVariants ? (

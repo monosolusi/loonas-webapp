@@ -39,7 +39,7 @@ export function ProductPickerVariantRow({ variant, active, onClick }: ProductPic
         <>
           {/* StatusChip renders a span; Chip renders a button and would nest inside this row's button. */}
           {hasTiers && <StatusChip label="Grosir" variant="primary" compact />}
-          <OutOfStockBadge status={variant.stockStatus} />
+          <OutOfStockBadge isOutOfStock={variant.isOutOfStock} />
           <NumberDisplay value={variant.price} />
           <StockHint available={stockSource} />
         </>
