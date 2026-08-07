@@ -87,11 +87,11 @@ describe("classifyCorrectingEntry", () => {
     expect(classifyCorrectingEntry(makeRow({ correctingEntry: null }))).toEqual({ kind: "unmapped" });
   });
 
-  it("returns a mapped label with debit and credit codes when present", () => {
+  it("returns a mapped label with debit and credit names when present", () => {
     const row = makeRow({ correctingEntry: makeCorrectingEntry() });
     expect(classifyCorrectingEntry(row)).toEqual({
       kind: "mapped",
-      label: "HPP 5000 · Persediaan 1400",
+      label: "HPP (5000) · Persediaan (1400)",
     });
   });
 });

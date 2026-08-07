@@ -35,12 +35,13 @@ export type CorrectingEntryDisplay =
   | { readonly kind: "unmapped" }
   | { readonly kind: "mapped"; readonly label: string };
 
-/** null = no resolved COA mapping. Present = "HPP {debit.code} · Persediaan {credit.code}". */
+/** null = no resolved COA mapping. Present = "{debit.name} ({debit.code}) · {credit.name} ({credit.code})". */
 export function classifyCorrectingEntry(row: CostValuationGapRowEntity): CorrectingEntryDisplay {
   if (row.correctingEntry === null) return { kind: "unmapped" };
+  const { debit, credit } = row.correctingEntry;
   return {
     kind: "mapped",
-    label: `HPP ${row.correctingEntry.debit.code} · Persediaan ${row.correctingEntry.credit.code}`,
+    label: `${debit.name} (${debit.code}) · ${credit.name} (${credit.code})`,
   };
 }
 

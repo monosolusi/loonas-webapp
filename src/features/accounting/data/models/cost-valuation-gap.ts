@@ -51,8 +51,8 @@ export class CostValuationGapRowModel implements AbstractModel {
     public readonly occurrenceCount: number,
     public readonly affectedSaleCount: number,
     public readonly unvaluedQty: number,
-    public readonly firstPostingDate: string,
-    public readonly lastPostingDate: string,
+    public readonly firstPostingDate: string | null,
+    public readonly lastPostingDate: string | null,
     public readonly hppOmittedCount: number | null,
     public readonly hppUnderstatedCount: number | null,
     public readonly cause: CostValuationGapCause,
@@ -64,25 +64,24 @@ export class CostValuationGapRowModel implements AbstractModel {
   ) {}
 
   public static fromJson(raw: Record<string, any>): CostValuationGapRowModel {
-    const correctingRaw = raw["correcting_entry"];
     return new CostValuationGapRowModel(
-      raw["gap_kind"] ?? "variant",
+      resolveGapKind(raw["gap_kind"]),
       raw["subject_id"] ?? "",
-      raw["name"] ?? null,
-      raw["variant_name"] ?? null,
-      raw["unit"] ?? null,
+      raw["name"] || null,
+      raw["variant_name"] || null,
+      raw["unit"] || null,
       raw["deleted"] ?? false,
       raw["occurrence_count"] ?? 0,
       raw["affected_sale_count"] ?? 0,
       raw["unvalued_qty"] ?? 0,
-      raw["first_posting_date"] ?? "",
-      raw["last_posting_date"] ?? "",
+      raw["first_posting_date"] || null,
+      raw["last_posting_date"] || null,
       raw["hpp_omitted_count"] ?? null,
       raw["hpp_understated_count"] ?? null,
-      raw["cause"] ?? "no_source_record",
+      resolveCause(raw["cause"]),
       raw["action_required"] ?? false,
       raw["action_text"] ?? "",
-      correctingRaw ? CorrectingEntryModel.fromJson(correctingRaw) : null,
+      buildCorrectingEntry(raw["correcting_entry"]),
       raw["current_wac"] ?? null,
       raw["correcting_amount"] ?? null,
     );
@@ -111,4 +110,45 @@ export class CostValuationGapRowModel implements AbstractModel {
       this.correctingAmount,
     );
   }
+}
+
+const KNOWN_GAP_KINDS: ReadonlySet<string> = new Set(["variant", "raw_material"]);
+const KNOWN_CAUSES: ReadonlySet<string> = new Set(["no_source_record", "cost_basis_not_derived"]);
+
+/**
+ * Resolve a gap_kind from the raw API value, warning on unknown enum members so
+ * backend contract drift is visible in dev without crashing production.
+ */
+function resolveGapKind(raw: unknown): CostValuationGapKind {
+  if (typeof raw === "string" && KNOWN_GAP_KINDS.has(raw)) return raw as CostValuationGapKind;
+  if (typeof raw === "string" && raw !== "" && process.env.NODE_ENV !== "production") {
+    console.warn(`[CostValuationGap] Unknown gap_kind "${raw}" from API — falling back to "variant".`);
+  }
+  return "variant";
+}
+
+/**
+ * Resolve a cause from the raw API value, warning on unknown enum members so
+ * backend contract drift is visible in dev without crashing production.
+ */
+function resolveCause(raw: unknown): CostValuationGapCause {
+  if (typeof raw === "string" && KNOWN_CAUSES.has(raw)) return raw as CostValuationGapCause;
+  if (typeof raw === "string" && raw !== "" && process.env.NODE_ENV !== "production") {
+    console.warn(`[CostValuationGap] Unknown cause "${raw}" from API — falling back to "no_source_record".`);
+  }
+  return "no_source_record";
+}
+
+/**
+ * Build a CorrectingEntryModel only when the raw object has both a debit and a
+ * credit with a non-empty code. A present-but-empty correcting_entry would
+ * otherwise render a bogus "HPP · Persediaan" label with empty codes — treat it
+ * as unmapped (null) instead.
+ */
+function buildCorrectingEntry(raw: Record<string, any> | null | undefined): CorrectingEntryModel | null {
+  if (!raw) return null;
+  const debitCode = raw["debit"]?.["code"];
+  const creditCode = raw["credit"]?.["code"];
+  if (!debitCode || !creditCode) return null;
+  return CorrectingEntryModel.fromJson(raw);
 }

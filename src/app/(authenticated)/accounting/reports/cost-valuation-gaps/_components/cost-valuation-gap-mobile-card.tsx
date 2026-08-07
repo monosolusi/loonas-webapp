@@ -1,6 +1,5 @@
 "use client";
 
-import { DateTime } from "luxon";
 import { StatusChip } from "@/core/presentations/components/status-chip";
 import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { MobileListCard } from "@/core/presentations/components/table/mobile-list-card";
@@ -11,15 +10,11 @@ import {
   classifyNullableAmount,
   classifyRow,
 } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_utils/classify-row";
+import { formatGapDate } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_utils/format-date";
 
 type CostValuationGapMobileCardProps = {
   row: CostValuationGapRowEntity;
 };
-
-function formatDate(iso: string): string {
-  if (!iso) return "—";
-  return DateTime.fromISO(iso).toFormat("d MMM yyyy", { locale: "id" });
-}
 
 export function CostValuationGapMobileCard({ row }: CostValuationGapMobileCardProps) {
   const displayClass = classifyRow(row);
@@ -48,7 +43,7 @@ export function CostValuationGapMobileCard({ row }: CostValuationGapMobileCardPr
       }
       meta={
         <span>
-          {formatDate(row.firstPostingDate)} — {formatDate(row.lastPostingDate)} ·{" "}
+          {formatGapDate(row.firstPostingDate)} — {formatGapDate(row.lastPostingDate)} ·{" "}
           <NumberDisplay value={row.unvaluedQty} />
           {row.unit ? ` ${row.unit}` : ""} tidak tercatat
         </span>

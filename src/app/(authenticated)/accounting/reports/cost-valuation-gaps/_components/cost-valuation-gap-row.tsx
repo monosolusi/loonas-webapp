@@ -1,7 +1,6 @@
 "use client";
 
 import clsx from "clsx";
-import { DateTime } from "luxon";
 import { StatusChip } from "@/core/presentations/components/status-chip";
 import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { BalanceDisplay } from "@/features/accounting/presentations/components/reports/balance-display";
@@ -13,15 +12,11 @@ import {
   classifyNullableAmount,
   classifyRow,
 } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_utils/classify-row";
+import { formatGapDate } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_utils/format-date";
 
 type CostValuationGapRowProps = {
   row: CostValuationGapRowEntity;
 };
-
-function formatDate(iso: string): string {
-  if (!iso) return "—";
-  return DateTime.fromISO(iso).toFormat("d MMM yyyy", { locale: "id" });
-}
 
 export function CostValuationGapRow({ row }: CostValuationGapRowProps) {
   const displayClass = classifyRow(row);
@@ -82,8 +77,8 @@ export function CostValuationGapRow({ row }: CostValuationGapRowProps) {
 
       {/* Periode */}
       <div className="flex flex-col gap-y-0.5">
-        <span className="text-sm text-neutral-500">{formatDate(row.firstPostingDate)}</span>
-        <span className="text-xs text-neutral-300">s/d {formatDate(row.lastPostingDate)}</span>
+        <span className="text-sm text-neutral-500">{formatGapDate(row.firstPostingDate)}</span>
+        <span className="text-xs text-neutral-300">s/d {formatGapDate(row.lastPostingDate)}</span>
       </div>
 
       {/* HPP (omitted/understated) */}
