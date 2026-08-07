@@ -51,14 +51,16 @@ export function useListCostValuationGaps(
     { keepPreviousData: true },
   );
 
+  const swrError = error instanceof ServerError ? error : error ? new ServerError(ErrorCodes.UNKNOWN) : null;
+
   if (isLoading && !data) return INITIAL_STATE;
-  if (error && !data) {
+  if (swrError && !data) {
     return {
       data: null,
       loading: false,
       isLoadingPage: false,
-      error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
-      refresh: null,
+      error: swrError,
+      refresh: () => mutate(),
     };
   }
   if (!data) return INITIAL_STATE;
@@ -67,7 +69,7 @@ export function useListCostValuationGaps(
     data,
     loading: false,
     isLoadingPage: isValidating,
-    error: null,
+    error: swrError,
     refresh: mutate,
   };
 }

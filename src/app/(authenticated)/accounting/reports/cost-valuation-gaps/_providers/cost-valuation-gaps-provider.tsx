@@ -1,9 +1,10 @@
 "use client";
 
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { DateTime } from "luxon";
 import { PaginationMeta } from "@/core/resources/paginated";
-import { ServerError } from "@/core/resources/server-error";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { ReportShellState } from "@/features/accounting/presentations/types/report-shell.types";
 import { CostValuationGapRowEntity } from "@/features/accounting/domain/entities/cost-valuation-gap";
 import { useListCostValuationGaps } from "@/features/accounting/presentations/hooks/use-list-cost-valuation-gaps";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
@@ -19,8 +20,10 @@ type CostValuationGapsContextValue = {
   onPageChange: (page: number) => void;
   rows: CostValuationGapRowEntity[];
   meta: PaginationMeta | null;
-  loading: boolean;
-  error: ServerError | null;
+  shellState: ReportShellState;
+  accessDenied: boolean;
+  isLoadingPage: boolean;
+  pageError: ServerError | null;
   onRetry: () => void;
 };
 
@@ -79,12 +82,29 @@ export function CostValuationGapsProvider({ children }: CostValuationGapsProvide
 
   const rows = hookResult.data?.rows ?? [];
   const meta = hookResult.data?.meta ?? null;
+  const hasData = hookResult.data !== null;
+  const hookError = hookResult.error ?? null;
 
-  const loading = hookResult.loading;
+  // 403 FORBIDDEN from the API → feature unavailable, not a generic failure.
+  // Handled independently of shellState (the view renders AccessDenied before
+  // the shell-state switch), mirroring how siblings handle feature-gate 403.
+  const accessDenied = hookError?.code === ErrorCodes.FORBIDDEN.code;
+
+  const shellState = useMemo((): ReportShellState => {
+    if (hookError && !hasData) return "error";
+    if (hasData) return rows.length === 0 ? "empty" : "success";
+    return "loading";
+  }, [hookError, hasData, rows.length]);
+
+  // A failed refetch under a new filter must show retry UI or a shimmer, not
+  // silently render stale rows. Surface SWR's error even when data is present
+  // (keepPreviousData keeps stale rows on refetch error).
+  const pageError = hasData && hookError ? hookError : null;
+  const isLoadingPage = hookResult.isLoadingPage;
 
   const onRetry = useCallback(() => {
     hookResult.refresh?.();
-  }, [hookResult]);
+  }, [hookResult.refresh]);
 
   return (
     <CostValuationGapsContext.Provider
@@ -97,8 +117,10 @@ export function CostValuationGapsProvider({ children }: CostValuationGapsProvide
         onPageChange,
         rows,
         meta,
-        loading,
-        error: hookResult.error ?? null,
+        shellState,
+        accessDenied,
+        isLoadingPage,
+        pageError,
         onRetry,
       }}
     >

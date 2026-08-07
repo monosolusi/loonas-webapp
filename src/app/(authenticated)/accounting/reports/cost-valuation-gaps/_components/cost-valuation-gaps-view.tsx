@@ -1,20 +1,17 @@
 "use client";
 
-import { Fragment } from "react";
 import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
+import { FilterPill } from "@/core/presentations/components/filter-pill";
 import { ListPageHeader } from "@/core/presentations/components/list-page-header";
 import { SummaryCard } from "@/core/presentations/components/summary-card";
-import { TableContainer } from "@/core/presentations/components/table/table-container";
-import { TableHeader } from "@/core/presentations/components/table/table-header";
-import { TablePagination } from "@/core/presentations/components/table/table-pagination";
 import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
-import { FilterPill } from "@/app/(authenticated)/products/_components/filter-dropdown";
-import { ErrorCodes } from "@/core/resources/server-error";
 import { useCostValuationGapsProvider } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_providers/cost-valuation-gaps-provider";
-import { CostValuationGapRow } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_components/cost-valuation-gap-row";
-import { CostValuationGapMobileCard } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_components/cost-valuation-gap-mobile-card";
 import { CostValuationGapsAccessDenied } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_components/cost-valuation-gaps-access-denied";
 import { CostValuationGapsError } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_components/cost-valuation-gaps-error";
+import { CostValuationGapsLoading } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_components/cost-valuation-gaps-loading";
+import { CostValuationGapsEmpty } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_components/cost-valuation-gaps-empty";
+import { CostValuationGapsTable } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_components/cost-valuation-gaps-table";
+import { formatGapRange } from "@/app/(authenticated)/accounting/reports/cost-valuation-gaps/_utils/format-date";
 
 export function CostValuationGapsView() {
   const {
@@ -26,34 +23,17 @@ export function CostValuationGapsView() {
     onPageChange,
     rows,
     meta,
-    loading,
-    error,
+    shellState,
+    accessDenied,
+    isLoadingPage,
+    pageError,
     onRetry,
   } = useCostValuationGapsProvider();
 
   // 403 FORBIDDEN from the API → feature unavailable, not a generic failure.
-  if (error !== null && error.code === ErrorCodes.FORBIDDEN.code) {
-    return <CostValuationGapsAccessDenied />;
-  }
+  if (accessDenied) return <CostValuationGapsAccessDenied />;
 
-  const hasNon403Error = error !== null;
-
-  const header = (
-    <TableHeader
-      columns={[
-        { label: "Item" },
-        { label: "Tindakan" },
-        { label: "Qty Tidak Tercatat", align: "right" },
-        { label: "Kejadian / Penjualan" },
-        { label: "Periode" },
-        { label: "HPP" },
-        { label: "Estimasi Koreksi", align: "right" },
-        { label: "Akun Koreksi" },
-      ]}
-      className="grid-cols-[2fr_2fr_0.8fr_0.8fr_1fr_1fr_1fr_1.2fr] min-w-[1100px]"
-      hideOnMobile
-    />
-  );
+  const periodLabel = formatGapRange(dateRange);
 
   return (
     <div className="flex flex-col gap-y-6">
@@ -67,7 +47,7 @@ export function CostValuationGapsView() {
         value={meta ? String(meta.total) : "—"}
         variant="warning"
         subtitle="Total item dengan kesenjangan biaya"
-        loading={loading}
+        loading={shellState === "loading"}
       />
 
       <TableToolbar>
@@ -79,38 +59,24 @@ export function CostValuationGapsView() {
             disableFutureDates={false}
           />
           {hasDateFilter && (
-            <FilterPill label="Semua periode" onRemove={onClearRange} />
+            <FilterPill label={periodLabel} onRemove={onClearRange} />
           )}
         </div>
       </TableToolbar>
 
-      {hasNon403Error ? (
-        <CostValuationGapsError onRetry={onRetry} />
-      ) : (
-        <TableContainer
-          loading={loading}
-          empty={rows.length === 0 && !loading}
-          emptyMessage="Belum ada HPP yang belum tercatat."
-          scrollable
-        >
-          {header}
-          {rows.map((row) => (
-            <Fragment key={`${row.gapKind}-${row.subjectId}`}>
-              <CostValuationGapRow row={row} />
-              <div className="lg:hidden">
-                <CostValuationGapMobileCard row={row} />
-              </div>
-            </Fragment>
-          ))}
-          {meta && meta.totalPages > 1 && (
-            <TablePagination
-              displayedCount={rows.length}
-              meta={meta}
-              currentPage={page}
-              onPageChange={onPageChange}
-            />
-          )}
-        </TableContainer>
+      {shellState === "loading" && <CostValuationGapsLoading />}
+      {shellState === "error" && <CostValuationGapsError onRetry={onRetry} />}
+      {shellState === "empty" && <CostValuationGapsEmpty />}
+      {shellState === "success" && (
+        <CostValuationGapsTable
+          rows={rows}
+          meta={meta}
+          page={page}
+          onPageChange={onPageChange}
+          isLoadingPage={isLoadingPage}
+          pageError={pageError}
+          onRetry={onRetry}
+        />
       )}
     </div>
   );
