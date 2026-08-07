@@ -13,13 +13,8 @@ type CartItemRowProps = {
 };
 
 function CartItemRowInner({ item }: CartItemRowProps) {
-  const { updateQty, removeItem, stockErrors, priceMismatch } = usePosCart();
-  const beStockError = stockErrors.get(item.variantId) ?? null;
+  const { updateQty, removeItem, priceMismatch } = usePosCart();
   const pricingError = priceMismatch?.variantId === item.variantId ? priceMismatch : null;
-
-  // Cart-side real-time warning: qty exceeds the snapshot taken at add-time.
-  const localOverLimit =
-    item.availableQtySnapshot !== null && item.qty > item.availableQtySnapshot ? item.availableQtySnapshot : null;
 
   const displayName = item.variantName ? `${item.productName} · ${item.variantName}` : item.productName;
 
@@ -67,16 +62,6 @@ function CartItemRowInner({ item }: CartItemRowProps) {
           />
         </div>
       </div>
-      {beStockError && (
-        <span className="text-xs leading-4 font-medium text-error-300">
-          ⚠ Stok hanya {beStockError.available}, diminta {beStockError.requested}
-        </span>
-      )}
-      {!beStockError && localOverLimit !== null && (
-        <span className="text-xs leading-4 font-medium text-warning-300">
-          ⚠ Stok tersisa {localOverLimit}
-        </span>
-      )}
       {pricingError && (
         <span className="text-xs leading-4 font-medium text-error-300">
           ⚠ Harga berubah: <NumberDisplay value={pricingError.submittedUnitPrice} /> →{" "}

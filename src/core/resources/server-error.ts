@@ -352,12 +352,6 @@ export class ErrorCodes {
     message: "Metode pembayaran tidak tersedia. Pilih metode lain.",
   };
 
-  public static readonly INSUFFICIENT_STOCK: ErrorStructureType = {
-    code: "INSUFFICIENT_STOCK",
-    httpCode: 400,
-    message: "Stok tidak mencukupi untuk beberapa item.",
-  };
-
   public static readonly RECIPE_NOT_DEFINED: ErrorStructureType = {
     code: "RECIPE_NOT_DEFINED",
     httpCode: 400,
