@@ -28,7 +28,7 @@ export function NotesViewer({ report }: NotesViewerProps) {
             <div className="flex flex-row items-center gap-x-1.5">
               <h2 className="text-balance text-base font-semibold leading-6 text-neutral-500">{note.title}</h2>
               {note.isReadOnly && (
-                <LockClosedIcon aria-label="Read-only" className="size-4 text-neutral-400" />
+                <LockClosedIcon role="img" aria-label="Read-only" className="size-4 text-neutral-400" />
               )}
             </div>
             {note.paragraphRef && (
