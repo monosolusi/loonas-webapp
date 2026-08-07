@@ -81,7 +81,12 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   makes drift structurally impossible. LNS-570 was exactly this drift: a caller hand-rolled its own copy of
   "is this product single-priced?", disagreed with the entity, and silently destroyed variant-scoped
   sub-resources on every save. If you catch yourself re-deriving an entity rule at a call site, the rule
-  belongs on the entity.
+  belongs on the entity. Corollary: if you introduce a domain getter, route the presentation through it —
+  do not leave it unused while a helper re-derives the same predicate from the underlying field. An unused
+  getter plus a parallel helper is a drift surface even when both reference the same constant today, because
+  a future change to one will not reach the other. LNS-608 arch-review caught `VariantForSaleEntity.isOutOfStock`
+  sitting unused while `outOfStockBadgeProps(status)` re-derived `stockStatus === OUT_OF_STOCK`; the fix routed
+  `OutOfStockBadge` through `isOutOfStock: boolean` and deleted the helper.
 - **Model nested references**: When a model has nested objects from API, use actual Model classes (e.g.,
   `RawMaterialModel`, `VariantModel`) with their `fromJson()`, not plain objects. `toEntity()` maps to domain types.
 - **DataState pattern**: Use cases return `DataSuccess<T>` or `DataFailed` instead of throwing
@@ -129,6 +134,11 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 - **UseCase params independence**: Use case param types are defined in the use case file itself. Use cases MUST NOT
   import param types from repositories or sources. The use case defines its own params, then maps to repo params
   internally.
+- **Source owns its params (LNS-402)**: `domain/sources/*.ts` define their own `*ServiceParams` types locally and
+  MUST NOT import param types from `domain/repositories/`. The repository keeps its own params; the use case maps
+  between repo and service params. Mirrors Use-Case params independence one layer down — when adding a source, check
+  its siblings follow the same ownership and fold any repo-owned stragglers in the same PR (same defect class,
+  adjacent path).
 - **UseCase workflow**: `execute()` should read like a clean workflow — delegate to private methods. Common pattern:
   `resolveSession()` as private method that throws on failure, then private action methods that call repository.
 - **Provider pattern (feature-level)**: When a feature needs shared state across components, extract to a provider in
@@ -141,6 +151,11 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   need null checks.
 - **Provider data locality**: Provider only hosts data shared across multiple components. If data is used by only one
   component, that component fetches it locally.
+- **Preserve invariants when narrowing a mutation-clear callback**: when a cart-mutation callback that cleared
+  multiple error maps is narrowed to one concern (e.g. `clearStockErrorFor` → `clearPriceMismatch` after removing the
+  stock-error map), the renamed callback must still fire on every `addItem` / `updateQty` / `removeItem` path that
+  previously called it — otherwise the remaining concern (a stale `UNIT_PRICE_MISMATCH` marker) survives a cart edit.
+  LNS-608 preserved this on all three mutation paths.
 - **Component context rule**: When a component needs context data, it consumes context itself inside `_components/`.
   Page does not wrap children in a single content component — each component is self-contained.
 - **Component architecture**: One component per file. Use `useMemo` for computed/derived data. No conditional rendering
@@ -170,6 +185,12 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   page), extract a display component (props-based, no context) and create separate implementation components that
   consume their respective providers. Display component naming: `{noun}-form-dialog.tsx`. Implementation naming:
   `{noun}-edit-dialog.tsx`.
+- **Advisory display field vs hard-gate field**: when the BE exposes an advisory display field alongside a
+  hard-gate field (e.g. `ProductForSaleVariant.stock_status` advisory vs `is_available` hard-gate), consume the
+  advisory field for display and the hard-gate field for sellability — never re-derive the server-owned predicate
+  from the advisory field or from raw quantities (`current_stock` / `max_makeable`). The server owns the
+  availability call; duplicating it in the FE invites drift. LNS-608: `stock_status` drives the "Habis" badge,
+  `is_available` drives `disabled` / addable.
 - **POS payment methods**: plugin pattern — see `src/app/(pos)/pos/_payment-methods/PLUGIN_PATTERN.md` before adding or
   modifying a payment method. The wizard chrome (header, step layout, transitions) is method-agnostic; each method is a
   self-contained handler in `_payment-methods/{type}/`.
@@ -210,6 +231,15 @@ Custom `HttpRequest` class injects Clerk session headers:
 - `FetchConfig` supports `requireAuth` (default `true`), `contentType`, and `headers` — no account-level config
 - Services that bypass `HttpRequest` (manual `fetch`) must still set `Authorization` header manually
 
+**Idempotency key minted at the orchestration layer**: the `Idempotency-Key` is generated in the dialog/handler that
+owns form state (`crypto.randomUUID()`), then threaded `trigger → use case → repo → source → Idempotency-Key
+header`. Never minted in the service/source layer (the LNS-117 anti-pattern) — the service only forwards what it's
+given. **Reuse the key across retries** until a definitive 4xx, then rotate — gate rotation with
+`shouldRotateIdempotencyKey(httpStatus, code)` (`features/invoice/presentations/helpers/idempotency-rotation.ts`,
+as `pos-provider` does). A fresh key per attempt is unsafe: a lost 5xx/network response may have already been
+processed server-side, and a new key lets the server record a second adjustment (duplicate stock decrement). Mint
+once per logical attempt, reuse on retry, rotate only when the helper says so.
+
 **Partial-update PUTs: `undefined` omits, `null` clears — never conflate them.** `HttpRequest`
 serialises with `JSON.stringify`, which **silently drops `undefined`-valued keys**. On a partial-update
 endpoint an absent key means "leave unchanged", so `sku: value || undefined` in a request body does not
@@ -231,6 +261,13 @@ Two rules follow, and both are load-bearing:
   that captures `params.body` and assert on the stringified result — see
   `features/invoice/data/sources/create-pos-sale-body.test.ts` and
   `features/product/data/sources/product.test.ts`.
+
+**Dead error-code removal — branch and constant, not just the branch.** When a BE error code becomes
+unreachable (confirmed absent from `dev-api.loonas.id/openapi.json`), remove the FE runtime handler **and**
+the now-unreferenced shared `ErrorCodes` constant, not just the handler. LNS-608: `POST /pos/sales` can no
+longer return `INSUFFICIENT_STOCK`, so the `pos-provider` handler, `handleStockErrorDetails`,
+`StockErrorEntry`, **and** `ErrorCodes.INSUFFICIENT_STOCK` in `core/resources/server-error.ts` were all
+removed — leaving the dead constant is exactly the "removed rather than left as dead code" intent.
 
 The `""` → `null` conversion belongs in the **app layer that owns the form buffer** (e.g.
 `products/[id]/_utils/sync-variants.ts`), not the service: `""` is a presentation fact about an emptied

@@ -1,7 +1,17 @@
 import { PaginationMeta } from "@/core/resources/paginated";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { StockItemModel } from "@/features/inventory/data/models/stock-item";
-import { ListStockItemsParams, UpdateStockItemParams } from "@/features/inventory/domain/repositories/stock-item";
+
+export type ListStockItemsServiceParams = {
+  type?: string;
+  page?: number;
+  limit?: number;
+};
+
+export type UpdateStockItemServiceParams = {
+  id: string;
+  minStock: number | null;
+};
 
 export type ListStockItemsServiceResult = {
   data: StockItemModel[];
@@ -9,8 +19,9 @@ export type ListStockItemsServiceResult = {
 };
 
 export interface StockItemService {
-  list(params: ListStockItemsParams, session: SessionEntity): Promise<ListStockItemsServiceResult>;
-  listLowStock(params: ListStockItemsParams, session: SessionEntity): Promise<ListStockItemsServiceResult>;
+  list(params: ListStockItemsServiceParams, session: SessionEntity): Promise<ListStockItemsServiceResult>;
+  listLowStock(params: ListStockItemsServiceParams, session: SessionEntity): Promise<ListStockItemsServiceResult>;
+  listNegativeStock(params: ListStockItemsServiceParams, session: SessionEntity): Promise<ListStockItemsServiceResult>;
   get(id: string, session: SessionEntity): Promise<StockItemModel>;
-  update(params: UpdateStockItemParams, session: SessionEntity): Promise<StockItemModel>;
+  update(params: UpdateStockItemServiceParams, session: SessionEntity): Promise<StockItemModel>;
 }

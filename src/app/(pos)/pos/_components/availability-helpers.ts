@@ -2,14 +2,12 @@ import { StatusChipVariant } from "@/core/presentations/components/status-chip";
 import { UnavailableReason } from "@/features/product/domain/enums/unavailable-reason";
 
 const SHORT_LABELS: Record<UnavailableReason, string> = {
-  OUT_OF_STOCK: "Habis",
   STOCK_NOT_REGISTERED: "Setup",
   RECIPE_NOT_DEFINED: "Resep",
   RAW_MATERIAL_NOT_REGISTERED: "Bahan",
 };
 
 const VARIANTS: Record<UnavailableReason, StatusChipVariant> = {
-  OUT_OF_STOCK: "warning",
   STOCK_NOT_REGISTERED: "error",
   RECIPE_NOT_DEFINED: "error",
   RAW_MATERIAL_NOT_REGISTERED: "error",

@@ -11,6 +11,7 @@ import { SalesNavGroup } from "@/app/(authenticated)/_components/sales-nav-group
 import { AccountingNavEntry } from "@/app/(authenticated)/_components/accounting-nav-entry";
 import { AccountingNavigationMenu } from "@/app/(authenticated)/_components/accounting-navigation-menu";
 import { isAccountingPath } from "@/app/(authenticated)/_components/accounting-routes";
+import { InventoryNavGroup } from "@/app/(authenticated)/_components/inventory-nav-group";
 
 /**
  * The full authenticated navigation tree. Shared by the desktop sidebar
@@ -53,6 +54,7 @@ export function NavigationMenu() {
         <NavigationChildItem href="/products" label="Semua Produk" />
         <NavigationChildItem href="/productions" label="Produksi" />
       </NavigationGroup>
+      <InventoryNavGroup id="inventory" openGroup={openGroup} onOpenChange={handleOpenChange} />
       <AccountingNavEntry />
       <NavigationItem
         href="/accounts"
