@@ -14,6 +14,7 @@ import {
 import { INVENTORY_SWR_KEYS } from "@/features/inventory/presentations/constants/swr-keys";
 import { useAdjustStockItem } from "@/features/inventory/presentations/hooks/use-adjust-stock-item";
 import { StockAdjustmentFormDialog } from "@/features/inventory/presentations/components/stock-adjustment-form-dialog";
+import { shouldRotateIdempotencyKey } from "@/features/invoice/presentations/helpers/idempotency-rotation";
 
 type Channel = "counted" | "removed" | "";
 
@@ -35,6 +36,7 @@ export function StockAdjustmentDialog({ stockItem, onClose }: StockAdjustmentDia
   const [note, setNote] = useState<string>("");
   const [expectedBookQuantity, setExpectedBookQuantity] = useState<number>(0);
   const [error, setError] = useState<ServerError | null>(null);
+  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
 
   useEffect(() => {
     if (stockItem) {
@@ -44,6 +46,7 @@ export function StockAdjustmentDialog({ stockItem, onClose }: StockAdjustmentDia
       setNote("");
       setExpectedBookQuantity(stockItem.currentStock);
       setError(null);
+      setIdempotencyKey(null);
     }
   }, [stockItem]);
 
@@ -62,7 +65,8 @@ export function StockAdjustmentDialog({ stockItem, onClose }: StockAdjustmentDia
   const isValid = useMemo(() => {
     if (!reasonSet || !stockItem) return false;
     if (submitChannel === "") return false;
-    if (quantity <= 0) return false;
+    if (quantity < 0) return false;
+    if (submitChannel === "removed" && quantity === 0) return false;
     const r = reasonTyped as StockAdjustmentReasonType;
     if (isNoteRequired(r) && note.trim() === "") return false;
     return true;
@@ -83,7 +87,8 @@ export function StockAdjustmentDialog({ stockItem, onClose }: StockAdjustmentDia
   const handleSubmit = async () => {
     if (!stockItem || !isValid || isMutating || submitChannel === "") return;
 
-    const idempotencyKey = crypto.randomUUID();
+    const key = idempotencyKey ?? crypto.randomUUID();
+    setIdempotencyKey(key);
     const r = reasonTyped as StockAdjustmentReasonType;
     const noteValue = note.trim() ? note.trim() : null;
 
@@ -95,7 +100,7 @@ export function StockAdjustmentDialog({ stockItem, onClose }: StockAdjustmentDia
         reason: r,
         note: noteValue,
         expectedBookQuantity: submitChannel === "counted" ? expectedBookQuantity : undefined,
-        idempotencyKey,
+        idempotencyKey: key,
       });
 
       // Revalidate ALL inventory SWR keys — the min-stock dialog only
@@ -111,6 +116,10 @@ export function StockAdjustmentDialog({ stockItem, onClose }: StockAdjustmentDia
       onClose();
     } catch (err) {
       const serverError = err instanceof ServerError ? err : new ServerError(ErrorCodes.UNKNOWN, { message: "Gagal menyimpan penyesuaian" });
+
+      if (shouldRotateIdempotencyKey(serverError.httpCode, serverError.code)) {
+        setIdempotencyKey(null);
+      }
 
       if (IDEMPOTENCY_KEY_CODES.has(serverError.code)) {
         showToast(serverError.message, "error");

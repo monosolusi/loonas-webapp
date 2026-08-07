@@ -208,10 +208,14 @@ Custom `HttpRequest` class injects Clerk session headers:
 - `FetchConfig` supports `requireAuth` (default `true`), `contentType`, and `headers` — no account-level config
 - Services that bypass `HttpRequest` (manual `fetch`) must still set `Authorization` header manually
 
-**Idempotency key minted at the orchestration layer**: the `Idempotency-Key` is generated once per submit attempt in
-the dialog/handler that owns form state (`crypto.randomUUID()` in `handleSubmit`), then threaded
-`trigger → use case → repo → source → Idempotency-Key header`. Never minted in the service/source layer (the
-LNS-117 anti-pattern) — the service only forwards what it's given. Fresh key per attempt, stable within an attempt.
+**Idempotency key minted at the orchestration layer**: the `Idempotency-Key` is generated in the dialog/handler that
+owns form state (`crypto.randomUUID()`), then threaded `trigger → use case → repo → source → Idempotency-Key
+header`. Never minted in the service/source layer (the LNS-117 anti-pattern) — the service only forwards what it's
+given. **Reuse the key across retries** until a definitive 4xx, then rotate — gate rotation with
+`shouldRotateIdempotencyKey(httpStatus, code)` (`features/invoice/presentations/helpers/idempotency-rotation.ts`,
+as `pos-provider` does). A fresh key per attempt is unsafe: a lost 5xx/network response may have already been
+processed server-side, and a new key lets the server record a second adjustment (duplicate stock decrement). Mint
+once per logical attempt, reuse on retry, rotate only when the helper says so.
 
 **Partial-update PUTs: `undefined` omits, `null` clears — never conflate them.** `HttpRequest`
 serialises with `JSON.stringify`, which **silently drops `undefined`-valued keys**. On a partial-update
