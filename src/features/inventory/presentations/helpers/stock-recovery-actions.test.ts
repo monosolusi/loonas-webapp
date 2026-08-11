@@ -6,6 +6,8 @@ import {
   stockRecoveryPathsLabel,
 } from "@/features/inventory/presentations/helpers/stock-recovery-actions";
 
+const ALL_TYPES = [StockItemType.FINISHED_GOODS, StockItemType.RAW_MATERIAL, "consignment", ""];
+
 function buildStockItem(type: string): StockItemEntity {
   return new StockItemEntity({
     id: "stock-item-1",
@@ -20,8 +22,8 @@ function buildStockItem(type: string): StockItemEntity {
 }
 
 // One owner for "how does this item recover from a negative balance" — the
-// blocked dialog, the negative-stock list and the stock-adjustment list all read
-// it here rather than re-deriving from `type`.
+// blocked dialog, the adjustment form dialog, the negative-stock list and the
+// stock-adjustment list all read it here rather than re-deriving from `type`.
 describe("stockRecoveryActions", () => {
   it("offers production before purchasing for finished goods", () => {
     expect(stockRecoveryActions(buildStockItem(StockItemType.FINISHED_GOODS))).toEqual([
@@ -42,14 +44,16 @@ describe("stockRecoveryActions", () => {
     ]);
   });
 
-  it("falls back to purchasing alone when there is no item", () => {
-    expect(stockRecoveryActions(null)).toEqual([{ label: "Catat Pembelian", href: "/purchasing/create" }]);
-  });
-
   it("always ends with purchasing so the last action is the primary affordance", () => {
-    for (const type of [StockItemType.FINISHED_GOODS, StockItemType.RAW_MATERIAL]) {
+    for (const type of ALL_TYPES) {
       const actions = stockRecoveryActions(buildStockItem(type));
       expect(actions[actions.length - 1].label).toBe("Catat Pembelian");
+    }
+  });
+
+  it("is never empty — consumers dereference the last element", () => {
+    for (const type of ALL_TYPES) {
+      expect(stockRecoveryActions(buildStockItem(type)).length).toBeGreaterThan(0);
     }
   });
 });
@@ -63,7 +67,20 @@ describe("stockRecoveryPathsLabel", () => {
     expect(stockRecoveryPathsLabel(buildStockItem(StockItemType.RAW_MATERIAL))).toBe("pembelian");
   });
 
-  it("names purchasing alone when there is no item", () => {
-    expect(stockRecoveryPathsLabel(null)).toBe("pembelian");
+  it("names purchasing alone for an unrecognised type", () => {
+    expect(stockRecoveryPathsLabel(buildStockItem("consignment"))).toBe("pembelian");
+  });
+});
+
+// The blocked dialog renders the prose and the CTAs side by side, so the two
+// exports disagreeing is a visible defect. This is the assertion that catches
+// the shared predicate being inlined back into one of them.
+describe("the two exports agree", () => {
+  it("names production exactly when the actions include it", () => {
+    for (const type of ALL_TYPES) {
+      const stockItem = buildStockItem(type);
+      const offersProduction = stockRecoveryActions(stockItem).some((action) => action.label === "Catat Produksi");
+      expect(stockRecoveryPathsLabel(stockItem).includes("produksi")).toBe(offersProduction);
+    }
   });
 });
