@@ -175,9 +175,16 @@ export function StockAdjustmentFormDialog(props: StockAdjustmentFormDialogProps)
               <span className="text-error-300 text-sm leading-5">{props.error.message}</span>
             </div>
             {isNegativeBalanceError && (
-              <Link href="/purchasing/create" className="w-auto sm:w-fit">
-                <SecondaryButton outlined label="Catat Pembelian" className="w-full px-6 sm:w-auto" />
-              </Link>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Link href="/purchasing/create" className="w-full sm:w-auto">
+                  <SecondaryButton outlined label="Catat Pembelian" className="w-full px-6 sm:w-auto" />
+                </Link>
+                {props.stockItem?.isFinishedGoods && (
+                  <Link href="/productions/create" className="w-full sm:w-auto">
+                    <SecondaryButton outlined label="Catat Produksi" className="w-full px-6 sm:w-auto" />
+                  </Link>
+                )}
+              </div>
             )}
           </div>
         )}

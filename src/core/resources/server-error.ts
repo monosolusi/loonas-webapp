@@ -532,7 +532,7 @@ export class ErrorCodes {
   public static readonly STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE: ErrorStructureType = {
     code: "STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE",
     httpCode: 422,
-    message: "Stok item ini sudah negatif. Catat penerimaan barang yang belum tercatat sebelum menyesuaikan stok.",
+    message: "Stok item ini sudah negatif — catat transaksi yang belum tercatat sebelum menyesuaikan stok.",
   };
 
   public static readonly STOCK_ADJUSTMENT_BOOK_QUANTITY_CHANGED: ErrorStructureType = {
