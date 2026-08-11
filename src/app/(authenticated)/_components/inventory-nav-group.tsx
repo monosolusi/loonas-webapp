@@ -14,8 +14,8 @@ export function InventoryNavGroup({ id, openGroup, onOpenChange }: InventoryNavG
     <NavigationGroup
       id={id}
       label="Inventaris"
-      iconPath="/assets/images/box-icon-neutral-300-w16-h16.svg"
-      selectedIconPath="/assets/images/box-icon-primary-300-w16-h16.svg"
+      iconPath="/assets/images/archive-icon-neutral-300-w16-h16.svg"
+      selectedIconPath="/assets/images/archive-icon-primary-300-w16-h16.svg"
       matchPrefixes={["/inventory"]}
       openGroup={openGroup}
       onOpenChange={onOpenChange}
