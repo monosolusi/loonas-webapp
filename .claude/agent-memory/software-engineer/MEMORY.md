@@ -17,6 +17,7 @@
 - [Move means delete the source](feedback_move_means_delete_source.md) — "move/relocate" = delete the old files; verify the old dir is empty + nothing imports the old path (LNS-117)
 - [Grid child count walkthrough](feedback_grid_child_count_walkthrough.md) — a conditional bare child of grid-cols-N displaces siblings when shown; count children in both states, wrap conditional+sibling in a column div (LNS-117)
 - [Single dialog warn→ack](feedback_single_dialog_warn_ack.md) — warn→ack flow = inline body-mode switch in ONE LoonasDialog; second sibling dialog = second focus trap (LNS-372)
+- [Closed Headless UI Dialog is inert](feedback_headless_ui_dialog_closed_is_inert.md) — `unmount` defaults false: closed = display:none + inert, so mutually-exclusive sibling dialogs are safe; early-return unmount kills the leave transition
 - [Route map dynamic segment](feedback_route_map_dynamic_segment.md) — dynamic route header titles use if-block in useMemo, NOT bracket key in ROUTE_MAP (usePathname returns real UUIDs)
 - [Table row nested interactive](feedback_table_row_nested_interactive.md) — expand + ActionMenu: outer div grid, button col-span for expand, ActionMenu sibling in last col — never nest ActionMenu inside button
 - [Provider Rule 7 exception](feedback_provider_rule7_exception.md) — page-level orchestrator provider may import _components/ directly; Rule 7 bars feature-level providers, not co-located page providers

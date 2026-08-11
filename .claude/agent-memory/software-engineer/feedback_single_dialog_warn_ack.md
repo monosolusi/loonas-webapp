@@ -12,3 +12,5 @@ Pattern: `pendingWarnings.length > 0` drives an `isAckMode` flag. Dialog title a
 **Why:** A separate sibling dialog = a second focus trap. Two dialogs open simultaneously causes focus management issues and was flagged by EL as incorrect (LNS-372 fix loop). The single-dialog inline approach mirrors the pattern already in place in `journal-warning-dialog.tsx` in the create flow.
 
 **How to apply:** Any time a mutation dialog has a "needs-acknowledge" path (BE returns warnings), implement it as an inline mode switch in the same dialog chrome. Extract `*Form` and `*AckView` as separate files (one component per file rule), render the appropriate one based on the pending-warnings flag.
+
+**Scope — this bars two dialogs open AT ONCE, not two mounted.** Two sibling `LoonasDialog`s driven by *mutually exclusive* `open` flags are safe and are the right shape when the two states are separate dialogs with different titles/widths (see [[headless-ui-dialog-closed-is-inert]]). The warn→ack case above is one logical dialog changing mode, which is why it stays single.
