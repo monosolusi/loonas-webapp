@@ -49,6 +49,16 @@ export class StockItemEntity implements AbstractEntity {
     return this.minStock !== null && this.minStock > 0 && this.currentStock <= this.minStock;
   }
 
+  /**
+   * Mirrors the BE domain rule: an already-negative starting balance blocks an
+   * adjustment on either channel (422 STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE). A
+   * receipt or production record must bring the balance back to zero or above
+   * first — zero itself is adjustable.
+   */
+  get isNegativeBalance(): boolean {
+    return this.currentStock < 0;
+  }
+
   get itemName(): string {
     if (this.rawMaterial) return this.rawMaterial.name;
     if (this.variant) return this.variant.productName ?? this.variant.name;
