@@ -196,7 +196,7 @@ export function StockAdjustmentFormDialog(props: StockAdjustmentFormDialogProps)
             disabled={!props.isValid}
             loading={props.isMutating}
             onClick={props.onSubmit}
-            className="w-auto px-6"
+            className="px-6"
           />
         </DialogFooter>
       </div>

@@ -48,7 +48,7 @@ export function RawMaterialCreateDialog({ open, onClose }: RawMaterialCreateDial
         <RawMaterialUnitCombobox value={unit} onChange={setUnit} />
         <DialogFooter>
           <SecondaryButton outlined label="Batal" onClick={handleClose} />
-          <PrimaryButton label="Simpan" disabled={!name.trim() || !unit} loading={isMutating} onClick={handleCreate} className="w-auto px-6" />
+          <PrimaryButton label="Simpan" disabled={!name.trim() || !unit} loading={isMutating} onClick={handleCreate} className="px-6" />
         </DialogFooter>
       </div>
     </LoonasDialog>
