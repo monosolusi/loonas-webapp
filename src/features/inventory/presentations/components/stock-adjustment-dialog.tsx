@@ -13,6 +13,7 @@ import {
 } from "@/features/inventory/domain/helpers/stock-adjustment-reason";
 import { INVENTORY_SWR_KEYS } from "@/features/inventory/presentations/constants/swr-keys";
 import { useAdjustStockItem } from "@/features/inventory/presentations/hooks/use-adjust-stock-item";
+import { StockAdjustmentBlockedDialog } from "@/features/inventory/presentations/components/stock-adjustment-blocked-dialog";
 import { StockAdjustmentFormDialog } from "@/features/inventory/presentations/components/stock-adjustment-form-dialog";
 import { shouldRotateIdempotencyKey } from "@/features/invoice/presentations/helpers/idempotency-rotation";
 
@@ -137,34 +138,45 @@ export function StockAdjustmentDialog({ stockItem, onClose }: StockAdjustmentDia
     }
   };
 
+  // The BE rejects an adjustment outright when the starting balance is already
+  // negative — on either channel (422 STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE). Put
+  // the guard here, in the one component all three entry points render, so every
+  // entry point gets the same behaviour by construction. Both dialogs stay
+  // mounted and are driven by `open`, so each keeps its close transition; only
+  // one is ever open, and a closed Headless UI dialog is inert.
+  const isBlocked = stockItem?.isNegativeBalance ?? false;
+
   return (
-    <StockAdjustmentFormDialog
-      open={!!stockItem}
-      stockItem={stockItem}
-      expectedBookQuantity={expectedBookQuantity}
-      reason={reason}
-      channel={channel}
-      quantity={quantity}
-      note={note}
-      isValid={isValid}
-      error={error}
-      isMutating={isMutating}
-      onReasonChange={handleReasonChange}
-      onChannelChange={(c) => {
-        setChannel(c);
-        setQuantity(0);
-        setError(null);
-      }}
-      onQuantityChange={(v) => {
-        setQuantity(v);
-        setError(null);
-      }}
-      onNoteChange={(v) => {
-        setNote(v);
-        setError(null);
-      }}
-      onSubmit={handleSubmit}
-      onClose={handleClose}
-    />
+    <>
+      <StockAdjustmentBlockedDialog open={!!stockItem && isBlocked} stockItem={stockItem} onClose={onClose} />
+      <StockAdjustmentFormDialog
+        open={!!stockItem && !isBlocked}
+        stockItem={stockItem}
+        expectedBookQuantity={expectedBookQuantity}
+        reason={reason}
+        channel={channel}
+        quantity={quantity}
+        note={note}
+        isValid={isValid}
+        error={error}
+        isMutating={isMutating}
+        onReasonChange={handleReasonChange}
+        onChannelChange={(c) => {
+          setChannel(c);
+          setQuantity(0);
+          setError(null);
+        }}
+        onQuantityChange={(v) => {
+          setQuantity(v);
+          setError(null);
+        }}
+        onNoteChange={(v) => {
+          setNote(v);
+          setError(null);
+        }}
+        onSubmit={handleSubmit}
+        onClose={handleClose}
+      />
+    </>
   );
 }
