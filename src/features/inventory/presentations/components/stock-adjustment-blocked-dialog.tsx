@@ -59,8 +59,8 @@ export function StockAdjustmentBlockedDialog({ open, stockItem, onClose }: Stock
             here. */}
         <DialogFooter>
           <SecondaryButton outlined label="Tutup" onClick={onClose} />
-          <Link href="/purchasing/create" className="w-full sm:w-auto">
-            <PrimaryButton label="Catat Pembelian" className="w-full px-6 sm:w-auto" />
+          <Link href="/purchasing/create" className="w-full">
+            <PrimaryButton label="Catat Pembelian" className="px-6" />
           </Link>
         </DialogFooter>
       </div>
