@@ -7,7 +7,6 @@ import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item";
-import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type";
 
 type StockAdjustmentBlockedDialogProps = {
   open: boolean;
@@ -19,7 +18,7 @@ export function StockAdjustmentBlockedDialog({ open, stockItem, onClose }: Stock
   // Only finished goods are produced; raw materials are restocked by purchasing
   // alone. Drives both the recovery-path copy and the production CTA so the two
   // cannot disagree.
-  const canBeProduced = stockItem?.type === StockItemType.FINISHED_GOODS;
+  const canBeProduced = stockItem?.isFinishedGoods ?? false;
   const recoveryPaths = canBeProduced ? "pembelian atau produksi" : "pembelian";
 
   return (

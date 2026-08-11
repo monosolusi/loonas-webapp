@@ -1,4 +1,5 @@
 import { AbstractEntity } from "@/core/resources/entity";
+import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type";
 
 type StockItemRawMaterialRef = {
   id: string;
@@ -57,6 +58,15 @@ export class StockItemEntity implements AbstractEntity {
    */
   get isNegativeBalance(): boolean {
     return this.currentStock < 0;
+  }
+
+  /**
+   * `type` is a bare `string` on the wire, so an inline comparison at a call
+   * site carries no compile-time protection — a typo silently evaluates false.
+   * Keep the comparison here so every consumer shares one spelling.
+   */
+  get isFinishedGoods(): boolean {
+    return this.type === StockItemType.FINISHED_GOODS;
   }
 
   get itemName(): string {

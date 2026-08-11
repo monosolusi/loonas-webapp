@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item";
+import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type";
 
-function buildStockItem(currentStock: number): StockItemEntity {
+function buildStockItem(currentStock: number, type: string = StockItemType.FINISHED_GOODS): StockItemEntity {
   return new StockItemEntity({
     id: "stock-item-1",
-    type: "finished_goods",
+    type,
     rawMaterial: null,
     variant: { id: "variant-1", name: "Reguler", productName: "Kopi Susu", sku: "KS-001" },
     currentStock,
@@ -37,5 +38,27 @@ describe("StockItemEntity.isNegativeBalance", () => {
 
   it("is false for a fractional positive balance", () => {
     expect(buildStockItem(0.5).isNegativeBalance).toBe(false);
+  });
+});
+
+// `type` arrives as a bare string, so the getter is the only place the wire
+// value is compared. It drives the production recovery path in the blocked
+// adjustment dialog — an unrecognised value must fall back to "not produced"
+// rather than offering a CTA that cannot apply.
+describe("StockItemEntity.isFinishedGoods", () => {
+  it("is true for a finished-goods item", () => {
+    expect(buildStockItem(0, StockItemType.FINISHED_GOODS).isFinishedGoods).toBe(true);
+  });
+
+  it("is false for a raw material", () => {
+    expect(buildStockItem(0, StockItemType.RAW_MATERIAL).isFinishedGoods).toBe(false);
+  });
+
+  it("is false for an unrecognised type", () => {
+    expect(buildStockItem(0, "consignment").isFinishedGoods).toBe(false);
+  });
+
+  it("is false for an empty type", () => {
+    expect(buildStockItem(0, "").isFinishedGoods).toBe(false);
   });
 });
