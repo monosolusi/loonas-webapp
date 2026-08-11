@@ -31,8 +31,8 @@ export function StockAdjustmentBlockedDialog({ open, stockItem, onClose }: Stock
           </div>
         )}
 
-        <div className="rounded-lg border border-warning-200 bg-warning-50 px-4 py-3" role="alert">
-          <p className="text-sm leading-5 text-warning-400">
+        <div className="rounded-lg border border-warning-400 bg-warning-50 px-4 py-3">
+          <p className="text-sm leading-5 text-warning-500">
             Saldo stok saat ini{" "}
             <span className="font-semibold">{stockItem && <NumberDisplay value={stockItem.currentStock} />}</span> —
             penyesuaian stok hanya bisa dilakukan saat saldo 0 atau lebih.
