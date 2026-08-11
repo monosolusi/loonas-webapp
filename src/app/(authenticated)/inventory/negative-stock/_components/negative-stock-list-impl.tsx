@@ -9,6 +9,7 @@ import { TableSearch } from "@/core/presentations/components/table/table-search"
 import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { useListNegativeStockItems } from "@/features/inventory/presentations/hooks/use-list-negative-stock-items";
+import { STOCK_ITEM_ROW_GRID } from "@/features/inventory/presentations/components/stock-item-table-row";
 import { NegativeStockRow } from "@/app/(authenticated)/inventory/negative-stock/_components/negative-stock-row";
 
 export function NegativeStockListImpl() {
@@ -46,7 +47,7 @@ export function NegativeStockListImpl() {
         { label: "Stok Min.", align: "right" },
         { label: "Aksi" },
       ]}
-      className="grid-cols-[1.5fr_1fr_1.2fr_0.8fr_0.8fr_40px]"
+      className={STOCK_ITEM_ROW_GRID}
       hideOnMobile
     />
   );

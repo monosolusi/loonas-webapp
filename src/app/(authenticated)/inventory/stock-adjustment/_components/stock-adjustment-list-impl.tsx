@@ -14,13 +14,19 @@ import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item
 import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type";
 import { useListStockItems } from "@/features/inventory/presentations/hooks/use-list-stock-items";
 import { StockAdjustmentDialog } from "@/features/inventory/presentations/components/stock-adjustment-dialog";
+import { STOCK_ITEM_ROW_GRID } from "@/features/inventory/presentations/components/stock-item-table-row";
 import { StockAdjustmentItemRow } from "@/app/(authenticated)/inventory/stock-adjustment/_components/stock-adjustment-item-row";
 
 const INVENTORY_ADJUSTMENT_FEATURE = "inventory_adjustment";
 
-const TYPE_TABS = ["Semua", "Bahan Baku", "Produk Jadi"] as const;
-// Index-aligned with TYPE_TABS. `undefined` omits the server-side `type` filter.
-const TYPE_VALUES = [undefined, StockItemType.RAW_MATERIAL, StockItemType.FINISHED_GOODS] as const;
+// Server-side `type` filter. `undefined` omits it entirely.
+const TYPE_FILTERS = [
+  { label: "Semua", value: undefined },
+  { label: "Bahan Baku", value: StockItemType.RAW_MATERIAL },
+  { label: "Produk Jadi", value: StockItemType.FINISHED_GOODS },
+] as const;
+
+const TYPE_TABS = TYPE_FILTERS.map((filter) => filter.label);
 
 export function StockAdjustmentListImpl() {
   const [page, setPage] = useState(1);
@@ -32,7 +38,7 @@ export function StockAdjustmentListImpl() {
   const canAdjust = account?.hasFeature(INVENTORY_ADJUSTMENT_FEATURE) ?? false;
 
   const { stockItems, meta, loading, error } = useListStockItems({
-    type: TYPE_VALUES[typeIndex],
+    type: TYPE_FILTERS[typeIndex].value,
     page,
     limit: DEFAULT_PAGE_SIZE,
   });
@@ -67,7 +73,7 @@ export function StockAdjustmentListImpl() {
         { label: "Stok Min.", align: "right" },
         { label: "Aksi" },
       ]}
-      className="grid-cols-[1.5fr_1fr_1.2fr_0.8fr_0.8fr_40px]"
+      className={STOCK_ITEM_ROW_GRID}
       hideOnMobile
     />
   );
