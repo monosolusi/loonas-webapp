@@ -377,6 +377,17 @@ SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockI
 - **Neutral palette diverges from Tailwind defaults**: `neutral-50` is `#FFFFFF` (pure white), not off-white. For
   visible-on-white chips/badges/borders, use `neutral-100` (`#D9DADA`) or darker. Check `src/app/globals.css` `@theme`
   for the canonical palette.
+- **Inline text links use `text-primary-400`, not `text-primary-300`**: `primary-300` (`#007BFF`, Lunas Blue) is
+  **3.98:1** on white — below the 4.5:1 WCAG AA floor PRODUCT.md sets for body text. `primary-400` (`#005ABB`) is
+  **6.61:1** and is DESIGN.md's documented token for blue text needing contrast on white; `hover:text-primary-500`
+  remains available beneath it. Roughly six existing links (`gross-profit-block-no-pos.tsx`, `data-kurang-card.tsx`,
+  `coa-account-delete-mapping-body.tsx`, `coa-account-delete-journal-lines-body.tsx`, `production-create-form-card.tsx`,
+  `opening-balance-readonly.tsx`) still use the `primary-300` base — that is known a11y debt, **not** a convention to
+  match. Same defect class as `text-warning-400` body text (~3.4:1). Also underline inline links by default rather than
+  `hover:underline` only: a link sitting inline among similarly-weighted text needs a non-color cue for users who never
+  hover (WCAG 1.4.1). The `h-11` interactive-height rule does not apply to inline links — WCAG 2.5.5 exempts links
+  within a run of text. Generally: a color used at many call sites is not thereby AA-compliant — compute the ratio
+  against `globals.css` before citing any color as established.
 - **Nullable API fields where `null` = unclassified/unknown render distinctly — never as `0` or `Rp 0`**: when a row
   field is nullable and `null` means the system has NOT classified/measured it (not that it found zero), render `null`
   as an em-dash (`—`, `text-neutral-200`) or "Belum diklasifikasi" — NEVER `0`. Same for nullable money:

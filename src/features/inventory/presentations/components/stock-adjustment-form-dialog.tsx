@@ -182,12 +182,15 @@ export function StockAdjustmentFormDialog(props: StockAdjustmentFormDialogProps)
               <ExclamationCircleIcon className="text-error-300 mt-0.5 size-5 shrink-0" />
               <span className="text-error-300 text-sm leading-5">{props.error.message}</span>
             </div>
-            {isNegativeBalanceError &&
-              recoveryActions.map((action) => (
-                <Link key={action.href} href={action.href} className="w-auto sm:w-fit">
-                  <SecondaryButton outlined label={action.label} className="w-full px-6 sm:w-auto" />
-                </Link>
-              ))}
+            {isNegativeBalanceError && (
+              <div className="flex flex-col gap-2 sm:flex-row">
+                {recoveryActions.map((action) => (
+                  <Link key={action.href} href={action.href} className="w-full sm:w-auto">
+                    <SecondaryButton outlined label={action.label} className="w-full px-6 sm:w-auto" />
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

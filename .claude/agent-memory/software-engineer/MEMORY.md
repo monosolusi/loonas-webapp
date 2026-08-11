@@ -32,6 +32,7 @@
 - [Partial-update clear needs explicit null](feedback_partial_update_clear_needs_explicit_null.md) — on a PUT with omitted=unchanged/null=clear semantics, `|| undefined` silently defeats clearing; use `|| null` + build body explicitly, never passthrough (LNS-573)
 - [Dialog outlives its item](feedback_dialog_outlives_its_item.md) — entity prop goes null before the 200ms leave fade finishes; latch it with `useLatchedValue` in the dialog, never widen the helper's signature to absorb the null
 - [Second instance means extract](feedback_second_instance_means_extract.md) — a divergence you spotted argues for extracting the shared row, not a careful copy; grep a rule's literal strings/routes before claiming single ownership
+- [Helper owns which, not how](feedback_helper_owns_which_not_how.md) — never encode a rendering hierarchy ("last one is primary") in a shared helper; export the predicate beside the list so a surface can present it differently
 - [Repo is not prettier-clean](feedback_repo_is_not_prettier_clean.md) — prettier isn't in CI or hooks and HEAD already fails `--check` widely; new files clean, untouched lines left alone; quote app-router paths, don't glob
 
 ## Project
