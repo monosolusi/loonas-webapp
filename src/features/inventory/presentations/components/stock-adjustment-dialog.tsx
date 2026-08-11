@@ -141,9 +141,12 @@ export function StockAdjustmentDialog({ stockItem, onClose }: StockAdjustmentDia
   // The BE rejects an adjustment outright when the starting balance is already
   // negative — on either channel (422 STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE). Put
   // the guard here, in the one component all three entry points render, so every
-  // entry point gets the same behaviour by construction. Both dialogs stay
-  // mounted and are driven by `open`, so each keeps its close transition; only
-  // one is ever open, and a closed Headless UI dialog is inert.
+  // entry point gets the same behaviour by construction. Both dialogs are
+  // rendered unconditionally and driven by `open`: Headless UI wraps each
+  // `Dialog` in a `Transition`, which plays the leave animation before removing
+  // the subtree, so the outgoing dialog fades out properly. An early return that
+  // swaps which one is rendered tears it down synchronously and the leave never
+  // plays. Only one is ever open, and the closed one is gone from the DOM.
   const isBlocked = stockItem?.isNegativeBalance ?? false;
 
   return (
