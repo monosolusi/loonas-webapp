@@ -7,6 +7,10 @@ import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item";
+import {
+  stockRecoveryActions,
+  stockRecoveryPathsLabel,
+} from "@/features/inventory/presentations/helpers/stock-recovery-actions";
 
 type StockAdjustmentBlockedDialogProps = {
   open: boolean;
@@ -15,11 +19,13 @@ type StockAdjustmentBlockedDialogProps = {
 };
 
 export function StockAdjustmentBlockedDialog({ open, stockItem, onClose }: StockAdjustmentBlockedDialogProps) {
-  // Only finished goods are produced; raw materials are restocked by purchasing
-  // alone. Drives both the recovery-path copy and the production CTA so the two
-  // cannot disagree.
-  const canBeProduced = stockItem?.isFinishedGoods ?? false;
-  const recoveryPaths = canBeProduced ? "pembelian atau produksi" : "pembelian";
+  // Recovery paths and copy both come from the one helper, so the CTAs and the
+  // prose cannot disagree. The list is ordered least- to most-prominent: the last
+  // action is the primary button, anything before it an outlined secondary.
+  const recoveryActions = stockRecoveryActions(stockItem);
+  const recoveryPaths = stockRecoveryPathsLabel(stockItem);
+  const secondaryRecoveryActions = recoveryActions.slice(0, -1);
+  const primaryRecoveryAction = recoveryActions[recoveryActions.length - 1];
 
   return (
     <LoonasDialog title="Tidak Dapat Menyesuaikan Stok" width="lg" open={open} onClose={onClose}>
@@ -46,13 +52,13 @@ export function StockAdjustmentBlockedDialog({ open, stockItem, onClose }: Stock
 
         <DialogFooter>
           <SecondaryButton outlined label="Tutup" onClick={onClose} />
-          {canBeProduced && (
-            <Link href="/productions/create" className="w-full sm:w-auto">
-              <SecondaryButton outlined label="Catat Produksi" className="w-full px-6 sm:w-auto" />
+          {secondaryRecoveryActions.map((action) => (
+            <Link key={action.href} href={action.href} className="w-full sm:w-auto">
+              <SecondaryButton outlined label={action.label} className="w-full px-6 sm:w-auto" />
             </Link>
-          )}
-          <Link href="/purchasing/create" className="w-full sm:w-auto">
-            <PrimaryButton label="Catat Pembelian" className="w-full px-6 sm:w-auto" />
+          ))}
+          <Link href={primaryRecoveryAction.href} className="w-full sm:w-auto">
+            <PrimaryButton label={primaryRecoveryAction.label} className="w-full px-6 sm:w-auto" />
           </Link>
         </DialogFooter>
       </div>
