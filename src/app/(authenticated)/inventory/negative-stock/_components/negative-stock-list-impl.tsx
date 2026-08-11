@@ -60,7 +60,10 @@ export function NegativeStockListImpl() {
       <div className="flex flex-col gap-y-6">
         <div className="flex flex-col gap-y-2">
           <ListPageHeader title="Stok Negatif" subtitle={subtitle} />
-          {!isEmpty && (
+          {/* Deictic copy ("berikut" = the rows below) — only true once rows are actually
+              rendered. Gate on filteredItems, not isEmpty, so it never shows during loading,
+              on error, on a filtered-empty result, or as a flash frame on confirmed-empty. */}
+          {filteredItems.length > 0 && (
             <p className="text-sm leading-5 text-neutral-300">
               Item berikut tercatat minus — catat pembelian atau produksi yang belum tercatat untuk memulihkan
               saldo.
