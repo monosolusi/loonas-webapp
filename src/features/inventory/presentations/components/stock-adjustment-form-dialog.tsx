@@ -11,7 +11,8 @@ import { SearchCombobox, SearchComboboxOption } from "@/core/presentations/compo
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { NumberDisplay } from "@/core/presentations/components/number-display";
-import { ServerError } from "@/core/resources/server-error";
+import { useLatchedValue } from "@/core/presentations/hooks/use-latched-value";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item";
 import {
   StockAdjustmentReason,
@@ -24,6 +25,7 @@ import {
   isNoteRequired,
 } from "@/features/inventory/domain/helpers/stock-adjustment-reason";
 import { ChannelOption } from "@/features/inventory/presentations/components/stock-adjustment-channel-option";
+import { stockRecoveryActions } from "@/features/inventory/presentations/helpers/stock-recovery-actions";
 
 type Channel = "counted" | "removed" | "";
 
@@ -53,13 +55,16 @@ const REASON_OPTIONS: SearchComboboxOption[] = (
   label: StockAdjustmentReasonLabel[value],
 }));
 
-const NEGATIVE_BALANCE_CODE = "STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE";
-
 export function StockAdjustmentFormDialog(props: StockAdjustmentFormDialogProps) {
   const selectedReason = useMemo(
     () => REASON_OPTIONS.find((opt) => opt.id === props.reason) ?? null,
     [props.reason],
   );
+
+  // The parent nulls `stockItem` the instant the dialog closes, while the panel
+  // is still playing its leave transition. Latch it so the header and the
+  // recovery CTAs stay put while it fades.
+  const stockItem = useLatchedValue(props.stockItem);
 
   const reasonTyped = props.reason as StockAdjustmentReasonType | "";
   const reasonSet = reasonTyped !== "" && reasonTyped in StockAdjustmentReasonLabel;
@@ -77,17 +82,20 @@ export function StockAdjustmentFormDialog(props: StockAdjustmentFormDialogProps)
   const showRemoved = activeChannel === "removed";
   const noteRequired = reasonSet && isNoteRequired(reasonTyped as StockAdjustmentReasonType);
 
-  const isNegativeBalanceError = props.error?.code === NEGATIVE_BALANCE_CODE;
+  // Reachable only through the stale-data race the dialog-level guard exists
+  // for: every entry point now hides the adjust action on a negative balance, so
+  // the BE rejection lands here when the balance went negative after the list
+  // rendered. Same rule, same source as the blocked dialog.
+  const isNegativeBalanceError = props.error?.code === ErrorCodes.STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE.code;
+  const recoveryActions = stockItem ? stockRecoveryActions(stockItem) : [];
 
   return (
     <LoonasDialog title="Sesuaikan Stok" width="lg" open={props.open} onClose={props.onClose}>
       <div className="mt-2 flex flex-col gap-y-5">
-        {props.stockItem && (
+        {stockItem && (
           <div className="flex flex-col gap-y-1">
-            <span className="text-sm font-medium text-neutral-500">{props.stockItem.itemName}</span>
-            {props.stockItem.variantName && (
-              <span className="text-xs text-neutral-300">{props.stockItem.variantName}</span>
-            )}
+            <span className="text-sm font-medium text-neutral-500">{stockItem.itemName}</span>
+            {stockItem.variantName && <span className="text-xs text-neutral-300">{stockItem.variantName}</span>}
           </div>
         )}
 
@@ -174,11 +182,12 @@ export function StockAdjustmentFormDialog(props: StockAdjustmentFormDialogProps)
               <ExclamationCircleIcon className="text-error-300 mt-0.5 size-5 shrink-0" />
               <span className="text-error-300 text-sm leading-5">{props.error.message}</span>
             </div>
-            {isNegativeBalanceError && (
-              <Link href="/purchasing/create" className="w-auto sm:w-fit">
-                <SecondaryButton outlined label="Catat Pembelian" className="w-full px-6 sm:w-auto" />
-              </Link>
-            )}
+            {isNegativeBalanceError &&
+              recoveryActions.map((action) => (
+                <Link key={action.href} href={action.href} className="w-auto sm:w-fit">
+                  <SecondaryButton outlined label={action.label} className="w-full px-6 sm:w-auto" />
+                </Link>
+              ))}
           </div>
         )}
 
