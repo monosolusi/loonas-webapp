@@ -1,12 +1,13 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { NumberInput } from "@/core/presentations/components/text-inputs/number-input";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
-import { SelectInput } from "@/core/presentations/components/select-input";
+import { SearchCombobox, SearchComboboxOption } from "@/core/presentations/components/search-combobox";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { NumberDisplay } from "@/core/presentations/components/number-display";
@@ -45,14 +46,21 @@ type StockAdjustmentFormDialogProps = {
   onClose: () => void;
 };
 
-const REASON_OPTIONS = (Object.values(StockAdjustmentReason) as StockAdjustmentReasonType[]).map((value) => ({
+const REASON_OPTIONS: SearchComboboxOption[] = (
+  Object.values(StockAdjustmentReason) as StockAdjustmentReasonType[]
+).map((value) => ({
+  id: value,
   label: StockAdjustmentReasonLabel[value],
-  value,
 }));
 
 const NEGATIVE_BALANCE_CODE = "STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE";
 
 export function StockAdjustmentFormDialog(props: StockAdjustmentFormDialogProps) {
+  const selectedReason = useMemo(
+    () => REASON_OPTIONS.find((opt) => opt.id === props.reason) ?? null,
+    [props.reason],
+  );
+
   const reasonTyped = props.reason as StockAdjustmentReasonType | "";
   const reasonSet = reasonTyped !== "" && reasonTyped in StockAdjustmentReasonLabel;
   const showChannelPicker = reasonSet && admitsBothChannels(reasonTyped as StockAdjustmentReasonType);
@@ -83,12 +91,13 @@ export function StockAdjustmentFormDialog(props: StockAdjustmentFormDialogProps)
           </div>
         )}
 
-        <SelectInput
+        <SearchCombobox
           label="Alasan Penyesuaian"
-          value={props.reason}
           options={REASON_OPTIONS}
-          onChange={props.onReasonChange}
+          value={selectedReason}
+          onChange={(opt) => props.onReasonChange(opt?.id ?? "")}
           placeholder="Pilih alasan penyesuaian"
+          emptyMessage="Alasan tidak ditemukan"
           required
           disabled={props.isMutating}
         />
@@ -157,10 +166,13 @@ export function StockAdjustmentFormDialog(props: StockAdjustmentFormDialogProps)
         />
 
         {props.error && (
-          <div className="flex flex-col gap-y-3 rounded-lg border border-neutral-100 bg-neutral-50 p-4">
+          <div
+            className="border-error-300/20 bg-error-300/5 flex flex-col gap-y-3 rounded-lg border px-4 py-3"
+            role="alert"
+          >
             <div className="flex items-start gap-x-2">
-              <ExclamationCircleIcon className="mt-0.5 size-5 shrink-0 text-error-300" />
-              <span className="text-sm leading-5 text-neutral-400">{props.error.message}</span>
+              <ExclamationCircleIcon className="text-error-300 mt-0.5 size-5 shrink-0" />
+              <span className="text-error-300 text-sm leading-5">{props.error.message}</span>
             </div>
             {isNegativeBalanceError && (
               <Link href="/purchasing/create" className="w-auto sm:w-fit">
