@@ -30,6 +30,8 @@
 - [Mobile-adapt finance periodic scope](feedback_mobile_adapt_finance_periodic_scope.md) — toolbar flex-wrap > col/row toggle; TabFilter needs explicit width under items-start parents; 3+ control rows exceed MobileListCard's 2 slots; UUID reference rows need wrap+truncate
 - [`field: value || undefined` key is always present](feedback_undefined_key_still_present_in_params_obj.md) — `"key" in obj` is always true for this pattern; assert `.field === undefined` + JSON.stringify, not "in" (LNS-570)
 - [Partial-update clear needs explicit null](feedback_partial_update_clear_needs_explicit_null.md) — on a PUT with omitted=unchanged/null=clear semantics, `|| undefined` silently defeats clearing; use `|| null` + build body explicitly, never passthrough (LNS-573)
+- [Tailwind `*:` child variant beats child utility](feedback_tailwind_child_variant_beats_child_utility.md) — `sm:*:w-auto` on a parent deterministically overrides a same-specificity utility on the child, no `!important` needed; fixes "sibling flex-basis fight" bugs at the shared-component level
+- [Headless Chrome screenshot viewport floor](feedback_headless_chrome_screenshot_viewport_floor.md) — `--window-size` below ~500px is silently ignored by `--screenshot`, cropping a wider centered layout; request >=500px even for mobile breakpoint checks
 
 ## Project
 
