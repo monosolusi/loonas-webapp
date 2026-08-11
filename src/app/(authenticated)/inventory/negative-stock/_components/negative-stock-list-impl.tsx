@@ -36,6 +36,7 @@ export function NegativeStockListImpl() {
   }, [stockItems, search]);
 
   const isFilteredEmpty = !loading && !error && (stockItems?.length ?? 0) > 0 && filteredItems.length === 0;
+  const isEmpty = (stockItems?.length ?? 0) === 0 && !loading;
 
   const subtitle = loading ? "Memuat..." : error ? "" : meta ? `${meta.total} item` : "";
 
@@ -57,7 +58,15 @@ export function NegativeStockListImpl() {
   return (
     <>
       <div className="flex flex-col gap-y-6">
-        <ListPageHeader title="Stok Negatif" subtitle={subtitle} />
+        <div className="flex flex-col gap-y-2">
+          <ListPageHeader title="Stok Negatif" subtitle={subtitle} />
+          {!isEmpty && (
+            <p className="text-sm leading-5 text-neutral-300">
+              Item berikut tercatat minus — catat pembelian atau produksi yang belum tercatat untuk memulihkan
+              saldo.
+            </p>
+          )}
+        </div>
 
         <TableToolbar>
           <div />
@@ -74,7 +83,7 @@ export function NegativeStockListImpl() {
         <TableContainer
           loading={loading}
           error={!!error}
-          empty={(stockItems?.length ?? 0) === 0 && !loading}
+          empty={isEmpty}
           emptyMessage="Belum ada stok negatif."
           filteredEmpty={isFilteredEmpty}
         >
