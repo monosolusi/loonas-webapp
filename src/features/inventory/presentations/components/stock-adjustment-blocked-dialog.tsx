@@ -16,10 +16,10 @@ type StockAdjustmentBlockedDialogProps = {
 
 export function StockAdjustmentBlockedDialog({ open, stockItem, onClose }: StockAdjustmentBlockedDialogProps) {
   // Only finished goods are produced; raw materials are restocked by purchasing
-  // alone. Drives both the recovery-path copy and the production CTA so the two
-  // cannot disagree.
+  // alone. Drives both the inline recovery-path sentence (production as a link vs.
+  // purchasing-only) and the item-type-agnostic footer below, so the two cannot
+  // disagree.
   const canBeProduced = stockItem?.isFinishedGoods ?? false;
-  const recoveryPaths = canBeProduced ? "pembelian atau produksi" : "pembelian";
 
   return (
     <LoonasDialog title="Tidak Dapat Menyesuaikan Stok" width="lg" open={open} onClose={onClose}>
@@ -40,17 +40,25 @@ export function StockAdjustmentBlockedDialog({ open, stockItem, onClose }: Stock
         </div>
 
         <p className="text-sm leading-5 text-neutral-300">
-          Catat {recoveryPaths} terlebih dahulu untuk memulihkan saldo. Setelah saldo kembali 0 atau lebih, penyesuaian
-          stok bisa dilakukan lagi.
+          {canBeProduced ? (
+            <>
+              Catat pembelian atau{" "}
+              <Link href="/productions/create" className="text-primary-400 underline hover:text-primary-500">
+                produksi
+              </Link>{" "}
+              yang belum tercatat untuk memulihkan saldo.
+            </>
+          ) : (
+            "Catat pembelian yang belum tercatat untuk memulihkan saldo."
+          )}
         </p>
 
+        {/* Exactly 2 buttons for every item type: Tutup (dismiss) then Catat Pembelian
+            (the one recovery path valid for every item type). The production path lives
+            as the inline link above, not a third footer button — do not reintroduce it
+            here. */}
         <DialogFooter>
           <SecondaryButton outlined label="Tutup" onClick={onClose} />
-          {canBeProduced && (
-            <Link href="/productions/create" className="w-full sm:w-auto">
-              <SecondaryButton outlined label="Catat Produksi" className="w-full px-6 sm:w-auto" />
-            </Link>
-          )}
           <Link href="/purchasing/create" className="w-full sm:w-auto">
             <PrimaryButton label="Catat Pembelian" className="w-full px-6 sm:w-auto" />
           </Link>
