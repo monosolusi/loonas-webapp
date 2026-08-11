@@ -200,6 +200,16 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   (`usePathname()` returns real ids, e.g. `/finance/journals/abc-123`, so a `"/finance/journals/[id]"` key never
   matches and the title falls back). For a dynamic route, add a `segments[]`-based `if` block in the `useMemo`
   (mirror `/accounts/:id`), not a bracket key.
+- **Nav icon assets: one file per color state, and unique among siblings**: sidebar icons live in
+  `public/assets/images/` as `{shape}-icon-{token}-w16-h16.svg` pairs — a `-neutral-300` (`#323636`) resting file and a
+  `-primary-300` (`#007BFF`) selected file — wired through `NavigationGroup` / `NavigationItem`'s `iconPath` /
+  `selectedIconPath`. The hex is baked into the asset (there is no `currentColor` variant), so keep it identical to the
+  matching `@theme` token in `globals.css`. Geometry follows the sibling set: `16x16` viewBox, `fill="none"`,
+  `stroke-width="1.33333"`, round `stroke-linecap` / `stroke-linejoin`. **Before pointing a new nav entry at an existing
+  asset, check no sibling already claims it** — "Produk" and "Inventaris" both shipped on `box-icon-*`, leaving two
+  adjacent groups indistinguishable. Also check the new silhouette against the Heroicons in `mobile-tab-bar.tsx`: the
+  "Lainnya" sheet renders the full `NavigationMenu` above that bar, so both icon sets are on screen at once (a warehouse
+  shape for Inventaris was rejected for colliding with `HomeIcon`).
 - **List-page header/toolbar standard**: every list/index page uses one layout. Heuristic: **action top-right,
   filters bottom-left, search bottom-right.**
   - **Row 1 — header**: `ListPageHeader` (`core/presentations/components/list-page-header.tsx`) for top-level pages,
