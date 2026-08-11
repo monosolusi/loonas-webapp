@@ -39,7 +39,10 @@ export function RawMaterialDetailStockCard() {
   const status = stockStatusLabel(stockItem);
 
   const menuOptions: ActionMenuOption[] = [{ label: "Atur Stok Minimum", onClick: () => setEditingItem(stockItem) }];
-  if (canAdjust) {
+  // A negative balance is never adjustable (BE 422
+  // STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE), so the option would only dead-end in
+  // the blocked dialog. Suppress it here instead.
+  if (canAdjust && !stockItem.isNegativeBalance) {
     menuOptions.push({ label: "Sesuaikan Stok", onClick: () => setAdjustingItem(stockItem) });
   }
 
