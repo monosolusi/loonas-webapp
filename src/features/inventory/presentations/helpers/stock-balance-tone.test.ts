@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item";
 import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type";
-import { stockBalanceTone } from "@/app/(authenticated)/inventory/stock-adjustment/_utils/stock-balance-tone";
+import { stockBalanceTone } from "@/features/inventory/presentations/helpers/stock-balance-tone";
 
 function buildStockItem(currentStock: number, minStock: number | null): StockItemEntity {
   return new StockItemEntity({
