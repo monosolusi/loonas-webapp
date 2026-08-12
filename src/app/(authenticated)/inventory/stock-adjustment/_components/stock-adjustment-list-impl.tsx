@@ -15,9 +15,8 @@ import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type
 import { useListStockItems } from "@/features/inventory/presentations/hooks/use-list-stock-items";
 import { StockAdjustmentDialog } from "@/features/inventory/presentations/components/stock-adjustment-dialog";
 import { STOCK_ITEM_ROW_GRID } from "@/features/inventory/presentations/components/stock-item-table-row";
-import { StockAdjustmentItemRow } from "@/app/(authenticated)/inventory/stock-adjustment/_components/stock-adjustment-item-row";
-
-const INVENTORY_ADJUSTMENT_FEATURE = "inventory_adjustment";
+import { StockItemActionRow } from "@/features/inventory/presentations/components/stock-item-action-row";
+import { INVENTORY_ADJUSTMENT_FEATURE } from "@/features/inventory/presentations/constants/feature-flags";
 
 // Server-side `type` filter. `undefined` omits it entirely.
 const TYPE_FILTERS = [
@@ -113,7 +112,7 @@ export function StockAdjustmentListImpl() {
         >
           {header}
           {filteredItems.map((item) => (
-            <StockAdjustmentItemRow key={item.id} stockItem={item} canAdjust={canAdjust} onAdjust={setAdjustingItem} />
+            <StockItemActionRow key={item.id} stockItem={item} canAdjust={canAdjust} onAdjust={setAdjustingItem} />
           ))}
           {meta && meta.totalPages > 1 && (
             <TablePagination

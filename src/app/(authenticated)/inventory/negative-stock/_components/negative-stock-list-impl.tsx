@@ -8,13 +8,21 @@ import { TablePagination } from "@/core/presentations/components/table/table-pag
 import { TableSearch } from "@/core/presentations/components/table/table-search";
 import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
+import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
+import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item";
 import { useListNegativeStockItems } from "@/features/inventory/presentations/hooks/use-list-negative-stock-items";
+import { StockAdjustmentDialog } from "@/features/inventory/presentations/components/stock-adjustment-dialog";
 import { STOCK_ITEM_ROW_GRID } from "@/features/inventory/presentations/components/stock-item-table-row";
-import { NegativeStockRow } from "@/app/(authenticated)/inventory/negative-stock/_components/negative-stock-row";
+import { StockItemActionRow } from "@/features/inventory/presentations/components/stock-item-action-row";
+import { INVENTORY_ADJUSTMENT_FEATURE } from "@/features/inventory/presentations/constants/feature-flags";
 
 export function NegativeStockListImpl() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [adjustingItem, setAdjustingItem] = useState<StockItemEntity | null>(null);
+
+  const { account } = useGetCurrentAccount();
+  const canAdjust = account?.hasFeature(INVENTORY_ADJUSTMENT_FEATURE) ?? false;
 
   const { stockItems, meta, loading, error } = useListNegativeStockItems({ page, limit: DEFAULT_PAGE_SIZE });
 
@@ -54,52 +62,58 @@ export function NegativeStockListImpl() {
   );
 
   return (
-    <div className="flex flex-col gap-y-6">
-      <div className="flex flex-col gap-y-2">
-        <ListPageHeader title="Stok Negatif" subtitle={subtitle} />
-        {/* Deictic copy ("berikut" = the rows below) — only true once rows are actually
-            rendered. Gate on filteredItems, not isEmpty, so it never shows during loading,
-            on error, on a filtered-empty result, or as a flash frame on confirmed-empty. */}
-        {filteredItems.length > 0 && (
-          <p className="text-sm leading-5 text-neutral-300">
-            Item berikut tercatat minus — catat pembelian atau produksi yang belum tercatat untuk memulihkan saldo.
-          </p>
-        )}
-      </div>
+    <>
+      <div className="flex flex-col gap-y-6">
+        <div className="flex flex-col gap-y-2">
+          <ListPageHeader title="Stok Negatif" subtitle={subtitle} />
+          {/* Deictic copy ("berikut" = the rows below) — only true once rows are actually
+              rendered. Gate on filteredItems, not isEmpty, so it never shows during loading,
+              on error, on a filtered-empty result, or as a flash frame on confirmed-empty. */}
+          {filteredItems.length > 0 && (
+            <p className="text-sm leading-5 text-neutral-300">
+              Item berikut tercatat minus — pilih aksi pada baris untuk memulihkan saldo.
+            </p>
+          )}
+        </div>
 
-      <TableToolbar>
-        <div />
-        <TableSearch
-          value={search}
-          onChange={(v) => {
-            setSearch(v);
-            setPage(1);
-          }}
-          placeholder="Cari item, varian, atau SKU..."
-        />
-      </TableToolbar>
-
-      <TableContainer
-        loading={loading}
-        error={!!error}
-        empty={isEmpty}
-        emptyMessage="Belum ada stok negatif."
-        filteredEmpty={isFilteredEmpty}
-      >
-        {header}
-        {filteredItems.map((item) => (
-          <NegativeStockRow key={item.id} stockItem={item} />
-        ))}
-        {meta && meta.totalPages > 1 && (
-          <TablePagination
-            displayedCount={filteredItems.length}
-            meta={meta}
-            currentPage={page}
-            onPageChange={setPage}
-            countLabel="item"
+        <TableToolbar>
+          <div />
+          <TableSearch
+            value={search}
+            onChange={(v) => {
+              setSearch(v);
+              setPage(1);
+            }}
+            placeholder="Cari item, varian, atau SKU..."
           />
-        )}
-      </TableContainer>
-    </div>
+        </TableToolbar>
+
+        <TableContainer
+          loading={loading}
+          error={!!error}
+          empty={isEmpty}
+          emptyMessage="Belum ada stok negatif."
+          filteredEmpty={isFilteredEmpty}
+        >
+          {header}
+          {filteredItems.map((item) => (
+            <StockItemActionRow key={item.id} stockItem={item} canAdjust={canAdjust} onAdjust={setAdjustingItem} />
+          ))}
+          {meta && meta.totalPages > 1 && (
+            <TablePagination
+              displayedCount={filteredItems.length}
+              meta={meta}
+              currentPage={page}
+              onPageChange={setPage}
+              countLabel="item"
+            />
+          )}
+        </TableContainer>
+      </div>
+      {/* Every item on this list is negative, so this always lands on the
+          blocked dialog — that is intended: explain the block, don't hide the
+          action that would otherwise trigger it. */}
+      {canAdjust && <StockAdjustmentDialog stockItem={adjustingItem} onClose={() => setAdjustingItem(null)} />}
+    </>
   );
 }
