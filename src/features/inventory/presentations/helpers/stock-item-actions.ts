@@ -2,19 +2,28 @@ import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item
 
 /**
  * The navigable actions a stock item row can offer, and which ones apply to a
- * given item. This module owns two distinct lists that must not be confused:
+ * given item. Every action is declared exactly once in {@link STOCK_ITEM_ACTION_RULES}
+ * — its applicability and whether it recovers a negative balance are facts on
+ * that one row, not restated per consumer. The two public functions below are
+ * both projections (filters) over that single table, not independently
+ * maintained lists:
  *
  * - {@link stockRecoveryActions} — the paths that bring a *negative* balance
  *   back to zero or above. The BE rejects an adjustment outright while the
  *   balance is negative (422 STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE), so
  *   recording the missing transaction — purchasing always, plus production
  *   for finished goods — is the only way out. A sale is never a recovery
- *   path: it deepens a negative balance, it does not fix one.
+ *   path: it deepens a negative balance, it does not fix one. That fact lives
+ *   once, as `recoversNegativeBalance: false` on the sale row.
  * - {@link stockItemNavigationActions} — the uniform row menu every stock
  *   item offers regardless of balance: purchasing, sale, and (finished goods
  *   only) production. "Sesuaikan Stok" is deliberately not part of this list
  *   — it is a callback, not a route, so it belongs to the row that owns the
  *   adjustment dialog state.
+ *
+ * Because both functions filter the same table in table order, "navigation is
+ * always a superset of recovery" and "purchasing always leads" are structural
+ * — they hold by construction, not by convention plus test vigilance.
  *
  * This module owns *which* paths apply to an item. Each surface owns *how* it
  * presents them: the blocked dialog demotes production to an inline link and
@@ -38,6 +47,30 @@ export const RECORD_SALE: StockItemAction = { label: "Catat Penjualan", href: "/
 /** Finished goods only — see {@link canRecoverByProduction}. */
 export const RECORD_PRODUCTION: StockItemAction = { label: "Catat Produksi", href: "/productions/create" };
 
+type StockItemActionRule = {
+  readonly action: StockItemAction;
+  /** Only offered on finished goods (production restocks finished goods; raw materials are restocked by purchasing alone). */
+  readonly finishedGoodsOnly: boolean;
+  /** Whether recording this transaction brings a negative balance back to zero or above. */
+  readonly recoversNegativeBalance: boolean;
+};
+
+/**
+ * The single source of truth for stock item actions, in menu order. Both
+ * {@link stockRecoveryActions} and {@link stockItemNavigationActions} are
+ * filters over this table — add a fourth action here, not in either function.
+ */
+const STOCK_ITEM_ACTION_RULES: readonly StockItemActionRule[] = [
+  { action: RECORD_PURCHASE, finishedGoodsOnly: false, recoversNegativeBalance: true },
+  { action: RECORD_SALE, finishedGoodsOnly: false, recoversNegativeBalance: false },
+  { action: RECORD_PRODUCTION, finishedGoodsOnly: true, recoversNegativeBalance: true },
+];
+
+/** The rules that apply to this item, table order preserved. */
+function applicableStockItemActionRules(stockItem: StockItemEntity): StockItemActionRule[] {
+  return STOCK_ITEM_ACTION_RULES.filter((rule) => !rule.finishedGoodsOnly || stockItem.isFinishedGoods);
+}
+
 /**
  * The one spelling of the rule. Only finished goods are produced; raw materials
  * are restocked by purchasing alone. Surfaces that present production
@@ -55,8 +88,9 @@ export function canRecoverByProduction(stockItem: StockItemEntity): boolean {
  * dialog footer.
  */
 export function stockRecoveryActions(stockItem: StockItemEntity): StockItemAction[] {
-  if (canRecoverByProduction(stockItem)) return [RECORD_PURCHASE, RECORD_PRODUCTION];
-  return [RECORD_PURCHASE];
+  return applicableStockItemActionRules(stockItem)
+    .filter((rule) => rule.recoversNegativeBalance)
+    .map((rule) => rule.action);
 }
 
 /**
@@ -65,6 +99,5 @@ export function stockRecoveryActions(stockItem: StockItemEntity): StockItemActio
  * {@link stockRecoveryActions} for the same item.
  */
 export function stockItemNavigationActions(stockItem: StockItemEntity): StockItemAction[] {
-  if (canRecoverByProduction(stockItem)) return [RECORD_PURCHASE, RECORD_SALE, RECORD_PRODUCTION];
-  return [RECORD_PURCHASE, RECORD_SALE];
+  return applicableStockItemActionRules(stockItem).map((rule) => rule.action);
 }
