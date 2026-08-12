@@ -100,7 +100,6 @@ export function ReopenPeriodDialog() {
           />
           <PrimaryButton
             label="Buka kembali periode"
-            className="whitespace-nowrap"
             onClick={handleSubmit}
             disabled={!isValid || isReopening}
             loading={isReopening}

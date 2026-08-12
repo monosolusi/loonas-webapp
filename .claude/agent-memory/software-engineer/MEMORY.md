@@ -17,6 +17,7 @@
 - [Move means delete the source](feedback_move_means_delete_source.md) — "move/relocate" = delete the old files; verify the old dir is empty + nothing imports the old path (LNS-117)
 - [Grid child count walkthrough](feedback_grid_child_count_walkthrough.md) — a conditional bare child of grid-cols-N displaces siblings when shown; count children in both states, wrap conditional+sibling in a column div (LNS-117)
 - [Single dialog warn→ack](feedback_single_dialog_warn_ack.md) — warn→ack flow = inline body-mode switch in ONE LoonasDialog; second sibling dialog = second focus trap (LNS-372)
+- [Render both mutually-exclusive dialogs](feedback_headless_ui_dialog_closed_is_inert.md) — the wrapping Transition unmounts a closed Dialog only AFTER its leave animation (unmount defaults true); an early return skips the fade
 - [Route map dynamic segment](feedback_route_map_dynamic_segment.md) — dynamic route header titles use if-block in useMemo, NOT bracket key in ROUTE_MAP (usePathname returns real UUIDs)
 - [Table row nested interactive](feedback_table_row_nested_interactive.md) — expand + ActionMenu: outer div grid, button col-span for expand, ActionMenu sibling in last col — never nest ActionMenu inside button
 - [Provider Rule 7 exception](feedback_provider_rule7_exception.md) — page-level orchestrator provider may import _components/ directly; Rule 7 bars feature-level providers, not co-located page providers
@@ -29,6 +30,13 @@
 - [Mobile-adapt finance periodic scope](feedback_mobile_adapt_finance_periodic_scope.md) — toolbar flex-wrap > col/row toggle; TabFilter needs explicit width under items-start parents; 3+ control rows exceed MobileListCard's 2 slots; UUID reference rows need wrap+truncate
 - [`field: value || undefined` key is always present](feedback_undefined_key_still_present_in_params_obj.md) — `"key" in obj` is always true for this pattern; assert `.field === undefined` + JSON.stringify, not "in" (LNS-570)
 - [Partial-update clear needs explicit null](feedback_partial_update_clear_needs_explicit_null.md) — on a PUT with omitted=unchanged/null=clear semantics, `|| undefined` silently defeats clearing; use `|| null` + build body explicitly, never passthrough (LNS-573)
+- [Tailwind `*:` child variant beats child utility](feedback_tailwind_child_variant_beats_child_utility.md) — `sm:*:w-auto` on a parent deterministically overrides a same-specificity utility on the child, no `!important` needed; fixes "sibling flex-basis fight" bugs at the shared-component level
+- [Headless Chrome screenshot viewport floor](feedback_headless_chrome_screenshot_viewport_floor.md) — `--window-size` below ~500px is silently ignored by `--screenshot`, cropping a wider centered layout; request >=500px even for mobile breakpoint checks
+- [Dialog outlives its item](feedback_dialog_outlives_its_item.md) — entity prop goes null before the 200ms leave fade finishes; latch it with `useLatchedValue` in the dialog, never widen the helper's signature to absorb the null
+- [Second instance means extract](feedback_second_instance_means_extract.md) — a divergence you spotted argues for extracting the shared row, not a careful copy; grep a rule's literal strings/routes before claiming single ownership
+- [Helper owns which, not how](feedback_helper_owns_which_not_how.md) — never encode a rendering hierarchy ("last one is primary") in a shared helper; export the predicate beside the list so a surface can present it differently
+- [Repo is not prettier-clean](feedback_repo_is_not_prettier_clean.md) — prettier isn't in CI or hooks and HEAD already fails `--check` widely; new files clean, untouched lines left alone; quote app-router paths, don't glob
+- [Declaration table over paired branches](feedback_declaration_table_over_paired_branches.md) — when two functions must stay superset/subset, replace independent branch pairs with one rule table + filters so the invariant is structural, not test-enforced (stock-item-actions arch-review)
 
 ## Project
 

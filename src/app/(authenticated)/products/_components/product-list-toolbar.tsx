@@ -2,10 +2,11 @@
 
 import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
 import { TableSearch } from "@/core/presentations/components/table/table-search";
+import { FilterPill } from "@/core/presentations/components/filter-pill";
 import { ProductType, ProductTypeLabel, ProductTypeType } from "@/features/product/domain/enums/product-type";
 import { useListProductCategories } from "@/features/product/presentations/hooks/use-list-product-categories";
 import { useProductList } from "@/app/(authenticated)/products/_providers/product-list-provider";
-import { FilterDropdown, FilterPill } from "@/app/(authenticated)/products/_components/filter-dropdown";
+import { FilterDropdown } from "@/app/(authenticated)/products/_components/filter-dropdown";
 
 const TYPE_OPTIONS = Object.values(ProductType).map((value) => ({
   label: ProductTypeLabel[value as ProductTypeType],

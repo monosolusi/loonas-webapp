@@ -8,9 +8,11 @@ import { StockRowActionMenu } from "@/app/(authenticated)/products/[id]/_compone
 type ProductDetailStockRowProps = {
   stockItem: StockItemEntity;
   onEditMinStock: (stockItem: StockItemEntity) => void;
+  onAdjustStock?: (stockItem: StockItemEntity) => void;
+  canAdjust?: boolean;
 };
 
-export function ProductDetailStockRow({ stockItem, onEditMinStock }: ProductDetailStockRowProps) {
+export function ProductDetailStockRow({ stockItem, onEditMinStock, onAdjustStock, canAdjust }: ProductDetailStockRowProps) {
   return (
     <div className="grid grid-cols-[1fr_0.8fr_0.8fr_0.6fr_40px] items-center gap-x-4 border-b border-neutral-100 px-4 py-3 last:border-b-0">
       <span className="text-sm leading-5 text-neutral-500">{stockItem.variant?.name ?? "—"}</span>
@@ -23,7 +25,14 @@ export function ProductDetailStockRow({ stockItem, onEditMinStock }: ProductDeta
           <StatusChip label="Cukup" variant="success" compact />
         ) : null}
       </div>
-      <StockRowActionMenu onEditMinStock={() => onEditMinStock(stockItem)} />
+      <StockRowActionMenu
+        onEditMinStock={() => onEditMinStock(stockItem)}
+        onAdjustStock={onAdjustStock ? () => onAdjustStock(stockItem) : undefined}
+        // The menu shape does not depend on the balance — a negative balance
+        // is handled by StockAdjustmentDialog, which explains why in a modal
+        // rather than the option going missing.
+        canAdjust={canAdjust}
+      />
     </div>
   );
 }

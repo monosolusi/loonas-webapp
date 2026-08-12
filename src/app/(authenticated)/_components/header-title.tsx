@@ -24,6 +24,7 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/accounting/fixed-costs": { title: "Biaya Tetap" },
   "/accounting/fixed-cost-types": { title: "Jenis Biaya Tetap" },
   "/accounting/reports": { title: "Laporan Keuangan" },
+  "/accounting/reports/cost-valuation-gaps": { title: "HPP Belum Tercatat" },
   "/accounting/journals": { title: "Jurnal Umum" },
   "/accounting/journals/new": { title: "Jurnal Baru" },
   "/accounting/periods": { title: "Periode Akuntansi" },
@@ -32,6 +33,8 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/accounting/profitability": { title: "Profitabilitas Varian" },
   "/accounting/accounts": { title: "Bagan Akun" },
   "/accounting/mappings": { title: "Bagan Akun" },
+  "/inventory/stock-adjustment": { title: "Penyesuaian Stok", description: "Penyesuaian stok manual" },
+  "/inventory/negative-stock": { title: "Stok Negatif", description: "Penyelesaian stok negatif" },
 };
 
 export function HeaderTitle() {

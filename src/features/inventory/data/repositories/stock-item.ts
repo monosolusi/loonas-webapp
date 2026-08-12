@@ -41,6 +41,22 @@ export class StockItemRepositoryImpl implements StockItemRepository {
     }
   }
 
+  public async listNegativeStock(
+    params: ListStockItemsParams,
+    session: SessionEntity,
+  ): Promise<DataState<PaginatedData<StockItemEntity>>> {
+    try {
+      const result = await this.service.listNegativeStock(params, session);
+      return new DataSuccess({
+        data: result.data.map((m) => m.toEntity()),
+        meta: result.meta,
+      });
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
   public async get(id: string, session: SessionEntity): Promise<DataState<StockItemEntity>> {
     try {
       const result = await this.service.get(id, session);

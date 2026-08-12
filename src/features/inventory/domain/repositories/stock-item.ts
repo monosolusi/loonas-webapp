@@ -17,6 +17,7 @@ export type UpdateStockItemParams = {
 export interface StockItemRepository {
   list(params: ListStockItemsParams, session: SessionEntity): Promise<DataState<PaginatedData<StockItemEntity>>>;
   listLowStock(params: ListStockItemsParams, session: SessionEntity): Promise<DataState<PaginatedData<StockItemEntity>>>;
+  listNegativeStock(params: ListStockItemsParams, session: SessionEntity): Promise<DataState<PaginatedData<StockItemEntity>>>;
   get(id: string, session: SessionEntity): Promise<DataState<StockItemEntity>>;
   update(params: UpdateStockItemParams, session: SessionEntity): Promise<DataState<StockItemEntity>>;
 }

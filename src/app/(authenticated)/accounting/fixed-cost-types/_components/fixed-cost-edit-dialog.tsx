@@ -64,7 +64,7 @@ export function FixedCostEditDialog() {
             disabled={!name.trim()}
             loading={isMutating}
             onClick={handleUpdate}
-            className="w-auto px-6"
+            className="px-6"
           />
         </DialogFooter>
       </div>
