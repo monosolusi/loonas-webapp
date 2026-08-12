@@ -44,7 +44,7 @@ export const RECORD_PURCHASE: StockItemAction = { label: "Catat Pembelian", href
 /** Never a recovery path — see the module doc comment. */
 export const RECORD_SALE: StockItemAction = { label: "Catat Penjualan", href: "/pos" };
 
-/** Finished goods only — see {@link canRecoverByProduction}. */
+/** Finished goods only — see {@link STOCK_ITEM_ACTION_RULES}. */
 export const RECORD_PRODUCTION: StockItemAction = { label: "Catat Produksi", href: "/productions/create" };
 
 type StockItemActionRule = {
@@ -72,16 +72,6 @@ function applicableStockItemActionRules(stockItem: StockItemEntity): StockItemAc
 }
 
 /**
- * The one spelling of the rule. Only finished goods are produced; raw materials
- * are restocked by purchasing alone. Surfaces that present production
- * differently from the other paths — an inline link, a conditional button —
- * read this rather than re-deriving from the item type.
- */
-export function canRecoverByProduction(stockItem: StockItemEntity): boolean {
-  return stockItem.isFinishedGoods;
-}
-
-/**
  * Every path that recovers a negative balance, purchasing first as the
  * universal one. Never empty, never includes {@link RECORD_SALE}. For
  * surfaces that present the paths uniformly — a button row, the blocked
@@ -91,6 +81,18 @@ export function stockRecoveryActions(stockItem: StockItemEntity): StockItemActio
   return applicableStockItemActionRules(stockItem)
     .filter((rule) => rule.recoversNegativeBalance)
     .map((rule) => rule.action);
+}
+
+/**
+ * Whether {@link RECORD_PRODUCTION} is one of {@link stockRecoveryActions} for
+ * this item — a projection over {@link STOCK_ITEM_ACTION_RULES}, not a second
+ * spelling of its `finishedGoodsOnly` / `recoversNegativeBalance` facts. For
+ * surfaces that present production differently from the other recovery
+ * paths — the blocked dialog's inline "atau produksi" link — instead of the
+ * uniform list {@link stockRecoveryActions} feeds directly.
+ */
+export function canRecoverByProduction(stockItem: StockItemEntity): boolean {
+  return stockRecoveryActions(stockItem).includes(RECORD_PRODUCTION);
 }
 
 /**
