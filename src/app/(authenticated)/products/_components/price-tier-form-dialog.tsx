@@ -124,7 +124,7 @@ export function PriceTierFormDialog(props: PriceTierFormDialogProps) {
             disabled={!props.isValid || !!props.loadError || props.loading}
             loading={props.isSubmitting}
             onClick={props.onSubmit}
-            className="w-auto px-6"
+            className="px-6"
           />
         </DialogFooter>
       </div>

@@ -73,7 +73,7 @@ export function CategorySelect({ value, onChange }: CategorySelectProps) {
               disabled={!newName.trim()}
               loading={isMutating}
               onClick={handleCreate}
-              className="w-auto px-6"
+              className="px-6"
             />
           </DialogFooter>
         </div>

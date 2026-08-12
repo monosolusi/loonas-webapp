@@ -35,7 +35,7 @@ export function WizardConfirmDialog() {
             label="Batal"
             disabled={isSubmitting}
             onClick={closeConfirmModal}
-            className="w-auto px-6"
+            className="px-6"
           />
           <PrimaryButton
             label="Simpan Sekarang"
@@ -43,7 +43,7 @@ export function WizardConfirmDialog() {
             loading={isSubmitting}
             disabled={isSubmitting}
             onClick={handleSubmit}
-            className="w-auto px-6"
+            className="px-6"
             aria-busy={isSubmitting}
           />
         </DialogFooter>

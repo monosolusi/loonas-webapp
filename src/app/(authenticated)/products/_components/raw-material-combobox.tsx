@@ -98,7 +98,7 @@ export function RawMaterialCombobox({ value, onChange, excludeIds = [] }: RawMat
               disabled={!formName.trim() || !formUnit}
               loading={isCreating}
               onClick={handleCreateNew}
-              className="w-auto px-6"
+              className="px-6"
             />
           </DialogFooter>
         </div>

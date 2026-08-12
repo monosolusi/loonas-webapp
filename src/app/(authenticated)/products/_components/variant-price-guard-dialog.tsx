@@ -53,7 +53,7 @@ export function VariantPriceGuardDialog({ open, offendingTiers, newPrice, onClos
         )}
 
         <DialogFooter>
-          <PrimaryButton label="Mengerti" onClick={onClose} className="w-auto px-6" />
+          <PrimaryButton label="Mengerti" onClick={onClose} className="px-6" />
         </DialogFooter>
       </div>
     </LoonasDialog>

@@ -75,8 +75,8 @@ export function StockAdjustmentBlockedDialog({ open, stockItem, onClose }: Stock
             here. */}
         <DialogFooter>
           <SecondaryButton outlined label="Tutup" onClick={onClose} />
-          <Link href={RECORD_PURCHASE.href} className="w-full sm:w-auto">
-            <PrimaryButton label={RECORD_PURCHASE.label} className="w-full px-6 sm:w-auto" />
+          <Link href={RECORD_PURCHASE.href} className="w-full">
+            <PrimaryButton label={RECORD_PURCHASE.label} className="px-6" />
           </Link>
         </DialogFooter>
       </div>

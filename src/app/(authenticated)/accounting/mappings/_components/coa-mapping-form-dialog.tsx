@@ -104,7 +104,7 @@ export function CoaMappingFormDialog(props: CoaMappingFormDialogProps) {
             disabled={!props.isValid}
             loading={props.isSubmitting}
             onClick={props.onSubmit}
-            className="w-auto px-6"
+            className="px-6"
           />
         </DialogFooter>
       </div>

@@ -153,7 +153,7 @@ export function CoaAccountFormDialog(props: CoaAccountFormDialogProps) {
             disabled={isSubmitDisabled}
             loading={props.submitting}
             onClick={props.onSubmit}
-            className="w-auto px-6"
+            className="px-6"
           />
         </DialogFooter>
       </div>

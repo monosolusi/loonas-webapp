@@ -35,7 +35,7 @@ export function RawMaterialEditFormDialog({
         <RawMaterialUnitCombobox value={unit} onChange={onUnitChange} />
         <DialogFooter>
           <SecondaryButton outlined label="Batal" onClick={onClose} />
-          <PrimaryButton label="Simpan" disabled={!name.trim() || !unit} loading={loading} onClick={onSubmit} className="w-auto px-6" />
+          <PrimaryButton label="Simpan" disabled={!name.trim() || !unit} loading={loading} onClick={onSubmit} className="px-6" />
         </DialogFooter>
       </div>
     </LoonasDialog>
