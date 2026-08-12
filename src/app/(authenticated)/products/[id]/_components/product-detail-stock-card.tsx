@@ -12,8 +12,7 @@ import { StockAdjustmentDialog } from "@/features/inventory/presentations/compon
 import { useProductDetail } from "@/app/(authenticated)/products/[id]/_providers/product-detail-provider";
 import { ProductDetailStockRow } from "@/app/(authenticated)/products/[id]/_components/product-detail-stock-row";
 import { StockMinStockDialog } from "@/app/(authenticated)/products/[id]/_components/stock-min-stock-dialog";
-
-const INVENTORY_ADJUSTMENT_FEATURE = "inventory_adjustment";
+import { INVENTORY_ADJUSTMENT_FEATURE } from "@/features/inventory/presentations/constants/feature-flags";
 
 function hasFinishedGoodsStock(type: string, productionMode: string | null): boolean {
   if (type === ProductType.SERVICE) return false;
