@@ -1,6 +1,7 @@
 import { AbstractEntity } from "@/core/resources/entity";
 import { DEFAULT_VARIANT_NAME } from "@/features/product/domain/constants/default-variant";
 import { ProductEntity } from "@/features/product/domain/entities/product";
+import { PriceTierScheduleEntity } from "@/features/product/domain/entities/price-tier-schedule";
 
 type VariantEntityConstructor = {
   id: string;
@@ -9,6 +10,7 @@ type VariantEntityConstructor = {
   price: number;
   metadata: { hasRecipe?: boolean } | null;
   product: ProductEntity | null;
+  priceTierSchedule: PriceTierScheduleEntity | null;
 };
 
 export class VariantEntity implements AbstractEntity {
@@ -18,6 +20,13 @@ export class VariantEntity implements AbstractEntity {
   public price: number;
   public metadata: { hasRecipe?: boolean } | null;
   public product: ProductEntity | null;
+  /**
+   * `null` means the endpoint did not hydrate a schedule — render nothing at all, not an
+   * "no tiers configured" state. A non-null schedule with no tiers means flat-priced.
+   * The mode lives inside the schedule precisely so it cannot be read without first
+   * narrowing this null.
+   */
+  public readonly priceTierSchedule: PriceTierScheduleEntity | null;
 
   constructor(args: VariantEntityConstructor) {
     this.id = args.id;
@@ -26,6 +35,7 @@ export class VariantEntity implements AbstractEntity {
     this.price = args.price;
     this.metadata = args.metadata;
     this.product = args.product;
+    this.priceTierSchedule = args.priceTierSchedule;
   }
 
   public get isDefault(): boolean {

@@ -45,7 +45,7 @@ export function ConfirmationDialog({
         <div className="text-sm text-neutral-300">{description}</div>
         <DialogFooter>
           <SecondaryButton outlined label={cancelLabel} onClick={onClose} />
-          <ActionButton label={confirmLabel} loading={loading} onClick={onConfirm} className="w-auto px-6" />
+          <ActionButton label={confirmLabel} loading={loading} onClick={onConfirm} className="px-6" />
         </DialogFooter>
       </div>
     </LoonasDialog>

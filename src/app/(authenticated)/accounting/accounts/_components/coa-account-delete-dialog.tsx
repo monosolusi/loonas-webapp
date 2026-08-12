@@ -109,10 +109,10 @@ export function CoaAccountDeleteDialog() {
           {!guardCode ? (
             <>
               <SecondaryButton outlined label="Batal" onClick={handleClose} disabled={isMutating} />
-              <DangerButton label="Hapus" loading={isMutating} onClick={handleDelete} className="w-auto px-6" />
+              <DangerButton label="Hapus" loading={isMutating} onClick={handleDelete} className="px-6" />
             </>
           ) : (
-            <PrimaryButton label="Tutup" onClick={handleClose} className="w-auto px-6" autoFocus />
+            <PrimaryButton label="Tutup" onClick={handleClose} className="px-6" autoFocus />
           )}
         </DialogFooter>
       </div>

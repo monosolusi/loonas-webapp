@@ -10,6 +10,9 @@ export const POS_RECEIPT_COPY = {
   CHANGE_LABEL: "Kembalian",
   SETTLEMENT_LABEL: "Settlement",
   NOTE_LABEL: "Catatan",
+  TIER_BADGE_LABEL: "Grosir",
+  TIER_BRACKET_LABEL: "Harga grosir · mulai",
+  TIER_LIST_PRICE_LABEL: "Harga normal",
 } as const;
 
 export function formatPosReceiptPayInMethodLabel(type: PayInType | null | undefined): string {

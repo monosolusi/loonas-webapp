@@ -3,7 +3,6 @@ import { useClerk } from "@clerk/nextjs";
 export type CreatePosSaleHookItem = {
   variantId: string;
   quantity: number;
-  unitPrice: number;
   discount: number;
 };
 

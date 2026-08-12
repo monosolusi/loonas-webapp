@@ -132,7 +132,7 @@ export function RecipeFormDialog({ open, variant, onClose, onSave }: RecipeFormD
 
         <DialogFooter>
           <SecondaryButton outlined label="Batal" onClick={onClose} />
-          <PrimaryButton label="Simpan Resep" disabled={!isValid} onClick={handleSave} className="w-auto px-6" />
+          <PrimaryButton label="Simpan Resep" disabled={!isValid} onClick={handleSave} className="px-6" />
         </DialogFooter>
       </div>
     </LoonasDialog>

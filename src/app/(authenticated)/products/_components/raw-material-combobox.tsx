@@ -3,26 +3,16 @@
 import { useState } from "react";
 import { SearchCombobox, SearchComboboxOption } from "@/core/presentations/components/search-combobox";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
-import { SelectInput } from "@/core/presentations/components/select-input";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { LoonasDialog } from "@/core/presentations/components/loonas-dialog";
 import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { useToast } from "@/core/presentations/hooks/use-toast";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
-import {
-  RawMaterialUnit,
-  RawMaterialUnitLabel,
-  RawMaterialUnitType,
-} from "@/features/raw-material/domain/enums/raw-material-unit";
 import { RAW_MATERIAL_SWR_KEYS } from "@/features/raw-material/presentations/constants/swr-keys";
+import { RawMaterialUnitCombobox } from "@/features/raw-material/presentations/components/raw-material-unit-combobox";
 import { useListRawMaterials } from "@/features/raw-material/presentations/hooks/use-list-raw-materials";
 import { useCreateRawMaterial } from "@/features/raw-material/presentations/hooks/use-create-raw-material";
-
-const UNIT_OPTIONS = Object.values(RawMaterialUnit).map((value) => ({
-  label: RawMaterialUnitLabel[value as RawMaterialUnitType],
-  value,
-}));
 
 export type RawMaterialOption = SearchComboboxOption & {
   unit: string;
@@ -92,14 +82,7 @@ export function RawMaterialCombobox({ value, onChange, excludeIds = [] }: RawMat
             onChange={setFormName}
             required
           />
-          <SelectInput
-            label="Satuan"
-            value={formUnit}
-            options={UNIT_OPTIONS}
-            onChange={setFormUnit}
-            placeholder="Pilih satuan"
-            required
-          />
+          <RawMaterialUnitCombobox value={formUnit} onChange={setFormUnit} />
           <DialogFooter>
             <SecondaryButton
               outlined
@@ -115,7 +98,7 @@ export function RawMaterialCombobox({ value, onChange, excludeIds = [] }: RawMat
               disabled={!formName.trim() || !formUnit}
               loading={isCreating}
               onClick={handleCreateNew}
-              className="w-auto px-6"
+              className="px-6"
             />
           </DialogFooter>
         </div>

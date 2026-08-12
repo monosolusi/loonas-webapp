@@ -25,6 +25,7 @@ const INITIAL_STATE: UseListProductionRecordsReturnType = {
   meta: null,
   loading: true,
   error: null,
+  refresh: null,
 };
 
 async function ListProductionRecordFetcher([_, params]: [string, ListProductionRecordFetcherParams]) {
@@ -48,7 +49,7 @@ async function ListProductionRecordFetcher([_, params]: [string, ListProductionR
 
 export function useListProductionRecords(params: UseListProductionRecordsParams = {}): UseListProductionRecordsReturnType {
   const clerk = useClerk();
-  const { data, isLoading, error } = useSWR(
+  const { data, isLoading, error, mutate } = useSWR(
     [PRODUCTION_SWR_KEYS.LIST_PRODUCTION_RECORDS, { ...params, clerk }],
     ListProductionRecordFetcher,
   );
@@ -60,6 +61,7 @@ export function useListProductionRecords(params: UseListProductionRecordsParams 
       meta: null,
       loading: false,
       error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
+      refresh: mutate,
     };
   }
 
@@ -70,5 +72,6 @@ export function useListProductionRecords(params: UseListProductionRecordsParams 
     meta: data.meta,
     loading: false,
     error: null,
+    refresh: mutate,
   };
 }

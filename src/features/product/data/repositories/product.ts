@@ -140,6 +140,12 @@ export class ProductRepositoryImpl implements ProductRepository {
       await this.service.deleteVariant(productId, variantId, session);
       return new DataSuccess(undefined);
     } catch (err) {
+      // LNS-489: a 404 means the variant is already gone — the intent is already satisfied.
+      // The backend deliberately never says whether it never existed, was deleted, or is
+      // another tenant's, so we must not branch on that either.
+      if (err instanceof ServerError && (err.code === ErrorCodes.NOT_FOUND.code || err.httpCode === 404)) {
+        return new DataSuccess(undefined);
+      }
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
     }

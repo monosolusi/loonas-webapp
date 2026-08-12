@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { DateTime } from "luxon";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
@@ -9,19 +9,23 @@ import { OutgoingInvoiceStatus } from "@/features/invoice/domain/enums/outgoing-
 import { DEFAULT_VARIANT_NAME } from "@/features/product/domain/constants/default-variant";
 import { ProductForSaleEntity } from "@/features/product/domain/entities/product-for-sale";
 import { VariantForSaleEntity } from "@/features/product/domain/entities/variant-for-sale";
+import { previewLinePrice } from "@/features/product/domain/helpers/price-tier-preview";
 import { PaymentMethodEntity } from "@/features/pos/domain/entities/payment-method";
 import { useListPaymentMethods } from "@/features/pos/presentations/hooks/use-list-payment-methods";
 import { useCreatePosSale } from "@/features/invoice/presentations/hooks/use-create-pos-sale";
+import { parseUnitPriceMismatch } from "@/features/invoice/presentations/helpers/unit-price-mismatch";
+import { shouldRotateIdempotencyKey } from "@/features/invoice/presentations/helpers/idempotency-rotation";
 import { POS_SWR_KEYS } from "@/features/pos/presentations/constants/swr-keys";
 import { getPaymentMethodHandler } from "@/app/(pos)/pos/_payment-methods/registry";
 import { MOCK_PAYMENT_METHODS, USE_MOCK_PAYMENT_METHODS } from "@/app/(pos)/pos/_dev/mock-payment-methods";
 import {
   CartItem,
+  CartLine,
   CheckoutStep,
   PosCartValue,
   PosContextValue,
   PosUIValue,
-  StockErrorEntry,
+  PriceMismatchEntry,
 } from "@/app/(pos)/pos/_providers/pos-provider.types";
 
 // ---------------------------------------------------------------------------
@@ -59,12 +63,6 @@ export function usePos(): PosContextValue {
 
 const RETRY_DELAY_MS = 1000;
 
-function resolveAvailableQty(variant: VariantForSaleEntity): number | null {
-  if (variant.currentStock !== null) return variant.currentStock;
-  if (variant.maxMakeable !== null) return variant.maxMakeable;
-  return null;
-}
-
 export function PosProvider({ children }: { children: React.ReactNode }) {
   const { showToast } = useToast();
   const realPaymentMethodsState = useListPaymentMethods({ isEnabled: true });
@@ -97,26 +95,40 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
   const [pickerAutoSkipped, setPickerAutoSkipped] = useState(false);
 
   // Idempotency
-  const [idempotencyKey, setIdempotencyKey] = useState<string>(() => crypto.randomUUID());
+  //
+  // A ref, not state: `completeTransaction` rotates the key inside its own catch, and a
+  // state update would be invisible to the closure that already captured it. The key is
+  // never rendered, so there is nothing to re-render for.
+  const idempotencyKeyRef = useRef<string>(crypto.randomUUID());
   useEffect(() => {
-    setIdempotencyKey(crypto.randomUUID());
+    idempotencyKeyRef.current = crypto.randomUUID();
   }, [items, selectedPaymentGatewayId]);
 
   const regenerateIdempotencyKey = useCallback(() => {
-    setIdempotencyKey(crypto.randomUUID());
+    idempotencyKeyRef.current = crypto.randomUUID();
   }, []);
 
   // Errors
-  const [stockErrors, setStockErrors] = useState<Map<string, StockErrorEntry>>(new Map());
+  const [priceMismatch, setPriceMismatch] = useState<PriceMismatchEntry | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<ServerError | null>(null);
 
-  const total = useMemo(() => items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0), [items]);
-
-  const hasCartWarnings = useMemo(
-    () => items.some((i) => i.availableQtySnapshot !== null && i.qty > i.availableQtySnapshot),
+  // Decorate once: one array, one source of truth for every price shown pre-submit.
+  const lines = useMemo<CartLine[]>(
+    () =>
+      items.map((item) => ({
+        ...item,
+        preview: previewLinePrice({
+          basePrice: item.listPrice,
+          schedule: item.priceTierSchedule,
+          qty: item.qty,
+        }),
+      })),
     [items],
   );
+
+  // Per-line rounding then summed, matching how the server builds its own summary.
+  const total = useMemo(() => lines.reduce((sum, line) => sum + line.preview.estimatedLineAmount, 0), [lines]);
 
   const currentMethod = useMemo<PaymentMethodEntity | null>(() => {
     if (paymentMethodsState.status !== "loaded") return null;
@@ -149,19 +161,17 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     setSearch("");
   }, []);
 
-  const clearStockErrorFor = useCallback((variantId: string) => {
-    setStockErrors((prev) => {
-      if (!prev.has(variantId)) return prev;
-      const next = new Map(prev);
-      next.delete(variantId);
-      return next;
-    });
+  // Any cart edit invalidates a pricing rejection: the next submit is a new sale, so a stale
+  // UNIT_PRICE_MISMATCH marker must not survive an add/qty-change/remove. (The earlier
+  // INSUFFICIENT_STOCK map this also cleared is gone — POST /pos/sales no longer returns it.)
+  const clearPriceMismatch = useCallback(() => {
+    setPriceMismatch(null);
   }, []);
 
   const addItem = useCallback(
     (product: ProductForSaleEntity, variant: VariantForSaleEntity) => {
       if (!variant.isAvailable) return;
-      clearStockErrorFor(variant.id);
+      clearPriceMismatch();
       setItems((prev) => {
         const idx = prev.findIndex((i) => i.productId === product.id && i.variantId === variant.id);
         if (idx >= 0) {
@@ -177,19 +187,19 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
             variantId: variant.id,
             productName: product.name,
             variantName,
-            unitPrice: variant.price,
+            listPrice: variant.price,
+            priceTierSchedule: variant.priceTierSchedule,
             qty: 1,
-            availableQtySnapshot: resolveAvailableQty(variant),
           },
         ];
       });
     },
-    [clearStockErrorFor],
+    [clearPriceMismatch],
   );
 
   const updateQty = useCallback(
     (productId: string, variantId: string, qty: number) => {
-      clearStockErrorFor(variantId);
+      clearPriceMismatch();
       if (qty <= 0) {
         setItems((prev) => prev.filter((i) => !(i.productId === productId && i.variantId === variantId)));
         return;
@@ -198,22 +208,21 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
         prev.map((i) => (i.productId === productId && i.variantId === variantId ? { ...i, qty } : i)),
       );
     },
-    [clearStockErrorFor],
+    [clearPriceMismatch],
   );
 
   const removeItem = useCallback(
     (productId: string, variantId: string) => {
-      clearStockErrorFor(variantId);
+      clearPriceMismatch();
       setItems((prev) => prev.filter((i) => !(i.productId === productId && i.variantId === variantId)));
     },
-    [clearStockErrorFor],
+    [clearPriceMismatch],
   );
 
   const clearCart = useCallback(() => {
     setItems([]);
     setSelectedPaymentGatewayId(null);
     setCheckoutStep(null);
-    setStockErrors(new Map());
     setCheckoutError(null);
     setPickerAutoSkipped(false);
   }, []);
@@ -222,7 +231,6 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
   const startCheckout = useCallback(() => {
     if (items.length === 0) return;
     setCheckoutError(null);
-    setStockErrors(new Map());
     setPickerAutoSkipped(false);
     setCheckoutStep("method");
   }, [items.length]);
@@ -297,44 +305,6 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     if (checkoutStep !== null) setDrawerOpen(false);
   }, [checkoutStep]);
 
-  const handleStockErrorDetails = useCallback(
-    (details: Record<string, any>) => {
-      const rawItems = details["items"];
-      if (!Array.isArray(rawItems)) return;
-
-      const variantMap = new Map<string, StockErrorEntry>();
-      const rawMaterialNames: string[] = [];
-      for (const entry of rawItems) {
-        const kind = entry["kind"];
-        if (kind === "variant") {
-          const variantId = entry["variant_id"];
-          if (typeof variantId !== "string") continue;
-          variantMap.set(variantId, {
-            available: Number(entry["available"] ?? 0),
-            requested: Number(entry["requested"] ?? 0),
-            variantName: String(entry["variant_name"] ?? ""),
-          });
-        } else if (kind === "raw_material") {
-          const name = entry["raw_material_name"] ?? entry["raw_material_id"];
-          if (typeof name === "string") rawMaterialNames.push(name);
-        }
-      }
-
-      setStockErrors(variantMap);
-      if (rawMaterialNames.length > 0) {
-        showToast(
-          {
-            title: "Bahan baku kurang",
-            description: rawMaterialNames.join(", "),
-            type: "warning",
-          },
-          "warning",
-        );
-      }
-    },
-    [showToast],
-  );
-
   const completeTransaction = useCallback(async (): Promise<string | null> => {
     if (isCheckingOut) return null;
     if (items.length === 0) return null;
@@ -344,7 +314,11 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     setCheckoutError(null);
     setIsCheckingOut(true);
 
-    const currentKey = idempotencyKey;
+    setPriceMismatch(null);
+
+    // The order submitted here is what the server's zero-based `line_index` refers to.
+    const submittedVariantIds = items.map((i) => i.variantId);
+
     let attempt = 0;
     const maxAttempts = 2;
 
@@ -356,14 +330,30 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
           paymentGatewayId: selectedPaymentGatewayId,
           discount: 0,
           note: undefined,
+          // No unitPrice: the server resolves each line from the variant's tier schedule.
           items: items.map((i) => ({
             variantId: i.variantId,
             quantity: i.qty,
-            unitPrice: i.unitPrice,
             discount: 0,
           })),
-          idempotencyKey: currentKey,
+          // Read per attempt so a rotation in the catch below is picked up immediately.
+          idempotencyKey: idempotencyKeyRef.current,
         });
+
+        // The cashier settles the drawer from the pre-submit estimate, so if the server
+        // charged something else they need to know before handing back change. Method
+        // -agnostic on purpose: this is the only place holding both numbers.
+        const chargedTotal = sale.summary?.total ?? null;
+        if (chargedTotal !== null && Math.round(chargedTotal) !== Math.round(total)) {
+          showToast(
+            {
+              title: "Total akhir berbeda dari perkiraan",
+              description: "Ikuti nominal pada struk untuk pembayaran dan kembalian.",
+              type: "warning",
+            },
+            "warning",
+          );
+        }
 
         // Cash returns status === PAID immediately → auto-clear cart and close wizard.
         // QRIS returns status === READY_TO_SEND (PENDING_PAYMENT on qris.status); the
@@ -373,7 +363,6 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
           setItems([]);
           setSelectedPaymentGatewayId(null);
           setCheckoutStep(null);
-          setStockErrors(new Map());
           setPickerAutoSkipped(false);
         }
         setIsCheckingOut(false);
@@ -381,6 +370,45 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
       } catch (err) {
         const error = err instanceof ServerError ? err : new ServerError(ErrorCodes.UNKNOWN, { error: err });
         const code = error.code;
+        const status = typeof error.details?.["status"] === "number" ? (error.details["status"] as number) : null;
+
+        // The one path that legitimately reuses the key: the BE is still processing THIS
+        // key, so re-sending the identical body under it is a probe, not a new attempt.
+        if (code === ErrorCodes.IDEMPOTENCY_KEY_IN_PROGRESS.code) {
+          if (attempt < maxAttempts) {
+            await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+            continue;
+          }
+          // Retries exhausted. The original may still land, so KEEP the key — a manual
+          // retry must replay idempotently rather than record a second sale.
+          showToast({ title: error.message, type: "error" }, "error");
+          setCheckoutError(error);
+          setIsCheckingOut(false);
+          return null;
+        }
+
+        // 4xx only — see shouldRotateIdempotencyKey for why a 5xx or network failure
+        // must keep the key.
+        if (shouldRotateIdempotencyKey(status, code)) {
+          idempotencyKeyRef.current = crypto.randomUUID();
+        }
+
+        if (code === ErrorCodes.UNIT_PRICE_MISMATCH.code) {
+          const parsed = parseUnitPriceMismatch(error, submittedVariantIds);
+          if (parsed) setPriceMismatch(parsed);
+          showToast(
+            {
+              title: "Transaksi dibatalkan — harga berubah",
+              description: "Tidak ada transaksi yang tercatat. Periksa item yang ditandai lalu ulangi.",
+              type: "error",
+            },
+            "error",
+          );
+          setCheckoutStep(null);
+          setCheckoutError(error);
+          setIsCheckingOut(false);
+          return null;
+        }
 
         if (code === ErrorCodes.PAYMENT_METHOD_DISABLED.code) {
           showToast({ title: error.message, type: "error" }, "error");
@@ -391,23 +419,6 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
           setCheckoutError(error);
           setIsCheckingOut(false);
           return null;
-        }
-
-        if (code === ErrorCodes.INSUFFICIENT_STOCK.code) {
-          handleStockErrorDetails(error.details ?? {});
-          showToast({ title: error.message, type: "error" }, "error");
-          setCheckoutStep(null);
-          setCheckoutError(error);
-          setIsCheckingOut(false);
-          return null;
-        }
-
-        // BE caches all responses (incl. 4xx/5xx) under the Idempotency-Key. A retry
-        // with the same key returns the cached failure, so don't auto-retry CONFLICT —
-        // the cart-mutation effect regenerates the key for any genuine retry.
-        if (code === ErrorCodes.IDEMPOTENCY_KEY_IN_PROGRESS.code && attempt < maxAttempts) {
-          await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
-          continue;
         }
 
         showToast({ title: error.message, type: "error" }, "error");
@@ -422,12 +433,11 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
   }, [
     checkoutStep,
     createPosSale,
-    handleStockErrorDetails,
-    idempotencyKey,
     isCheckingOut,
     items,
     selectedPaymentGatewayId,
     showToast,
+    total,
   ]);
 
   // ---------------------------------------------------------------------------
@@ -435,28 +445,26 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
   // ---------------------------------------------------------------------------
   const cartValue = useMemo<PosCartValue>(
     () => ({
-      items,
+      items: lines,
       total,
       addItem,
       updateQty,
       removeItem,
       clearCart,
-      hasCartWarnings,
-      stockErrors,
+      priceMismatch,
       isCheckingOut,
       checkoutError,
       completeTransaction,
       regenerateIdempotencyKey,
     }),
     [
-      items,
+      lines,
       total,
       addItem,
       updateQty,
       removeItem,
       clearCart,
-      hasCartWarnings,
-      stockErrors,
+      priceMismatch,
       isCheckingOut,
       checkoutError,
       completeTransaction,

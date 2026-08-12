@@ -57,7 +57,7 @@ export function MinStockDialog({ stockItem, onClose }: MinStockDialogProps) {
         />
         <DialogFooter>
           <SecondaryButton outlined label="Batal" onClick={onClose} />
-          <PrimaryButton label="Simpan" loading={isMutating} onClick={handleSave} className="w-auto px-6" />
+          <PrimaryButton label="Simpan" loading={isMutating} onClick={handleSave} className="px-6" />
         </DialogFooter>
       </div>
     </LoonasDialog>

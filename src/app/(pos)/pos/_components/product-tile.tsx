@@ -5,6 +5,7 @@ import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { ProductForSaleEntity } from "@/features/product/domain/entities/product-for-sale";
 import { StockHint } from "@/app/(pos)/pos/_components/stock-hint";
 import { UnavailableBadge } from "@/app/(pos)/pos/_components/unavailable-badge";
+import { OutOfStockBadge } from "@/app/(pos)/pos/_components/out-of-stock-badge";
 
 type ProductTileProps = {
   product: ProductForSaleEntity;
@@ -59,7 +60,10 @@ export function ProductTile({ product, qtyInCart, onClick }: ProductTileProps) {
             Rp <NumberDisplay value={min} />
           </span>
           {singleVariant ? (
-            <StockHint available={singleVariant.currentStock ?? singleVariant.maxMakeable} />
+            <div className="flex flex-row items-center gap-x-1.5">
+              <OutOfStockBadge isOutOfStock={singleVariant.isOutOfStock} />
+              <StockHint available={singleVariant.currentStock ?? singleVariant.maxMakeable} />
+            </div>
           ) : product.hasMultipleVariants ? (
             <span className="shrink-0 text-xs whitespace-nowrap text-neutral-300">{product.variants.length} varian</span>
           ) : null}

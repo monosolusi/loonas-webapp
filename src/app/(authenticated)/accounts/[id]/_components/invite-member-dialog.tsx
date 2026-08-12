@@ -47,13 +47,13 @@ export function InviteMemberDialog({ open, onClose }: InviteMemberDialogProps) {
         <p className="text-sm text-neutral-200">Undangan akan dikirim melalui email ke alamat di atas.</p>
 
         <DialogFooter>
-          <SecondaryButton outlined type="button" label="Batal" onClick={handleClose} className="w-auto px-6" />
+          <SecondaryButton outlined type="button" label="Batal" onClick={handleClose} className="px-6" />
           <PrimaryButton
             disabled={!isValidEmail}
             loading={isMutating}
             onClick={handleSubmit}
             label="Undang"
-            className="w-auto px-6"
+            className="px-6"
           />
         </DialogFooter>
       </div>
