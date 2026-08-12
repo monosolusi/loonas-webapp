@@ -12,6 +12,7 @@ export const ACCOUNTING_SWR_KEYS = {
   LIST_JOURNALS: "list-journals",
   GET_JOURNAL: "get-journal",
   LIST_TRIAL_BALANCE_LINES: "list-trial-balance-lines",
+  LIST_COST_VALUATION_GAPS_REPORT: "list-cost-valuation-gaps-report",
   GET_OPENING_BALANCE: "get-opening-balance",
   GET_ACCOUNT_SETTING: "get-account-setting",
   LIST_ACCOUNT_SETTING_AUDIT: "list-account-setting-audit",

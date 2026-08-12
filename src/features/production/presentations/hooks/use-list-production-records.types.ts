@@ -1,6 +1,7 @@
+import { KeyedMutator } from "swr";
 import { useClerk } from "@clerk/nextjs";
 import { ServerError } from "@/core/resources/server-error";
-import { PaginationMeta } from "@/core/resources/paginated";
+import { PaginatedData, PaginationMeta } from "@/core/resources/paginated";
 import { ProductionRecordEntity } from "@/features/production/domain/entities/production-record";
 
 export type UseListProductionRecordsParams = {
@@ -21,6 +22,7 @@ type InitialState = {
   meta: null;
   loading: true;
   error: null;
+  refresh: null;
 };
 
 type LoadedState = {
@@ -28,6 +30,7 @@ type LoadedState = {
   meta: PaginationMeta;
   loading: false;
   error: null;
+  refresh: KeyedMutator<PaginatedData<ProductionRecordEntity>>;
 };
 
 type ErrorState = {
@@ -35,6 +38,7 @@ type ErrorState = {
   meta: null;
   loading: false;
   error: ServerError;
+  refresh: KeyedMutator<PaginatedData<ProductionRecordEntity>>;
 };
 
 export type UseListProductionRecordsReturnType = InitialState | LoadedState | ErrorState;

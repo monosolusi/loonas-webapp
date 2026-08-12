@@ -352,12 +352,6 @@ export class ErrorCodes {
     message: "Metode pembayaran tidak tersedia. Pilih metode lain.",
   };
 
-  public static readonly INSUFFICIENT_STOCK: ErrorStructureType = {
-    code: "INSUFFICIENT_STOCK",
-    httpCode: 400,
-    message: "Stok tidak mencukupi untuk beberapa item.",
-  };
-
   public static readonly RECIPE_NOT_DEFINED: ErrorStructureType = {
     code: "RECIPE_NOT_DEFINED",
     httpCode: 400,
@@ -515,6 +509,60 @@ export class ErrorCodes {
     code: "FEATURE_NOT_AVAILABLE",
     httpCode: 403,
     message: "Fitur ini belum tersedia untuk akun Anda.",
+  };
+
+  public static readonly PRICE_TIER_SCHEDULE_INVALID: ErrorStructureType = {
+    code: "PRICE_TIER_SCHEDULE_INVALID",
+    httpCode: 422,
+    message: "Skema harga grosir tidak valid.",
+  };
+
+  public static readonly VARIANT_PRICE_BELOW_TIER: ErrorStructureType = {
+    code: "VARIANT_PRICE_BELOW_TIER",
+    httpCode: 422,
+    message: "Harga dasar tidak boleh lebih rendah dari harga grosir yang aktif.",
+  };
+
+  public static readonly UNIT_PRICE_MISMATCH: ErrorStructureType = {
+    code: "UNIT_PRICE_MISMATCH",
+    httpCode: 422,
+    message: "Harga yang dikirim tidak sesuai dengan harga yang dihitung server. Transaksi tidak tercatat.",
+  };
+
+  public static readonly STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE: ErrorStructureType = {
+    code: "STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE",
+    httpCode: 422,
+    message: "Stok item ini sudah negatif — catat transaksi yang belum tercatat sebelum menyesuaikan stok.",
+  };
+
+  public static readonly STOCK_ADJUSTMENT_BOOK_QUANTITY_CHANGED: ErrorStructureType = {
+    code: "STOCK_ADJUSTMENT_BOOK_QUANTITY_CHANGED",
+    httpCode: 409,
+    message: "Saldo buku stok sudah berubah. Muat ulang saldo terkini lalu hitung ulang.",
+  };
+
+  public static readonly STOCK_ADJUSTMENT_NO_CHANGE: ErrorStructureType = {
+    code: "STOCK_ADJUSTMENT_NO_CHANGE",
+    httpCode: 422,
+    message: "Jumlah hasil hitung sama dengan saldo saat ini. Tidak ada perubahan untuk dicatat.",
+  };
+
+  public static readonly STOCK_ADJUSTMENT_REASON_DIRECTION_MISMATCH: ErrorStructureType = {
+    code: "STOCK_ADJUSTMENT_REASON_DIRECTION_MISMATCH",
+    httpCode: 422,
+    message: "Arah perubahan tidak sesuai alasan yang dipilih. Pilih alasan yang sesuai atau ubah jumlahnya.",
+  };
+
+  public static readonly OWNER_WITHDRAWAL_NOT_SUPPORTED_FOR_ENTITY: ErrorStructureType = {
+    code: "OWNER_WITHDRAWAL_NOT_SUPPORTED_FOR_ENTITY",
+    httpCode: 422,
+    message: "Penarikan pemilik (prive) tidak didukung untuk bentuk badan usaha ini.",
+  };
+
+  public static readonly STOCK_ADJUSTMENT_COST_BASIS_UNAVAILABLE: ErrorStructureType = {
+    code: "STOCK_ADJUSTMENT_COST_BASIS_UNAVAILABLE",
+    httpCode: 422,
+    message: "Dasar harga pokok belum tersedia untuk item ini. Penyesuaian tidak dapat dicatat.",
   };
 
   public static find(code: string): ErrorStructureType | undefined {

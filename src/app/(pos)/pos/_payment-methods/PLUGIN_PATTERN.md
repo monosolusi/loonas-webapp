@@ -123,12 +123,37 @@ That's it. The wizard picks up the new handler automatically.
 | Selected payment method id | `PosProvider` | The wizard core needs to look up the handler |
 | `checkoutStep` | `PosProvider` | The wizard core drives transitions |
 | Idempotency key | `PosProvider` | Owned by the submit flow which is method-agnostic |
+| Price mismatch (422) | `PosProvider` | Rejects the whole sale, not one method's step |
 | `tenderedAmount` (cash) | `CashProvider` | Only cash steps read it |
 | QR code URL, payment status (qris) | `QrisProvider` | Only qris steps read it |
 | Card token (future credit-card method) | `CreditCardProvider` | Only credit-card steps read it |
 
 **Golden rule:** if only your method's components read a piece of state, it
 belongs in your method's context, not in `PosProvider`.
+
+## Pricing: `total` is an estimate until the sale exists
+
+`POST /pos/sales` resolves every line's price server-side from the variant's
+grosir (tier) schedule. The client does **not** send `unit_price`, and a
+divergent one is rejected outright with 422 `UNIT_PRICE_MISMATCH`.
+
+That splits pricing into two epochs, and a handler must respect both:
+
+- **Before the sale is created** — `total` from `PosProvider` is a *display
+  estimate*, resolved locally through the tier schedules so the cashier can
+  quote and take cash. It may differ from what the server charges by a rupiah
+  or two.
+- **After a 201** — the response is authoritative. Read `invoice.summary.total`
+  and the per-line `amount_before_tax`. Never keep showing `total` on a screen
+  the customer reads once the sale exists (`QrisConfirmStep` does this via
+  `displayTotal`).
+
+Never recompute a line total from `qty × price`: under `GRADUATED` the returned
+`price` is a blended presentational figure and the two genuinely differ.
+
+`PosCartValue.items` is `CartLine[]` — each row carries a `preview` with the
+estimate. Cart rows carry `listPrice`, not `unitPrice`, so nothing on the cart
+resembles a price to send.
 
 ## Wizard navigation contract
 

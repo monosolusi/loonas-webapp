@@ -1,4 +1,5 @@
 import { AbstractEntity } from "@/core/resources/entity";
+import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item";
 
 type StockMovementEntityConstructor = {
   id: string;
@@ -9,6 +10,9 @@ type StockMovementEntityConstructor = {
   note: string | null;
   stockItemId: string;
   createdAt: string;
+  reason: string | null;
+  effectiveAt: string;
+  stockItem: StockItemEntity | null;
 };
 
 export class StockMovementEntity implements AbstractEntity {
@@ -20,6 +24,9 @@ export class StockMovementEntity implements AbstractEntity {
   public readonly note: string | null;
   public readonly stockItemId: string;
   public readonly createdAt: string;
+  public readonly reason: string | null;
+  public readonly effectiveAt: string;
+  public readonly stockItem: StockItemEntity | null;
 
   constructor(args: StockMovementEntityConstructor) {
     this.id = args.id;
@@ -30,6 +37,9 @@ export class StockMovementEntity implements AbstractEntity {
     this.note = args.note;
     this.stockItemId = args.stockItemId;
     this.createdAt = args.createdAt;
+    this.reason = args.reason;
+    this.effectiveAt = args.effectiveAt;
+    this.stockItem = args.stockItem;
   }
 
   get isStockIn(): boolean {

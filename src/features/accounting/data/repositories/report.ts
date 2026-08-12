@@ -10,12 +10,14 @@ import {
   GetGeneralLedgerRepoParams,
   GetNotesRepoParams,
   ListTrialBalanceLinesRepoParams,
+  ListCostValuationGapsRepoParams,
   BalanceSheetReportData,
   IncomeStatementReportData,
   CashFlowReportData,
   TrialBalanceReportData,
   GeneralLedgerReportData,
   TrialBalanceLinesData,
+  CostValuationGapsData,
   NotesReportData,
 } from "@/features/accounting/domain/repositories/report";
 import { ReportService } from "@/features/accounting/domain/sources/report";
@@ -117,6 +119,20 @@ export class ReportRepositoryImpl implements ReportRepository {
       const lines = result.data.map(TrialBalanceLineModel.fromJson).map((m) => m.toEntity());
       const counterparts = result.counterparts.map(TrialBalanceLineModel.fromJson).map((m) => m.toEntity());
       return new DataSuccess({ lines, counterparts, meta: result.meta });
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async listCostValuationGaps(
+    params: ListCostValuationGapsRepoParams,
+    session: SessionEntity,
+  ): Promise<DataState<CostValuationGapsData>> {
+    try {
+      const result = await this.service.listCostValuationGaps(params, session);
+      const rows = result.data.map((m) => m.toEntity());
+      return new DataSuccess({ rows, meta: result.meta });
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

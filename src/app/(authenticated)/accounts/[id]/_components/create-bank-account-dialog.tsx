@@ -101,7 +101,7 @@ export function CreateBankAccountDialog(props: CreateBankAccountDialogProps) {
             loading={isMutating}
             onClick={handleSubmit}
             label="Tambah Rekening"
-            className="w-auto px-6"
+            className="px-6"
           />
         </DialogFooter>
       </div>

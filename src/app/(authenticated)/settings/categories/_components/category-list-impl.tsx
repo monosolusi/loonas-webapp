@@ -217,7 +217,7 @@ export function CategoryListImpl() {
               disabled={!formName.trim()}
               loading={isCreating}
               onClick={handleCreate}
-              className="w-auto px-6"
+              className="px-6"
             />
           </DialogFooter>
         </div>
@@ -240,7 +240,7 @@ export function CategoryListImpl() {
               disabled={!formName.trim()}
               loading={isUpdating}
               onClick={handleUpdate}
-              className="w-auto px-6"
+              className="px-6"
             />
           </DialogFooter>
         </div>

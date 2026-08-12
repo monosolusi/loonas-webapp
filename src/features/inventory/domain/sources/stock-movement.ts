@@ -1,7 +1,13 @@
 import { PaginationMeta } from "@/core/resources/paginated";
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { StockMovementModel } from "@/features/inventory/data/models/stock-movement";
-import { ListStockMovementsParams } from "@/features/inventory/domain/repositories/stock-movement";
+
+export type ListStockMovementsServiceParams = {
+  stockItemId?: string;
+  type?: string;
+  page?: number;
+  limit?: number;
+};
 
 export type ListStockMovementsServiceResult = {
   data: StockMovementModel[];
@@ -9,5 +15,5 @@ export type ListStockMovementsServiceResult = {
 };
 
 export interface StockMovementService {
-  list(params: ListStockMovementsParams, session: SessionEntity): Promise<ListStockMovementsServiceResult>;
+  list(params: ListStockMovementsServiceParams, session: SessionEntity): Promise<ListStockMovementsServiceResult>;
 }

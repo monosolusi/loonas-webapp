@@ -6,6 +6,9 @@ on:
       - dev
       - main
       - opencode-dev
+      # Epic FE work stacks on a release/* integration branch before promotion to dev.
+      # Without this, PRs into those branches ran no CI at all.
+      - 'release/**'
   push:
     branches:
       - dev
@@ -48,6 +51,9 @@ jobs:
 
       - name: Type-check
         run: npm run typecheck
+
+      - name: Test
+        run: npm run test
 
       - name: Build
         run: npm run build

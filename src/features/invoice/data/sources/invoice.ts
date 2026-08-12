@@ -110,10 +110,15 @@ export class InvoiceServiceImpl implements InvoiceService {
         date: params.date,
         payment_gateway: { id: params.paymentGatewayId },
         discount: params.discount,
+        // No `unit_price`. The server resolves every line from the variant's own tier
+        // schedule and rejects a submitted value that disagrees with 422
+        // UNIT_PRICE_MISMATCH — which would fire only at quantities that reach a tier
+        // break, i.e. intermittently and unattributably at the till. The key is absent
+        // structurally, not set to undefined: `unitPrice` no longer exists on
+        // CreatePosSaleItemServiceParams, so reintroducing it fails to compile.
         items: params.items.map((item) => ({
           variant: { id: item.variantId },
           quantity: item.quantity,
-          unit_price: item.unitPrice,
           discount: item.discount,
         })),
       };

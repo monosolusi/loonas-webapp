@@ -97,7 +97,6 @@ export interface ListInvoicesServiceFilter {
 export interface CreatePosSaleItemServiceParams {
   variantId: string;
   quantity: number;
-  unitPrice: number;
   discount: number;
 }
 

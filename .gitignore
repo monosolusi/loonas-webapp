@@ -1,3 +1,5 @@
+.worktrees/
+
 src/app/(authenticated)/playground/
 tools/config.yml
 

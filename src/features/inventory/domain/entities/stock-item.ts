@@ -1,4 +1,5 @@
 import { AbstractEntity } from "@/core/resources/entity";
+import { StockItemType } from "@/features/inventory/domain/enums/stock-item-type";
 
 type StockItemRawMaterialRef = {
   id: string;
@@ -47,6 +48,25 @@ export class StockItemEntity implements AbstractEntity {
 
   get isLowStock(): boolean {
     return this.minStock !== null && this.minStock > 0 && this.currentStock <= this.minStock;
+  }
+
+  /**
+   * Mirrors the BE domain rule: an already-negative starting balance blocks an
+   * adjustment on either channel (422 STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE). A
+   * receipt or production record must bring the balance back to zero or above
+   * first — zero itself is adjustable.
+   */
+  get isNegativeBalance(): boolean {
+    return this.currentStock < 0;
+  }
+
+  /**
+   * `type` is a bare `string` on the wire, so an inline comparison at a call
+   * site carries no compile-time protection — a typo silently evaluates false.
+   * Keep the comparison here so every consumer shares one spelling.
+   */
+  get isFinishedGoods(): boolean {
+    return this.type === StockItemType.FINISHED_GOODS;
   }
 
   get itemName(): string {

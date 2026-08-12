@@ -5,6 +5,7 @@ import { OutgoingInvoiceEntity } from "@/features/invoice/domain/entities/outgoi
 import { CashPayInDetailEntity } from "@/features/invoice/domain/entities/pay-in-detail/cash-pay-in-detail";
 import { InvoicePaymentStatusChip } from "@/features/invoice/presentations/components/invoice-payment-status-chip";
 import { InvoiceSettlementChip } from "@/features/invoice/presentations/components/invoice-settlement-chip";
+import { PosReceiptLine } from "@/features/invoice/presentations/components/pos-receipt-line";
 import { formatPosReceiptDateTime } from "@/core/utilities/datetime/format-pos-receipt-datetime";
 import { idrSpeller } from "@/core/utilities/currency/idr-speller";
 import {
@@ -35,42 +36,7 @@ export function PosReceiptCard({ invoice }: PosReceiptCardProps) {
 
       <div className="flex flex-col gap-y-2">
         {invoice.items.map((item) => (
-          <div key={item.id} className="flex flex-col gap-y-0.5">
-            <div className="flex flex-row items-start justify-between gap-x-3">
-              <div className="flex min-w-0 flex-1 flex-row items-start gap-x-2.5">
-                <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-neutral-100 text-xs font-semibold tabular-nums text-neutral-500">
-                  {item.qty}
-                </span>
-                <div className="flex min-w-0 flex-col">
-                  <span className="truncate text-sm text-neutral-500">{item.name}</span>
-                  {item.qty > 1 && (
-                    <span className="text-xs tabular-nums text-neutral-300">
-                      {item.qty} × <NumberDisplay value={item.price} />
-                    </span>
-                  )}
-                </div>
-              </div>
-              <span className="w-24 shrink-0 text-right text-sm font-medium tabular-nums text-neutral-500">
-                <NumberDisplay value={item.total} />
-              </span>
-            </div>
-            {item.discount !== undefined && item.discount > 0 && (
-              <div className="flex flex-row justify-between text-xs text-neutral-300">
-                <span>Diskon</span>
-                <span>
-                  -<NumberDisplay value={item.discount} />
-                </span>
-              </div>
-            )}
-            {item.tax > 0 && (
-              <div className="flex flex-row justify-between text-xs text-neutral-300">
-                <span>Pajak</span>
-                <span>
-                  <NumberDisplay value={item.tax} />
-                </span>
-              </div>
-            )}
-          </div>
+          <PosReceiptLine key={item.id} item={item} />
         ))}
       </div>
 

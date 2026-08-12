@@ -60,7 +60,7 @@ export function FixedCostCreateDialog({ open, onClose }: FixedCostCreateDialogPr
             disabled={!name.trim()}
             loading={isMutating}
             onClick={handleCreate}
-            className="w-auto px-6"
+            className="px-6"
           />
         </DialogFooter>
       </div>

@@ -14,8 +14,9 @@ import { TableToolbar } from "@/core/presentations/components/table/table-toolba
 import { ListPageHeader } from "@/core/presentations/components/list-page-header";
 import { MobileListCard } from "@/core/presentations/components/table/mobile-list-card";
 import { DateRangePicker } from "@/core/presentations/components/date-range-picker";
+import { FilterPill } from "@/core/presentations/components/filter-pill";
 import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
-import { FilterDropdown, FilterPill } from "@/app/(authenticated)/products/_components/filter-dropdown";
+import { FilterDropdown } from "@/app/(authenticated)/products/_components/filter-dropdown";
 import { AccountTypeBadge } from "@/app/(authenticated)/accounting/ledger/_components/account-type-badge";
 import { useLedgerListRange } from "@/app/(authenticated)/accounting/ledger/_providers/ledger-list-range-provider";
 import { useListLedgerAccounts } from "@/features/accounting/presentations/hooks/use-list-ledger-accounts";

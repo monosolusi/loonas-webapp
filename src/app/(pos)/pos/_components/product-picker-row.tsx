@@ -6,6 +6,7 @@ import { ProductForSaleEntity } from "@/features/product/domain/entities/product
 import { ProductListRow } from "@/app/(pos)/pos/_components/product-list-row";
 import { StockHint } from "@/app/(pos)/pos/_components/stock-hint";
 import { UnavailableBadge } from "@/app/(pos)/pos/_components/unavailable-badge";
+import { OutOfStockBadge } from "@/app/(pos)/pos/_components/out-of-stock-badge";
 
 type ProductPickerRowProps = {
   product: ProductForSaleEntity;
@@ -45,7 +46,10 @@ export function ProductPickerRow({ product, active, onClick }: ProductPickerRowP
         <>
           <PriceRangeDisplay min={min} max={max} />
           {singleVariant && (
-            <StockHint available={singleVariant.currentStock ?? singleVariant.maxMakeable} />
+            <>
+              <OutOfStockBadge isOutOfStock={singleVariant.isOutOfStock} />
+              <StockHint available={singleVariant.currentStock ?? singleVariant.maxMakeable} />
+            </>
           )}
           {partial && (
             <span className="text-xs text-neutral-300 tabular-nums">

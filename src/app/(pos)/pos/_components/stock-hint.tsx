@@ -10,7 +10,7 @@ type StockHintProps = {
 export function StockHint({ available }: StockHintProps) {
   if (available === null) return null;
   if (available > LOW_STOCK_THRESHOLD) return null;
-  if (available <= 0) return null; // out-of-stock is rendered via the unavailable chip, not here.
+  if (available <= 0) return null; // out-of-stock is rendered via the stock_status badge (OutOfStockBadge), not here.
 
   const tone = available <= 3 ? "text-warning-300" : "text-neutral-400";
 
