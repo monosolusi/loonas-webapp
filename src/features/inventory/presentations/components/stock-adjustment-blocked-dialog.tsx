@@ -12,7 +12,7 @@ import {
   canRecoverByProduction,
   RECORD_PRODUCTION,
   RECORD_PURCHASE,
-} from "@/features/inventory/presentations/helpers/stock-recovery-actions";
+} from "@/features/inventory/presentations/helpers/stock-item-actions";
 
 type StockAdjustmentBlockedDialogProps = {
   open: boolean;
@@ -34,11 +34,11 @@ export function StockAdjustmentBlockedDialog({ open, stockItem, onClose }: Stock
   // Drives the inline recovery-path sentence (production as a link vs.
   // purchasing-only) against the item-type-agnostic footer below, so the two
   // cannot disagree. The rule itself lives in the helper, shared with the form
-  // dialog and both list rows.
+  // dialog and the row action menu.
   const canBeProduced = canRecoverByProduction(item);
 
   return (
-    <LoonasDialog title="Tidak Dapat Menyesuaikan Stok" width="lg" open={open} onClose={onClose}>
+    <LoonasDialog title="Stok Minus, Belum Bisa Disesuaikan" width="lg" open={open} onClose={onClose}>
       <div className="mt-2 flex flex-col gap-y-4">
         <div className="flex flex-col gap-y-1">
           <span className="text-sm font-medium text-neutral-500">{item.itemName}</span>
@@ -47,25 +47,25 @@ export function StockAdjustmentBlockedDialog({ open, stockItem, onClose }: Stock
 
         <div className="rounded-lg border border-warning-400 bg-warning-50 px-4 py-3">
           <p className="text-sm leading-5 text-warning-500">
-            Saldo stok saat ini{" "}
+            Stok sekarang{" "}
             <span className="font-semibold">
               <NumberDisplay value={item.currentStock} />
-            </span>{" "}
-            — penyesuaian stok hanya bisa dilakukan saat saldo 0 atau lebih.
+            </span>
+            . Penyesuaian hanya bisa saat stok 0 atau lebih.
           </p>
         </div>
 
         <p className="text-sm leading-5 text-neutral-300">
           {canBeProduced ? (
             <>
-              Catat pembelian atau{" "}
+              Catat dulu pembelian atau{" "}
               <Link href={RECORD_PRODUCTION.href} className="text-primary-400 underline hover:text-primary-500">
                 produksi
               </Link>{" "}
-              yang belum tercatat untuk memulihkan saldo.
+              yang belum masuk. Setelah stok tidak minus, penyesuaian bisa dilakukan.
             </>
           ) : (
-            "Catat pembelian yang belum tercatat untuk memulihkan saldo."
+            "Catat dulu pembelian yang belum masuk. Setelah stok tidak minus, penyesuaian bisa dilakukan."
           )}
         </p>
 
