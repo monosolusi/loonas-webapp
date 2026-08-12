@@ -33,6 +33,7 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/accounting/profitability": { title: "Profitabilitas Varian" },
   "/accounting/accounts": { title: "Bagan Akun" },
   "/accounting/mappings": { title: "Bagan Akun" },
+  "/inventory/stock-adjustment": { title: "Penyesuaian Stok", description: "Penyesuaian stok manual" },
   "/inventory/negative-stock": { title: "Stok Negatif", description: "Penyelesaian stok negatif" },
 };
 

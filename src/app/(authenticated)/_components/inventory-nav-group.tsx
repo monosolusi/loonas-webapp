@@ -20,6 +20,7 @@ export function InventoryNavGroup({ id, openGroup, onOpenChange }: InventoryNavG
       openGroup={openGroup}
       onOpenChange={onOpenChange}
     >
+      <NavigationChildItem href="/inventory/stock-adjustment" label="Penyesuaian Stok" />
       <NavigationChildItem href="/inventory/negative-stock" label="Stok Negatif" />
     </NavigationGroup>
   );

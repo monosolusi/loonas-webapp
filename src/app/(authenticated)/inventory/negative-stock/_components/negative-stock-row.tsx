@@ -1,46 +1,32 @@
 "use client";
 
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { NumberDisplay } from "@/core/presentations/components/number-display";
-import { ActionMenu, ActionMenuOption } from "@/core/presentations/components/action-menu";
-import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
+import { ActionMenuOption } from "@/core/presentations/components/action-menu";
 import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item";
-import { StockItemTypeLabel, StockItemTypeType } from "@/features/inventory/domain/enums/stock-item-type";
-
-const INVENTORY_ADJUSTMENT_FEATURE = "inventory_adjustment";
+import { StockItemTableRow } from "@/features/inventory/presentations/components/stock-item-table-row";
+import { stockRecoveryActions } from "@/features/inventory/presentations/helpers/stock-recovery-actions";
 
 type NegativeStockRowProps = {
   stockItem: StockItemEntity;
-  onAdjust: (item: StockItemEntity) => void;
 };
 
-export function NegativeStockRow({ stockItem, onAdjust }: NegativeStockRowProps) {
+export function NegativeStockRow({ stockItem }: NegativeStockRowProps) {
   const router = useRouter();
-  const { account } = useGetCurrentAccount();
 
-  const canAdjust = account?.hasFeature(INVENTORY_ADJUSTMENT_FEATURE) ?? false;
-
-  const options: ActionMenuOption[] = [{ label: "Catat Pembelian", onClick: () => router.push("/purchasing/create") }];
-  if (canAdjust) {
-    options.push({ label: "Sesuaikan Stok", onClick: () => onAdjust(stockItem) });
-  }
-
-  return (
-    <div className="grid grid-cols-[1.5fr_1fr_1.2fr_0.8fr_0.8fr_40px] items-center gap-x-4 border-b border-neutral-100 px-4 py-3 last:border-b-0">
-      <span className="truncate text-sm leading-5 text-neutral-500">{stockItem.itemName}</span>
-      <span className="text-sm leading-5 text-neutral-400">
-        {StockItemTypeLabel[stockItem.type as StockItemTypeType] ?? stockItem.type}
-      </span>
-      <span className="truncate text-sm leading-5 text-neutral-300">{stockItem.sku ?? "—"}</span>
-      <span className="text-sm leading-5 font-medium text-error-400">
-        <NumberDisplay value={stockItem.currentStock} />
-      </span>
-      <span className="text-sm leading-5 text-neutral-400">
-        {stockItem.minStock !== null ? <NumberDisplay value={stockItem.minStock} /> : "—"}
-      </span>
-      <div className="flex items-center justify-end">
-        <ActionMenu options={options} />
-      </div>
-    </div>
+  // Every item on this list is negative, and a negative balance can never be
+  // adjusted (BE 422 STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE) — only recovered. The
+  // inventory-adjustment feature flag is therefore irrelevant here.
+  const options = useMemo<ActionMenuOption[]>(
+    () =>
+      stockRecoveryActions(stockItem).map((action) => ({
+        label: action.label,
+        onClick: () => router.push(action.href),
+      })),
+    [stockItem, router],
   );
+
+  // This endpoint returns only negative items, so the tone is a page invariant
+  // rather than a per-row decision.
+  return <StockItemTableRow stockItem={stockItem} toneClass="text-error-400" options={options} />;
 }

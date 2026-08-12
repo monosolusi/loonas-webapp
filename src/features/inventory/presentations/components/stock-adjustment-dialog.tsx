@@ -140,13 +140,21 @@ export function StockAdjustmentDialog({ stockItem, onClose }: StockAdjustmentDia
 
   // The BE rejects an adjustment outright when the starting balance is already
   // negative — on either channel (422 STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE). Put
-  // the guard here, in the one component all three entry points render, so every
-  // entry point gets the same behaviour by construction. Both dialogs are
-  // rendered unconditionally and driven by `open`: Headless UI wraps each
-  // `Dialog` in a `Transition`, which plays the leave animation before removing
-  // the subtree, so the outgoing dialog fades out properly. An early return that
-  // swaps which one is rendered tears it down synchronously and the leave never
-  // plays. Only one is ever open, and the closed one is gone from the DOM.
+  // the guard here, in the one component every entry point renders, so every
+  // entry point gets the same behaviour by construction. Entry points also hide
+  // the "Sesuaikan Stok" option on a negative item: that row-level gate is the
+  // first line, this guard the last, because SWR list data can go stale between
+  // render and click and the balance may have gone negative in between.
+  //
+  // Both dialogs below are rendered unconditionally and driven by `open`.
+  // Headless UI wraps each `Dialog` in a `Transition`, which plays the leave
+  // animation before removing the subtree, so the outgoing dialog fades out
+  // properly; an early return *here* that swaps which one is rendered would tear
+  // it down synchronously and the leave would never play. Only one is ever open,
+  // and the closed one is gone from the DOM. (`StockAdjustmentBlockedDialog` has
+  // an early return of its own, but it fires only before that dialog's first
+  // open — never on the way out — so it is compatible with this, not an
+  // exception to it.)
   const isBlocked = stockItem?.isNegativeBalance ?? false;
 
   return (

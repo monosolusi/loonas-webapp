@@ -28,7 +28,10 @@ export function ProductDetailStockRow({ stockItem, onEditMinStock, onAdjustStock
       <StockRowActionMenu
         onEditMinStock={() => onEditMinStock(stockItem)}
         onAdjustStock={onAdjustStock ? () => onAdjustStock(stockItem) : undefined}
-        canAdjust={canAdjust}
+        // A negative balance is never adjustable (BE 422
+        // STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE), so the option would only
+        // dead-end in the blocked dialog. Suppress it at the row instead.
+        canAdjust={canAdjust && !stockItem.isNegativeBalance}
       />
     </div>
   );
