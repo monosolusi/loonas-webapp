@@ -191,6 +191,14 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   from the advisory field or from raw quantities (`current_stock` / `max_makeable`). The server owns the
   availability call; duplicating it in the FE invites drift. LNS-608: `stock_status` drives the "Habis" badge,
   `is_available` drives `disabled` / addable.
+- **A server-side rule that blocks an action does not remove the affordance**: the menu shape stays uniform and
+  a dialog explains the block. Suppressing an option on a per-row predicate makes two rows of the same table
+  offer different menus, which reads as a broken or inconsistent UI rather than as a rule. Incident:
+  `isNegativeBalance` suppressed "Sesuaikan Stok" across four surfaces (both `/inventory` lists plus the product
+  and raw-material detail stock cards) while `StockAdjustmentDialog` already owned the block and its
+  explanation; the fix kept the option everywhere and routed it to `StockAdjustmentBlockedDialog`. Corollary:
+  when the guard already exists in one shared component, a second gate at the call site is not defence-in-depth,
+  it is a divergent UI.
 - **POS payment methods**: plugin pattern — see `src/app/(pos)/pos/_payment-methods/PLUGIN_PATTERN.md` before adding or
   modifying a payment method. The wizard chrome (header, step layout, transitions) is method-agnostic; each method is a
   self-contained handler in `_payment-methods/{type}/`.
