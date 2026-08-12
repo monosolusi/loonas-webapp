@@ -6,7 +6,13 @@ import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
+import { useLatchedValue } from "@/core/presentations/hooks/use-latched-value";
 import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item";
+import {
+  canRecoverByProduction,
+  RECORD_PRODUCTION,
+  RECORD_PURCHASE,
+} from "@/features/inventory/presentations/helpers/stock-recovery-actions";
 
 type StockAdjustmentBlockedDialogProps = {
   open: boolean;
@@ -15,27 +21,37 @@ type StockAdjustmentBlockedDialogProps = {
 };
 
 export function StockAdjustmentBlockedDialog({ open, stockItem, onClose }: StockAdjustmentBlockedDialogProps) {
-  // Only finished goods are produced; raw materials are restocked by purchasing
-  // alone. Drives both the inline recovery-path sentence (production as a link vs.
-  // purchasing-only) and the item-type-agnostic footer below, so the two cannot
-  // disagree.
-  const canBeProduced = stockItem?.isFinishedGoods ?? false;
+  // The parent nulls `stockItem` the instant the dialog closes, while the panel
+  // is still playing its ~200ms leave transition. Render the whole body from the
+  // latched item so the name, the balance and the actions stay put while it
+  // fades instead of blanking one by one.
+  const item = useLatchedValue(stockItem);
+
+  // Null only before the dialog has ever opened — `open` is false in that window
+  // and Headless UI renders nothing anyway, so this skips no leave animation.
+  if (!item) return null;
+
+  // Drives the inline recovery-path sentence (production as a link vs.
+  // purchasing-only) against the item-type-agnostic footer below, so the two
+  // cannot disagree. The rule itself lives in the helper, shared with the form
+  // dialog and both list rows.
+  const canBeProduced = canRecoverByProduction(item);
 
   return (
     <LoonasDialog title="Tidak Dapat Menyesuaikan Stok" width="lg" open={open} onClose={onClose}>
       <div className="mt-2 flex flex-col gap-y-4">
-        {stockItem && (
-          <div className="flex flex-col gap-y-1">
-            <span className="text-sm font-medium text-neutral-500">{stockItem.itemName}</span>
-            {stockItem.variantName && <span className="text-xs text-neutral-300">{stockItem.variantName}</span>}
-          </div>
-        )}
+        <div className="flex flex-col gap-y-1">
+          <span className="text-sm font-medium text-neutral-500">{item.itemName}</span>
+          {item.variantName && <span className="text-xs text-neutral-300">{item.variantName}</span>}
+        </div>
 
         <div className="rounded-lg border border-warning-400 bg-warning-50 px-4 py-3">
           <p className="text-sm leading-5 text-warning-500">
             Saldo stok saat ini{" "}
-            <span className="font-semibold">{stockItem && <NumberDisplay value={stockItem.currentStock} />}</span> —
-            penyesuaian stok hanya bisa dilakukan saat saldo 0 atau lebih.
+            <span className="font-semibold">
+              <NumberDisplay value={item.currentStock} />
+            </span>{" "}
+            — penyesuaian stok hanya bisa dilakukan saat saldo 0 atau lebih.
           </p>
         </div>
 
@@ -43,7 +59,7 @@ export function StockAdjustmentBlockedDialog({ open, stockItem, onClose }: Stock
           {canBeProduced ? (
             <>
               Catat pembelian atau{" "}
-              <Link href="/productions/create" className="text-primary-400 underline hover:text-primary-500">
+              <Link href={RECORD_PRODUCTION.href} className="text-primary-400 underline hover:text-primary-500">
                 produksi
               </Link>{" "}
               yang belum tercatat untuk memulihkan saldo.
@@ -59,8 +75,8 @@ export function StockAdjustmentBlockedDialog({ open, stockItem, onClose }: Stock
             here. */}
         <DialogFooter>
           <SecondaryButton outlined label="Tutup" onClick={onClose} />
-          <Link href="/purchasing/create" className="w-full sm:w-auto">
-            <PrimaryButton label="Catat Pembelian" className="w-full px-6 sm:w-auto" />
+          <Link href={RECORD_PURCHASE.href} className="w-full sm:w-auto">
+            <PrimaryButton label={RECORD_PURCHASE.label} className="w-full px-6 sm:w-auto" />
           </Link>
         </DialogFooter>
       </div>
