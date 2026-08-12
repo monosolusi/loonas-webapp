@@ -1,7 +1,8 @@
 import { StockItemEntity } from "@/features/inventory/domain/entities/stock-item";
 
 /**
- * Text tone for the "Stok Terkini" cell. Three states, so it lives outside the
+ * Text tone for the "Stok Terkini" cell, shared by every stock item list
+ * (Penyesuaian Stok, Stok Negatif). Three states, so it lives outside the
  * `.tsx` where the Vitest node suite can lock the precedence: a negative balance
  * is the blocked state and outranks low stock, low stock is a warning, and every
  * other balance is ordinary.

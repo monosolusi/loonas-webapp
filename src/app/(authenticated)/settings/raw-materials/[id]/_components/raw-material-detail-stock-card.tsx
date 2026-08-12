@@ -11,8 +11,8 @@ import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-
 import { MinStockDialog } from "@/features/inventory/presentations/components/min-stock-dialog";
 import { StockAdjustmentDialog } from "@/features/inventory/presentations/components/stock-adjustment-dialog";
 import { useRawMaterialDetail } from "@/app/(authenticated)/settings/raw-materials/[id]/_providers/raw-material-detail-provider";
-
-const INVENTORY_ADJUSTMENT_FEATURE = "inventory_adjustment";
+import { INVENTORY_ADJUSTMENT_FEATURE } from "@/features/inventory/presentations/constants/feature-flags";
+import clsx from "clsx";
 
 function stockStatusLabel(stockItem: StockItemEntity): { label: string; color: string } {
   if (stockItem.minStock === null) return { label: "Min stok belum diatur", color: "text-neutral-300" };
@@ -39,10 +39,10 @@ export function RawMaterialDetailStockCard() {
   const status = stockStatusLabel(stockItem);
 
   const menuOptions: ActionMenuOption[] = [{ label: "Atur Stok Minimum", onClick: () => setEditingItem(stockItem) }];
-  // A negative balance is never adjustable (BE 422
-  // STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE), so the option would only dead-end in
-  // the blocked dialog. Suppress it here instead.
-  if (canAdjust && !stockItem.isNegativeBalance) {
+  // The menu shape does not depend on the balance — a negative balance is
+  // handled by StockAdjustmentDialog, which explains why in a modal rather
+  // than the option going missing.
+  if (canAdjust) {
     menuOptions.push({ label: "Sesuaikan Stok", onClick: () => setAdjustingItem(stockItem) });
   }
 
@@ -68,7 +68,7 @@ export function RawMaterialDetailStockCard() {
           </div>
           <div className="flex flex-row items-center justify-between">
             <span className="text-sm text-neutral-300">Status Stok</span>
-            <span className={`text-sm font-medium ${status.color}`}>{status.label}</span>
+            <span className={clsx("text-sm font-medium", status.color)}>{status.label}</span>
           </div>
         </div>
       </SectionCard>

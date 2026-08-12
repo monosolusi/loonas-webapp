@@ -25,7 +25,7 @@ import {
   isNoteRequired,
 } from "@/features/inventory/domain/helpers/stock-adjustment-reason";
 import { ChannelOption } from "@/features/inventory/presentations/components/stock-adjustment-channel-option";
-import { stockRecoveryActions } from "@/features/inventory/presentations/helpers/stock-recovery-actions";
+import { stockRecoveryActions } from "@/features/inventory/presentations/helpers/stock-item-actions";
 
 type Channel = "counted" | "removed" | "";
 
@@ -83,9 +83,11 @@ export function StockAdjustmentFormDialog(props: StockAdjustmentFormDialogProps)
   const noteRequired = reasonSet && isNoteRequired(reasonTyped as StockAdjustmentReasonType);
 
   // Reachable only through the stale-data race the dialog-level guard exists
-  // for: every entry point now hides the adjust action on a negative balance, so
-  // the BE rejection lands here when the balance went negative after the list
-  // rendered. Same rule, same source as the blocked dialog.
+  // for: the row menu no longer hides "Sesuaikan Stok" on a negative balance —
+  // picking it opens the blocked dialog instead — so this error block only
+  // fires when the balance went negative between the list render and submit
+  // (list said non-negative, BE says negative). Same rule, same source as the
+  // blocked dialog.
   const isNegativeBalanceError = props.error?.code === ErrorCodes.STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE.code;
   const recoveryActions = stockItem ? stockRecoveryActions(stockItem) : [];
 

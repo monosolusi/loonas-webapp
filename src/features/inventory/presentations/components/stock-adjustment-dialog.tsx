@@ -141,10 +141,12 @@ export function StockAdjustmentDialog({ stockItem, onClose }: StockAdjustmentDia
   // The BE rejects an adjustment outright when the starting balance is already
   // negative — on either channel (422 STOCK_ADJUSTMENT_ON_NEGATIVE_BALANCE). Put
   // the guard here, in the one component every entry point renders, so every
-  // entry point gets the same behaviour by construction. Entry points also hide
-  // the "Sesuaikan Stok" option on a negative item: that row-level gate is the
-  // first line, this guard the last, because SWR list data can go stale between
-  // render and click and the balance may have gone negative in between.
+  // entry point gets the same behaviour by construction. The row-level gate
+  // that used to hide "Sesuaikan Stok" on a negative item was deliberately
+  // removed — the action menu is now uniform across every balance — so this
+  // component is the single owner of both the block and its explanation: pick
+  // "Sesuaikan Stok" on a negative item and this guard routes to the blocked
+  // dialog instead of the form.
   //
   // Both dialogs below are rendered unconditionally and driven by `open`.
   // Headless UI wraps each `Dialog` in a `Transition`, which plays the leave
