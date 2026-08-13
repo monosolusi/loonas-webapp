@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/16/solid";
+import { Spinner } from "@/core/presentations/components/spinner";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { useDebounce } from "@/core/presentations/hooks/use-debounce";
 import { useToast } from "@/core/presentations/hooks/use-toast";
@@ -12,6 +13,7 @@ import { CategoryChips } from "@/app/(pos)/pos/_components/category-chips";
 import { ProductPickerBody } from "@/app/(pos)/pos/_components/product-picker-body";
 import { PickerRow } from "@/app/(pos)/pos/_components/product-picker-body-list";
 import { usePos } from "@/app/(pos)/pos/_providers/pos-provider";
+import { RowAction, resolveRowAction } from "@/app/(pos)/pos/_utils/resolve-row-action";
 import { classifyCommit, KeystrokeSample } from "@/app/(pos)/pos/_utils/scan-detector";
 
 const PAGE_SIZE = 50;
@@ -114,65 +116,57 @@ export function ProductPicker() {
     setPendingCommit(null);
   }, [isDrilldown]);
 
+  // Carries out a decision made by `resolveRowAction` — the decision itself lives in that pure
+  // module so the keyboard/click path and the scan path cannot drift apart.
+  const applyRowAction = (result: RowAction) => {
+    if (result.action === "noop") return;
+    if (result.action === "drilldown") {
+      enterDrilldown(result.product);
+      setSearch("");
+      return;
+    }
+    addItem(result.product, result.variant);
+    setSearch("");
+  };
+
   const activate = (idx: number) => {
     const row = visibleRows[idx];
     if (!row) return;
-    if (row.kind === "variant" && drilldownProduct) {
-      if (!row.variant.isAvailable) return;
-      addItem(drilldownProduct, row.variant);
-      setSearch("");
+    if (row.kind === "variant") {
+      if (!drilldownProduct) return;
+      applyRowAction(resolveRowAction({ kind: "variant", product: drilldownProduct, variant: row.variant }));
       return;
     }
-    if (row.kind === "product") {
-      const product = row.product;
-      if (!product.hasAvailableVariant) return;
-      if (product.hasMultipleVariants) {
-        enterDrilldown(product);
-        setSearch("");
-      } else {
-        addItem(product, product.variants[0]);
-        setSearch("");
-      }
-    }
+    applyRowAction(resolveRowAction({ kind: "product", product: row.product }));
   };
 
   // Maps a resolved SKU match to a cart/navigation action. The domain helper (`matchBySku`)
-  // deliberately knows nothing about carts or drilldown — this is where that mapping lives.
-  // Respects the same availability rules as `activate()`: an unavailable variant, or a product
-  // with no available variant, is never added — silently, exactly like a disabled row click.
+  // deliberately knows nothing about carts or drilldown — this is where that mapping lives. The
+  // variant/product arms delegate to the same `resolveRowAction` rule a row click uses, so an
+  // unavailable variant is refused identically either way; only the `ambiguous` / `none` arms
+  // below are scan-specific.
   const resolveSkuMatch = (match: SkuMatch, opts: { isScan: boolean; term: string; onFallback: () => void }) => {
     if (match.kind === "variant") {
-      if (!match.variant.isAvailable) return;
-      addItem(match.product, match.variant);
-      setSearch("");
+      applyRowAction(resolveRowAction({ kind: "variant", product: match.product, variant: match.variant }));
       return;
     }
     if (match.kind === "product") {
-      if (!match.product.hasAvailableVariant) return;
-      if (match.product.hasMultipleVariants) {
-        enterDrilldown(match.product);
-        setSearch("");
-      } else {
-        addItem(match.product, match.product.variants[0]);
-        setSearch("");
-      }
+      applyRowAction(resolveRowAction({ kind: "product", product: match.product }));
       return;
     }
     if (match.kind === "ambiguous") {
-      // Two different products share this code — leave the filtered list on screen so the
-      // cashier picks the right one instead of us silently guessing.
+      // More than one product — or more than one variant of one product — carries this code.
+      // The committed term keeps the list filtered to those candidates, so leaving it on screen
+      // lets the cashier pick the right one instead of us silently guessing.
       return;
     }
     // match.kind === "none"
     if (opts.isScan) {
-      showToast(
-        {
-          title: `SKU "${opts.term}" tidak ditemukan`,
-          description: "Cari produk secara manual, atau ulangi scan.",
-          type: "error",
-        },
-        "error",
-      );
+      showToast({
+        title: `SKU "${opts.term}" tidak ditemukan`,
+        description: "Cari produk secara manual, atau ulangi scan.",
+        type: "error",
+      });
       return;
     }
     opts.onFallback();
@@ -259,6 +253,18 @@ export function ProductPicker() {
 
   const isLoading = !isDrilldown && productsState.status === "loading";
   const isResolvingCommit = pendingCommit !== null;
+
+  // A click that lands while a commit is still resolving would add its row directly AND leave the
+  // pending resolver to add again a moment later — two cart lines from one intent. That window is
+  // reachable in practice: re-scanning the same SKU for a second unit can hit the SWR cache, so
+  // the rows are painted and clickable in the same render that queued the commit. Gated here, at
+  // the pointer entry point only — the resolver's own human-typing fallback calls `activate`
+  // directly and must still work while a commit is in flight. The input itself stays enabled so a
+  // scanner firing the next code doesn't lose its keystrokes.
+  const onRowActivate = (idx: number) => {
+    if (isResolvingCommit) return;
+    activate(idx);
+  };
   const error = !isDrilldown && productsState.status === "error" ? productsState.error : null;
 
   return (
@@ -271,25 +277,9 @@ export function ProductPicker() {
           value={search}
           onChange={setSearch}
           onKeyDown={onKeyDown}
+          aria-busy={isResolvingCommit}
           leftIcon={<MagnifyingGlassIcon className="size-5 text-neutral-300" />}
-          rightIcon={
-            isResolvingCommit ? (
-              <svg
-                className="size-5 animate-spin text-neutral-300"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-            ) : undefined
-          }
+          rightIcon={isResolvingCommit ? <Spinner className="text-neutral-300" /> : undefined}
         />
         {isDrilldown && drilldownProduct && (
           <button
@@ -311,7 +301,7 @@ export function ProductPicker() {
           isDrilldown={isDrilldown}
           rows={visibleRows}
           highlight={highlight}
-          onActivate={activate}
+          onActivate={onRowActivate}
         />
       </div>
 
