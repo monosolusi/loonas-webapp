@@ -117,6 +117,21 @@ describe("matchBySku", () => {
     expect(result.kind).toBe("ambiguous");
   });
 
+  it("returns ambiguous when two variants of the SAME product share the code", () => {
+    // Nothing guarantees SKUs are unique within a product, and picking the first match would
+    // silently drop an arbitrary size/colour into the cart with no signal to the cashier.
+    const v1 = variant({ id: "v1", name: "Merah", sku: "SHARED" });
+    const v2 = variant({ id: "v2", name: "Biru", sku: "SHARED" });
+    const p1 = product({ id: "p1", sku: "PRD-1", variants: [v1, v2] });
+
+    const result = matchBySku([p1], "SHARED");
+
+    expect(result.kind).toBe("ambiguous");
+    if (result.kind === "ambiguous") {
+      expect(result.products).toEqual([p1]);
+    }
+  });
+
   it("returns none for an unknown code", () => {
     const p1 = product({ id: "p1", sku: "PRD-1", variants: [variant({ id: "v1", sku: null })] });
 

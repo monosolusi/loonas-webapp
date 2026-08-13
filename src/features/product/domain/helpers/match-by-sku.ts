@@ -33,9 +33,9 @@ function uniqueById(products: ProductForSaleEntity[]): ProductForSaleEntity[] {
 /**
  * Exact, case-insensitive, whitespace-trimmed match on SKU.
  *
- * Variant-SKU matches take precedence over product-SKU matches. Two different products
- * matching the same code (at either level) is `ambiguous` — the caller must not silently pick
- * one. An empty/blank code is `none`.
+ * Variant-SKU matches take precedence over product-SKU matches. Any code matched by more than
+ * one candidate is `ambiguous` — whether that's two products, or two variants of a single
+ * product — and the caller must not silently pick one. An empty/blank code is `none`.
  */
 export function matchBySku(products: ProductForSaleEntity[], code: string): SkuMatch {
   const normalized = normalize(code);
@@ -50,9 +50,13 @@ export function matchBySku(products: ProductForSaleEntity[], code: string): SkuM
     }
   }
 
-  if (variantMatches.length > 0) {
-    const owningProducts = uniqueById(variantMatches.map((match) => match.product));
-    if (owningProducts.length > 1) return { kind: "ambiguous", products: owningProducts };
+  // More than one variant carrying this code is ambiguous even when they belong to the SAME
+  // product — nothing verifies that SKUs are unique within a product, and silently taking the
+  // first match would add an arbitrary size/colour to the cart with no signal to the cashier.
+  if (variantMatches.length > 1) {
+    return { kind: "ambiguous", products: uniqueById(variantMatches.map((match) => match.product)) };
+  }
+  if (variantMatches.length === 1) {
     return { kind: "variant", product: variantMatches[0].product, variant: variantMatches[0].variant };
   }
 
