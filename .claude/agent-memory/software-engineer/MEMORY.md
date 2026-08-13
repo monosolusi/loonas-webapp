@@ -37,6 +37,7 @@
 - [Helper owns which, not how](feedback_helper_owns_which_not_how.md) — never encode a rendering hierarchy ("last one is primary") in a shared helper; export the predicate beside the list so a surface can present it differently
 - [Repo is not prettier-clean](feedback_repo_is_not_prettier_clean.md) — prettier isn't in CI or hooks and HEAD already fails `--check` widely; new files clean, untouched lines left alone; quote app-router paths, don't glob
 - [Declaration table over paired branches](feedback_declaration_table_over_paired_branches.md) — when two functions must stay superset/subset, replace independent branch pairs with one rule table + filters so the invariant is structural, not test-enforced (stock-item-actions arch-review)
+- [Derived-index reset during render, not effect](feedback_derived_index_reset_during_render.md) — when a second effect consumes highlight/selectedIndex in the same commit, reset it via render-time setState (React's documented pattern), not useEffect, or the consumer reads a stale index (POS barcode-scan fix)
 
 ## Project
 
