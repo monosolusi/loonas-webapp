@@ -79,6 +79,10 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
   const createUser = async () => {
     try {
       setIsCreating(true);
+      // Intentionally re-derives from the same source flags as `isReady` above, rather than
+      // reading `isReady` itself — each check here needs its own distinct `ServerError` code,
+      // which one collapsed boolean can't carry. If `isReady` ever gains another dependency,
+      // add a matching branch here too.
       if (!isClean || isLoadingMe) throw new ServerError(ErrorCodes.VALIDATION_FAILED);
       if (!isLoaded) throw new ServerError(ErrorCodes.AUTH_NOT_READY);
       if (isSignedIn) throw new ServerError(ErrorCodes.USER_SIGNED_IN);
