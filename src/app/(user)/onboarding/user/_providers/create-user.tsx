@@ -13,6 +13,8 @@ type CreateUserContextProps = {
   repeatPassword: string;
   isClean: boolean;
   isCreating: boolean;
+  isReady: boolean;
+  isSignedIn: boolean;
   emailError: string | null;
   passwordError: string | null;
   repeatPasswordError: string | null;
@@ -32,6 +34,8 @@ const CreateUserContext = React.createContext<CreateUserContextProps>({
   repeatPassword: "",
   isClean: true,
   isCreating: false,
+  isReady: false,
+  isSignedIn: false,
   emailError: null,
   passwordError: null,
   repeatPasswordError: null,
@@ -66,11 +70,21 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
     [email, password, repeatPassword],
   );
 
+  // Single source of truth for "ready to submit" — derived from the same `useSignUp()` instance
+  // `createUser()` uses below, plus the `useGetMe()` loading flag. Consumers (e.g. the submit
+  // button) must read this instead of calling `useAuth().isLoaded` themselves, which can resolve
+  // at a different time and disagree with this provider.
+  const isReady = useMemo(() => isLoaded && !isLoadingMe, [isLoaded, isLoadingMe]);
+
   const createUser = async () => {
     try {
       setIsCreating(true);
+      // Intentionally re-derives from the same source flags as `isReady` above, rather than
+      // reading `isReady` itself — each check here needs its own distinct `ServerError` code,
+      // which one collapsed boolean can't carry. If `isReady` ever gains another dependency,
+      // add a matching branch here too.
       if (!isClean || isLoadingMe) throw new ServerError(ErrorCodes.VALIDATION_FAILED);
-      if (!isLoaded) return;
+      if (!isLoaded) throw new ServerError(ErrorCodes.AUTH_NOT_READY);
       if (isSignedIn) throw new ServerError(ErrorCodes.USER_SIGNED_IN);
 
       // Check if the user already logged in. If so, we will redirect to the home page directly
@@ -81,8 +95,14 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
       if (resource.status === "complete") await setActive({ session: resource.createdSessionId });
       else throw new ServerError(ErrorCodes.UNKNOWN, { message: resource.status });
     } catch (err) {
-      if (isClerkAPIResponseError(err)) throw new ServerError(ErrorCodes.UNKNOWN, { message: err.message });
-      console.error(JSON.stringify(err, null, 2));
+      if (err instanceof ServerError) throw err;
+      if (isClerkAPIResponseError(err)) {
+        // User-visible copy is unchanged (still `err.message`) — the Clerk error code is kept in
+        // `details` only, for logging, not surfaced.
+        throw new ServerError(ErrorCodes.UNKNOWN, { message: err.message, clerkErrorCode: err.errors[0]?.code });
+      }
+      console.error(err);
+      throw err;
     } finally {
       setIsCreating(false);
     }
@@ -103,6 +123,8 @@ export function CreateUserProvider(props: CreateUserProviderProps) {
         repeatPasswordError,
         createUser,
         isCreating,
+        isReady,
+        isSignedIn: !!isSignedIn,
       }}
     >
       {props.children}

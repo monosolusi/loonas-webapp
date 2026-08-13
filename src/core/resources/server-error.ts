@@ -7,6 +7,12 @@ export class ErrorCodes {
     message: "User already signed in",
   };
 
+  public static readonly AUTH_NOT_READY: ErrorStructureType = {
+    code: "AUTH_NOT_READY",
+    httpCode: 400,
+    message: "Sesi belum siap. Coba lagi sesaat lagi.",
+  };
+
   public static readonly EMPTY_RESPONSE = {
     code: "EMPTY_RESPONSE",
     httpCode: 400,

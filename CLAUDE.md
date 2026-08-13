@@ -156,6 +156,28 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   stock-error map), the renamed callback must still fire on every `addItem` / `updateQty` / `removeItem` path that
   previously called it — otherwise the remaining concern (a stale `UNIT_PRICE_MISMATCH` marker) survives a cart edit.
   LNS-608 preserved this on all three mutation paths.
+- **An `async` event handler must never `throw`, and a catch-all must never swallow**: React does not await
+  `onSubmit`/`onClick`, so a `throw` inside one becomes an unhandled promise rejection — the user sees nothing, the
+  button silently resets, and the failure is invisible. The mirror defect is a provider-side `catch` that logs
+  instead of rethrowing: the async function then *resolves*, and the caller runs its success path (`router.push`)
+  on a failure that never happened. Both shipped together on `/onboarding/user` — registration appeared to succeed
+  while no account existed. Rules: (1) every branch of a handler's `catch` either navigates or sets error state,
+  never `throw`; (2) a `catch` that re-wraps errors must rethrow deliberate ones first (`if (err instanceof
+  ServerError) throw err;`) — otherwise a narrowing guard like `isClerkAPIResponseError` returns false for your OWN
+  thrown `ServerError` and the catch-all eats it; (3) `console.error(JSON.stringify(err))` on a native `Error` logs
+  `{}` (message/stack are non-enumerable) — log the raw object. Extract the error→outcome decision into a pure
+  `_utils/classify-submit-error.ts` so vitest can reach it; the `.tsx` handler itself cannot be tested.
+- **A third-party widget injected into a DOM slot needs the slot mounted, visible, and ordered before the submit
+  control**: Clerk mounts its Turnstile challenge into `#clerk-captcha` at `signUp.create()` call time, not on page
+  load. That slot was rendered *after* the submit button, so the challenge appeared below the fold and the button
+  spun forever with nothing explaining why. The slot must exist before submit fires (if absent, Clerk degrades to
+  invisible-only and can hard-block a falsely-flagged user with no recourse); it must never be `display:none`
+  (Turnstile fails to measure inside a hidden node — reveal the *label*, not the container); and it belongs between
+  the last field and the button, per Clerk's own examples. Clerk exposes **no** app-observable captcha state — no
+  `captcha_unsolved` code, no callback — so do not build UI around detecting an unsolved challenge. Watch the slot's
+  *size* with a `ResizeObserver` instead, and reveal only on non-zero height: the widget is injected on every submit
+  including the invisible path, so an unguarded observer shows a "solve the captcha" hint and scroll-jumps every
+  successful signup.
 - **Component context rule**: When a component needs context data, it consumes context itself inside `_components/`.
   Page does not wrap children in a single content component — each component is self-contained.
 - **Component architecture**: One component per file. Use `useMemo` for computed/derived data. No conditional rendering

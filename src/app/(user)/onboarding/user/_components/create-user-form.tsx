@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useCreateUser } from "@/app/(user)/onboarding/user/_providers/create-user";
-import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { classifySubmitError } from "@/app/(user)/onboarding/user/_utils/classify-submit-error";
 
 type CreateUserFormProps = {
   children: React.ReactNode;
@@ -15,21 +15,20 @@ export function CreateUserForm(props: CreateUserFormProps) {
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!isClean) return;
+    if (!createUser) return;
+    if (isCreating) return;
+
     try {
-      event.preventDefault();
-      event.stopPropagation();
-
-      if (!isClean) return;
-      if (!createUser) return;
-      if (isCreating) return;
-
       await createUser();
       router.push("/onboarding/account");
     } catch (err) {
-      if (err instanceof ServerError) {
-        if (err.code === ErrorCodes.USER_SIGNED_IN.code) router.replace("/home");
-        else setErrorMessage(err.message);
-      } else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+      const outcome = classifySubmitError(err);
+      if (outcome.kind === "redirect-signed-in") router.replace("/home");
+      else setErrorMessage(outcome.message);
     }
   };
 
@@ -41,7 +40,6 @@ export function CreateUserForm(props: CreateUserFormProps) {
         </div>
       )}
       {props.children}
-      <div id="clerk-captcha" />
     </form>
   );
 }
