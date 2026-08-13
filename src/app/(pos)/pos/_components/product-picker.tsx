@@ -156,8 +156,8 @@ export function ProductPicker() {
     }
     if (match.kind === "ambiguous") {
       // More than one product — or more than one variant of one product — carries this code.
-      // The committed term keeps the list filtered to those candidates, so leaving it on screen
-      // lets the cashier pick the right one instead of us silently guessing.
+      // The committed term keeps those candidates visible (it is how they were found), so
+      // leaving the list up lets the cashier pick the right one instead of us silently guessing.
       return;
     }
     // match.kind === "none"
