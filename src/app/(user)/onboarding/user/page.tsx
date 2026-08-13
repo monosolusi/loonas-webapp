@@ -8,6 +8,7 @@ import { CreateUserButton } from "@/app/(user)/onboarding/user/_components/creat
 import { CreateUserProvider } from "@/app/(user)/onboarding/user/_providers/create-user";
 import { CreateUserInputs } from "@/app/(user)/onboarding/user/_components/create-user-inputs";
 import { CreateUserForm } from "@/app/(user)/onboarding/user/_components/create-user-form";
+import { CreateUserCaptcha } from "@/app/(user)/onboarding/user/_components/create-user-captcha";
 
 export default function UserStepPage() {
   return (
@@ -30,6 +31,7 @@ export default function UserStepPage() {
           </div>
           <CreateUserForm>
             <CreateUserInputs />
+            <CreateUserCaptcha />
             <CreateUserButton />
           </CreateUserForm>
           <span className="text-center text-xs leading-5 font-normal text-neutral-200">

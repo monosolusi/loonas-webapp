@@ -41,7 +41,6 @@ export function CreateUserForm(props: CreateUserFormProps) {
         </div>
       )}
       {props.children}
-      <div id="clerk-captcha" />
     </form>
   );
 }
