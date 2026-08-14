@@ -1,44 +1,28 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
 import { useCreateUser } from "@/app/(user)/onboarding/user/_providers/create-user";
-import { classifySubmitError } from "@/app/(user)/onboarding/user/_utils/classify-submit-error";
+import { CreateUserErrorBanner } from "@/app/(user)/onboarding/user/_components/create-user-error-banner";
 
 type CreateUserFormProps = {
   children: React.ReactNode;
 };
 
 export function CreateUserForm(props: CreateUserFormProps) {
-  const router = useRouter();
-  const { createUser, isClean, isCreating } = useCreateUser();
-  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const { submit } = useCreateUser();
 
-  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
-
-    if (!isClean) return;
-    if (!createUser) return;
-    if (isCreating) return;
-
-    try {
-      await createUser();
-      router.push("/onboarding/account");
-    } catch (err) {
-      const outcome = classifySubmitError(err);
-      if (outcome.kind === "redirect-signed-in") router.replace("/home");
-      else setErrorMessage(outcome.message);
-    }
+    // `submit()` never throws — it records status/error state itself — so this handler stays a
+    // plain fire-and-forget void call rather than an async handler that could otherwise become
+    // an invisible unhandled rejection.
+    void submit?.();
   };
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-6">
-      {errorMessage && (
-        <div className="border-error-300/20 bg-error-300/5 flex flex-row items-start gap-3 rounded-lg border p-4">
-          <span className="text-error-300/90 text-sm leading-5 font-normal">{errorMessage}</span>
-        </div>
-      )}
+      <CreateUserErrorBanner />
       {props.children}
     </form>
   );

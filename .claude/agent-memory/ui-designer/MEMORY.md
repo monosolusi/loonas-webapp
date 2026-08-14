@@ -1,4 +1,5 @@
 - [Design language conventions](design_language.md) — SectionCard, PrimaryButton, h-11, size-8, neutral palette, ActionMenu, skeletons
+- [Async submit-feedback states (onboarding registration)](project_onboarding_submit_feedback_lns_registration.md) — top-vs-below-button banner split, 8s/20s escalation, redirect-bridge rule, 2 a11y precedents to grep
 - [CoA mappings current structure](project_coa_mappings.md) — current table grid, line shape, dialog form, provider pattern
 - [Finance nav group](project_finance_nav.md) — FinanceNavGroup gated on hasFeature("accounting"), NavigationGroup/NavigationChildItem pattern
 - [Settings page tile pattern](project_settings_page.md) — SettingsCategoryCard grid, feature-gating via hasFeature(), active/inactive states
