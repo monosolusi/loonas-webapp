@@ -178,6 +178,44 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   *size* with a `ResizeObserver` instead, and reveal only on non-zero height: the widget is injected on every submit
   including the invisible path, so an unguarded observer shows a "solve the captcha" hint and scroll-jumps every
   successful signup.
+- **Never race a real mutating call against a client-side deadline — bound the *display*, not the promise**:
+  `Promise.race([signUp.create(), timeout])` rejects the UI promise but does **not** cancel the request. It keeps
+  running and can still succeed server-side, so the user is told "gagal", retries, and the retry collides with
+  `form_identifier_exists` on an account that silently already exists — manufacturing the very duplicate-account
+  trap the timeout was added to prevent. This applies to any call whose server-side effect is not safely
+  re-triggerable (account creation, payment capture, stock adjustment). Instead: `await` the real promise and let
+  its real settlement be the **only** thing that ends the loading state, and run a separate `setInterval` purely
+  to track elapsed time, feeding a pure `resolveWaitPhase(elapsedMs)` that escalates the *copy*
+  (`_utils/submit-wait-phase.ts` → `_components/create-user-wait-notice.tsx`, 8s caption → 20s advisory). Past the
+  stall threshold the copy must stay honestly uncertain ("mungkin sudah berhasil dibuat di latar belakang") and
+  steer to **reload-and-check**, never resubmit. The carve-out: a deadline IS safe once the mutation has already
+  returned and the *next* step is what's hanging — `withTimeout()` (`core/utilities/`) bounds `setActive()` only,
+  because by then the account is known-created, so "akun sudah dibuat, sesi gagal diaktifkan — muat ulang lalu
+  masuk" is correct whether Clerk truly failed or merely never answered. Test the boundary by asking: *if I reject
+  now and I'm wrong, is my copy still true?* Note the two `onboarding/account` hooks still race a 60s
+  `AbortController` against account creation — same defect class, pre-existing, deliberately left untouched here.
+- **A submit's success is a terminal UI state, and the auth library owns the post-auth navigation**: three
+  separate mistakes shipped together on `/onboarding/user` and each alone reproduces "the user cannot tell whether
+  it worked". (1) `disabled = !isClean || !isReady || isSignedIn` on the submit button: the instant `setActive()`
+  resolves, `isSignedIn` flips true while the in-flight flag flips false **on the same tick**, so the button renders
+  dead grey — no spinner, no error — whether or not navigation actually happened. Model the lifecycle as a
+  `SubmitStatus` union where `"succeeded"` is TERMINAL and never falls back to `"idle"`, and resolve the button
+  through a pure `_utils/create-user-button-state.ts` carrying the invariant *no input yields `disabled && !loading`
+  while succeeded*. (2) `Button` renders `label` only when **not** loading, so `loading` without `loadingLabel` is a
+  bare spinner with zero text — every `loading: true` branch must carry a `loadingLabel`. (3) A bare
+  `await setActive({ session })` followed by a separate `router.push()` is the one shape Clerk's docs never use and
+  it gets dropped; pass `setActive({ session, redirectUrl })` as `SignInProvider` already does, and keep a
+  ref-guarded `status === "succeeded"` effect as the fallback. When two navigation paths exist (post-signup vs a
+  pre-existing session), give each its own destination and make each consume the other's ref guard, or they race.
+- **Clerk throws two unrelated error classes and `isClerkAPIResponseError` only catches one**: a client-side
+  failure before any request — notably `{ code: "captcha_unavailable" }` when Turnstile itself cannot load — is a
+  `ClerkRuntimeError`, for which that guard returns **false**, so a catch-all silently collapses it to a generic
+  message. Duck-type both structurally rather than importing `@clerk/*`, so the classifier stays reachable by the
+  node-env vitest suite (house precedent: `sign-in.tsx`'s `classifyClerkError`): `ClerkAPIResponseError` has
+  `status: number` + `errors: Array<{ code }>` + optional `retryAfter` (seconds, surface it in rate-limit copy);
+  `ClerkRuntimeError` has only `code: string`. Check `status === 429` **before** pattern-matching `errors[0].code` —
+  the HTTP status is authoritative. Never render a raw `SignUpResource.status` (`"missing_requirements"`) as user
+  copy; map it, and keep the raw value in `details` for logging.
 - **Component context rule**: When a component needs context data, it consumes context itself inside `_components/`.
   Page does not wrap children in a single content component — each component is self-contained.
 - **Component architecture**: One component per file. Use `useMemo` for computed/derived data. No conditional rendering
