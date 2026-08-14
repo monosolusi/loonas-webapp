@@ -182,6 +182,18 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   Page does not wrap children in a single content component — each component is self-contained.
 - **Component architecture**: One component per file. Use `useMemo` for computed/derived data. No conditional rendering
   of multiple states in return — split into separate components instead (e.g., loading, empty, list components).
+- **A stray `;` after a JSX element is a text node, not a statement terminator**: inside a JSX body, `<Foo />;`
+  renders a literal semicolon into the DOM. Nothing in the toolchain catches it — `tsc` sees valid JSX, Prettier
+  reformats around it, and `eslint-plugin-react`'s recommended set has no rule for bare-punctuation children
+  (`react/jsx-no-literals` would flag every line of Indonesian UI copy, so it stays off). The defect is least
+  visible in review and most visible in UAT when the sibling component can return `null`: `GoToSignIn` wrapped
+  `<UseOtherAccountAction />;` in a flex div, and `UseOtherAccountAction` returns `null` both while user status
+  loads and when `approvedAccount.count === 0` — so the div shipped holding nothing but a floating `;` at the
+  bottom-left of the "Pilih Jenis Akun" step. When touching JSX, grep the shape:
+  `grep -rnE '^[[:space:]]+(<[A-Za-z][^=]*/>|</[A-Za-z][A-Za-z0-9.]*>)[[:space:]]*;[[:space:]]*$' --include="*.tsx" src`
+  — a `return <X />;` on its own line is correct JS, a punctuation-terminated JSX *child* never is. Same reading
+  applies to a dead class token (`fo` in the step-indicator pill): a typo'd utility is invisible to Tailwind and to
+  lint, so verify unknown class names against the `@theme` block in `globals.css` rather than assuming they resolve.
 - **Displayed mode and saved mode must be the same expression**: never mask a form value for display while the
   save path reads the raw one. `hasVariants={form.type !== ProductType.SERVICE && form.hasVariants}` passed a
   masked value to the card while `syncVariants` / `handleSubmit` read the unmasked `form.hasVariants`, so the

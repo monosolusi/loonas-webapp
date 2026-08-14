@@ -16,7 +16,7 @@ export function GoToSignIn() {
   else if (isSignedIn) {
     return (
       <div className="flex flex-row text-center">
-        <UseOtherAccountAction />;
+        <UseOtherAccountAction />
       </div>
     );
   } else {

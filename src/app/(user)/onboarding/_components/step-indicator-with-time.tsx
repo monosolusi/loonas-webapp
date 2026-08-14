@@ -15,7 +15,7 @@ type StepIndicatorWithTimeProps = {
 export function StepIndicatorWithTime(props: StepIndicatorWithTimeProps) {
   return (
     <div className="border-primary-300/10 bg-primary-300/5 text-primary-300 flex flex-row items-center gap-2.5 rounded-full border px-3 py-2">
-      <span className="text-primary-300 fo text-sm leading-5 font-medium">
+      <span className="text-primary-300 text-sm leading-5 font-medium">
         Step {props.currentStep} of {props.totalSteps}
       </span>
       <div className="bg-primary-300/30 size-1 rounded-full"></div>
