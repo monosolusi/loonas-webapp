@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useCallback } from "react";
-import { DateTime } from "luxon";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
 import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
 import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
+import { DateOfBirthParts } from "@/app/(user)/onboarding/account/_utils/date-of-birth";
 
 type AccountType = "personal" | "business";
 
@@ -38,7 +38,9 @@ type PersonalAccountData = {
   fullName?: string;
   occupation?: OccupationEntity;
   placeOfBirth?: string;
-  dateOfBirth?: DateTime;
+  // Raw three-part form buffer — the provider holds this, never the derived DateTime.
+  // See `resolveDateOfBirth` for the single-owner derivation.
+  dateOfBirth?: DateOfBirthParts;
   province?: ProvinceEntity;
   city?: CityEntity;
   district?: DistrictEntity;

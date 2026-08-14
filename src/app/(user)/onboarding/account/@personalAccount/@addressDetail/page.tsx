@@ -24,19 +24,30 @@ export default function AddressDetailInputPage() {
         </div>
         <div className="mb-8 flex flex-col gap-4">
           {/* Province Input */}
-          <ProvinceInput value={data.province} onChange={(value) => update?.({ province: value })} />
+          <ProvinceInput value={data.province} onChange={(value) => update?.({ province: value })} required />
 
           {/* City Input */}
-          <CityInput value={data.city} onChange={(value) => update?.({ city: value })} province={data.province} />
+          <CityInput
+            value={data.city}
+            onChange={(value) => update?.({ city: value })}
+            province={data.province}
+            required
+          />
 
           {/* District Input */}
-          <DistrictInput value={data.district} onChange={(value) => update?.({ district: value })} city={data.city} />
+          <DistrictInput
+            value={data.district}
+            onChange={(value) => update?.({ district: value })}
+            city={data.city}
+            required
+          />
 
           {/* Subdistrict Input */}
           <SubdistrictInput
             value={data.subDistrict}
             onChange={(value) => update?.({ subDistrict: value })}
             district={data.district}
+            required
           />
 
           {/* Address Input */}
