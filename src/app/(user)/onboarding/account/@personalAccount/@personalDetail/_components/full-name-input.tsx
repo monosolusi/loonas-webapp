@@ -14,6 +14,7 @@ export function FullNameInput() {
       placeholder="Masukan nama lengkap Anda"
       value={data.fullName ?? ""}
       maxLength={IDENTITY_FIELD_LIMITS.fullName}
+      required
       onChange={(value) => update?.({ fullName: value })}
     />
   );
