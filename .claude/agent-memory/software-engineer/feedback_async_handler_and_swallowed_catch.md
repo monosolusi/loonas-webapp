@@ -55,6 +55,34 @@ they're runtime/a11y-only):
   leave dead layout space, make spacing (e.g. a margin) conditional on the populated state
   instead of the element's mount/hidden state — that avoids the gap without touching a11y
   exposure.
+  - **Caveat found on the follow-up fix (`create-user-wait-notice.tsx`, same page):** the
+    "make the element's own margin conditional" trick only works when the PARENT spaces children
+    with margins. If the parent is `flex flex-col gap-N` (this codebase's default list/form
+    spacing), CSS `gap` inserts a fixed gap between every pair of rendered flex items
+    *regardless* of an item's own height/margin — an always-mounted-but-empty `<p>` still
+    contributes one full `gap-N` of dead space before it, permanently, even with zero content.
+    Fix: mount conditionally on a **state that only ever transitions one way** (e.g. a
+    `SubmitStatus` union that starts at `"idle"` and never returns to it), not on the
+    visible/empty distinction itself — `if (status === "idle") return null;` before any submit
+    has ever happened, then stay permanently mounted from the first non-idle render onward. This
+    still satisfies "exists before its content first changes" (the mount and the first real text
+    land in different renders, since the slow/redirect copy always arrives after a state
+    transition, never in the same commit as the initial mount) while adding zero gap-driven dead
+    space during the page's default (idle) state. Prefer this pattern over margin-toggling
+    whenever the ancestor uses `gap-*` rather than child margins for spacing.
+  - **`role="status"`/`role="alert"` are the exception to "always mount before content arrives".**
+    Unlike a bare `aria-live` region, ARIA's alert/status roles are specifically designed to be
+    announced by major screen readers WHEN INSERTED, content and all, in the same commit — that's
+    the whole point of the role. So a card that only appears at a late threshold (e.g. a
+    "submission may have already succeeded, reload to check" advisory shown only once a submit
+    has been stuck ≥20s) can be conditionally mounted/unmounted freely
+    (`{phase === "stalled" && <div role="status" aria-live="polite" aria-atomic="true">...}`)
+    without the always-mount workaround above — which also sidesteps the `gap-*` dead-space
+    problem entirely for that piece, since an unmounted item contributes no flex item at all. Only
+    a PLAIN `aria-live` paragraph (no role) needs the always-mounted trick; design specs that hand
+    you two different treatments for two different urgency levels (a quiet caption vs. a bordered
+    warning card with its own role) usually intend exactly this split — mount the plain one
+    permanently, mount the roled one on demand. See `_components/create-user-wait-notice.tsx`.
 
 See `src/app/(user)/onboarding/user/_components/create-user-captcha.tsx` for the shipped shape.
 
