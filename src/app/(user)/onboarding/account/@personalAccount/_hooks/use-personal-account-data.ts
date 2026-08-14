@@ -9,6 +9,7 @@ import { useOrganizationList } from "@clerk/nextjs";
 import { NIK_PATTERN, PASSPORT_PATTERN } from "@/features/account/domain/constants/identity-field-limits";
 import { mapSubmitError, ERROR_COPY_NO_VALID_SESSION } from "@/app/(user)/onboarding/account/_lib/map-submit-error";
 import { useRouter } from "next/navigation";
+import { resolveDateOfBirth } from "@/app/(user)/onboarding/account/_utils/date-of-birth";
 
 export function usePersonalAccountData() {
   const { accountData, updatePersonalData, submitAttempted, markSubmitAttempted } = useCreateAccount();
@@ -25,6 +26,11 @@ export function usePersonalAccountData() {
   const clearSubmitError = () => setSubmitError(null);
 
   const data = accountData.data;
+
+  // Single point of derivation for the birth-date parts → real-date resolution. Both the
+  // `isClean` gate and `runCreate`'s payload read this SAME resolved value, never re-derive.
+  const dateOfBirthResolution = useMemo(() => resolveDateOfBirth(data.dateOfBirth ?? {}), [data.dateOfBirth]);
+
   const isClean = useMemo(() => {
     return (
       isNonEmptyString(data.nationality) &&
@@ -35,8 +41,7 @@ export function usePersonalAccountData() {
         : NIK_PATTERN.test(data.identityNumber ?? "")) &&
       !!data.occupation &&
       isNonEmptyString(data.placeOfBirth) &&
-      !!data.dateOfBirth &&
-      data.dateOfBirth.isValid === true &&
+      dateOfBirthResolution.status === "valid" &&
       !!data.province &&
       !!data.city &&
       !!data.district &&
@@ -54,7 +59,7 @@ export function usePersonalAccountData() {
     data.identityNumber,
     data.occupation,
     data.placeOfBirth,
-    data.dateOfBirth,
+    dateOfBirthResolution,
     data.province,
     data.city,
     data.district,
@@ -65,6 +70,11 @@ export function usePersonalAccountData() {
   ]);
 
   const runCreate = async (): Promise<string> => {
+    // Defensive guard — `isClean` already gates the submit button on this same
+    // resolution, so this should be unreachable, but never non-null-assert a value
+    // that isn't structurally guaranteed to exist.
+    if (dateOfBirthResolution.status !== "valid") throw new ServerError(ErrorCodes.VALIDATION_FAILED);
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
       controller.abort(new DOMException("TimeoutError", "TimeoutError"));
@@ -79,7 +89,7 @@ export function usePersonalAccountData() {
             idNumber: data.identityNumber!,
             occupation: data.occupation!,
             placeOfBirth: data.placeOfBirth!,
-            dateOfBirth: data.dateOfBirth!,
+            dateOfBirth: dateOfBirthResolution.value,
           },
           address: {
             province: data.province!,
@@ -143,6 +153,7 @@ export function usePersonalAccountData() {
     data,
     update: updatePersonalData,
     isClean,
+    dateOfBirthResolution,
     isCreating: isMutating,
     submit,
     submitError,
