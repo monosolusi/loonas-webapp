@@ -186,7 +186,7 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   re-triggerable (account creation, payment capture, stock adjustment). Instead: `await` the real promise and let
   its real settlement be the **only** thing that ends the loading state, and run a separate `setInterval` purely
   to track elapsed time, feeding a pure `resolveWaitPhase(elapsedMs)` that escalates the *copy*
-  (`_utils/submit-wait-phase.ts` → `_components/create-user-wait-notice.tsx`, 8s caption → 20s advisory). Past the
+  (`_utils/submit-wait-phase.ts` → `_components/create-user-status-notice.tsx`, 8s caption → 20s advisory). Past the
   stall threshold the copy must stay honestly uncertain ("mungkin sudah berhasil dibuat di latar belakang") and
   steer to **reload-and-check**, never resubmit. The carve-out: a deadline IS safe once the mutation has already
   returned and the *next* step is what's hanging — `withTimeout()` (`core/utilities/`) bounds `setActive()` only,
