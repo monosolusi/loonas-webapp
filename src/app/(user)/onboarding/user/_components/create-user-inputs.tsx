@@ -17,7 +17,13 @@ export function CreateUserInputs() {
     emailError,
     passwordError,
     repeatPasswordError,
+    status,
   } = useCreateUser();
+
+  // Nothing typed mid-flight is sent — an editable field would be misleading. Covers "succeeded"
+  // too: the button is still locked and spinning while the redirect lands, so the fields must not
+  // quietly become editable again in that window.
+  const disabled = status === "submitting" || status === "succeeded";
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -31,6 +37,7 @@ export function CreateUserInputs() {
         value={email}
         onChange={setEmail}
         error={emailError}
+        disabled={disabled}
       />
 
       {/* Password Input */}
@@ -40,6 +47,7 @@ export function CreateUserInputs() {
         value={password}
         onChange={setPassword}
         error={passwordError}
+        disabled={disabled}
       />
 
       {/*  Re-enter Password Input */}
@@ -48,6 +56,7 @@ export function CreateUserInputs() {
         value={repeatPassword}
         onChange={setRepeatPassword}
         error={repeatPasswordError}
+        disabled={disabled}
       />
     </div>
   );

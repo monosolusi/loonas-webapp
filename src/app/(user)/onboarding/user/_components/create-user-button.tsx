@@ -1,15 +1,20 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { useCreateUser } from "@/app/(user)/onboarding/user/_providers/create-user";
+import { resolveCreateUserButtonState } from "@/app/(user)/onboarding/user/_utils/create-user-button-state";
 
 export function CreateUserButton() {
-  const { isClean, isCreating, isReady, isSignedIn } = useCreateUser();
+  const { status, isClean, isReady, isSignedIn } = useCreateUser();
+  const { disabled, loading, label, loadingLabel } = resolveCreateUserButtonState({
+    status,
+    isClean,
+    isReady,
+    isSignedIn,
+  });
 
-  const disabled = useMemo(() => {
-    return !isClean || !isReady || isSignedIn;
-  }, [isClean, isReady, isSignedIn]);
-
-  return <PrimaryButton type="submit" label="Buat User" disabled={disabled} loading={isCreating} />;
+  return (
+    <PrimaryButton type="submit" label={label} loadingLabel={loadingLabel} disabled={disabled} loading={loading} />
+  );
 }
