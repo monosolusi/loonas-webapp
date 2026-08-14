@@ -29,6 +29,7 @@ export function OccupationInput(props: OccupationInputProps) {
   return (
     <SelectInput
       label="Pekerjaan"
+      required
       options={options}
       placeholder="Pilih pekerjaan Anda"
       value={props.value?.id ?? ""}

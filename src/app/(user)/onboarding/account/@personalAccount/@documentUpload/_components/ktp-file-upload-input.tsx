@@ -14,6 +14,7 @@ export function KtpFileUploadInput() {
   return (
     <FileUploadInput
       label="Dokumen Identitas / KTP"
+      required
       accept=".jpg,.jpeg,.png,.pdf"
       maxSize={5 * 1024 * 1024}
       onChange={onChange}

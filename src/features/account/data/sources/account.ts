@@ -171,8 +171,12 @@ export class AccountServiceImpl implements AccountService {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
       if (!baseUrl) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
-      // This should be checked previously, but it is better to check again
-      const isoDob = dob.toISO();
+      // This should be checked previously, but it is better to check again.
+      // The live spec (dev-api.loonas.id/openapi.json) declares `date_of_birth` as
+      // `{"type":"string","format":"date"}` — a plain YYYY-MM-DD, not an offset datetime.
+      // toISODate() (not toISO()) avoids risking an off-by-one-day birth date if the BE
+      // normalises an offset datetime through UTC.
+      const isoDob = dob.toISODate();
       if (!isoDob) throw new ServerError(ErrorCodes.INVALID_INSTANCE);
 
       const headers = new Headers();

@@ -46,7 +46,13 @@ export function SelectInput(props: SelectInputProps) {
 
   const cleanedInputProps = useMemo(() => {
     const { leftIcon, label, onChange, description, options, placeholder, noLabel, tooltip, ...cleanedProps } = props;
-    return cleanedProps;
+    // A caller passing `value={undefined}` would otherwise spread onto `<select>` as an
+    // UNCONTROLLED element — the browser then auto-selects the first non-disabled
+    // <option> per the HTML select-reset algorithm, silently committing a phantom value
+    // while the placeholder overlay makes the field look empty. Coerce to "" so the
+    // element is always controlled and matches the placeholder-driven `hasValue` check
+    // below (mirrors TextInput's `value: cleanedProps.value ?? ""`).
+    return Object.assign({}, cleanedProps, { value: cleanedProps.value ?? "" }) as React.SelectHTMLAttributes<HTMLSelectElement>;
   }, [props]);
 
   const hasValue = props.value !== undefined && props.value !== "";

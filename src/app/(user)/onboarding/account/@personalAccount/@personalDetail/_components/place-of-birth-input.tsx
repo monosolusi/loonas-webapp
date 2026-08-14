@@ -14,6 +14,7 @@ export function PlaceOfBirthInput() {
       placeholder="Masukan tempat lahir Anda"
       value={data.placeOfBirth ?? ""}
       maxLength={IDENTITY_FIELD_LIMITS.placeOfBirth}
+      required
       onChange={(value) => update?.({ placeOfBirth: value })}
     />
   );

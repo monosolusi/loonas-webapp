@@ -40,6 +40,8 @@
 - [Derived-index reset during render, not effect](feedback_derived_index_reset_during_render.md) — when a second effect consumes highlight/selectedIndex in the same commit, reset it via render-time setState (React's documented pattern), not useEffect, or the consumer reads a stale index (POS barcode-scan fix)
 - [Async handler throw + swallowed catch + Clerk captcha DOM pattern](feedback_async_handler_and_swallowed_catch.md) — never throw from an async onSubmit; a catch that only rethrows for one recognized shape swallows the rest; Clerk captcha needs ResizeObserver+height (not MutationObserver+injection) and an always-mounted aria-live region; gap-parent caveat: mount on a one-way status latch, not a margin toggle
 - [No timeout-race on mutating calls](feedback_no_timeout_race_on_mutating_calls.md) — racing signUp.create()/setActive() against a client deadline leaves an orphaned promise that can still succeed → duplicate-account trap; use display-only elapsed timers instead. Plus ClerkAPIResponseError vs ClerkRuntimeError structural shapes.
+- [SelectInput uncontrolled value={undefined}](feedback_select_input_uncontrolled_value.md) — undefined value on a `<select>` is uncontrolled → browser auto-selects first option, phantom value hidden by placeholder overlay; SelectInput now coerces to "" but check any new controlled-select field
+- [fieldset/legend has no Tailwind preflight reset](feedback_fieldset_legend_no_preflight_reset.md) — this project's v4 preflight doesn't touch fieldset/legend; reset manually (m-0 min-w-0 border-0 p-0) and don't nest legend as a flex-row child
 
 ## Project
 

@@ -13,6 +13,7 @@ export function AddressInput() {
       placeholder="Masukkan alamat lengkap"
       value={data.address ?? ""}
       maxLength={IDENTITY_FIELD_LIMITS.address}
+      required
       onChange={(value) => update?.({ address: value })}
     />
   );

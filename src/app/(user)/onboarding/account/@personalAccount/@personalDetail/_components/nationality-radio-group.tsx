@@ -40,9 +40,12 @@ export function NationalityRadioGroup() {
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <legend>Status Kewarganegaraan</legend>
-      <fieldset className="flex flex-row gap-3">
+    <fieldset className="m-0 min-w-0 border-0 p-0">
+      <legend className="mb-2 flex items-center gap-x-1.5 p-0 text-base">
+        Status Kewarganegaraan
+        <span className="text-red-500"> *</span>
+      </legend>
+      <div className="flex flex-row gap-3">
         {NATIONALITY_OPTIONS.map((option) => (
           <div key={option.value} className="flex-1">
             <NationalityRadioItem
@@ -57,7 +60,7 @@ export function NationalityRadioGroup() {
             />
           </div>
         ))}
-      </fieldset>
-    </div>
+      </div>
+    </fieldset>
   );
 }

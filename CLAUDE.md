@@ -220,6 +220,18 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   Page does not wrap children in a single content component — each component is self-contained.
 - **Component architecture**: One component per file. Use `useMemo` for computed/derived data. No conditional rendering
   of multiple states in return — split into separate components instead (e.g., loading, empty, list components).
+- **A stray `;` after a JSX element is a text node, not a statement terminator**: inside a JSX body, `<Foo />;`
+  renders a literal semicolon into the DOM. Nothing in the toolchain catches it — `tsc` sees valid JSX, Prettier
+  reformats around it, and `eslint-plugin-react`'s recommended set has no rule for bare-punctuation children
+  (`react/jsx-no-literals` would flag every line of Indonesian UI copy, so it stays off). The defect is least
+  visible in review and most visible in UAT when the sibling component can return `null`: `GoToSignIn` wrapped
+  `<UseOtherAccountAction />;` in a flex div, and `UseOtherAccountAction` returns `null` both while user status
+  loads and when `approvedAccount.count === 0` — so the div shipped holding nothing but a floating `;` at the
+  bottom-left of the "Pilih Jenis Akun" step. When touching JSX, grep the shape:
+  `grep -rnE '^[[:space:]]+(<[A-Za-z][^=]*/>|</[A-Za-z][A-Za-z0-9.]*>)[[:space:]]*;[[:space:]]*$' --include="*.tsx" src`
+  — a `return <X />;` on its own line is correct JS, a punctuation-terminated JSX *child* never is. Same reading
+  applies to a dead class token (`fo` in the step-indicator pill): a typo'd utility is invisible to Tailwind and to
+  lint, so verify unknown class names against the `@theme` block in `globals.css` rather than assuming they resolve.
 - **Displayed mode and saved mode must be the same expression**: never mask a form value for display while the
   save path reads the raw one. `hasVariants={form.type !== ProductType.SERVICE && form.hasVariants}` passed a
   masked value to the card while `syncVariants` / `handleSubmit` read the unmasked `form.hasVariants`, so the
@@ -238,6 +250,33 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   don't touch is the one that rots. Keep the sentinel key module-private, as `NEW_SINGLE_VARIANT_KEY` in
   `[id]/_utils/sync-variants.ts` does; if two modules need it, that is the signal to move the derivation, not
   to export the constant.
+- **A multi-part form buffer must never back-fill the parts the user has not chosen**: when one logical value is
+  entered through several controls (day/month/year, and any similar composite), each control edits ONLY its own
+  part, and a *single* pure resolver turns the parts into the committed domain value. The onboarding birth-date
+  field did the opposite — `updateDate()` filled the untouched components with defaults (`day ?? 1`, `month ?? 1`,
+  `year ?? currentYear`), so picking only a year committed 1 Januari of the current year and *passed the `isClean`
+  submit gate*: a KYC birth date the user never entered. Model the buffer as independently-optional parts
+  (`DateOfBirthParts`) and return a discriminated resolution (`empty | incomplete | invalid | underage | valid`)
+  from one `_utils/` module (`onboarding/account/_utils/date-of-birth.ts`), so "partially chosen" is representable
+  and fabricating a missing component is structurally impossible. Same family as LNS-570/572: the gate and the
+  payload must read the SAME resolved value, never re-derive. Corollary: when an edit orphans another part (day 31
+  → Februari), **clear it and say so** — silently clamping to `endOf("month")` is the same fabricate-a-value defect
+  wearing a different hat, and a clear with no message is only marginally better. Clearing feedback must NOT be
+  gated behind a touched/blur flag: selecting an option usually leaves focus on the control, so a blur-gated
+  message never appears in the common path.
+- **Never pass `undefined` as a controlled input's `value`**: React downgrades the element to UNCONTROLLED, and for
+  `<select>` the HTML select-reset algorithm then auto-selects the first non-disabled `<option>` — silently
+  committing a phantom value while a placeholder overlay makes the field look empty. `SelectInput`'s three
+  birth-date selects showed exactly this (day `1` / `Januari` / current year, the year list being descending), and
+  re-tapping the already-highlighted option fires no `change` event, so state stayed empty with no feedback.
+  `SelectInput` now coerces `value ?? ""` after the props spread (mirroring `TextInput`), so the component owns its
+  controlled contract — but an uninitialised provider/form-buffer field is the recurring source, so check the
+  threading at the call site too. Note Tailwind v4's preflight resets `button`/`input`/`select`/`textarea` but has
+  **no `fieldset`/`legend` rule at all** — a native pair needs `m-0 min-w-0 border-0 p-0` / `p-0` added by hand, and
+  `<legend>` does not lay out reliably as a flex child. For a NEW group of controls sitting inline with ordinary
+  div/span-labelled fields, prefer `role="group"` + `aria-labelledby`; reserve real `fieldset`/`legend` for fixing
+  markup that is already broken (as `nationality-radio-group.tsx` was, with its `<legend>` an invalid sibling
+  *before* the `<fieldset>`).
 - **Interface Segregation (repositories)**: When a feature has distinct sub-resources (e.g., master + entries), split
   into separate repository/source interfaces, implementations, and files. Each concern gets its own file:
   `fixed-cost.ts` (master) + `fixed-cost-entry.ts` (entries).
@@ -323,7 +362,14 @@ once per logical attempt, reuse on retry, rotate only when the helper says so.
 deployed schemas over BE PR or ticket prose. Never pre-add a field to a Model (`data/models/`) or
 Entity (`domain/entities/`) for a BE contract that hasn't shipped to dev-api — that invents a
 contract the backend hasn't committed to (the LNS-637 FE guard deliberately omitted a discriminator
-field that LNS-631 had not added).
+field that LNS-631 had not added). **Read the declared `format`, not just the type** — a spec
+`{"type":"string","format":"date"}` means a plain `YYYY-MM-DD`, so serialise it with Luxon's
+`toISODate()`, never `toISO()`: the latter emits an offset datetime
+(`2000-05-14T00:00:00.000+07:00`) that can shift the calendar day if the BE normalises through UTC.
+`POST /accounts/personal`'s `date_of_birth` shipped this way — a silent off-by-one on a KYC birth
+date. The spec is also where you confirm a rule is *not* the backend's: that endpoint declares no
+min/max and no age-related error code, so `MINIMUM_ACCOUNT_HOLDER_AGE_YEARS` is documented in-code
+as an FE-owned floor rather than a mirrored BE constraint.
 
 **Partial-update PUTs: `undefined` omits, `null` clears — never conflate them.** `HttpRequest`
 serialises with `JSON.stringify`, which **silently drops `undefined`-valued keys**. On a partial-update

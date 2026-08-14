@@ -12,3 +12,12 @@ export const NIK_PATTERN = /^\d{16}$/;
 
 /** Matches a passport number: 1–16 alphanumeric characters. */
 export const PASSPORT_PATTERN = /^[A-Za-z0-9]{1,16}$/;
+
+/**
+ * Minimum age (in years) to open a personal account.
+ * FE-owned rule: the live BE contract (`dev-api.loonas.id/openapi.json`) declares
+ * `date_of_birth` with no min/max/pattern and no age-related error code, so this floor
+ * is enforced client-side only. 17 mirrors the Indonesian KTP issuance age / legal
+ * capacity floor commonly used for financial onboarding.
+ */
+export const MINIMUM_ACCOUNT_HOLDER_AGE_YEARS = 17;
