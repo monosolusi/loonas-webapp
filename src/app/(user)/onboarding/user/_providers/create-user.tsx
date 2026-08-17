@@ -6,7 +6,7 @@ import { withTimeout } from "@/core/utilities/with-timeout";
 import { useGetMe } from "@/features/user/presentation/hooks/use-get-me";
 import { useAuth, useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { SubmitStatus } from "@/app/(user)/onboarding/user/_utils/submit-status";
+import { SubmitStatus } from "@/app/(user)/onboarding/_utils/submit-status";
 import {
   EMAIL_VERIFICATION_REQUIRED_MESSAGE,
   GENERIC_ERROR_MESSAGE,

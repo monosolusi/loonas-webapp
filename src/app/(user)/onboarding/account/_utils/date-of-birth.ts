@@ -79,6 +79,16 @@ export function resolveDateOfBirth(parts: DateOfBirthParts, now: DateTime = Date
   return { status: "valid", value };
 }
 
+/**
+ * Inline copy for each unmet birth-date resolution. Exported as constants because two modules
+ * render them — this field's own inline error and the submit banner's missing-field list, via
+ * `personal-account-completeness.ts`. One owner, so the two can never drift apart.
+ */
+export const DOB_COPY_INCOMPLETE = "Lengkapi tanggal, bulan, dan tahun lahir";
+export const DOB_COPY_INVALID = "Tanggal lahir tidak valid";
+export const DOB_COPY_UNDERAGE = "Usia minimal 17 tahun untuk membuka akun";
+export const DOB_COPY_DAY_CLEARED = "Tanggal tidak tersedia untuk bulan yang dipilih, silakan pilih ulang";
+
 export type DateOfBirthErrorCopyParams = {
   resolution: DateOfBirthResolution;
   /**
@@ -101,17 +111,38 @@ export type DateOfBirthErrorCopyParams = {
 export function dateOfBirthErrorCopy(params: DateOfBirthErrorCopyParams): string | undefined {
   const { resolution, dayWasCleared, showError } = params;
 
-  if (dayWasCleared) return "Tanggal tidak tersedia untuk bulan yang dipilih, silakan pilih ulang";
+  if (dayWasCleared) return DOB_COPY_DAY_CLEARED;
   if (!showError) return undefined;
 
   switch (resolution.status) {
     case "incomplete":
-      return "Lengkapi tanggal, bulan, dan tahun lahir";
+      return DOB_COPY_INCOMPLETE;
     case "invalid":
-      return "Tanggal lahir tidak valid";
+      return DOB_COPY_INVALID;
     case "underage":
-      return "Usia minimal 17 tahun untuk membuka akun";
+      return DOB_COPY_UNDERAGE;
     case "empty":
+    case "valid":
+      return undefined;
+  }
+}
+
+/**
+ * The birth date's copy as a *completeness* concern rather than a field-local one.
+ *
+ * The difference from `dateOfBirthErrorCopy` is `empty`: an untouched field renders nothing
+ * inline (there is no error to show yet), but it is absolutely a blocker for submit, so it must
+ * still be named in the missing-field list. Returns `undefined` only for `valid`.
+ */
+export function dateOfBirthIssueCopy(resolution: DateOfBirthResolution): string | undefined {
+  switch (resolution.status) {
+    case "empty":
+    case "incomplete":
+      return DOB_COPY_INCOMPLETE;
+    case "invalid":
+      return DOB_COPY_INVALID;
+    case "underage":
+      return DOB_COPY_UNDERAGE;
     case "valid":
       return undefined;
   }

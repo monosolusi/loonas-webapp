@@ -3,13 +3,18 @@
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import Image from "next/image";
 import React from "react";
-import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 
-export function NextButton() {
-  const { nextStep, currentStep } = useCreateAccount();
+type NextButtonProps = {
+  onClick: () => void;
+};
 
-  // Only when the current step is not "personal.documents" you can show the next button.
-  if (currentStep === "personal.documents" || currentStep === "business.documents") return null;
+/**
+ * Display component only — it holds no context and decides nothing about whether advancing is
+ * allowed. Its personal and business implementations own that, because each has to consume its
+ * own account-type hook (`usePersonalAccountData` throws outright when the selected type is
+ * business, so a single shared implementation is impossible).
+ */
+export function NextButton(props: NextButtonProps) {
   return (
     <PrimaryButton
       type="button"
@@ -17,7 +22,7 @@ export function NextButton() {
       rightIcon={
         <Image src="/assets/images/arrow-right-icon-white-w16-h16.svg" alt="Arrow Right" width={16} height={16} />
       }
-      onClick={nextStep}
+      onClick={props.onClick}
     />
   );
 }

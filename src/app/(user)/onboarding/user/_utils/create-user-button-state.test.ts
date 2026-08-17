@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { resolveCreateUserButtonState } from "@/app/(user)/onboarding/user/_utils/create-user-button-state";
-import { SubmitStatus } from "@/app/(user)/onboarding/user/_utils/submit-status";
+import { SubmitStatus } from "@/app/(user)/onboarding/_utils/submit-status";
 
 describe("resolveCreateUserButtonState", () => {
   it("is never { disabled: true, loading: false } once the submission has succeeded — the QA attempt-3 regression", () => {
