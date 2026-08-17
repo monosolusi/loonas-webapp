@@ -77,13 +77,18 @@ export function SelectInput(props: SelectInputProps) {
     [cleanedInputProps["aria-describedby"], hasMessage ? messageId : undefined].filter(Boolean).join(" ") || undefined;
 
   return (
-    // `opacity-50` deliberately does NOT live here. A wrapper-level fade also dims the error and
-    // description lines, and a disabled select is exactly when those carry the reason it is
-    // disabled: `text-neutral-200` (#BDBDBD) at 50% over white is ~1.35:1, i.e. invisible. The fade
-    // is applied to the label and the field row only.
+    // No `opacity-50` anywhere in this component, at any level. A fade composites every descendant
+    // against the white page, so it dims the error/description line — which on a disabled field is
+    // exactly the copy explaining WHY it is disabled (`text-neutral-200` at 50% on white is ~1.35:1,
+    // i.e. not there). It also halves any fill on the same node: `bg-neutral-100/25` under
+    // `opacity-50` renders as ≈#FAFAFA instead of ≈#F5F6F6, which is why the row's fill was invisible
+    // while the fade was still doing all the signalling. Recession comes from COLOR throughout —
+    // same rule as `nationality-radio-item.tsx`.
     <div className="flex flex-col gap-2 transition-all">
       {!props.noLabel && (
-        <span className={clsx("flex items-center gap-x-1.5 text-base transition-all", props.disabled && "opacity-50")}>
+        <span
+          className={clsx("flex items-center gap-x-1.5 text-base transition-all", props.disabled && "text-neutral-300")}
+        >
           {props.label}
           {props.required && <span className="text-red-500"> *</span>}
           {props.tooltip && <InfoTooltip text={props.tooltip} />}
@@ -94,11 +99,11 @@ export function SelectInput(props: SelectInputProps) {
           "relative flex h-11 flex-row items-center gap-3 rounded-lg border border-solid p-3 transition-all",
           hasError ? "border-red-500" : "border-neutral-100",
           props.disabled
-            ? // `bg-neutral-50` was a no-op — it is #FFFFFF in this project, identical to the page,
-              // which left `opacity-50` doing 100% of the disabled signalling. `bg-neutral-100/25`
-              // (≈#F5F6F6) is the same faint fill the unselectable nationality card uses, so both
-              // disabled treatments read as one vocabulary.
-              "cursor-not-allowed bg-neutral-100/25 opacity-50"
+            ? // `bg-neutral-50` was a no-op — it is #FFFFFF in this project, identical to the page.
+              // `bg-neutral-100/25` (≈#F5F6F6) is the same faint fill the unselectable nationality
+              // card uses, so both disabled treatments read as one vocabulary. The border stays at
+              // full strength per DESIGN.md's disabled spec: Mist border, Mist fill, Charcoal text.
+              "cursor-not-allowed bg-neutral-100/25"
             : hasError
               ? "focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-500/20"
               : "focus-within:ring-primary-300/20 focus-within:border-primary-300 focus-within:ring-2",
@@ -116,7 +121,10 @@ export function SelectInput(props: SelectInputProps) {
           className={clsx(
             "flex-1 appearance-none bg-transparent text-base outline-none",
             props.disabled ? "cursor-not-allowed" : "cursor-pointer",
-            !hasValue && "text-transparent",
+            // Mutually exclusive rather than stacked: two `color` utilities of equal specificity are
+            // resolved by stylesheet order, which clsx cannot influence, so the placeholder-hiding
+            // `text-transparent` has to win by being the only one emitted.
+            !hasValue ? "text-transparent" : props.disabled ? "text-neutral-300" : undefined,
           )}
         >
           <option value="" disabled></option>
@@ -126,7 +134,12 @@ export function SelectInput(props: SelectInputProps) {
             </option>
           ))}
         </select>
-        <div className="pointer-events-none shrink-0">
+        {/*
+          The chevron is a fixed-colour SVG asset, so it cannot be receded by token. Opacity is
+          acceptable here and nowhere else in this component: the rule protects COPY, and there is no
+          text inside a decorative arrow.
+        */}
+        <div className={clsx("pointer-events-none shrink-0", props.disabled && "opacity-60")}>
           <Image
             src="/assets/images/chevron-down-icon-neutral-200-w20-h20.svg"
             alt="Dropdown arrow"

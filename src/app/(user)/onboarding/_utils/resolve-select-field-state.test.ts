@@ -1,13 +1,15 @@
 import { describe, expect, it } from "vitest";
+import { SELECT_FIELD_COPY } from "@/app/(user)/onboarding/_utils/select-field-copy";
 import {
-  LOADING_OPTIONS_COPY,
   ResolveSelectFieldStateParams,
+  SelectFieldList,
   SelectFieldParentDependency,
+  resolveSelectFieldList,
   resolveSelectFieldState,
 } from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
 
-const FETCH_ERROR_COPY = "Gagal memuat daftar provinsi";
-const PARENT_HINT_COPY = "Pilih provinsi terlebih dahulu";
+const FETCH_ERROR_COPY = SELECT_FIELD_COPY.fetchError.city;
+const PARENT_HINT_COPY = SELECT_FIELD_COPY.parentHint.city;
 const CALLER_ERROR = "Kabupaten/Kota wajib dipilih";
 const CALLER_DESCRIPTION = "Sesuai KTP Anda";
 
@@ -16,19 +18,20 @@ const PARENTS: SelectFieldParentDependency[] = [
   { hasParent: true, parentChosen: true, parentHintCopy: PARENT_HINT_COPY },
   { hasParent: true, parentChosen: false, parentHintCopy: PARENT_HINT_COPY },
 ];
+const LISTS: SelectFieldList[] = ["unresolved", "empty", "populated"];
 
-/** Every combination of the resolver's inputs — 3 parents x 2 x 2 x 2 x (caller copy on/off). */
+/** Every combination: 3 parents x 3 list states x validating x hasFetchError x caller-copy. */
 function everyCombination(): ResolveSelectFieldStateParams[] {
   const combinations: ResolveSelectFieldStateParams[] = [];
   for (const parent of PARENTS) {
-    for (const hasFetchError of [false, true]) {
-      for (const loading of [false, true]) {
-        for (const canRetry of [false, true]) {
+    for (const list of LISTS) {
+      for (const validating of [false, true]) {
+        for (const hasFetchError of [false, true]) {
           for (const callerCopy of [true, false]) {
             combinations.push({
+              list,
+              validating,
               hasFetchError,
-              loading,
-              canRetry,
               fetchErrorCopy: FETCH_ERROR_COPY,
               parent,
               callerError: callerCopy ? CALLER_ERROR : undefined,
@@ -42,130 +45,176 @@ function everyCombination(): ResolveSelectFieldStateParams[] {
   return combinations;
 }
 
-describe("resolveSelectFieldState — the load-bearing invariant", () => {
+const label = (params: ResolveSelectFieldStateParams) => JSON.stringify(params);
+
+describe("resolveSelectFieldState — the load-bearing invariants", () => {
   it("never returns a disabled field without copy explaining why, for ANY input", () => {
-    // This is the whole point of the module, and the direct analogue of
-    // `create-account-button-state.test.ts`'s "no input yields disabled && !loading". All five
-    // onboarding selects used to go inert — on a failed fetch, or while a parent was unchosen —
-    // with nothing on screen accounting for it. If this ever fails, that dead end is back.
+    // The whole point of the module, and the direct analogue of
+    // `create-account-button-state.test.ts`'s "no input yields disabled && !loading".
     //
     // Deliberately ONE-DIRECTIONAL: disabled implies an explanation, NOT the converse. A field can
-    // carry copy while staying enabled, which is exactly the fetch-error state. Do not strengthen
-    // this to an iff.
+    // carry copy while staying enabled — that is exactly the fetch-error and empty-list states. Do
+    // not strengthen this to an iff; it would forbid the correct behaviour.
     for (const params of everyCombination()) {
       const state = resolveSelectFieldState(params);
       if (!state.disabled) continue;
       const copy = state.error ?? state.description;
-      expect(copy, JSON.stringify(params)).toBeTruthy();
-      expect(copy?.trim().length, JSON.stringify(params)).toBeGreaterThan(0);
+      expect(copy, label(params)).toBeTruthy();
+      expect(copy?.trim().length, label(params)).toBeGreaterThan(0);
     }
   });
 
   it("never returns both an error and a description, because SelectInput would drop one", () => {
-    // `SelectInput` renders `description` only when `error` is falsy.
     for (const params of everyCombination()) {
       const state = resolveSelectFieldState(params);
-      expect(!!state.error && !!state.description, JSON.stringify(params)).toBe(false);
+      expect(!!state.error && !!state.description, label(params)).toBe(false);
     }
   });
 
-  it("leaves the field ENABLED whenever the fetch error is the message on screen", () => {
-    // A failed list is EMPTY, not disabled. Disabling it would push the error out of tab order and
-    // strand the retry button behind an inert control.
+  it("never leaves a usable list disabled, and never shouts a fetch failure over one", () => {
+    // The S1 regression. SWR keeps `data` when a revalidation fails and `isLoading` stays false, so
+    // keying the error rung off "did a request fail" painted a red failure and a retry link over a
+    // working dropdown — a false alarm on a KYC path, very reachable on a flaky mobile network.
     for (const params of everyCombination()) {
+      if (params.list !== "populated") continue;
+      if (params.parent.hasParent && !params.parent.parentChosen) continue;
       const state = resolveSelectFieldState(params);
-      if (state.error !== FETCH_ERROR_COPY) continue;
-      expect(state.disabled, JSON.stringify(params)).toBe(false);
+      expect(state.disabled, label(params)).toBe(false);
+      expect(state.error, label(params)).not.toBe(FETCH_ERROR_COPY);
+      expect(state.description, label(params)).not.toBe(SELECT_FIELD_COPY.loading);
+      expect(state.retry, label(params)).toBe("hidden");
+      expect(state.announcement, label(params)).toBeUndefined();
     }
   });
 
-  it("offers retry only under its own error message, never while loading", () => {
-    // A retry in flight keeps SWR's previous `error` populated; showing the button beside a stale
-    // red failure reads as "still broken" and invites a double-tap.
+  it("never announces the caller's own validation copy", () => {
+    // N3: `IncompleteFormNotice` already reads that out through its own live region, and it is
+    // `aria-describedby`-associated on focus. Announcing it here would duplicate it.
     for (const params of everyCombination()) {
       const state = resolveSelectFieldState(params);
-      if (!state.showRetry) continue;
-      expect(params.hasFetchError, JSON.stringify(params)).toBe(true);
-      expect(params.canRetry, JSON.stringify(params)).toBe(true);
-      expect(params.loading, JSON.stringify(params)).toBe(false);
-      expect(state.error, JSON.stringify(params)).toBe(FETCH_ERROR_COPY);
+      expect(state.announcement, label(params)).not.toBe(CALLER_ERROR);
+      expect(state.announcement, label(params)).not.toBe(CALLER_DESCRIPTION);
+      // When set, the announcement is exactly the message on screen.
+      if (state.announcement) expect(state.announcement, label(params)).toBe(state.error ?? state.description);
     }
   });
 
-  it("never offers retry while the list is loading", () => {
+  it("shows a retry only when a fetch actually failed", () => {
     for (const params of everyCombination()) {
-      if (!params.loading) continue;
-      expect(resolveSelectFieldState(params).showRetry, JSON.stringify(params)).toBe(false);
+      const state = resolveSelectFieldState(params);
+      if (state.retry === "hidden") continue;
+      expect(params.hasFetchError, label(params)).toBe(true);
+    }
+  });
+
+  it("offers a live retry only under its own error message, and a pending one only in flight", () => {
+    for (const params of everyCombination()) {
+      const state = resolveSelectFieldState(params);
+      if (state.retry === "available") {
+        expect(state.error, label(params)).toBe(FETCH_ERROR_COPY);
+        expect(state.disabled, label(params)).toBe(false);
+      }
+      if (state.retry === "pending") {
+        expect(params.validating, label(params)).toBe(true);
+        expect(state.description, label(params)).toBe(SELECT_FIELD_COPY.loading);
+      }
+    }
+  });
+
+  it("never reports an empty list while SWR has not answered yet", () => {
+    // Rung 6. Otherwise a first render flashes "Tidak ada pilihan tersedia." before the real list
+    // arrives, which would make the fix depend on whether `isValidating` is true on the first render.
+    for (const params of everyCombination()) {
+      if (params.list !== "unresolved") continue;
+      const state = resolveSelectFieldState(params);
+      expect(state.description, label(params)).not.toBe(SELECT_FIELD_COPY.noOptions);
     }
   });
 });
 
 describe("resolveSelectFieldState — precedence", () => {
   const base: ResolveSelectFieldStateParams = {
+    list: "populated",
+    validating: false,
     hasFetchError: false,
-    loading: false,
-    canRetry: true,
     fetchErrorCopy: FETCH_ERROR_COPY,
     parent: { hasParent: true, parentChosen: true, parentHintCopy: PARENT_HINT_COPY },
     callerError: CALLER_ERROR,
     callerDescription: CALLER_DESCRIPTION,
   };
+  const unchosen: SelectFieldParentDependency = {
+    hasParent: true,
+    parentChosen: false,
+    parentHintCopy: PARENT_HINT_COPY,
+  };
 
-  it("puts the parent hint above a fetch failure", () => {
-    // If no province is chosen, nothing could have loaded, so a leftover error from a previous
-    // parent is not the true story.
-    const state = resolveSelectFieldState({
-      ...base,
-      hasFetchError: true,
-      parent: { hasParent: true, parentChosen: false, parentHintCopy: PARENT_HINT_COPY },
+  it("puts the parent hint above everything else", () => {
+    const state = resolveSelectFieldState({ ...base, list: "unresolved", hasFetchError: true, parent: unchosen });
+    expect(state).toEqual({
+      disabled: true,
+      description: PARENT_HINT_COPY,
+      announcement: PARENT_HINT_COPY,
+      retry: "hidden",
     });
-    expect(state).toEqual({ disabled: true, description: PARENT_HINT_COPY, showRetry: false });
   });
 
-  it("puts loading above a fetch failure, so an in-flight retry hides the stale error", () => {
-    // SWR keeps the previous `error` populated while revalidating. Showing red next to a live retry
-    // button reads as "still broken" and invites a double-tap.
-    const state = resolveSelectFieldState({ ...base, hasFetchError: true, loading: true });
-    expect(state).toEqual({ disabled: true, description: LOADING_OPTIONS_COPY, showRetry: false });
+  it("keeps a populated list live through a failed background revalidation", () => {
+    const state = resolveSelectFieldState({ ...base, hasFetchError: true, validating: true });
+    expect(state).toEqual({ disabled: false, error: CALLER_ERROR, description: undefined, retry: "hidden" });
   });
 
-  it("puts the parent hint above loading", () => {
-    // A stale `loading` from the previous parent must never render "Memuat pilihan..." over the
-    // truthful "you have not chosen a province yet".
-    const state = resolveSelectFieldState({
-      ...base,
-      loading: true,
-      parent: { hasParent: true, parentChosen: false, parentHintCopy: PARENT_HINT_COPY },
+  it("shows loading, not a stale error, while a retry is in flight", () => {
+    const state = resolveSelectFieldState({ ...base, list: "unresolved", validating: true, hasFetchError: true });
+    expect(state).toEqual({
+      disabled: true,
+      description: SELECT_FIELD_COPY.loading,
+      announcement: SELECT_FIELD_COPY.loading,
+      retry: "pending",
     });
-    expect(state).toEqual({ disabled: true, description: PARENT_HINT_COPY, showRetry: false });
   });
 
-  it("puts a fetch failure above the caller's standing required-error, and stays enabled", () => {
-    const state = resolveSelectFieldState({ ...base, hasFetchError: true });
-    expect(state).toEqual({ disabled: false, error: FETCH_ERROR_COPY, showRetry: true });
+  it("hides the retry during a first load, when nothing has failed yet", () => {
+    const state = resolveSelectFieldState({ ...base, list: "unresolved", validating: true });
+    expect(state.retry).toBe("hidden");
+    expect(state.description).toBe(SELECT_FIELD_COPY.loading);
   });
 
-  it("puts the parent hint above the caller's standing required-error", () => {
-    // Nothing is lost: the parent field is showing its own error in exactly this state, and
-    // "Kabupaten/Kota wajib dipilih" is misleading before a province exists to pick one from.
-    const state = resolveSelectFieldState({
-      ...base,
-      parent: { hasParent: true, parentChosen: false, parentHintCopy: PARENT_HINT_COPY },
+  it("reports a failed first load as an enabled, reachable error with a live retry", () => {
+    const state = resolveSelectFieldState({ ...base, list: "unresolved", hasFetchError: true });
+    expect(state).toEqual({
+      disabled: false,
+      error: FETCH_ERROR_COPY,
+      announcement: FETCH_ERROR_COPY,
+      retry: "available",
     });
-    expect(state).toEqual({ disabled: true, description: PARENT_HINT_COPY, showRetry: false });
   });
 
-  it("puts loading above the caller's standing required-error", () => {
-    const state = resolveSelectFieldState({ ...base, loading: true });
-    expect(state).toEqual({ disabled: true, description: LOADING_OPTIONS_COPY, showRetry: false });
+  it("explains a legitimately empty list instead of going silent", () => {
+    const state = resolveSelectFieldState({ ...base, list: "empty" });
+    expect(state).toEqual({
+      disabled: false,
+      description: SELECT_FIELD_COPY.noOptions,
+      announcement: SELECT_FIELD_COPY.noOptions,
+      retry: "hidden",
+    });
   });
 
-  it("falls through to the caller's copy once the list is ready", () => {
+  it("treats an unresolved, settled list as loading rather than empty", () => {
+    const state = resolveSelectFieldState({ ...base, list: "unresolved" });
+    expect(state).toEqual({
+      disabled: true,
+      description: SELECT_FIELD_COPY.loading,
+      announcement: SELECT_FIELD_COPY.loading,
+      retry: "hidden",
+    });
+  });
+
+  it("falls through to the caller's copy once a usable list is there", () => {
     expect(resolveSelectFieldState(base)).toEqual({
       disabled: false,
       error: CALLER_ERROR,
       description: undefined,
-      showRetry: false,
+      retry: "hidden",
     });
   });
 
@@ -174,54 +223,33 @@ describe("resolveSelectFieldState — precedence", () => {
       disabled: false,
       error: undefined,
       description: CALLER_DESCRIPTION,
-      showRetry: false,
+      retry: "hidden",
     });
   });
 
   it("leaves a ready, valid, parentless field fully live and silent", () => {
-    expect(
-      resolveSelectFieldState({
-        ...base,
-        parent: { hasParent: false },
-        callerError: undefined,
-        callerDescription: undefined,
-      }),
-    ).toEqual({ disabled: false, error: undefined, description: undefined, showRetry: false });
+    const state = resolveSelectFieldState({
+      ...base,
+      parent: { hasParent: false },
+      callerError: undefined,
+      callerDescription: undefined,
+    });
+    expect(state).toEqual({ disabled: false, error: undefined, description: undefined, retry: "hidden" });
   });
 });
 
-describe("resolveSelectFieldState — a parentless field", () => {
-  it("is never held inert waiting for a parent it does not have", () => {
-    // Province and occupation top their own chains; only their own load can make them inert.
-    const state = resolveSelectFieldState({
-      hasFetchError: false,
-      loading: false,
-      canRetry: true,
-      fetchErrorCopy: FETCH_ERROR_COPY,
-      parent: { hasParent: false },
-    });
-    expect(state.disabled).toBe(false);
+describe("resolveSelectFieldList", () => {
+  it("reads undefined as unresolved, never as empty", () => {
+    // The distinction rung 6 depends on. `options` is `[]` in both cases at the call site, which is
+    // why this derives from the hook's raw `data` instead.
+    expect(resolveSelectFieldList(undefined)).toBe("unresolved");
   });
 
-  it("still reports its own fetch failure, without going inert", () => {
-    const state = resolveSelectFieldState({
-      hasFetchError: true,
-      loading: false,
-      canRetry: true,
-      fetchErrorCopy: FETCH_ERROR_COPY,
-      parent: { hasParent: false },
-    });
-    expect(state).toEqual({ disabled: false, error: FETCH_ERROR_COPY, showRetry: true });
+  it("reads a zero-length response as empty", () => {
+    expect(resolveSelectFieldList([])).toBe("empty");
   });
 
-  it("cannot offer retry when the hook exposes no refresh", () => {
-    const state = resolveSelectFieldState({
-      hasFetchError: true,
-      loading: false,
-      canRetry: false,
-      fetchErrorCopy: FETCH_ERROR_COPY,
-      parent: { hasParent: false },
-    });
-    expect(state).toEqual({ disabled: false, error: FETCH_ERROR_COPY, showRetry: false });
+  it("reads a non-empty response as populated", () => {
+    expect(resolveSelectFieldList([{ id: "1" }])).toBe("populated");
   });
 });

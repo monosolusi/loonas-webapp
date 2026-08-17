@@ -7,7 +7,11 @@ import { DistrictEntity } from "@/core/utilities/address/domain/entities/distric
 import { useListSubdistrict } from "@/core/utilities/address/presentation/hooks/use-list-subdistrict";
 import { SelectFieldRetryButton } from "@/app/(user)/onboarding/_components/select-field-retry-button";
 import { SelectFieldAnnouncer } from "@/app/(user)/onboarding/_components/select-field-announcer";
-import { resolveSelectFieldState } from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
+import {
+  resolveSelectFieldList,
+  resolveSelectFieldState,
+} from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
+import { SELECT_FIELD_COPY } from "@/app/(user)/onboarding/_utils/select-field-copy";
 
 type SubdistrictInputProps = {
   value?: SubdistrictEntity;
@@ -16,9 +20,6 @@ type SubdistrictInputProps = {
   label?: string;
   placeholder?: string;
 } & Omit<SelectInputProps, "value" | "onChange" | "options" | "label">;
-
-const FETCH_ERROR_COPY = "Gagal memuat daftar kelurahan.";
-const PARENT_HINT_COPY = "Pilih kecamatan terlebih dahulu";
 
 /** Gated on a chosen district — see `CityInput` for why the resolver owns the inert-reason copy. */
 export function SubdistrictInput({
@@ -32,7 +33,7 @@ export function SubdistrictInput({
   description,
   ...restProps
 }: SubdistrictInputProps) {
-  const { subdistricts, error: fetchError, loading, refresh } = useListSubdistrict({ districtId: district?.id });
+  const { subdistricts, error: fetchError, validating, refresh } = useListSubdistrict({ districtId: district?.id });
 
   const options = useMemo(() => {
     if (!subdistricts) return [];
@@ -48,11 +49,11 @@ export function SubdistrictInput({
   };
 
   const fieldState = resolveSelectFieldState({
+    list: resolveSelectFieldList(subdistricts),
+    validating,
     hasFetchError: !!fetchError,
-    loading,
-    canRetry: true,
-    fetchErrorCopy: FETCH_ERROR_COPY,
-    parent: { hasParent: true, parentChosen: !!district, parentHintCopy: PARENT_HINT_COPY },
+    fetchErrorCopy: SELECT_FIELD_COPY.fetchError.subdistrict,
+    parent: { hasParent: true, parentChosen: !!district, parentHintCopy: SELECT_FIELD_COPY.parentHint.subdistrict },
     callerError: error ?? undefined,
     callerDescription: description,
   });
@@ -70,8 +71,8 @@ export function SubdistrictInput({
         error={fieldState.error}
         description={fieldState.description}
       />
-      <SelectFieldAnnouncer message={fieldState.error ?? fieldState.description} />
-      {fieldState.showRetry && <SelectFieldRetryButton onRetry={() => refresh()} />}
+      <SelectFieldAnnouncer message={fieldState.announcement} />
+      {fieldState.retry !== "hidden" && <SelectFieldRetryButton state={fieldState.retry} onRetry={() => refresh()} />}
     </div>
   );
 }

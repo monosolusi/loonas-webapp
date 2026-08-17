@@ -7,7 +7,11 @@ import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
 import { SelectFieldRetryButton } from "@/app/(user)/onboarding/_components/select-field-retry-button";
 import { SelectFieldAnnouncer } from "@/app/(user)/onboarding/_components/select-field-announcer";
-import { resolveSelectFieldState } from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
+import {
+  resolveSelectFieldList,
+  resolveSelectFieldState,
+} from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
+import { SELECT_FIELD_COPY } from "@/app/(user)/onboarding/_utils/select-field-copy";
 
 type CityInputProps = {
   value?: CityEntity;
@@ -17,13 +21,10 @@ type CityInputProps = {
   placeholder?: string;
 } & Omit<SelectInputProps, "value" | "onChange" | "options" | "label">;
 
-const FETCH_ERROR_COPY = "Gagal memuat daftar kabupaten/kota.";
-const PARENT_HINT_COPY = "Pilih provinsi terlebih dahulu";
-
 /**
- * Gated on a chosen province. `resolveSelectFieldState` owns telling the user which of the three
- * reasons ("province not chosen yet", "list loading", "list failed") is holding the field inert —
- * before this, all three rendered as the same silent, empty dropdown.
+ * Gated on a chosen province. `resolveSelectFieldState` owns telling the user which reason is holding
+ * the field — province not chosen yet, list loading, list failed, or no options at all. Before this,
+ * every one of them rendered as the same silent, empty dropdown.
  */
 export function CityInput({
   value,
@@ -36,7 +37,7 @@ export function CityInput({
   description,
   ...restProps
 }: CityInputProps) {
-  const { cities, error: fetchError, loading, refresh } = useListCity({ provinceId: province?.id });
+  const { cities, error: fetchError, validating, refresh } = useListCity({ provinceId: province?.id });
 
   const options = useMemo(() => {
     if (!cities) return [];
@@ -52,11 +53,13 @@ export function CityInput({
   };
 
   const fieldState = resolveSelectFieldState({
+    // Derived from the hook's raw `data`, not from `options` — the memo returns `[]` both before the
+    // request resolves and for a genuinely empty response, which are different states.
+    list: resolveSelectFieldList(cities),
+    validating,
     hasFetchError: !!fetchError,
-    loading,
-    canRetry: true,
-    fetchErrorCopy: FETCH_ERROR_COPY,
-    parent: { hasParent: true, parentChosen: !!province, parentHintCopy: PARENT_HINT_COPY },
+    fetchErrorCopy: SELECT_FIELD_COPY.fetchError.city,
+    parent: { hasParent: true, parentChosen: !!province, parentHintCopy: SELECT_FIELD_COPY.parentHint.city },
     callerError: error ?? undefined,
     callerDescription: description,
   });
@@ -74,8 +77,8 @@ export function CityInput({
         error={fieldState.error}
         description={fieldState.description}
       />
-      <SelectFieldAnnouncer message={fieldState.error ?? fieldState.description} />
-      {fieldState.showRetry && <SelectFieldRetryButton onRetry={() => refresh()} />}
+      <SelectFieldAnnouncer message={fieldState.announcement} />
+      {fieldState.retry !== "hidden" && <SelectFieldRetryButton state={fieldState.retry} onRetry={() => refresh()} />}
     </div>
   );
 }

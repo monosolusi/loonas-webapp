@@ -12,9 +12,11 @@ import clsx from "clsx";
  * unhandled promise rejection. Either way the user tapped and literally nothing happened.
  *
  * Follows the shape its sibling `SignOutAction` already uses: `await` inside `try/catch`, a pending
- * state that RENDERS rather than vanishes, `disabled` + `aria-busy` while pending, and an error line
- * on failure. Per CLAUDE.md, every branch of the handler either navigates or sets error state, and
- * never throws.
+ * state for the in-flight switch, `disabled` + `aria-busy` while pending, and an error line on
+ * failure. Per CLAUDE.md, every branch of the handler either navigates or sets error state, and never
+ * throws. Note the pending state covers the switch itself, not the whole mount: the `!status` guard
+ * below still returns `null` while `useGetUserStatus` resolves, so this renders nothing for that
+ * window rather than a pending control.
  *
  * The two `return null` guards below are correct and deliberate: an account SWITCHER genuinely has
  * nothing to offer when there is nothing to switch to, and `SignOutAction` is the unconditional exit
@@ -43,8 +45,8 @@ export function UseOtherAccountAction() {
   if (!status) return null;
   if (status.approvedAccount.count === 0) return null;
 
-  // Covers the discarded-click case: while Clerk is still loading the button is visibly pending
-  // instead of silently ignoring a tap.
+  // Once rendered, a tap is never silently discarded: while Clerk's org list is still loading the
+  // button is visibly pending rather than ignoring the click.
   const pending = !isLoaded || isSwitching;
 
   return (

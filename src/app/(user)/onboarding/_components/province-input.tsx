@@ -6,7 +6,11 @@ import { useListProvince } from "@/core/utilities/address/presentation/hooks/use
 import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
 import { SelectFieldRetryButton } from "@/app/(user)/onboarding/_components/select-field-retry-button";
 import { SelectFieldAnnouncer } from "@/app/(user)/onboarding/_components/select-field-announcer";
-import { resolveSelectFieldState } from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
+import {
+  resolveSelectFieldList,
+  resolveSelectFieldState,
+} from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
+import { SELECT_FIELD_COPY } from "@/app/(user)/onboarding/_utils/select-field-copy";
 
 type ProvinceInputProps = {
   value?: ProvinceEntity;
@@ -14,8 +18,6 @@ type ProvinceInputProps = {
   label?: string;
   placeholder?: string;
 } & Omit<SelectInputProps, "value" | "onChange" | "options" | "label">;
-
-const FETCH_ERROR_COPY = "Gagal memuat daftar provinsi.";
 
 /**
  * Province select input component.
@@ -40,7 +42,7 @@ export function ProvinceInput({
   description,
   ...restProps
 }: ProvinceInputProps) {
-  const { provinces, error: fetchError, loading, refresh } = useListProvince();
+  const { provinces, error: fetchError, validating, refresh } = useListProvince();
 
   const options = useMemo(() => {
     if (!provinces) return [];
@@ -56,10 +58,12 @@ export function ProvinceInput({
   };
 
   const fieldState = resolveSelectFieldState({
+    // Derived from the hook's raw `data`, not from `options` — the memo returns `[]` both before the
+    // request resolves and for a genuinely empty response, which are different states.
+    list: resolveSelectFieldList(provinces),
+    validating,
     hasFetchError: !!fetchError,
-    loading,
-    canRetry: true,
-    fetchErrorCopy: FETCH_ERROR_COPY,
+    fetchErrorCopy: SELECT_FIELD_COPY.fetchError.province,
     parent: { hasParent: false },
     callerError: error ?? undefined,
     callerDescription: description,
@@ -80,8 +84,8 @@ export function ProvinceInput({
         error={fieldState.error}
         description={fieldState.description}
       />
-      <SelectFieldAnnouncer message={fieldState.error ?? fieldState.description} />
-      {fieldState.showRetry && <SelectFieldRetryButton onRetry={() => refresh()} />}
+      <SelectFieldAnnouncer message={fieldState.announcement} />
+      {fieldState.retry !== "hidden" && <SelectFieldRetryButton state={fieldState.retry} onRetry={() => refresh()} />}
     </div>
   );
 }

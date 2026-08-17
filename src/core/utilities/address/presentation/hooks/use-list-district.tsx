@@ -36,12 +36,15 @@ async function ListDistrictFetcher([_, params]: [string, ListDistrictFetcherPara
 }
 
 export function useListDistrict(params: ListDistrictFetcherParams) {
-  const { data, error, isLoading, mutate } = useSWR(["list-district", params], ListDistrictFetcher);
+  const { data, error, isLoading, isValidating, mutate } = useSWR(["list-district", params], ListDistrictFetcher);
 
   return {
     districts: data,
     error: error,
     loading: isLoading,
+    // True for ANY in-flight request, including a background revalidation over already-loaded data —
+    // consumers must gate it on the list being unusable, or a populated field goes inert on refocus.
+    validating: isValidating,
     refresh: mutate,
   };
 }

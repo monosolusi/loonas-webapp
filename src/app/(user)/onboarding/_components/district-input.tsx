@@ -7,7 +7,11 @@ import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { useListDistrict } from "@/core/utilities/address/presentation/hooks/use-list-district";
 import { SelectFieldRetryButton } from "@/app/(user)/onboarding/_components/select-field-retry-button";
 import { SelectFieldAnnouncer } from "@/app/(user)/onboarding/_components/select-field-announcer";
-import { resolveSelectFieldState } from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
+import {
+  resolveSelectFieldList,
+  resolveSelectFieldState,
+} from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
+import { SELECT_FIELD_COPY } from "@/app/(user)/onboarding/_utils/select-field-copy";
 
 type DistrictInputProps = {
   value?: DistrictEntity;
@@ -16,9 +20,6 @@ type DistrictInputProps = {
   label?: string;
   placeholder?: string;
 } & Omit<SelectInputProps, "value" | "onChange" | "options" | "label">;
-
-const FETCH_ERROR_COPY = "Gagal memuat daftar kecamatan.";
-const PARENT_HINT_COPY = "Pilih kabupaten/kota terlebih dahulu";
 
 /** Gated on a chosen city — see `CityInput` for why the resolver owns the inert-reason copy. */
 export function DistrictInput({
@@ -32,7 +33,7 @@ export function DistrictInput({
   description,
   ...restProps
 }: DistrictInputProps) {
-  const { districts, error: fetchError, loading, refresh } = useListDistrict({ cityId: city?.id });
+  const { districts, error: fetchError, validating, refresh } = useListDistrict({ cityId: city?.id });
 
   const options = useMemo(() => {
     if (!districts) return [];
@@ -48,11 +49,11 @@ export function DistrictInput({
   };
 
   const fieldState = resolveSelectFieldState({
+    list: resolveSelectFieldList(districts),
+    validating,
     hasFetchError: !!fetchError,
-    loading,
-    canRetry: true,
-    fetchErrorCopy: FETCH_ERROR_COPY,
-    parent: { hasParent: true, parentChosen: !!city, parentHintCopy: PARENT_HINT_COPY },
+    fetchErrorCopy: SELECT_FIELD_COPY.fetchError.district,
+    parent: { hasParent: true, parentChosen: !!city, parentHintCopy: SELECT_FIELD_COPY.parentHint.district },
     callerError: error ?? undefined,
     callerDescription: description,
   });
@@ -70,8 +71,8 @@ export function DistrictInput({
         error={fieldState.error}
         description={fieldState.description}
       />
-      <SelectFieldAnnouncer message={fieldState.error ?? fieldState.description} />
-      {fieldState.showRetry && <SelectFieldRetryButton onRetry={() => refresh()} />}
+      <SelectFieldAnnouncer message={fieldState.announcement} />
+      {fieldState.retry !== "hidden" && <SelectFieldRetryButton state={fieldState.retry} onRetry={() => refresh()} />}
     </div>
   );
 }

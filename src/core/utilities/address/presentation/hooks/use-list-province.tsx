@@ -28,12 +28,15 @@ async function ListProvinceFetcher() {
 }
 
 export function useListProvince() {
-  const { data, error, isLoading, mutate } = useSWR("list-province", ListProvinceFetcher);
+  const { data, error, isLoading, isValidating, mutate } = useSWR("list-province", ListProvinceFetcher);
 
   return {
     provinces: data,
     error: error,
     loading: isLoading,
+    // True for ANY in-flight request, including a background revalidation over already-loaded data —
+    // consumers must gate it on the list being unusable, or a populated field goes inert on refocus.
+    validating: isValidating,
     refresh: mutate,
   };
 }
