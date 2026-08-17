@@ -5,7 +5,7 @@ import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@persona
 import { IDENTITY_FIELD_LIMITS } from "@/features/account/domain/constants/identity-field-limits";
 
 export function PlaceOfBirthInput() {
-  const { data, update } = usePersonalAccountData();
+  const { data, update, fieldError } = usePersonalAccountData();
 
   return (
     <TextInput
@@ -15,6 +15,7 @@ export function PlaceOfBirthInput() {
       value={data.placeOfBirth ?? ""}
       maxLength={IDENTITY_FIELD_LIMITS.placeOfBirth}
       required
+      error={fieldError("placeOfBirth")}
       onChange={(value) => update?.({ placeOfBirth: value })}
     />
   );

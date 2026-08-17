@@ -8,13 +8,15 @@ type PersonalAccountFormWrapperProps = {
 };
 
 export function PersonalAccountFormWrapper(props: PersonalAccountFormWrapperProps) {
-  const { submit, isCreating, markSubmitAttempted } = usePersonalAccountData();
+  const { submit, isCreating } = usePersonalAccountData();
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
 
-    markSubmitAttempted?.();
+    // `submit()` owns the incomplete case itself — it reveals the offending steps' errors and
+    // navigates to the first one. Nothing here needs to pre-check, and nothing may throw: React
+    // does not await onSubmit, so a throw would surface to the user as silence.
     await submit();
   };
 

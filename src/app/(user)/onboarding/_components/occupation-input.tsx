@@ -8,6 +8,7 @@ import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/oc
 type OccupationInputProps = {
   value?: OccupationEntity;
   onChange?: (occupation: OccupationEntity | undefined) => void;
+  error?: string;
 };
 
 export function OccupationInput(props: OccupationInputProps) {
@@ -34,6 +35,7 @@ export function OccupationInput(props: OccupationInputProps) {
       placeholder="Pilih pekerjaan Anda"
       value={props.value?.id ?? ""}
       onChange={(value) => onChange(value)}
+      error={props.error}
       disabled={loading}
     />
   );

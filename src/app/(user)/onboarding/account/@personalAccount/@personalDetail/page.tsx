@@ -11,7 +11,7 @@ import { OccupationInput } from "@/app/(user)/onboarding/_components/occupation-
 
 export default function PersonalDetailInputPage() {
   const { currentStep, type } = useCreateAccount();
-  const { data, update } = usePersonalAccountData();
+  const { data, update, fieldError } = usePersonalAccountData();
 
   if (!(type === "personal" && currentStep === "personal.personal")) return null;
   return (
@@ -33,7 +33,11 @@ export default function PersonalDetailInputPage() {
         <IdentityNumberInput />
 
         {/* Occupation Input */}
-        <OccupationInput value={data.occupation} onChange={(value) => update?.({ occupation: value })} />
+        <OccupationInput
+          value={data.occupation}
+          onChange={(value) => update?.({ occupation: value })}
+          error={fieldError("occupation")}
+        />
 
         {/*  Place of Birth Input */}
         <PlaceOfBirthInput />

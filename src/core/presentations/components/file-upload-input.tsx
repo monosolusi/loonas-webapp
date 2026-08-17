@@ -10,6 +10,8 @@ type FileUploadInputBaseProps = {
   icon?: React.ReactNode;
   maxSize?: number;
   onError?: (error: string) => void;
+  /** Externally-owned validation copy, e.g. "this document is still missing". */
+  error?: string | null;
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value" | "type">;
 
 type FileUploadInputWithLabel = FileUploadInputBaseProps & {
@@ -33,8 +35,12 @@ export type FileUploadInputProps = FileUploadInputWithLabel | FileUploadInputWit
 export function FileUploadInput(props: FileUploadInputProps) {
   const [internalFile, setInternalFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [rejectionError, setRejectionError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // A rejected pick describes what the user just did, so it outranks the caller's standing
+  // validation copy ("still missing") until the next pick clears it.
+  const error = rejectionError ?? props.error ?? null;
 
   // Use controlled value if provided, otherwise use internal state
   const file = props.value !== undefined ? props.value : internalFile;
@@ -53,12 +59,12 @@ export function FileUploadInput(props: FileUploadInputProps) {
 
   const handleFile = useCallback(
     (selectedFile: File | null) => {
-      setError(null);
+      setRejectionError(null);
 
       if (selectedFile && props.maxSize && selectedFile.size > props.maxSize) {
         const maxSizeMB = (props.maxSize / (1024 * 1024)).toFixed(0);
         const errorMessage = `File terlalu besar. Maksimal ${maxSizeMB}MB`;
-        setError(errorMessage);
+        setRejectionError(errorMessage);
         props.onError?.(errorMessage);
         return;
       }
@@ -122,7 +128,7 @@ export function FileUploadInput(props: FileUploadInputProps) {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={`flex cursor-pointer flex-col rounded-[10px] border border-solid bg-neutral-50 p-[22px] transition-colors ${
-          isDragging ? "border-primary-300 bg-primary-50" : "border-neutral-100"
+          isDragging ? "border-primary-300 bg-primary-50" : error ? "border-red-500" : "border-neutral-100"
         }`}
       >
         <input ref={inputRef} type="file" accept={props.accept} onChange={handleInputChange} className="hidden" />

@@ -10,7 +10,7 @@ import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@persona
 
 export default function AddressDetailInputPage() {
   const { type, currentStep } = useCreateAccount();
-  const { data, update } = usePersonalAccountData();
+  const { data, update, fieldError } = usePersonalAccountData();
 
   if (!(type === "personal" && currentStep === "personal.address")) return null;
   else
@@ -24,13 +24,19 @@ export default function AddressDetailInputPage() {
         </div>
         <div className="mb-8 flex flex-col gap-4">
           {/* Province Input */}
-          <ProvinceInput value={data.province} onChange={(value) => update?.({ province: value })} required />
+          <ProvinceInput
+            value={data.province}
+            onChange={(value) => update?.({ province: value })}
+            error={fieldError("province")}
+            required
+          />
 
           {/* City Input */}
           <CityInput
             value={data.city}
             onChange={(value) => update?.({ city: value })}
             province={data.province}
+            error={fieldError("city")}
             required
           />
 
@@ -39,6 +45,7 @@ export default function AddressDetailInputPage() {
             value={data.district}
             onChange={(value) => update?.({ district: value })}
             city={data.city}
+            error={fieldError("district")}
             required
           />
 
@@ -47,6 +54,7 @@ export default function AddressDetailInputPage() {
             value={data.subDistrict}
             onChange={(value) => update?.({ subDistrict: value })}
             district={data.district}
+            error={fieldError("subDistrict")}
             required
           />
 

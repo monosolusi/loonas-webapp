@@ -4,12 +4,13 @@ import { StepIndicatorWithTime } from "@/app/(user)/onboarding/_components/step-
 import { StepHeader } from "@/app/(user)/onboarding/_components/step-header";
 import React from "react";
 import { PreviousButton } from "@/app/(user)/onboarding/account/_components/previous-button";
-import { NextButton } from "@/app/(user)/onboarding/account/_components/next-button";
+import { PersonalNextButton } from "@/app/(user)/onboarding/account/@personalAccount/_components/personal-next-button";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { StepIndicatorImpl } from "@/app/(user)/onboarding/account/_components/step-indicator.impl";
 import { SubmitButton } from "@/app/(user)/onboarding/account/@personalAccount/_components/submit-button";
 import { PersonalAccountFormWrapper } from "@/app/(user)/onboarding/account/@personalAccount/_components/personal-account-form-wrapper";
 import { PersonalSubmitErrorBanner } from "@/app/(user)/onboarding/account/@personalAccount/_components/submit-error-banner";
+import { PersonalSubmitIncompleteBanner } from "@/app/(user)/onboarding/account/@personalAccount/_components/submit-incomplete-banner";
 
 type PersonalAccountCreationLayoutProps = {
   personalDetail: React.ReactNode;
@@ -34,12 +35,13 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
             {props.documentUpload}
           </div>
           <PersonalSubmitErrorBanner />
+          <PersonalSubmitIncompleteBanner />
           <div className="flex flex-row gap-3 border-t border-neutral-100 pt-4">
             <div className="flex-1">
               <PreviousButton />
             </div>
             <div className="flex-1">
-              <NextButton />
+              <PersonalNextButton />
               <SubmitButton />
             </div>
           </div>

@@ -5,7 +5,7 @@ import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@persona
 import { IDENTITY_FIELD_LIMITS } from "@/features/account/domain/constants/identity-field-limits";
 
 export function AddressInput() {
-  const { data, update } = usePersonalAccountData();
+  const { data, update, fieldError } = usePersonalAccountData();
 
   return (
     <TextAreaInput
@@ -14,6 +14,7 @@ export function AddressInput() {
       value={data.address ?? ""}
       maxLength={IDENTITY_FIELD_LIMITS.address}
       required
+      error={fieldError("address")}
       onChange={(value) => update?.({ address: value })}
     />
   );
