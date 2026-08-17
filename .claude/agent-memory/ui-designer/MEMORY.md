@@ -1,4 +1,6 @@
 - [Design language conventions](design_language.md) — SectionCard, PrimaryButton, h-11, size-8, neutral palette, ActionMenu, skeletons
+- [opacity-50 disabled states fail AA](feedback_disabled_state_opacity_fails_aa.md) — no token survives it on white; bg-neutral-50 disabled fill is a no-op (F10)
+- [Unavailable-feature copy + real support channels](project_f10_unavailable_option_copy.md) — "Belum tersedia" not "Segera hadir"; LOONAS_WHATSAPP_URL is empty (F10)
 - [Async submit-feedback states (onboarding registration)](project_onboarding_submit_feedback_lns_registration.md) — top-vs-below-button banner split, 8s/20s escalation, redirect-bridge rule, 2 a11y precedents to grep
 - [CoA mappings current structure](project_coa_mappings.md) — current table grid, line shape, dialog form, provider pattern
 - [Finance nav group](project_finance_nav.md) — FinanceNavGroup gated on hasFeature("accounting"), NavigationGroup/NavigationChildItem pattern
