@@ -1,6 +1,7 @@
 import { ProvinceServiceImpl } from "@/core/utilities/address/data/sources/province";
 import { CityServiceImpl } from "@/core/utilities/address/data/sources/city";
 import { DistrictServiceImpl } from "@/core/utilities/address/data/sources/district";
+import { SubdistrictServiceImpl } from "@/core/utilities/address/data/sources/subdistrict";
 import { AddressRepositoryImpl } from "@/core/utilities/address/data/repositories/address";
 import { DataFailed } from "@/core/resources/data-state";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
@@ -17,7 +18,7 @@ async function ListDistrictFetcher([_, params]: [string, ListDistrictFetcherPara
   const provinceService = new ProvinceServiceImpl();
   const cityService = new CityServiceImpl();
   const districtService = new DistrictServiceImpl();
-  const subdistrictService = new DistrictServiceImpl();
+  const subdistrictService = new SubdistrictServiceImpl();
   const addressRepository = new AddressRepositoryImpl(
     provinceService,
     cityService,
