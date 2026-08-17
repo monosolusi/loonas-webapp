@@ -55,7 +55,12 @@ export type SelectFieldState = {
  * 1. If the parent is unchosen, nothing can load, so the parent hint is the only honest message —
  *    and "Kabupaten/Kota wajib dipilih" is actively misleading before a province exists to pick one
  *    from. Nothing is lost by suppressing the child's required-error there, because the parent field
- *    is showing its own error in exactly that state.
+ *    is showing its own error in exactly that state. Ranking this ABOVE the fetch error is
+ *    deliberately defensive rather than load-bearing: `ListCityFetcher` and its siblings early-return
+ *    `[]` when the parent id is missing instead of throwing, so `hasFetchError && !parentChosen` is
+ *    unreachable through the UI today. The resolver is total and its test sweeps the whole input
+ *    space, so the rung exists to make the ordering deliberate — if that state ever does arise, "pick
+ *    a province first" is the truthful message, not "the list failed".
  * 2. **Loading outranks a fetch error.** SWR keeps the PREVIOUS `error` populated while it
  *    revalidates, so during an in-flight retry a stale red failure would sit next to an enabled
  *    retry button and read as "still broken" — inviting a double-tap. Suppressing `showRetry` while

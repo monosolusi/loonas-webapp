@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useId, useMemo } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 import { InfoTooltip } from "@/core/presentations/components/info-tooltip";
@@ -41,6 +41,8 @@ export type SelectInputProps = (SelectInputWithLabel | SelectInputWithoutLabel) 
  * @constructor
  */
 export function SelectInput(props: SelectInputProps) {
+  const messageId = useId();
+
   const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (props.onChange) props.onChange(e.target.value);
   };
@@ -56,11 +58,23 @@ export function SelectInput(props: SelectInputProps) {
     // while the placeholder overlay makes the field look empty. Coerce to "" so the
     // element is always controlled and matches the placeholder-driven `hasValue` check
     // below (mirrors TextInput's `value: cleanedProps.value ?? ""`).
-    return Object.assign({}, cleanedProps, { value: cleanedProps.value ?? "" }) as React.SelectHTMLAttributes<HTMLSelectElement>;
+    return Object.assign({}, cleanedProps, {
+      value: cleanedProps.value ?? "",
+    }) as React.SelectHTMLAttributes<HTMLSelectElement>;
   }, [props]);
 
   const hasValue = props.value !== undefined && props.value !== "";
   const hasError = !!props.error;
+
+  // The error/description span used to be a bare sibling with no id, so assistive tech never
+  // announced it on focus — the message was visible but not programmatically associated. Exactly one
+  // of the two ever renders (error XOR description), so a single id is enough. Composed with any
+  // caller-supplied `aria-describedby` rather than replacing it: `SelectInputProps` extends
+  // `SelectHTMLAttributes`, so a caller may legitimately pass one, and setting the attribute after
+  // the props spread would otherwise clobber it.
+  const hasMessage = hasError || !!props.description;
+  const describedBy =
+    [cleanedInputProps["aria-describedby"], hasMessage ? messageId : undefined].filter(Boolean).join(" ") || undefined;
 
   return (
     // `opacity-50` deliberately does NOT live here. A wrapper-level fade also dims the error and
@@ -98,6 +112,7 @@ export function SelectInput(props: SelectInputProps) {
           {...cleanedInputProps}
           onChange={onChange}
           aria-invalid={hasError || undefined}
+          aria-describedby={describedBy}
           className={clsx(
             "flex-1 appearance-none bg-transparent text-base outline-none",
             props.disabled ? "cursor-not-allowed" : "cursor-pointer",
@@ -120,7 +135,11 @@ export function SelectInput(props: SelectInputProps) {
           />
         </div>
       </div>
-      {hasError && <span className="text-xs leading-4 font-normal text-red-500">{props.error}</span>}
+      {hasError && (
+        <span id={messageId} className="text-xs leading-4 font-normal text-red-500">
+          {props.error}
+        </span>
+      )}
       {!hasError && props.description && (
         // Darkened while disabled, because that is when the description is doing the work of
         // explaining WHY: `text-neutral-300` is 10.9:1 on the disabled fill, where `text-neutral-200`
@@ -129,6 +148,7 @@ export function SelectInput(props: SelectInputProps) {
         // but it is established across the whole app — changing it here only would make these fields
         // inconsistent with everything else for no user gain. That is its own app-wide ticket.
         <span
+          id={messageId}
           className={clsx(
             "text-xs leading-4 font-normal transition-all",
             props.disabled ? "text-neutral-300" : "text-neutral-200",
