@@ -23,10 +23,14 @@ export type ResolveAccountRedirectParams = {
  * 2. No accounts at all — send to account creation.
  * 3. The session's current account no longer exists — send to the accounts list.
  * 4. The account's verification is awaiting or rejected — send to the KYC summary, UNLESS the
- *    user is already on `/accounts` or anywhere under `/onboarding`. That exemption is load
- *    bearing: without it, a pending user can never reach `/accounts` to reactivate their own
- *    deactivated Clerk org (see `account-card-action-state.ts`), because this redirect would
- *    bounce them straight back out.
+ *    user is already on `/accounts` or anywhere under `/onboarding`.
+ *
+ *    The `/accounts` half is load bearing TODAY: without it, a pending user can never reach
+ *    `/accounts` to reactivate their own deactivated Clerk org (see `account-card-action-state.ts`),
+ *    because this redirect would bounce them straight back out. The `/onboarding` half is currently
+ *    unreachable — the only caller, `SelectedAccountProvider`, mounts via `ProtectedPage` under
+ *    `(authenticated)` and `(pos)` only, never under `(user)/onboarding` — and is kept as a guard
+ *    for wherever this logic lands once that `@deprecated` provider is migrated.
  *
  * Never returns `pathname` itself — a redirect equal to the current location is self-redirect
  * churn, not a navigation.
