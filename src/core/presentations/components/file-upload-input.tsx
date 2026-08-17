@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import clsx from "clsx";
 
 type FileUploadInputBaseProps = {
   description?: string;
@@ -127,9 +128,10 @@ export function FileUploadInput(props: FileUploadInputProps) {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`flex cursor-pointer flex-col rounded-[10px] border border-solid bg-neutral-50 p-[22px] transition-colors ${
-          isDragging ? "border-primary-300 bg-primary-50" : error ? "border-red-500" : "border-neutral-100"
-        }`}
+        className={clsx(
+          "flex cursor-pointer flex-col rounded-[10px] border border-solid bg-neutral-50 p-[22px] transition-colors",
+          isDragging ? "border-primary-300 bg-primary-50" : error ? "border-red-500" : "border-neutral-100",
+        )}
       >
         <input ref={inputRef} type="file" accept={props.accept} onChange={handleInputChange} className="hidden" />
 
