@@ -11,6 +11,7 @@ import { LocalStorageSessionService } from "@/features/authentication/data/sourc
 import { SaveSessionUseCase, SaveSessionUseCaseParams } from "@/features/authentication/domain/usecases/save-session";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { HttpRequest } from "@/core/helpers/http-request";
+import { USER_SWR_KEYS } from "@/features/user/presentation/constants/swr-keys";
 
 type SignUpAndSignIneFetcherParams = {
   arg: {
@@ -44,5 +45,5 @@ async function SignUpAndSignInFetcher(_: string, { arg }: SignUpAndSignIneFetche
 }
 
 export function useSignUpAndSignIn() {
-  return useSWRMutation("sign-in-and-sign-up", SignUpAndSignInFetcher);
+  return useSWRMutation(USER_SWR_KEYS.SIGN_UP_AND_SIGN_IN, SignUpAndSignInFetcher);
 }

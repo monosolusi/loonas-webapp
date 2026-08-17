@@ -10,8 +10,6 @@ import { ClerkSessionService } from "@/features/authentication/data/sources/cler
 import { AccountServiceImpl } from "@/features/account/data/sources/account";
 import { AccountRepositoryImpl } from "@/features/account/data/repositories/account";
 import { ListAccountUseCase } from "@/features/account/domain/usecases/list-account";
-import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
-import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 import { MembershipStatus } from "@/features/account/domain/enums/membership-status";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 import { UseListApprovedAccountsReturnType } from "@/features/account/presentation/hooks/use-list-approved-accounts.types";
@@ -38,10 +36,7 @@ async function ListApprovedAccountFetcher([_, params]: [string, FetcherParams]):
     // Exclude accounts with pending membership (not yet accepted invites)
     if (account.membership && account.membership.status === MembershipStatus.PENDING) return false;
 
-    return (
-      account.latestStatus === VerificationStatus.COMPLETED &&
-      account.verificationOutcome === VerificationOutcome.APPROVED
-    );
+    return account.isApproved;
   });
 }
 

@@ -120,6 +120,16 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   for consistent vertical rhythm. Exception: icon-only action buttons (edit, delete) in tables use `size-8` (32px).
 - **Account resolution**: Backend resolves account from Clerk JWT `orgId` (set via `setActive({ organization })`).
   Frontend never sends account ID in headers or params — only `Authorization: Bearer {token}`
+- **Org-scoped vs user-scoped endpoints — only the latter survives "no active org"**: `GET /accounts`
+  (`useListAccount`) is **user**-scoped, resolved from the bearer token alone, and returns every account the user
+  owns with its own `latest_status` / `verification_outcome` / `membership` — it works with no organization active.
+  `GET /accounts/me` (`useGetCurrentAccount`) and `GET /accounts/verification-works`
+  (`useGetAccountVerificationWork`) are **org**-scoped: they resolve from the JWT `orgId` and fail outright when
+  none is set. So any state that must render *before* an org is chosen — a returning user Clerk did not restore an
+  org for, anything after `setActive({ organization: null })` — may only read the user-scoped list. Note
+  `/accounts` returns **404 when the user has zero accounts**, which `useListAccount` maps to `[]`; and a redirect
+  guard keyed on one specific error code (`ErrorCodes.NOT_FOUND`) silently does nothing for every other code, so
+  never let such a guard be the only thing recovering a no-org session.
 - **Session parameter order**: In repository and service method signatures, `session: SessionEntity` must always be the
   **last** parameter. Methods have **maximum 2 parameters**: `(params, session)`. All business parameters grouped into a
   single object: `list({ search, page }, session)`, `update({ id, name, status }, session)`.
@@ -231,6 +241,32 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   carry a `loadingLabel`. Corollary: a "Next" button with no per-step validation is what lets an empty step-1
   field become an unexplained step-3 blocker — validate the current step and block by *revealing that step's
   inline errors*, never by disabling Next.
+- **An escape hatch must never be gated on the state that creates the need for it**: `/onboarding/kyc-summary`'s
+  only exit was `UseOtherAccountAction`, which `return null`s when `status.approvedAccount.count === 0` — precisely
+  the state of a user whose single account is still awaiting KYC. The `(user)/onboarding` layout renders no header,
+  so the app's only "Keluar" (`(authenticated)/_components/header-sign-out-menu.tsx`) was off-screen, and `/sign-in`
+  bounces an already-signed-in visitor back to `/home`, which redirects to kyc-summary again. The loop was closed:
+  the only documented escape was clearing cookies. The gate itself was *correct* — an account **switcher** has
+  nothing to offer when there is nothing to switch to — the defect is that it was the ONLY exit. Rule: any route a
+  redirect can strand a user on carries an exit whose sole precondition is that a session exists
+  (`onboarding/_components/sign-out-action.tsx`: never reads verification/account state, never `return null`s for a
+  signed-in user, renders a pending state rather than vanishing while `!isLoaded`). Same family as the
+  disabled-button rule — a control that renders nothing is strictly worse than one that renders grey. Corollary,
+  and the reason this shipped: when a component whose whole job is escape can render `null`, the sibling that wraps
+  it inherits that emptiness silently — `GoToSignIn` wrapped it in a flex div and its own `signOut` branch was
+  wired *only* to the signed-out case, which `account/layout.tsx` redirects away before it can ever render.
+- **A whole-page `return null` is a blank screen, not a loading state**: `kyc-summary/page.tsx` opened with
+  `if (!isLoaded || !organization) return null;` on a route with **no auth guard at all**, so a signed-out visitor
+  or anyone without an active Clerk org got a permanently blank page inside the marketing shell — no message, no
+  redirect, nothing to click. Resolve route entry through a pure `_utils/` resolver returning a discriminated
+  `loading | redirect | ready`, with a regression test asserting **no input renders nothing and redirects nowhere**
+  (`kyc-summary/_utils/resolve-kyc-summary-entry.ts`, mirroring `_utils/create-account-button-state.ts`). Two
+  supporting facts that decide such a resolver: **client-side redirects use `router.replace`, never `push`** — a
+  push stacks a history entry, so Back walks the user straight back into the state that triggered it; and a
+  **blocking redirect needs a path exemption for the surface that resolves the block** — the `SelectedAccountProvider`
+  KYC redirect fired from anywhere in `(authenticated)`, so `/accounts`, the one surface that can reactivate a
+  pending Clerk org, was unreachable by the exact user who needed it (`resolve-account-redirect.ts` exempts
+  `/accounts` and `/onboarding*`).
 - **Session readiness is not form validity — never `&&` them into one gate**: `isClean` ended in `&& isLoaded`
   from Clerk's `useOrganizationList()`. Per Clerk's docs that flag **never becomes true for a signed-out user**
   (the docs' own loading guard doubles as an auth guard) and reverts to false while auth state updates — and

@@ -1,6 +1,5 @@
 "use client";
 import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
-import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -15,7 +14,7 @@ export function ApprovedAction(props: ApprovedActionProps) {
 
   const onClick = () => router.replace("/home");
 
-  if (verificationWork?.verificationOutcome !== VerificationOutcome.APPROVED) return null;
+  if (!verificationWork?.isApproved) return null;
   return (
     <PrimaryButton
       label="Mulai Gunakan Loonas"
