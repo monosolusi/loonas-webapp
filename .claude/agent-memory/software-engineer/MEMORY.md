@@ -3,6 +3,7 @@
 ## Feedback
 
 - [Model classes implement AbstractModel](feedback_model_implements_abstract_model.md) — every `data/models/` class needs `implements AbstractModel`, incl. *ResultModel envelopes + nested toValue() value objects (LNS-369 M1+m1)
+- [Shared-worktree git add index race](feedback_shared_worktree_git_add_index_race.md) — `git add <files>` + `git commit` can still sweep in a concurrent agent's staged changes; diff `--cached` before every commit
 - [Use-case params are a class](feedback_usecase_params_class.md) — use-case input is always a named params CLASS, never a bare type alias, even when the plan writes `type Input` (LNS-369 m2)
 - [SWR conditional fetching via null key](feedback_swr_conditional_enabled.md) — add `enabled?: boolean` to hook params; pass `null` SWR key when disabled
 - [Discriminated union narrowing in components](feedback_discriminated_union_narrowing.md) — use sequential boolean flags, not compound checks, to narrow InitialState|LoadedState|ErrorState
@@ -49,3 +50,4 @@
 - [LNS-372 journal detail + reverse action](project_lns372_journal_detail_reverse.md) — shipped 2026-06-25, PR #98; warn→ack single-dialog pattern, page-level provider Rule 7 exception, dynamic ROUTE_MAP if-block
 - [LNS-378 year-end close + retained earnings](project_lns378_year_end_close.md) — R1–R6 risks mitigated; 3200 preselect, verbatim token, two journal-id keys, null not "", provider-extended not new
 - [LNS-457 failed-postings retry + escalation hint](project_lns457_failed_postings_retry.md) — shared 422-curation helper, double-nested details read, in-memory consecutive-failure counter
+- [KYC verification predicate tightening](project_lns_kyc_verification_predicate_tightening.md) — isApproved/isRejected getters require latestStatus===COMPLETED too; 4 call sites tightened intentionally, not a regression
