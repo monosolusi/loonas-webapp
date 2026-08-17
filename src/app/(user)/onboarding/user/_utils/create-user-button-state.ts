@@ -1,4 +1,4 @@
-import { SubmitStatus } from "@/app/(user)/onboarding/user/_utils/submit-status";
+import { SubmitStatus } from "@/app/(user)/onboarding/_utils/submit-status";
 
 export type CreateUserButtonState = {
   disabled: boolean;

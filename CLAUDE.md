@@ -216,6 +216,52 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   `ClerkRuntimeError` has only `code: string`. Check `status === 429` **before** pattern-matching `errors[0].code` —
   the HTTP status is authoritative. Never render a raw `SignUpResource.status` (`"missing_requirements"`) as user
   copy; map it, and keep the raw value in `details` for logging.
+- **A `disabled` submit button must never be the only thing standing between the user and the block**:
+  a boolean gate over a whole multi-step form can only ever render as grey, so whichever of its N conditions
+  failed, the user sees the same dead end — and on a wizard whose off-step pages `return null`, the offending
+  field is not even on screen. QA F8 was `disabled={!isClean}` over a 13-condition `useMemo` spanning all three
+  `/onboarding/account` steps. The fix shape: resolve completeness to a **step-ordered `FieldIssue[]`**
+  (`field`, `step`, `label`, `message`) plus `isComplete` and `firstIncompleteStep`
+  (`account/_utils/{personal,business}-account-completeness.ts`), leave the button **clickable**, and let the
+  submit handler answer — reveal errors on every step carrying one, navigate to `firstIncompleteStep`, and list
+  the missing fields *with their step name* in a banner. Same family as the "affordance stays, dialog explains
+  the block" rule. Enforce it structurally with a pure button-state resolver whose regression test asserts **no
+  input yields `disabled && !loading`** (`_utils/create-account-button-state.ts`, mirroring
+  `user/_utils/create-user-button-state.ts`); the only disabled states left are in-flight ones, which always
+  carry a `loadingLabel`. Corollary: a "Next" button with no per-step validation is what lets an empty step-1
+  field become an unexplained step-3 blocker — validate the current step and block by *revealing that step's
+  inline errors*, never by disabling Next.
+- **Session readiness is not form validity — never `&&` them into one gate**: `isClean` ended in `&& isLoaded`
+  from Clerk's `useOrganizationList()`. Per Clerk's docs that flag **never becomes true for a signed-out user**
+  (the docs' own loading guard doubles as an auth guard) and reverts to false while auth state updates — and
+  `src/middleware.ts` is a bare `clerkMiddleware()` with **no route protection**, so `/onboarding/account` is
+  reachable with no live session. The result was a permanently dead button on a form that was genuinely
+  complete. Removing it loses nothing: the use case resolves the Clerk session *before* any network write, so a
+  signed-out submit fails with `NO_VALID_SESSION` and copy the user can act on, and the existing
+  `createdAccountId` cache keeps the retry safe. A readiness flag belongs in a loading state or an error
+  message, never in a validity predicate.
+- **Reveal field errors per step, not with one global `submitAttempted` latch**: a single latch set by "Next" on
+  step 1 lights up step 2's untouched fields the moment the user arrives — errors for data they have not been
+  asked for yet. Track `attemptedSteps: Step[]` in the provider and derive
+  `showFieldErrors = attemptedSteps.includes(currentStep)`; since every field renders only on its own step, that
+  is exactly the right revelation scope. A field may still add its own `isTouched` on top for blur-time feedback,
+  but it must take its *copy* from the shared resolver (`issueFor(field)?.message`) rather than restating it.
+- **An uncontrolled shared input inside a step that unmounts will lie about its value**: `FileUploadInput` keeps
+  its own `internalFile` when no `value` prop is passed, and `/onboarding/account`'s step pages `return null`
+  when off-step. `KtpFileUploadInput` omitted `value`, so stepping away and back re-rendered the empty
+  "Klik untuk upload file" state while the provider still held the `File` — an empty-looking dropzone, an enabled
+  button, and the stale file submitted. The business flow passed `value` and was fine. Whenever a shared input
+  supports both modes, the page that owns the buffer must pass `value`. Related: that component's size check
+  `return`s **before** `onChange`, so an over-cap pick silently keeps the previous file — keeping it is correct
+  (a fat-finger should not destroy a valid selection), but only once `value` makes the retained file visible.
+- **When adding a validation `error` surface, check every input primitive the form actually uses**: `TextInput`
+  had `error`; `SelectInput`, `TextAreaInput`, `EmailInput` and `FileUploadInput` did not, and the five
+  address/occupation selects had no way to show one at all. Mirror `TextInput`'s contract (red border, `text-xs
+  leading-4 font-normal text-red-500` message, `aria-invalid`, error takes precedence over `description`) and
+  **destructure the new `error` out of the props-spread** (`cleanedInputProps`) or it lands on the DOM node as an
+  unknown attribute. Where a primitive already owns a local error (`EmailInput`'s format check, `FileUploadInput`'s
+  size check), the local one describes what the user just did and outranks the caller's standing copy:
+  `localError ?? props.error`.
 - **Component context rule**: When a component needs context data, it consumes context itself inside `_components/`.
   Page does not wrap children in a single content component — each component is self-contained.
 - **Component architecture**: One component per file. Use `useMemo` for computed/derived data. No conditional rendering

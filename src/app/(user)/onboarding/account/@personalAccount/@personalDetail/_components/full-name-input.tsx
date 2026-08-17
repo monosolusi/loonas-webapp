@@ -5,7 +5,7 @@ import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@persona
 import { IDENTITY_FIELD_LIMITS } from "@/features/account/domain/constants/identity-field-limits";
 
 export function FullNameInput() {
-  const { data, update } = usePersonalAccountData();
+  const { data, update, fieldError } = usePersonalAccountData();
 
   return (
     <TextInput
@@ -15,6 +15,7 @@ export function FullNameInput() {
       value={data.fullName ?? ""}
       maxLength={IDENTITY_FIELD_LIMITS.fullName}
       required
+      error={fieldError("fullName")}
       onChange={(value) => update?.({ fullName: value })}
     />
   );

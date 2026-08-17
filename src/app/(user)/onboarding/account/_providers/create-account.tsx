@@ -2,58 +2,14 @@
 
 import React, { useCallback } from "react";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
-import { CityEntity } from "@/core/utilities/address/domain/entities/city";
-import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
-import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
-import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
-import { DateOfBirthParts } from "@/app/(user)/onboarding/account/_utils/date-of-birth";
-
-type AccountType = "personal" | "business";
-
-type PersonalStep = "personal.personal" | "personal.address" | "personal.documents";
-type BusinessStep = "business.personal" | "business.address" | "business.documents";
-type Step = PersonalStep | BusinessStep;
-
-type BusinessAccountData = {
-  companyName?: string;
-  companyEmail?: string;
-  companyPhone?: string;
-  companyProvince?: ProvinceEntity;
-  companyCity?: CityEntity;
-  companyDistrict?: DistrictEntity;
-  companySubdistrict?: SubdistrictEntity;
-  companyAddress?: string;
-  deedOfEstablishment?: File | null;
-  mostRecentDeededOfEstablishment?: File | null;
-  businessRegistrationNumber?: File | null;
-  directorNationalIdentityCard?: File | null;
-  bankStatement?: File | null;
-};
-
-type PersonalAccountData = {
-  nationality?: string;
-  identityFile?: File | null;
-  identityNumber?: string;
-  fullName?: string;
-  occupation?: OccupationEntity;
-  placeOfBirth?: string;
-  // Raw three-part form buffer — the provider holds this, never the derived DateTime.
-  // See `resolveDateOfBirth` for the single-owner derivation.
-  dateOfBirth?: DateOfBirthParts;
-  province?: ProvinceEntity;
-  city?: CityEntity;
-  district?: DistrictEntity;
-  subDistrict?: SubdistrictEntity;
-  address?: string;
-};
-
-type AccountData = { type: "personal"; data: PersonalAccountData } | { type: "business"; data: BusinessAccountData };
-
-export const ACCOUNT_STEPS: Record<AccountType, Step[]> = {
-  personal: ["personal.personal", "personal.address", "personal.documents"],
-  business: ["business.personal", "business.address", "business.documents"],
-} as const;
+import {
+  ACCOUNT_STEPS,
+  AccountData,
+  AccountType,
+  BusinessAccountData,
+  PersonalAccountData,
+  Step,
+} from "@/app/(user)/onboarding/account/_utils/account-form-data";
 
 type CreateAccountContextProps = {
   type?: AccountType;
@@ -65,8 +21,11 @@ type CreateAccountContextProps = {
   accountData?: AccountData;
   updatePersonalData?: (data: Partial<PersonalAccountData>) => void;
   updateBusinessData?: (data: Partial<BusinessAccountData>) => void;
-  submitAttempted?: boolean;
-  markSubmitAttempted?: () => void;
+  /** Steps the user has already tried to leave or submit from. */
+  attemptedSteps?: Step[];
+  markStepAttempted?: (step: Step) => void;
+  /** Whether the CURRENT step's fields may render their validation errors yet. */
+  showFieldErrors?: boolean;
 };
 
 type CreateAccountProviderProps = {
@@ -80,9 +39,18 @@ export function CreateAccountProvider(props: CreateAccountProviderProps) {
   const [currentStep, setCurrentStep] = React.useState<Step>();
   const [personalData, setPersonalData] = React.useState<PersonalAccountData>({});
   const [businessData, setBusinessData] = React.useState<BusinessAccountData>({});
-  const [submitAttempted, setSubmitAttempted] = React.useState(false);
 
-  const markSubmitAttempted = useCallback(() => setSubmitAttempted(true), []);
+  // Error revelation is tracked PER STEP, not as one global "submit was attempted" latch. With a
+  // single latch, pressing "Selanjutnya" on step 1 would light up step 2's untouched fields the
+  // moment the user arrived there — errors for data they had not been asked for yet. Every field
+  // renders only on its own step, so "this step has been attempted" is exactly the right scope.
+  const [attemptedSteps, setAttemptedSteps] = React.useState<Step[]>([]);
+
+  const markStepAttempted = useCallback((step: Step) => {
+    setAttemptedSteps((prev) => (prev.includes(step) ? prev : [...prev, step]));
+  }, []);
+
+  const showFieldErrors = !!currentStep && attemptedSteps.includes(currentStep);
 
   const nextStep = () => {
     // Type and currentStep are guaranteed to be filled after type selection
@@ -130,8 +98,9 @@ export function CreateAccountProvider(props: CreateAccountProviderProps) {
         setCurrentStep,
         nextStep,
         prevStep,
-        submitAttempted,
-        markSubmitAttempted,
+        attemptedSteps,
+        markStepAttempted,
+        showFieldErrors,
       }}
     >
       {props.children}

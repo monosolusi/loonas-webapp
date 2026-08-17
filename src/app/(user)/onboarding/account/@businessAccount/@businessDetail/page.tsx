@@ -9,7 +9,7 @@ import { EmailInput } from "@/core/presentations/components/text-inputs/email-in
 
 export default function BusinessDetailPage() {
   const { type, currentStep } = useCreateAccount();
-  const { data, update } = useBusinessAccountData();
+  const { data, update, fieldError } = useBusinessAccountData();
 
   if (!(type === "business" && currentStep === "business.personal")) return null;
   return (
@@ -25,14 +25,21 @@ export default function BusinessDetailPage() {
           placeholder="Masukan nama perusahaan Anda."
           value={data.companyName ?? ""}
           onChange={(value) => update?.({ companyName: value })}
+          error={fieldError("companyName")}
           required
         />
 
-        <EmailInput value={data.companyEmail ?? ""} onChange={(value) => update?.({ companyEmail: value })} required />
+        <EmailInput
+          value={data.companyEmail ?? ""}
+          onChange={(value) => update?.({ companyEmail: value })}
+          error={fieldError("companyEmail")}
+          required
+        />
 
         <PhoneNumberInput
           value={data.companyPhone ?? ""}
           onChange={(value) => update?.({ companyPhone: value })}
+          error={fieldError("companyPhone")}
           required
         />
       </div>

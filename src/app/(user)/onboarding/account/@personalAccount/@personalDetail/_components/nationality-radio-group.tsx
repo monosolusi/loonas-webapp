@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { NationalityRadioItem } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/nationality-radio-item";
 import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
 
@@ -33,14 +34,23 @@ const NATIONALITY_OPTIONS: NationalityOption[] = [
 ];
 
 export function NationalityRadioGroup() {
-  const { data, update } = usePersonalAccountData();
+  const { data, update, fieldError } = usePersonalAccountData();
+  const errorId = useId();
+
+  // WNA is disabled, so this never carries a default — the user has to choose WNI actively, which
+  // makes an unchosen nationality a real (and previously unexplained) step-1 blocker.
+  const errorCopy = fieldError("nationality");
 
   const onChange = (value: Nationality) => (checked: boolean) => {
     if (checked && update) update({ nationality: value, identityNumber: "" });
   };
 
   return (
-    <fieldset className="m-0 min-w-0 border-0 p-0">
+    <fieldset
+      className="m-0 min-w-0 border-0 p-0"
+      aria-invalid={!!errorCopy}
+      aria-describedby={errorCopy ? errorId : undefined}
+    >
       <legend className="mb-2 flex items-center gap-x-1.5 p-0 text-base">
         Status Kewarganegaraan
         <span className="text-red-500"> *</span>
@@ -61,6 +71,11 @@ export function NationalityRadioGroup() {
           </div>
         ))}
       </div>
+      {errorCopy && (
+        <span id={errorId} className="mt-2 block text-xs leading-4 font-normal text-red-500">
+          {errorCopy}
+        </span>
+      )}
     </fieldset>
   );
 }

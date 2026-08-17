@@ -10,7 +10,7 @@ import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@busines
 
 export default function AddressDetailPage() {
   const { type, currentStep } = useCreateAccount();
-  const { data, update } = useBusinessAccountData();
+  const { data, update, fieldError } = useBusinessAccountData();
 
   if (!(type === "business" && currentStep === "business.address")) return null;
   return (
@@ -23,6 +23,7 @@ export default function AddressDetailPage() {
         <ProvinceInput
           value={data?.companyProvince}
           onChange={(value) => update?.({ companyProvince: value })}
+          error={fieldError("companyProvince")}
           required
         />
 
@@ -30,6 +31,7 @@ export default function AddressDetailPage() {
           value={data?.companyCity}
           onChange={(value) => update?.({ companyCity: value })}
           province={data?.companyProvince}
+          error={fieldError("companyCity")}
           required
         />
 
@@ -37,6 +39,7 @@ export default function AddressDetailPage() {
           value={data?.companyDistrict}
           onChange={(value) => update?.({ companyDistrict: value })}
           city={data?.companyCity}
+          error={fieldError("companyDistrict")}
           required
         />
 
@@ -44,6 +47,7 @@ export default function AddressDetailPage() {
           value={data?.companySubdistrict}
           onChange={(value) => update?.({ companySubdistrict: value })}
           district={data?.companyDistrict}
+          error={fieldError("companySubdistrict")}
           required
         />
 
@@ -52,6 +56,7 @@ export default function AddressDetailPage() {
           placeholder="Masukkan alamat lengkap"
           value={data?.companyAddress ?? ""}
           onChange={(value) => update?.({ companyAddress: value })}
+          error={fieldError("companyAddress")}
           required
         />
       </div>

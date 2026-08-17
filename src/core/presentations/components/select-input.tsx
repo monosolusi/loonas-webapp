@@ -12,6 +12,7 @@ export type SelectOption = {
 
 type SelectInputBaseProps = {
   description?: string;
+  error?: string | null;
   options: SelectOption[];
   onChange?: (value: string) => void;
   placeholder?: string;
@@ -45,7 +46,10 @@ export function SelectInput(props: SelectInputProps) {
   };
 
   const cleanedInputProps = useMemo(() => {
-    const { leftIcon, label, onChange, description, options, placeholder, noLabel, tooltip, ...cleanedProps } = props;
+    // `error` must be destructured out here with the other non-DOM props — leaving it in would
+    // spread onto the native <select> as an unknown attribute.
+    const { leftIcon, label, onChange, description, error, options, placeholder, noLabel, tooltip, ...cleanedProps } =
+      props;
     // A caller passing `value={undefined}` would otherwise spread onto `<select>` as an
     // UNCONTROLLED element — the browser then auto-selects the first non-disabled
     // <option> per the HTML select-reset algorithm, silently committing a phantom value
@@ -56,6 +60,7 @@ export function SelectInput(props: SelectInputProps) {
   }, [props]);
 
   const hasValue = props.value !== undefined && props.value !== "";
+  const hasError = !!props.error;
 
   return (
     <div className={clsx("flex flex-col gap-2 transition-all", props.disabled && "opacity-50")}>
@@ -68,10 +73,13 @@ export function SelectInput(props: SelectInputProps) {
       )}
       <div
         className={clsx(
-          "relative flex h-11 flex-row items-center gap-3 rounded-lg border border-solid border-neutral-100 p-3 transition-all",
+          "relative flex h-11 flex-row items-center gap-3 rounded-lg border border-solid p-3 transition-all",
+          hasError ? "border-red-500" : "border-neutral-100",
           props.disabled
             ? "cursor-not-allowed bg-neutral-50"
-            : "focus-within:ring-primary-300/20 focus-within:border-primary-300 focus-within:ring-2",
+            : hasError
+              ? "focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-500/20"
+              : "focus-within:ring-primary-300/20 focus-within:border-primary-300 focus-within:ring-2",
         )}
       >
         {props.leftIcon && <div className="shrink-0">{props.leftIcon}</div>}
@@ -81,6 +89,7 @@ export function SelectInput(props: SelectInputProps) {
         <select
           {...cleanedInputProps}
           onChange={onChange}
+          aria-invalid={hasError || undefined}
           className={clsx(
             "flex-1 appearance-none bg-transparent text-base outline-none",
             props.disabled ? "cursor-not-allowed" : "cursor-pointer",
@@ -103,7 +112,10 @@ export function SelectInput(props: SelectInputProps) {
           />
         </div>
       </div>
-      {props.description && <span className="text-xs leading-4 font-normal text-neutral-200">{props.description}</span>}
+      {hasError && <span className="text-xs leading-4 font-normal text-red-500">{props.error}</span>}
+      {!hasError && props.description && (
+        <span className="text-xs leading-4 font-normal text-neutral-200">{props.description}</span>
+      )}
     </div>
   );
 }

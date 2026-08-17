@@ -27,7 +27,7 @@ const MONTHS = [
 ];
 
 export function DateOfBirthInput() {
-  const { data, update, dateOfBirthResolution, submitAttempted } = usePersonalAccountData();
+  const { data, update, dateOfBirthResolution, showFieldErrors } = usePersonalAccountData();
   const [isTouched, setIsTouched] = useState(false);
   const groupLabelId = useId();
   const errorId = useId();
@@ -86,7 +86,7 @@ export function DateOfBirthInput() {
   const errorCopy = dateOfBirthErrorCopy({
     resolution: dateOfBirthResolution,
     dayWasCleared,
-    showError: isTouched || !!submitAttempted,
+    showError: isTouched || !!showFieldErrors,
   });
   const hasError = !!errorCopy;
 

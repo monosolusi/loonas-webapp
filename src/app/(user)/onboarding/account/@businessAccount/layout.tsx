@@ -4,7 +4,7 @@ import { StepIndicatorWithTime } from "@/app/(user)/onboarding/_components/step-
 import { StepHeader } from "@/app/(user)/onboarding/_components/step-header";
 import React from "react";
 import { PreviousButton } from "@/app/(user)/onboarding/account/_components/previous-button";
-import { NextButton } from "@/app/(user)/onboarding/account/_components/next-button";
+import { BusinessNextButton } from "@/app/(user)/onboarding/account/@businessAccount/_components/business-next-button";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { StepIndicatorImpl } from "@/app/(user)/onboarding/account/_components/step-indicator.impl";
 import { SubmitButton } from "@/app/(user)/onboarding/account/@businessAccount/_components/submit-button";
@@ -12,6 +12,7 @@ import {
   BusinessAccountFormWrapper
 } from "@/app/(user)/onboarding/account/@businessAccount/_components/business-account-form-wrapper";
 import { BusinessSubmitErrorBanner } from "@/app/(user)/onboarding/account/@businessAccount/_components/submit-error-banner";
+import { BusinessSubmitIncompleteBanner } from "@/app/(user)/onboarding/account/@businessAccount/_components/submit-incomplete-banner";
 
 type BusinessAccountCreationLayoutProps = {
   businessDetail: React.ReactNode;
@@ -36,12 +37,13 @@ export default function BusinessAccountCreationLayout(props: BusinessAccountCrea
             {props.documentUpload}
           </div>
           <BusinessSubmitErrorBanner />
+          <BusinessSubmitIncompleteBanner />
           <div className="flex flex-row gap-3 border-t border-neutral-100 pt-4">
             <div className="flex-1">
               <PreviousButton />
             </div>
             <div className="flex-1">
-              <NextButton />
+              <BusinessNextButton />
               <SubmitButton />
             </div>
           </div>
