@@ -39,12 +39,15 @@ async function ListSubdistrictFetcher([_, params]: [string, ListSubdistrictFetch
 }
 
 export function useListSubdistrict(params: ListSubdistrictFetcherParams) {
-  const { data, error, isLoading, mutate } = useSWR(["list-subdistrict", params], ListSubdistrictFetcher);
+  const { data, error, isLoading, isValidating, mutate } = useSWR(["list-subdistrict", params], ListSubdistrictFetcher);
 
   return {
     subdistricts: data,
     error: error,
     loading: isLoading,
+    // True for ANY in-flight request, including a background revalidation over already-loaded data —
+    // consumers must gate it on the list being unusable, or a populated field goes inert on refocus.
+    validating: isValidating,
     refresh: mutate,
   };
 }

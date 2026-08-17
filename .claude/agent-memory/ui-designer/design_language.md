@@ -22,7 +22,11 @@ metadata:
 ## Palette (diverges from Tailwind defaults)
 - `neutral-50` = #FFFFFF (pure white)
 - `neutral-100` = #D9DADA (lightest visible grey — use for chips, borders, backgrounds)
-- Use `neutral-300` for placeholder/secondary text
+- Use `neutral-300` (#323636, 11.87:1 on white) for placeholder/secondary text in NEW specs. The app's
+  de-facto secondary/placeholder token is `neutral-200` (#BDBDBD) — **1.878:1 on white, fails AA badly**
+  (every `SelectInput` description + placeholder, nationality card descriptions). Known app-wide debt,
+  NOT a convention to match; never introduce new `neutral-200` body text. See
+  [[disabled-state-opacity-fails-aa]].
 - `primary-300/10` for icon container backgrounds on active tiles
 
 ## Patterns
