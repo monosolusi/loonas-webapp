@@ -25,7 +25,7 @@ export function useBusinessAccountData() {
 
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
-  const [incompleteIssues, setIncompleteIssues] = useState<FieldIssue<BusinessFieldKey>[]>([]);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [createdAccountId, setCreatedAccountId] = useState<string | null>(null);
   const [setActiveAttempts, setSetActiveAttempts] = useState(0);
 
@@ -109,7 +109,7 @@ export function useBusinessAccountData() {
    */
   const reportIncomplete = (): void => {
     setSubmitError(null);
-    setIncompleteIssues(completeness.issues);
+    setSubmitAttempted(true);
     setSubmitStatus("failed");
 
     for (const step of new Set(completeness.issues.map((issue) => issue.step))) {
@@ -126,7 +126,6 @@ export function useBusinessAccountData() {
       return;
     }
 
-    setIncompleteIssues([]);
     setSubmitStatus("submitting");
 
     let accountClerkId = createdAccountId;
@@ -167,6 +166,11 @@ export function useBusinessAccountData() {
     markStepAttempted?.(currentStep);
     return false;
   };
+
+  // Derived live from the current buffer, never snapshotted: the list has to shrink as the user
+  // fixes fields and vanish once the form is complete. A snapshot taken at submit time would keep
+  // naming fields that have since been filled in.
+  const incompleteIssues: FieldIssue<BusinessFieldKey>[] = submitAttempted ? completeness.issues : [];
 
   return {
     data,
