@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { SelectInput } from "@/core/presentations/components/select-input";
 import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 import { SelectFieldRetryButton } from "@/app/(user)/onboarding/_components/select-field-retry-button";
+import { SelectFieldAnnouncer } from "@/app/(user)/onboarding/_components/select-field-announcer";
 import { resolveSelectFieldState } from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
 
 type OccupationInputProps = {
@@ -13,7 +14,7 @@ type OccupationInputProps = {
   error?: string;
 };
 
-const FETCH_ERROR_COPY = "Gagal memuat daftar pekerjaan";
+const FETCH_ERROR_COPY = "Gagal memuat daftar pekerjaan.";
 
 /**
  * Tops its own chain like `ProvinceInput` — no parent field gates it, so only its own fetch can make
@@ -45,7 +46,7 @@ export function OccupationInput(props: OccupationInputProps) {
   });
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1">
       <SelectInput
         label="Pekerjaan"
         required
@@ -57,6 +58,7 @@ export function OccupationInput(props: OccupationInputProps) {
         error={fieldState.error}
         description={fieldState.description}
       />
+      <SelectFieldAnnouncer message={fieldState.error ?? fieldState.description} />
       {fieldState.showRetry && <SelectFieldRetryButton onRetry={() => refresh()} />}
     </div>
   );

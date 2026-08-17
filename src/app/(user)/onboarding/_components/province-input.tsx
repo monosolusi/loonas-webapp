@@ -5,6 +5,7 @@ import { SelectInput, SelectInputProps } from "@/core/presentations/components/s
 import { useListProvince } from "@/core/utilities/address/presentation/hooks/use-list-province";
 import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
 import { SelectFieldRetryButton } from "@/app/(user)/onboarding/_components/select-field-retry-button";
+import { SelectFieldAnnouncer } from "@/app/(user)/onboarding/_components/select-field-announcer";
 import { resolveSelectFieldState } from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
 
 type ProvinceInputProps = {
@@ -14,7 +15,7 @@ type ProvinceInputProps = {
   placeholder?: string;
 } & Omit<SelectInputProps, "value" | "onChange" | "options" | "label">;
 
-const FETCH_ERROR_COPY = "Gagal memuat daftar provinsi";
+const FETCH_ERROR_COPY = "Gagal memuat daftar provinsi.";
 
 /**
  * Province select input component.
@@ -65,7 +66,7 @@ export function ProvinceInput({
   });
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1">
       <SelectInput
         {...restProps}
         label={label}
@@ -79,6 +80,7 @@ export function ProvinceInput({
         error={fieldState.error}
         description={fieldState.description}
       />
+      <SelectFieldAnnouncer message={fieldState.error ?? fieldState.description} />
       {fieldState.showRetry && <SelectFieldRetryButton onRetry={() => refresh()} />}
     </div>
   );

@@ -48,6 +48,10 @@ describe("resolveSelectFieldState — the load-bearing invariant", () => {
     // `create-account-button-state.test.ts`'s "no input yields disabled && !loading". All five
     // onboarding selects used to go inert — on a failed fetch, or while a parent was unchosen —
     // with nothing on screen accounting for it. If this ever fails, that dead end is back.
+    //
+    // Deliberately ONE-DIRECTIONAL: disabled implies an explanation, NOT the converse. A field can
+    // carry copy while staying enabled, which is exactly the fetch-error state. Do not strengthen
+    // this to an iff.
     for (const params of everyCombination()) {
       const state = resolveSelectFieldState(params);
       if (!state.disabled) continue;
@@ -65,10 +69,33 @@ describe("resolveSelectFieldState — the load-bearing invariant", () => {
     }
   });
 
-  it("offers retry only when the list actually failed and a refresh exists", () => {
+  it("leaves the field ENABLED whenever the fetch error is the message on screen", () => {
+    // A failed list is EMPTY, not disabled. Disabling it would push the error out of tab order and
+    // strand the retry button behind an inert control.
     for (const params of everyCombination()) {
       const state = resolveSelectFieldState(params);
-      expect(state.showRetry, JSON.stringify(params)).toBe(params.hasFetchError && params.canRetry);
+      if (state.error !== FETCH_ERROR_COPY) continue;
+      expect(state.disabled, JSON.stringify(params)).toBe(false);
+    }
+  });
+
+  it("offers retry only under its own error message, never while loading", () => {
+    // A retry in flight keeps SWR's previous `error` populated; showing the button beside a stale
+    // red failure reads as "still broken" and invites a double-tap.
+    for (const params of everyCombination()) {
+      const state = resolveSelectFieldState(params);
+      if (!state.showRetry) continue;
+      expect(params.hasFetchError, JSON.stringify(params)).toBe(true);
+      expect(params.canRetry, JSON.stringify(params)).toBe(true);
+      expect(params.loading, JSON.stringify(params)).toBe(false);
+      expect(state.error, JSON.stringify(params)).toBe(FETCH_ERROR_COPY);
+    }
+  });
+
+  it("never offers retry while the list is loading", () => {
+    for (const params of everyCombination()) {
+      if (!params.loading) continue;
+      expect(resolveSelectFieldState(params).showRetry, JSON.stringify(params)).toBe(false);
     }
   });
 });
@@ -84,18 +111,22 @@ describe("resolveSelectFieldState — precedence", () => {
     callerDescription: CALLER_DESCRIPTION,
   };
 
-  it("puts a fetch failure above the parent hint", () => {
+  it("puts the parent hint above a fetch failure", () => {
+    // If no province is chosen, nothing could have loaded, so a leftover error from a previous
+    // parent is not the true story.
     const state = resolveSelectFieldState({
       ...base,
       hasFetchError: true,
       parent: { hasParent: true, parentChosen: false, parentHintCopy: PARENT_HINT_COPY },
     });
-    expect(state).toEqual({ disabled: true, error: FETCH_ERROR_COPY, showRetry: true });
+    expect(state).toEqual({ disabled: true, description: PARENT_HINT_COPY, showRetry: false });
   });
 
-  it("puts a fetch failure above loading", () => {
+  it("puts loading above a fetch failure, so an in-flight retry hides the stale error", () => {
+    // SWR keeps the previous `error` populated while revalidating. Showing red next to a live retry
+    // button reads as "still broken" and invites a double-tap.
     const state = resolveSelectFieldState({ ...base, hasFetchError: true, loading: true });
-    expect(state).toEqual({ disabled: true, error: FETCH_ERROR_COPY, showRetry: true });
+    expect(state).toEqual({ disabled: true, description: LOADING_OPTIONS_COPY, showRetry: false });
   });
 
   it("puts the parent hint above loading", () => {
@@ -107,6 +138,11 @@ describe("resolveSelectFieldState — precedence", () => {
       parent: { hasParent: true, parentChosen: false, parentHintCopy: PARENT_HINT_COPY },
     });
     expect(state).toEqual({ disabled: true, description: PARENT_HINT_COPY, showRetry: false });
+  });
+
+  it("puts a fetch failure above the caller's standing required-error, and stays enabled", () => {
+    const state = resolveSelectFieldState({ ...base, hasFetchError: true });
+    expect(state).toEqual({ disabled: false, error: FETCH_ERROR_COPY, showRetry: true });
   });
 
   it("puts the parent hint above the caller's standing required-error", () => {
@@ -167,7 +203,7 @@ describe("resolveSelectFieldState — a parentless field", () => {
     expect(state.disabled).toBe(false);
   });
 
-  it("still reports its own fetch failure", () => {
+  it("still reports its own fetch failure, without going inert", () => {
     const state = resolveSelectFieldState({
       hasFetchError: true,
       loading: false,
@@ -175,7 +211,7 @@ describe("resolveSelectFieldState — a parentless field", () => {
       fetchErrorCopy: FETCH_ERROR_COPY,
       parent: { hasParent: false },
     });
-    expect(state).toEqual({ disabled: true, error: FETCH_ERROR_COPY, showRetry: true });
+    expect(state).toEqual({ disabled: false, error: FETCH_ERROR_COPY, showRetry: true });
   });
 
   it("cannot offer retry when the hook exposes no refresh", () => {
@@ -186,6 +222,6 @@ describe("resolveSelectFieldState — a parentless field", () => {
       fetchErrorCopy: FETCH_ERROR_COPY,
       parent: { hasParent: false },
     });
-    expect(state).toEqual({ disabled: true, error: FETCH_ERROR_COPY, showRetry: false });
+    expect(state).toEqual({ disabled: false, error: FETCH_ERROR_COPY, showRetry: false });
   });
 });

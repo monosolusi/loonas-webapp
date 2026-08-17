@@ -6,6 +6,7 @@ import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subd
 import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
 import { useListSubdistrict } from "@/core/utilities/address/presentation/hooks/use-list-subdistrict";
 import { SelectFieldRetryButton } from "@/app/(user)/onboarding/_components/select-field-retry-button";
+import { SelectFieldAnnouncer } from "@/app/(user)/onboarding/_components/select-field-announcer";
 import { resolveSelectFieldState } from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
 
 type SubdistrictInputProps = {
@@ -16,7 +17,7 @@ type SubdistrictInputProps = {
   placeholder?: string;
 } & Omit<SelectInputProps, "value" | "onChange" | "options" | "label">;
 
-const FETCH_ERROR_COPY = "Gagal memuat daftar kelurahan";
+const FETCH_ERROR_COPY = "Gagal memuat daftar kelurahan.";
 const PARENT_HINT_COPY = "Pilih kecamatan terlebih dahulu";
 
 /** Gated on a chosen district — see `CityInput` for why the resolver owns the inert-reason copy. */
@@ -57,7 +58,7 @@ export function SubdistrictInput({
   });
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1">
       <SelectInput
         {...restProps}
         label={label}
@@ -69,6 +70,7 @@ export function SubdistrictInput({
         error={fieldState.error}
         description={fieldState.description}
       />
+      <SelectFieldAnnouncer message={fieldState.error ?? fieldState.description} />
       {fieldState.showRetry && <SelectFieldRetryButton onRetry={() => refresh()} />}
     </div>
   );

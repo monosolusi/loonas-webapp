@@ -44,22 +44,32 @@ export type SelectFieldState = {
  *
  * The bug this exists to make unrepresentable: all five onboarding address/occupation selects called
  * a SWR hook and none of them read `error`. On a failed fetch `loading` flips false and the option
- * list stays `[]`, so the field rendered ENABLED, EMPTY and SILENT — the user taps "Provinsi", gets
+ * list stays `[]`, so the field rendered enabled, empty and SILENT — the user taps "Provinsi", gets
  * an empty dropdown, nothing explains it, and the KYC address step cannot be completed except by
  * reloading. For city/district/subdistrict it was also indistinguishable from "parent not chosen".
+ * Note the fix is the missing MESSAGE, not a disable: an empty select stays enabled (see rung 3).
  *
- * Precedence: fetch-error > parent-unchosen hint > loading > the caller's standing required-error.
- * Telling someone "Pilih kota/kabupaten" when the list failed to load, or before they have chosen a
- * province, is actively misleading — the message describing why the control is inert RIGHT NOW
- * always outranks the caller's standing copy. This mirrors the house `localError ?? props.error`
- * pattern in `EmailInput` / `FileUploadInput`. Nothing is lost by suppressing a child's
- * required-error while its parent is unchosen, because the parent field is showing its own error in
- * exactly that state.
+ * Precedence, top wins: parent-unchosen hint > loading > fetch-error > the caller's standing
+ * required-error. Each rung is the only true statement available at that point:
  *
- * A fetch failure renders as `error` (red — something is genuinely broken); the parent hint and the
- * loading line render as `description` (grey — the user has done nothing wrong, this is guidance).
- * At most ONE of the two is ever returned: `SelectInput` renders `description` only when `error` is
- * falsy, so returning both would silently drop one.
+ * 1. If the parent is unchosen, nothing can load, so the parent hint is the only honest message —
+ *    and "Kabupaten/Kota wajib dipilih" is actively misleading before a province exists to pick one
+ *    from. Nothing is lost by suppressing the child's required-error there, because the parent field
+ *    is showing its own error in exactly that state.
+ * 2. **Loading outranks a fetch error.** SWR keeps the PREVIOUS `error` populated while it
+ *    revalidates, so during an in-flight retry a stale red failure would sit next to an enabled
+ *    retry button and read as "still broken" — inviting a double-tap. Suppressing `showRetry` while
+ *    loading is half of that same fix. No in-flight state is needed to detect this: `isLoading` is
+ *    `isValidating && data === undefined`, and `data` is undefined after a failure, so `loading`
+ *    already flips true on retry.
+ * 3. A fetch failure renders as `error` (red — something is genuinely broken) and, unlike the two
+ *    rungs above it, leaves the field **ENABLED**: it is empty, not disabled, and the error must stay
+ *    reachable in tab order with the retry immediately after it.
+ * 4. Otherwise the caller's standing validation copy, unchanged.
+ *
+ * The parent hint and the loading line render as `description` (grey — the user has done nothing
+ * wrong, this is guidance). At most ONE of `error`/`description` is ever returned: `SelectInput`
+ * renders `description` only when `error` is falsy, so returning both would silently drop one.
  *
  * A caller-supplied `disabled` is deliberately NOT an input here. Every reason this function
  * produces, it also explains; a caller that disables the field for its own reasons owns explaining
@@ -67,16 +77,17 @@ export type SelectFieldState = {
  * sweep the whole input space with no exemption.
  */
 export function resolveSelectFieldState(params: ResolveSelectFieldStateParams): SelectFieldState {
-  if (params.hasFetchError) {
-    return { disabled: true, error: params.fetchErrorCopy, showRetry: params.canRetry };
-  }
-
   if (params.parent.hasParent && !params.parent.parentChosen) {
     return { disabled: true, description: params.parent.parentHintCopy, showRetry: false };
   }
 
   if (params.loading) {
     return { disabled: true, description: LOADING_OPTIONS_COPY, showRetry: false };
+  }
+
+  if (params.hasFetchError) {
+    // Enabled on purpose — see rung 3 above. Do not "helpfully" disable this.
+    return { disabled: false, error: params.fetchErrorCopy, showRetry: params.canRetry };
   }
 
   return {

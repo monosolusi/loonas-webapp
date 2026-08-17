@@ -6,6 +6,7 @@ import { useListCity } from "@/core/utilities/address/presentation/hooks/use-lis
 import { CityEntity } from "@/core/utilities/address/domain/entities/city";
 import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
 import { SelectFieldRetryButton } from "@/app/(user)/onboarding/_components/select-field-retry-button";
+import { SelectFieldAnnouncer } from "@/app/(user)/onboarding/_components/select-field-announcer";
 import { resolveSelectFieldState } from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
 
 type CityInputProps = {
@@ -16,7 +17,7 @@ type CityInputProps = {
   placeholder?: string;
 } & Omit<SelectInputProps, "value" | "onChange" | "options" | "label">;
 
-const FETCH_ERROR_COPY = "Gagal memuat daftar kabupaten/kota";
+const FETCH_ERROR_COPY = "Gagal memuat daftar kabupaten/kota.";
 const PARENT_HINT_COPY = "Pilih provinsi terlebih dahulu";
 
 /**
@@ -61,7 +62,7 @@ export function CityInput({
   });
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1">
       <SelectInput
         {...restProps}
         label={label}
@@ -73,6 +74,7 @@ export function CityInput({
         error={fieldState.error}
         description={fieldState.description}
       />
+      <SelectFieldAnnouncer message={fieldState.error ?? fieldState.description} />
       {fieldState.showRetry && <SelectFieldRetryButton onRetry={() => refresh()} />}
     </div>
   );
