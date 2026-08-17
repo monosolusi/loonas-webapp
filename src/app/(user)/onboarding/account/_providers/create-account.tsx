@@ -32,6 +32,8 @@ type CreateAccountContextProps = {
   changeNationality?: (next: Nationality) => void;
   /** Set by `changeNationality` when a genuine switch just cleared a filled identity number. */
   identityNumberCleared?: boolean;
+  /** Ends the cleared notice once the user edits the field it refers to. */
+  dismissIdentityNumberCleared?: () => void;
   /** Steps the user has already tried to leave or submit from. */
   attemptedSteps?: Step[];
   markStepAttempted?: (step: Step) => void;
@@ -87,10 +89,14 @@ export function CreateAccountProvider(props: CreateAccountProviderProps) {
     setPersonalData((prev) => ({ ...prev, ...data }));
   };
 
-  // Set only by `changeNationality`, and never auto-dismissed here — `identity-number-input.tsx`
-  // derives its own visibility from this flag plus the current field value, so there is no
-  // separate dismiss path to keep in sync.
+  // Set only by `changeNationality`. This is a LATCH, not a derived value, so it needs an explicit
+  // end: `identity-number-input.tsx` also guards on `value === ""`, but that guard alone is
+  // one-way — after the user refills the field and then deletes it back to empty, the latch would
+  // still be true and the notice would falsely reappear claiming a citizenship change that
+  // happened several edits ago. The field's own edit path dismisses it instead.
   const [identityNumberCleared, setIdentityNumberCleared] = React.useState(false);
+
+  const dismissIdentityNumberCleared = () => setIdentityNumberCleared(false);
 
   // Deliberately a PLAIN function, not `useCallback`. `resolveNationalityChange` answers two
   // questions at once — the patch to apply, and whether a filled identity number was destroyed —
@@ -127,6 +133,7 @@ export function CreateAccountProvider(props: CreateAccountProviderProps) {
         updateBusinessData,
         changeNationality,
         identityNumberCleared,
+        dismissIdentityNumberCleared,
         setCurrentStep,
         nextStep,
         prevStep,

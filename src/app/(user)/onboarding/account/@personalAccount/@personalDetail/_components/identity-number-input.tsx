@@ -15,7 +15,8 @@ import {
 } from "@/app/(user)/onboarding/account/_utils/nationality-change";
 
 export function IdentityNumberInput() {
-  const { data, update, identityNumberCleared, showFieldErrors, issueFor } = usePersonalAccountData();
+  const { data, update, identityNumberCleared, dismissIdentityNumberCleared, showFieldErrors, issueFor } =
+    usePersonalAccountData();
   const [isFocused, setIsFocused] = useState(false);
   const [isTouched, setIsTouched] = useState(false);
 
@@ -26,9 +27,11 @@ export function IdentityNumberInput() {
   const placeholder = isWNI ? "Masukan 16 digit NIK Anda" : "Masukan nomor paspor Anda";
   const inputMode = isWNI ? "numeric" : "text";
 
-  // Visibility is DERIVED, not dismissed: it ends the instant the user types anything, so there is
-  // no separate dismiss callback to forget. `identityNumberCleared` only turns true on a genuine
-  // nationality switch (see `resolveNationalityChange`) — never on the first selection (QA F9).
+  // `identityNumberCleared` only turns true on a genuine nationality switch (see
+  // `resolveNationalityChange`) — never on the first selection (QA F9). The `value === ""` guard
+  // hides the notice as soon as the field is refilled; `handleChange` below then ends the latch
+  // itself, so deleting back to empty afterwards does not resurrect a notice about a citizenship
+  // change the user made several edits ago.
   const clearedNotice =
     identityNumberCleared && value === "" ? identityNumberClearedCopy(data.nationality) : undefined;
 
@@ -44,6 +47,10 @@ export function IdentityNumberInput() {
   const description = isFocused && isWNI ? `${value.length}/${IDENTITY_FIELD_LIMITS.idNumber} digit` : undefined;
 
   const handleChange = (raw: string) => {
+    // The user has answered the notice by editing the field, so retire it here rather than in an
+    // effect keyed on `data.nationality` — that shape is what the deleted `isTouched` reset got
+    // wrong, firing on a first selection that changed nothing about this field.
+    if (identityNumberCleared) dismissIdentityNumberCleared?.();
     update?.({ identityNumber: sanitizeIdentityNumber(raw, data.nationality) });
   };
 

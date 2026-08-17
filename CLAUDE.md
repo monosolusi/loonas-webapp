@@ -372,8 +372,10 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   owner (`CreateAccountProvider.changeNationality`) — a shallow-merge `update()` at a call site is how the invariant
   ends up re-implemented and drifting (LNS-570). Three refinements the F9 fix encodes: (1) preserve even a
   *partially typed*, currently-invalid value — only the user may discard their own input; (2) announce the clear
-  only when something was actually lost, and derive the notice's visibility (`cleared && value === ""`) instead of
-  adding a dismiss callback some future caller will forget; (3) do not "helpfully" reset a field's `isTouched` on
+  only when something was actually lost, and remember that a "was cleared" flag is a **latch, not a derived
+  value** — guarding the notice on `cleared && value === ""` reads as self-dismissing but is one-way, so refilling
+  the field and then emptying it again resurrects a notice about a change made several edits ago; pair the guard
+  with an explicit dismiss on the field's own edit path; (3) do not "helpfully" reset a field's `isTouched` on
   the governing change — after the fix that erases an error the user had already earned, which is the same defect
   wearing a different hat. Do not delete the switch branch just because the second option is currently
   `disabled` in the UI: `PASSPORT_PATTERN` (`/^[A-Za-z0-9]{1,16}$/`) **accepts a 16-digit NIK**, so enabling WNA
