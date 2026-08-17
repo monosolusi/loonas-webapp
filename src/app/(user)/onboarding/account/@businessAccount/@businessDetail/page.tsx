@@ -4,7 +4,7 @@ import { TextInput } from "@/core/presentations/components/text-inputs/text-inpu
 import React from "react";
 import PhoneNumberInput from "@/core/presentations/components/text-inputs/phone-number-input";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
-import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
+import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_providers/business-account-provider";
 import { EmailInput } from "@/core/presentations/components/text-inputs/email-input";
 
 export default function BusinessDetailPage() {

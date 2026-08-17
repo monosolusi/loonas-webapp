@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
+import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_providers/business-account-provider";
 
 type BusinessAccountFormWrapperProps = {
   children: React.ReactNode;
@@ -13,6 +13,12 @@ export function BusinessAccountFormWrapper(props: BusinessAccountFormWrapperProp
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
+
+    // Re-entry guard: a disabled submit button does not stop Enter-key submission from a text
+    // input, so a second submit can still fire while the first is in flight. Without this, a fast
+    // double-Enter could send two create-account mutations before `submitStatus` re-renders to
+    // "submitting" and disables the button.
+    if (isCreating) return;
 
     // `submit()` owns the incomplete case itself — it reveals the offending steps' errors and
     // navigates to the first one. Nothing here may throw: React does not await onSubmit, so a

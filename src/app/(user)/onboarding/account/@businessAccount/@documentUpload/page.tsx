@@ -3,7 +3,7 @@
 import React from "react";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { FileUploadInput } from "@/core/presentations/components/file-upload-input";
-import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
+import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_providers/business-account-provider";
 
 export default function DocumentUploadPage() {
   const { type, currentStep } = useCreateAccount();

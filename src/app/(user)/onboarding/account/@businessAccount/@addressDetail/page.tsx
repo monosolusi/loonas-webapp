@@ -6,7 +6,7 @@ import { CityInput } from "@/app/(user)/onboarding/_components/city-input";
 import { DistrictInput } from "@/app/(user)/onboarding/_components/district-input";
 import { SubdistrictInput } from "@/app/(user)/onboarding/_components/subdistrict-input";
 import { TextAreaInput } from "@/core/presentations/components/text-area-input";
-import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
+import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_providers/business-account-provider";
 
 export default function AddressDetailPage() {
   const { type, currentStep } = useCreateAccount();

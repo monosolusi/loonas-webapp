@@ -2,7 +2,7 @@
 
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
-import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
+import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_providers/business-account-provider";
 import { resolveCreateAccountButtonState } from "@/app/(user)/onboarding/account/_utils/create-account-button-state";
 
 const LABEL = "Buat Akun Bisnis";

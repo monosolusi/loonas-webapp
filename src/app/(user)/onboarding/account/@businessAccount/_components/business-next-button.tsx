@@ -2,7 +2,7 @@
 
 import { NextButton } from "@/app/(user)/onboarding/account/_components/next-button";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
-import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
+import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_providers/business-account-provider";
 
 /**
  * "Selanjutnya" for the business flow — the twin of `PersonalNextButton`. Separate components
