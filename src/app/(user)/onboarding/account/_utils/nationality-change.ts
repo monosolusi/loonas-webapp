@@ -16,9 +16,10 @@ import {
  * Why the clear is still load-bearing for a REAL switch (WNI<->WNA): `PASSPORT_PATTERN` is
  * `/^[A-Za-z0-9]{1,16}$/`, which a 16-digit NIK satisfies. Without clearing on a genuine switch, a
  * NIK typed under WNI would silently pass `identityNumberPattern` validation as a "passport
- * number" under WNA — a wrong identity value shipped as valid. WNA is `disabled: true` in
- * `NATIONALITY_OPTIONS` today, so this branch is unreachable through the UI, but the resolver
- * still implements and tests it so enabling WNA later does not reopen this trap.
+ * number" under WNA — a wrong identity value shipped as valid. WNA carries
+ * `availability: { selectable: false }` in `nationality-options.ts` today, so this branch is
+ * unreachable through the UI, but the resolver still implements and tests it so making WNA
+ * selectable later does not reopen this trap.
  *
  * Branch 1 (same value re-selected) is defensive-only: a browser does not fire `change` on an
  * already-checked radio input, so this case cannot currently be reached through the UI either.
