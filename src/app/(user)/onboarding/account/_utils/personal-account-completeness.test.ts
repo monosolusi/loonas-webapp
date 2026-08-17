@@ -6,6 +6,7 @@ import { ProvinceEntity } from "@/core/utilities/address/domain/entities/provinc
 import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
 import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
 import { PersonalAccountData } from "@/app/(user)/onboarding/account/_utils/account-form-data";
+import { NIK_PATTERN, PASSPORT_PATTERN } from "@/features/account/domain/constants/identity-field-limits";
 import {
   COPY_ADDRESS_REQUIRED,
   COPY_IDENTITY_FILE_REQUIRED,
@@ -13,7 +14,9 @@ import {
   COPY_NIK_INVALID,
   COPY_PASSPORT_INVALID,
   PersonalFieldKey,
+  identityNumberPattern,
   resolvePersonalAccountCompleteness,
+  sanitizeIdentityNumber,
 } from "@/app/(user)/onboarding/account/_utils/personal-account-completeness";
 import {
   DOB_COPY_INCOMPLETE,
@@ -192,5 +195,41 @@ describe("resolvePersonalAccountCompleteness — whitespace", () => {
     const issue = resolvePersonalAccountCompleteness(blank, NOW).issues[0];
     expect(issue.field).toBe("address");
     expect(issue.message).toBe(COPY_ADDRESS_REQUIRED);
+  });
+});
+
+describe("sanitizeIdentityNumber", () => {
+  it("strips non-digits for WNI", () => {
+    expect(sanitizeIdentityNumber("32-01 23a4567890123", "WNI")).toBe("3201234567890123");
+  });
+
+  it("caps at 16 characters for WNI", () => {
+    expect(sanitizeIdentityNumber("123456789012345678", "WNI")).toBe("1234567890123456");
+  });
+
+  it("keeps alphanumerics and strips punctuation/spaces for WNA", () => {
+    expect(sanitizeIdentityNumber("X-1234 5678!", "WNA")).toBe("X12345678");
+  });
+
+  it("caps at 16 characters for WNA", () => {
+    expect(sanitizeIdentityNumber("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "WNA")).toBe("ABCDEFGHIJKLMNOP");
+  });
+
+  it("treats an undefined nationality as WNI", () => {
+    expect(sanitizeIdentityNumber("32-0123", undefined)).toBe("320123");
+  });
+});
+
+describe("identityNumberPattern", () => {
+  it("returns the NIK pattern for an undefined nationality", () => {
+    expect(identityNumberPattern(undefined)).toBe(NIK_PATTERN);
+  });
+
+  it("returns the NIK pattern for WNI", () => {
+    expect(identityNumberPattern("WNI")).toBe(NIK_PATTERN);
+  });
+
+  it("returns the passport pattern for WNA", () => {
+    expect(identityNumberPattern("WNA")).toBe(PASSPORT_PATTERN);
   });
 });

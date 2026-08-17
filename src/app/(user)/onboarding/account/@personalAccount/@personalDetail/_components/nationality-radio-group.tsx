@@ -3,8 +3,7 @@
 import { useId } from "react";
 import { NationalityRadioItem } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/nationality-radio-item";
 import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
-
-type Nationality = "WNI" | "WNA";
+import { Nationality } from "@/app/(user)/onboarding/account/_utils/personal-account-completeness";
 
 type NationalityOption = {
   value: Nationality;
