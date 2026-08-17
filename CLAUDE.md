@@ -305,9 +305,12 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   supports both modes, the page that owns the buffer must pass `value`. Related: that component's size check
   `return`s **before** `onChange`, so an over-cap pick silently keeps the previous file — keeping it is correct
   (a fat-finger should not destroy a valid selection), but only once `value` makes the retained file visible.
-- **When adding a validation `error` surface, check every input primitive the form actually uses**: `TextInput`
-  had `error`; `SelectInput`, `TextAreaInput`, `EmailInput` and `FileUploadInput` did not, and the five
-  address/occupation selects had no way to show one at all. Mirror `TextInput`'s contract (red border, `text-xs
+- **When adding a validation `error` surface, check every input primitive the form actually uses**: when this was first
+  audited only `TextInput` had `error` — `SelectInput`, `TextAreaInput`, `EmailInput` and `FileUploadInput` did not,
+  and the five `(user)/onboarding` address/occupation selects had no way to show one at all. Those gaps are now
+  closed (`SelectInput` carries `error`, `description`, and a `useId()`-based `aria-describedby` association; all five
+  selects are wired), so read that list as a record of what was found, not of the code today — re-check the primitive
+  you are about to touch. The rule itself stands for the next one: mirror `TextInput`'s contract (red border, `text-xs
   leading-4 font-normal text-red-500` message, `aria-invalid`, error takes precedence over `description`) and
   **destructure the new `error` out of the props-spread** (`cleanedInputProps`) or it lands on the DOM node as an
   unknown attribute. Where a primitive already owns a local error (`EmailInput`'s format check, `FileUploadInput`'s
@@ -659,6 +662,16 @@ SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockI
   hover (WCAG 1.4.1). The `h-11` interactive-height rule does not apply to inline links — WCAG 2.5.5 exempts links
   within a run of text. Generally: a color used at many call sites is not thereby AA-compliant — compute the ratio
   against `globals.css` before citing any color as established.
+- **Validation copy renders in Tailwind's default `text-red-500`, which fails AA — app-wide debt, do not fix it
+  locally**: `red-500` is `oklch(63.7% 0.237 25.331)` ≈ `#fb2c36`, **3.81:1** on white, under the 4.5:1 body-text
+  floor. It is the validation color in ~22 component files (`TextInput`, `SelectInput`, `nationality-radio-group.tsx`
+  and the form fields that follow them), so darkening it in one component makes that field inconsistent with every
+  other for no user gain. What makes it worth recording rather than shrugging at: the project already ships a
+  compliant ramp for exactly this use — `error-500` (`#B42318`) is **6.57:1** and `error-400` (`#D92D20`) is
+  **4.83:1**, already used at ~57 call sites — so the app reaches for a Tailwind default where its own token is both
+  available and passing. Same class as the `primary-300` and `text-warning-400` debt above, and as the app-wide
+  secondary/placeholder token `neutral-200` (`#BDBDBD`, **1.88:1**): each needs one deliberate sweep with its own
+  ticket, never a drive-by. All ratios here are measured against `globals.css`, not estimated.
 - **Nullable API fields where `null` = unclassified/unknown render distinctly — never as `0` or `Rp 0`**: when a row
   field is nullable and `null` means the system has NOT classified/measured it (not that it found zero), render `null`
   as an em-dash (`—`, `text-neutral-200`) or "Belum diklasifikasi" — NEVER `0`. Same for nullable money:
