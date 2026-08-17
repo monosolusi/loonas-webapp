@@ -2,7 +2,7 @@
 
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/personal-account-provider";
 import { resolveCreateAccountButtonState } from "@/app/(user)/onboarding/account/_utils/create-account-button-state";
 
 const LABEL = "Buat Akun";

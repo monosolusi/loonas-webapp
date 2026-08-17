@@ -13,6 +13,7 @@ import {
 } from "@/app/(user)/onboarding/account/@businessAccount/_components/business-account-form-wrapper";
 import { BusinessSubmitErrorBanner } from "@/app/(user)/onboarding/account/@businessAccount/_components/submit-error-banner";
 import { BusinessSubmitIncompleteBanner } from "@/app/(user)/onboarding/account/@businessAccount/_components/submit-incomplete-banner";
+import { BusinessAccountProvider } from "@/app/(user)/onboarding/account/@businessAccount/_providers/business-account-provider";
 
 type BusinessAccountCreationLayoutProps = {
   businessDetail: React.ReactNode;
@@ -25,33 +26,35 @@ export default function BusinessAccountCreationLayout(props: BusinessAccountCrea
 
   if (type !== "business") return null; // Do not render this page if the user has not selected a business account.
   return (
-    <BusinessAccountFormWrapper>
-      <div className="flex flex-col items-center justify-center gap-10">
-        <StepIndicatorWithTime currentStep={3} totalSteps={4} expectedTime="~5 menit" />
-        <StepHeader title="Informasi Bisnis" description="Lengkapi data perusahaan untuk verifikasi bisnis Anda." />
-        <div className="flex w-full flex-col items-stretch">
-          <StepIndicatorImpl />
-          <div>
-            {props.businessDetail}
-            {props.addressDetail}
-            {props.documentUpload}
-          </div>
-          <BusinessSubmitErrorBanner />
-          <BusinessSubmitIncompleteBanner />
-          <div className="flex flex-row gap-3 border-t border-neutral-100 pt-4">
-            <div className="flex-1">
-              <PreviousButton />
+    <BusinessAccountProvider>
+      <BusinessAccountFormWrapper>
+        <div className="flex flex-col items-center justify-center gap-10">
+          <StepIndicatorWithTime currentStep={3} totalSteps={4} expectedTime="~5 menit" />
+          <StepHeader title="Informasi Bisnis" description="Lengkapi data perusahaan untuk verifikasi bisnis Anda." />
+          <div className="flex w-full flex-col items-stretch">
+            <StepIndicatorImpl />
+            <div>
+              {props.businessDetail}
+              {props.addressDetail}
+              {props.documentUpload}
             </div>
-            <div className="flex-1">
-              <BusinessNextButton />
-              <SubmitButton />
+            <BusinessSubmitErrorBanner />
+            <BusinessSubmitIncompleteBanner />
+            <div className="flex flex-row gap-3 border-t border-neutral-100 pt-4">
+              <div className="flex-1">
+                <PreviousButton />
+              </div>
+              <div className="flex-1">
+                <BusinessNextButton />
+                <SubmitButton />
+              </div>
             </div>
+            <p className="mt-2 text-center text-xs text-neutral-200">
+              Unggah dokumen mungkin membutuhkan beberapa saat pada jaringan lambat.
+            </p>
           </div>
-          <p className="mt-2 text-center text-xs text-neutral-200">
-            Unggah dokumen mungkin membutuhkan beberapa saat pada jaringan lambat.
-          </p>
         </div>
-      </div>
-    </BusinessAccountFormWrapper>
+      </BusinessAccountFormWrapper>
+    </BusinessAccountProvider>
   );
 }

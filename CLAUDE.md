@@ -161,6 +161,21 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   need null checks.
 - **Provider data locality**: Provider only hosts data shared across multiple components. If data is used by only one
   component, that component fetches it locally.
+- **A plain hook is not shared state — `use{X}Data()` called by N components is N independent `useState`s**: this
+  reads as shared state at every call site and is not, so the failure is silent and total. On `/onboarding/account`,
+  `usePersonalAccountData` was a plain hook (no `createContext`) called by 14 components:
+  `personal-account-form-wrapper` called `submit()` and wrote `submitError` / `submitStatus` / `submitAttempted` /
+  `createdAccountId` to **its own** instance, while `submit-error-banner`, `submit-incomplete-banner` and
+  `submit-button` read three *other* instances that were forever `null` / `[]` / `"idle"`. The entire F8 remediation
+  (error banner, named missing-field list, "Membuat akun..." in-flight label) was therefore dead on arrival while
+  looking correct in review — and `createdAccountId` being instance-local meant a second submit re-ran the create and
+  could open a **duplicate account**. The tell is a component wired to state that only a *different* component ever
+  writes; `grep -rln` the hook and if more than one consumer both reads and writes, it must be a provider. Two
+  corollaries: (1) the same defect was mirrored verbatim in the business twin — when a flow has personal/business
+  siblings, fix and grep both; (2) a `disabled` submit button does **not** block Enter-key submission from a text
+  input, so promoting the state is necessary but not sufficient — the handler still needs an `if (isCreating) return;`
+  re-entry guard. None of this is reachable by the vitest suite (`.tsx`, node env), so it is a review-and-smoke
+  concern, not a test one.
 - **Preserve invariants when narrowing a mutation-clear callback**: when a cart-mutation callback that cleared
   multiple error maps is narrowed to one concern (e.g. `clearStockErrorFor` → `clearPriceMismatch` after removing the
   stock-error map), the renamed callback must still fire on every `addItem` / `updateQty` / `removeItem` path that
@@ -346,6 +361,28 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   wearing a different hat, and a clear with no message is only marginally better. Clearing feedback must NOT be
   gated behind a touched/blur flag: selecting an option usually leaves focus on the control, so a blur-gated
   message never appears in the common path.
+- **A dependent-field reset must distinguish a FIRST selection from a genuine switch**: when choosing option A
+  invalidates field B, the reset condition is "B's governing value *changed* from one chosen value to another" — not
+  "A was clicked". `nationality-radio-group.tsx` cleared `identityNumber` on every checked change, so a user who
+  typed their NIK *before* picking "WNI" (the first, not-yet-made selection) had it silently wiped and was then
+  shown "NIK harus terdiri dari 16 digit" against the field the app itself had just emptied — QA F9. On the
+  `undefined → "WNI"` transition nothing has become invalid, so there is nothing to reset. Resolve the transition in
+  one pure `_utils/` module returning both the buffer patch and whether anything was actually discarded
+  (`nationality-change.ts::resolveNationalityChange`), and put the *only* writer of the coupled pair in the buffer
+  owner (`CreateAccountProvider.changeNationality`) — a shallow-merge `update()` at a call site is how the invariant
+  ends up re-implemented and drifting (LNS-570). Three refinements the F9 fix encodes: (1) preserve even a
+  *partially typed*, currently-invalid value — only the user may discard their own input; (2) announce the clear
+  only when something was actually lost, and remember that a "was cleared" flag is a **latch, not a derived
+  value** — guarding the notice on `cleared && value === ""` reads as self-dismissing but is one-way, so refilling
+  the field and then emptying it again resurrects a notice about a change made several edits ago; pair the guard
+  with an explicit dismiss on the field's own edit path; (3) do not "helpfully" reset a field's `isTouched` on
+  the governing change — after the fix that erases an error the user had already earned, which is the same defect
+  wearing a different hat. Do not delete the switch branch just because the second option is currently
+  `disabled` in the UI: `PASSPORT_PATTERN` (`/^[A-Za-z0-9]{1,16}$/`) **accepts a 16-digit NIK**, so enabling WNA
+  later without the clear would submit a NIK as a passport number and pass validation. Known unfixed sibling of
+  this class: `@addressDetail/page.tsx` writes `update?.({ province })` alone, so changing province leaves
+  `city`/`district`/`subDistrict` from the old one — and since the resolver only checks `!data.city`, a stale
+  entity is truthy and submits a city that is not in the submitted province.
 - **Never pass `undefined` as a controlled input's `value`**: React downgrades the element to UNCONTROLLED, and for
   `<select>` the HTML select-reset algorithm then auto-selects the first non-disabled `<option>` — silently
   committing a phantom value while a placeholder overlay makes the field look empty. `SelectInput`'s three

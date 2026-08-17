@@ -2,7 +2,7 @@
 
 import { NextButton } from "@/app/(user)/onboarding/account/_components/next-button";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/personal-account-provider";
 
 /**
  * "Selanjutnya" for the personal flow. It validates the step the user is standing on before

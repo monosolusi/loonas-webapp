@@ -14,7 +14,16 @@ import {
 } from "@/app/(user)/onboarding/account/_utils/business-account-completeness";
 import { SubmitStatus } from "@/app/(user)/onboarding/_utils/submit-status";
 
-export function useBusinessAccountData() {
+/**
+ * Provider-internal — owns all business-account submit state (submit status, error, incomplete
+ * issues, created-account id). Must only be called from `BusinessAccountProvider`, which mounts a
+ * single instance and shares it via context. Calling this directly from more than one component
+ * gives each call site its own `useState`, so submit-status writes made by one component (e.g. the
+ * form wrapper) are invisible to another (e.g. the error banner) — the exact bug this provider
+ * exists to prevent. Consumers should import `useBusinessAccountData` from
+ * `@/app/(user)/onboarding/account/@businessAccount/_providers/business-account-provider` instead.
+ */
+export function useBusinessAccountState() {
   const { accountData, updateBusinessData, currentStep, setCurrentStep, markStepAttempted, showFieldErrors } =
     useCreateAccount();
   const { setActive } = useOrganizationList();

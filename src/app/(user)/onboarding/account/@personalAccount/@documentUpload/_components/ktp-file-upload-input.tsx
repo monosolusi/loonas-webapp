@@ -2,7 +2,7 @@
 
 import React from "react";
 import { FileUploadInput } from "@/core/presentations/components/file-upload-input";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/personal-account-provider";
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 

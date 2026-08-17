@@ -1,6 +1,10 @@
 import { DateTime } from "luxon";
 import { isNonEmptyString, isValidFile } from "@/core/utilities/validation-patterns";
-import { NIK_PATTERN, PASSPORT_PATTERN } from "@/features/account/domain/constants/identity-field-limits";
+import {
+  IDENTITY_FIELD_LIMITS,
+  NIK_PATTERN,
+  PASSPORT_PATTERN,
+} from "@/features/account/domain/constants/identity-field-limits";
 import {
   AccountCompleteness,
   FieldIssue,
@@ -71,9 +75,37 @@ export const COPY_SUB_DISTRICT_REQUIRED = "Pilih kelurahan";
 export const COPY_ADDRESS_REQUIRED = "Alamat tidak boleh kosong";
 export const COPY_IDENTITY_FILE_REQUIRED = "Unggah dokumen identitas / KTP (maksimal 5MB)";
 
+/**
+ * The nationality field's own value type. `undefined` (never chosen yet) is treated as WNI by
+ * every predicate below — there is no "unknown" third state, only "not WNA yet".
+ */
+export type Nationality = "WNI" | "WNA";
+
+/** Single owner of "is this nationality WNA?" — `undefined` reads as WNI, never as WNA. */
+export function isWNA(nationality: string | undefined): boolean {
+  return nationality === "WNA";
+}
+
+/** The identity-number pattern this nationality's field is validated against. */
+export function identityNumberPattern(nationality: string | undefined): RegExp {
+  return isWNA(nationality) ? PASSPORT_PATTERN : NIK_PATTERN;
+}
+
+/**
+ * Sanitizes a raw identity-number keystroke into the characters the current nationality allows,
+ * capped at `IDENTITY_FIELD_LIMITS.idNumber`. Moved verbatim from `identity-number-input.tsx`'s
+ * `handleChange` — that was the only place this logic lived, which made it unreachable by the
+ * node-env vitest suite (`.tsx` files are outside its include glob). Behaviour is unchanged: WNI
+ * strips everything but digits, WNA strips everything but alphanumerics.
+ */
+export function sanitizeIdentityNumber(raw: string, nationality: string | undefined): string {
+  const cleaned = isWNA(nationality) ? raw.replace(/[^A-Za-z0-9]/g, "") : raw.replace(/\D/g, "");
+  return cleaned.slice(0, IDENTITY_FIELD_LIMITS.idNumber);
+}
+
 /** The identity field is labelled by nationality, exactly as the input itself is. */
 export function identityNumberLabel(nationality: string | undefined): string {
-  return nationality === "WNA" ? "Nomor Paspor" : "Nomor Induk Kependudukan (NIK)";
+  return isWNA(nationality) ? "Nomor Paspor" : "Nomor Induk Kependudukan (NIK)";
 }
 
 export function resolvePersonalAccountCompleteness(
@@ -86,8 +118,6 @@ export function resolvePersonalAccountCompleteness(
     issues.push({ field, step, label: label ?? PERSONAL_FIELD_LABELS[field], message });
 
   // Step 1 — Data Diri, in the order the fields appear on screen.
-  const isWNA = data.nationality === "WNA";
-
   if (!isNonEmptyString(data.nationality)) {
     add("nationality", "personal.personal", COPY_NATIONALITY_REQUIRED);
   }
@@ -96,12 +126,11 @@ export function resolvePersonalAccountCompleteness(
     add("fullName", "personal.personal", COPY_FULL_NAME_REQUIRED);
   }
 
-  const identityPattern = isWNA ? PASSPORT_PATTERN : NIK_PATTERN;
-  if (!identityPattern.test(data.identityNumber ?? "")) {
+  if (!identityNumberPattern(data.nationality).test(data.identityNumber ?? "")) {
     add(
       "identityNumber",
       "personal.personal",
-      isWNA ? COPY_PASSPORT_INVALID : COPY_NIK_INVALID,
+      isWNA(data.nationality) ? COPY_PASSPORT_INVALID : COPY_NIK_INVALID,
       identityNumberLabel(data.nationality),
     );
   }

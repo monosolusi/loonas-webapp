@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
+import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_providers/business-account-provider";
 import { ErrorCard } from "@/core/presentations/components/error-card";
 
 export function BusinessSubmitErrorBanner() {
