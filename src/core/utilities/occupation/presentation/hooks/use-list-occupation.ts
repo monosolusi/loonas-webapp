@@ -16,11 +16,14 @@ async function ListOccupationFetcher(): Promise<OccupationEntity[]> {
 }
 
 export function useListOccupation() {
-  const { data, error, isLoading } = useSWR("list-occupation", ListOccupationFetcher);
+  const { data, error, isLoading, mutate } = useSWR("list-occupation", ListOccupationFetcher);
 
   return {
     occupations: data,
     error: error,
     loading: isLoading,
+    // Mirrors the four address hooks, so every onboarding select can offer the same retry after a
+    // failed fetch instead of stranding the user on an empty dropdown.
+    refresh: mutate,
   };
 }

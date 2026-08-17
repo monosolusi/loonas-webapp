@@ -4,6 +4,8 @@ import { useListOccupation } from "@/core/utilities/occupation/presentation/hook
 import { useMemo } from "react";
 import { SelectInput } from "@/core/presentations/components/select-input";
 import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
+import { SelectFieldRetryButton } from "@/app/(user)/onboarding/_components/select-field-retry-button";
+import { resolveSelectFieldState } from "@/app/(user)/onboarding/_utils/resolve-select-field-state";
 
 type OccupationInputProps = {
   value?: OccupationEntity;
@@ -11,8 +13,14 @@ type OccupationInputProps = {
   error?: string;
 };
 
+const FETCH_ERROR_COPY = "Gagal memuat daftar pekerjaan";
+
+/**
+ * Tops its own chain like `ProvinceInput` — no parent field gates it, so only its own fetch can make
+ * it inert, and `resolveSelectFieldState` owns saying so.
+ */
 export function OccupationInput(props: OccupationInputProps) {
-  const { occupations, loading } = useListOccupation();
+  const { occupations, error: fetchError, loading, refresh } = useListOccupation();
 
   const options = useMemo(() => {
     if (!occupations) return [];
@@ -27,16 +35,29 @@ export function OccupationInput(props: OccupationInputProps) {
     props.onChange?.(selectedOccupation);
   };
 
+  const fieldState = resolveSelectFieldState({
+    hasFetchError: !!fetchError,
+    loading,
+    canRetry: true,
+    fetchErrorCopy: FETCH_ERROR_COPY,
+    parent: { hasParent: false },
+    callerError: props.error,
+  });
+
   return (
-    <SelectInput
-      label="Pekerjaan"
-      required
-      options={options}
-      placeholder="Pilih pekerjaan Anda"
-      value={props.value?.id ?? ""}
-      onChange={(value) => onChange(value)}
-      error={props.error}
-      disabled={loading}
-    />
+    <div className="flex flex-col gap-1.5">
+      <SelectInput
+        label="Pekerjaan"
+        required
+        options={options}
+        placeholder="Pilih pekerjaan Anda"
+        value={props.value?.id ?? ""}
+        onChange={(value) => onChange(value)}
+        disabled={fieldState.disabled}
+        error={fieldState.error}
+        description={fieldState.description}
+      />
+      {fieldState.showRetry && <SelectFieldRetryButton onRetry={() => refresh()} />}
+    </div>
   );
 }

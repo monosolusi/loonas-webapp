@@ -63,9 +63,13 @@ export function SelectInput(props: SelectInputProps) {
   const hasError = !!props.error;
 
   return (
-    <div className={clsx("flex flex-col gap-2 transition-all", props.disabled && "opacity-50")}>
+    // `opacity-50` deliberately does NOT live here. A wrapper-level fade also dims the error and
+    // description lines, and a disabled select is exactly when those carry the reason it is
+    // disabled: `text-neutral-200` (#BDBDBD) at 50% over white is ~1.35:1, i.e. invisible. The fade
+    // is applied to the label and the field row only.
+    <div className="flex flex-col gap-2 transition-all">
       {!props.noLabel && (
-        <span className="flex items-center gap-x-1.5 text-base">
+        <span className={clsx("flex items-center gap-x-1.5 text-base transition-all", props.disabled && "opacity-50")}>
           {props.label}
           {props.required && <span className="text-red-500"> *</span>}
           {props.tooltip && <InfoTooltip text={props.tooltip} />}
@@ -76,7 +80,11 @@ export function SelectInput(props: SelectInputProps) {
           "relative flex h-11 flex-row items-center gap-3 rounded-lg border border-solid p-3 transition-all",
           hasError ? "border-red-500" : "border-neutral-100",
           props.disabled
-            ? "cursor-not-allowed bg-neutral-50"
+            ? // `bg-neutral-50` was a no-op — it is #FFFFFF in this project, identical to the page,
+              // which left `opacity-50` doing 100% of the disabled signalling. `bg-neutral-100/25`
+              // (≈#F5F6F6) is the same faint fill the unselectable nationality card uses, so both
+              // disabled treatments read as one vocabulary.
+              "cursor-not-allowed bg-neutral-100/25 opacity-50"
             : hasError
               ? "focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-500/20"
               : "focus-within:ring-primary-300/20 focus-within:border-primary-300 focus-within:ring-2",
@@ -114,7 +122,20 @@ export function SelectInput(props: SelectInputProps) {
       </div>
       {hasError && <span className="text-xs leading-4 font-normal text-red-500">{props.error}</span>}
       {!hasError && props.description && (
-        <span className="text-xs leading-4 font-normal text-neutral-200">{props.description}</span>
+        // Darkened while disabled, because that is when the description is doing the work of
+        // explaining WHY: `text-neutral-300` is 10.9:1 on the disabled fill, where `text-neutral-200`
+        // is 1.88:1 on white. Left at `text-neutral-200` when enabled so no other consumer shifts.
+        // NOTE: `text-neutral-200` as the app-wide secondary/placeholder token genuinely fails AA,
+        // but it is established across the whole app — changing it here only would make these fields
+        // inconsistent with everything else for no user gain. That is its own app-wide ticket.
+        <span
+          className={clsx(
+            "text-xs leading-4 font-normal transition-all",
+            props.disabled ? "text-neutral-300" : "text-neutral-200",
+          )}
+        >
+          {props.description}
+        </span>
       )}
     </div>
   );
