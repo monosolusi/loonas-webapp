@@ -92,11 +92,13 @@ export function CreateAccountProvider(props: CreateAccountProviderProps) {
   // separate dismiss path to keep in sync.
   const [identityNumberCleared, setIdentityNumberCleared] = React.useState(false);
 
-  // Deliberately a PLAIN function, not `useCallback`: it closes over `personalData` (so it cannot
-  // use a pure functional `setPersonalData` updater — the `next` argument alone doesn't tell it
-  // the array of missing/expected steps), and it must also set the `identityNumberCleared`
-  // sibling flag, which cannot happen inside a `setState` updater's body without risking a double
-  // fire under StrictMode's double-invoke. `markStepAttempted` above gets away with `useCallback`
+  // Deliberately a PLAIN function, not `useCallback`. `resolveNationalityChange` answers two
+  // questions at once — the patch to apply, and whether a filled identity number was destroyed —
+  // and the second answer has to drive a SEPARATE setter. That rules out computing it inside a
+  // functional `setPersonalData` updater, since a side effect in an updater body fires twice under
+  // StrictMode's double-invoke. So it reads `personalData` from the closure instead, which is safe
+  // for a click handler but means it must NOT be memoized without `personalData` in its deps or it
+  // would resolve against a stale buffer. `markStepAttempted` above gets away with `useCallback`
   // only because it uses a functional updater and touches nothing else.
   const changeNationality = (next: Nationality) => {
     const { patch, didClearIdentityNumber } = resolveNationalityChange(personalData, next);

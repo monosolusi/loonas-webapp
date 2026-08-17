@@ -4,6 +4,7 @@
 
 - [Model classes implement AbstractModel](feedback_model_implements_abstract_model.md) — every `data/models/` class needs `implements AbstractModel`, incl. *ResultModel envelopes + nested toValue() value objects (LNS-369 M1+m1)
 - [Shared-worktree git add index race](feedback_shared_worktree_git_add_index_race.md) — `git add <files>` + `git commit` can still sweep in a concurrent agent's staged changes; diff `--cached` before every commit
+- [Verify investigate-premise before acting](feedback_verify_investigate_premise_before_acting.md) — a brief's claim about a specific file's imports can be wrong; grep before fixing/rewiring
 - [Use-case params are a class](feedback_usecase_params_class.md) — use-case input is always a named params CLASS, never a bare type alias, even when the plan writes `type Input` (LNS-369 m2)
 - [SWR conditional fetching via null key](feedback_swr_conditional_enabled.md) — add `enabled?: boolean` to hook params; pass `null` SWR key when disabled
 - [Discriminated union narrowing in components](feedback_discriminated_union_narrowing.md) — use sequential boolean flags, not compound checks, to narrow InitialState|LoadedState|ErrorState
@@ -43,6 +44,7 @@
 - [No timeout-race on mutating calls](feedback_no_timeout_race_on_mutating_calls.md) — racing signUp.create()/setActive() against a client deadline leaves an orphaned promise that can still succeed → duplicate-account trap; use display-only elapsed timers instead. Plus ClerkAPIResponseError vs ClerkRuntimeError structural shapes.
 - [SelectInput uncontrolled value={undefined}](feedback_select_input_uncontrolled_value.md) — undefined value on a `<select>` is uncontrolled → browser auto-selects first option, phantom value hidden by placeholder overlay; SelectInput now coerces to "" but check any new controlled-select field
 - [fieldset/legend has no Tailwind preflight reset](feedback_fieldset_legend_no_preflight_reset.md) — this project's v4 preflight doesn't touch fieldset/legend; reset manually (m-0 min-w-0 border-0 p-0) and don't nest legend as a flex-row child
+- [Plain hook + multi-consumer needs a provider](feedback_plain_hook_shared_state_needs_provider.md) — a non-context hook called from several sibling components gets independent `useState` per call site; wrap in `{Noun}Provider` + rename hook to `use{Noun}State()`, repoint every consumer, add `isCreating` re-entry guard on submit (onboarding submit-state fix, 2026-08-17)
 
 ## Project
 
