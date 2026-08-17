@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/personal-account-provider";
 import { IDENTITY_FIELD_LIMITS } from "@/features/account/domain/constants/identity-field-limits";
 import {
   identityNumberLabel,

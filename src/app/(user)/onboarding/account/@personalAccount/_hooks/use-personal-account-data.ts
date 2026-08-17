@@ -15,7 +15,16 @@ import {
 } from "@/app/(user)/onboarding/account/_utils/personal-account-completeness";
 import { SubmitStatus } from "@/app/(user)/onboarding/_utils/submit-status";
 
-export function usePersonalAccountData() {
+/**
+ * Provider-internal — owns all personal-account submit state (submit status, error, incomplete
+ * issues, created-account id). Must only be called from `PersonalAccountProvider`, which mounts a
+ * single instance and shares it via context. Calling this directly from more than one component
+ * gives each call site its own `useState`, so submit-status writes made by one component (e.g. the
+ * form wrapper) are invisible to another (e.g. the error banner) — the exact bug this provider
+ * exists to prevent. Consumers should import `usePersonalAccountData` from
+ * `@/app/(user)/onboarding/account/@personalAccount/_providers/personal-account-provider` instead.
+ */
+export function usePersonalAccountState() {
   const {
     accountData,
     updatePersonalData,

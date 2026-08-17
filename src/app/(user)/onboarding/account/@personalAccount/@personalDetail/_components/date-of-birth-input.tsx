@@ -2,7 +2,7 @@
 
 import { useId, useMemo, useState } from "react";
 import { SelectInput } from "@/core/presentations/components/select-input";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/personal-account-provider";
 import {
   DateOfBirthParts,
   dateOfBirthErrorCopy,
