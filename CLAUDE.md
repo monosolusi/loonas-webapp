@@ -313,6 +313,44 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   unknown attribute. Where a primitive already owns a local error (`EmailInput`'s format check, `FileUploadInput`'s
   size check), the local one describes what the user just did and outranks the caller's standing copy:
   `localError ?? props.error`.
+- **A component consuming a fetch hook must read `error`, not only `loading`**: all five `(user)/onboarding`
+  address/occupation selects destructured `{ data, loading }` and dropped `error`. On a failed fetch `loading` flips
+  false while the option list stays `[]`, so the control renders **enabled, empty and silent** — strictly worse than a
+  disabled one, because it looks fully functional. A user whose province list failed could not finish the KYC address
+  step and nothing said why; on the child selects it was also indistinguishable from "parent not chosen yet". The tell
+  is a destructure taking `loading` but not `error` from a hook that returns both. Corollary for the retry affordance:
+  a **bound** SWR `mutate()` triggers a refetch and defaults to `throwOnError: true`, so wiring a button straight to it
+  yields an unhandled rejection from an `onClick` when the retry also fails — swallow it deliberately
+  (`void refresh().catch(() => {})`), which is safe precisely because SWR leaves `error` set, so the field keeps its
+  copy and the button stays on screen. Same mechanism as the `revalidateSWRKey()` rule above.
+- **When one message slot serves several conditions, order by which fact is true *right now*, in one pure module**:
+  `SelectInput` renders `description` only when `error` is falsy, so exactly one message can ever surface while four
+  conditions compete for it. `onboarding/_utils/resolve-select-field-state.ts` ranks them: parent-unchosen → loading
+  → fetch-error → caller's standing required-error. Two rungs are non-obvious.
+  **Loading outranks a fetch error**, because SWR keeps the previous `error` populated while revalidating (`isLoading`
+  is `isValidating && data === undefined`), so a retry otherwise leaves stale red copy beside a live retry button —
+  it reads as "still broken" and invites a double-tap. **The caller's standing required-error ranks last**, because
+  "Pilih kota/kabupaten" before a province is chosen, or after the list failed, instructs an impossible action and the
+  user blames themselves; suppressing it is safe only because submit is gated by the step-ordered completeness
+  resolver and its banner, not by the field's red text. Same shape as `localError ?? props.error` above. Make the bad
+  states unrepresentable rather than merely tested — model unselectability as `{ selectable: false; reason: string }`
+  and a parent dependency as `{ hasParent: true; parentChosen: boolean; parentHintCopy: string }`, so copy-less
+  inertness is a type error. The regression test asserts the field is never `disabled` without an `error` or
+  `description`; keep that implication **one-directional**, because the fetch-error state deliberately carries copy
+  while staying *enabled* (disabling it would drop it out of tab order) — tightening it to an iff forbids the correct
+  behaviour.
+- **A disabled state that carries copy must recede by colour, never by `opacity`**: a wrapper-level `opacity-50`
+  composites every descendant against the page, so the sentence explaining the disabled state fades with it. On this
+  app's white surfaces `text-neutral-300` (`#323636`, 11.9:1) collapses to ~2.8:1 and even `text-neutral-500` reaches
+  only ~3.6:1 — no token survives, so there is no "pick a darker grey" escape. Both instances shipped the same shape:
+  the WNA citizenship card was `opacity-50` and nothing else (QA F10), and `SelectInput` faded its whole wrapper
+  including the error/description line — exactly when that line is doing the work of explaining why the field is
+  inert. Second half of the rule, and why `opacity` was load-bearing at all: **`bg-neutral-50` is not a disabled
+  fill** — `neutral-50` is `#FFFFFF`, identical to the surface, so `SelectInput`'s `disabled ? "bg-neutral-50"` was a
+  no-op and the fade was doing 100% of the signalling. Use `bg-neutral-100/25` (≈`#F5F6F6`), keep the fill a
+  *supporting* cue only, and let visible text carry the state (`StatusChip variant="neutral" compact`) — never colour
+  alone. Same family as the disabled-submit-button and vanishing-escape-hatch rules above, one layer down in the
+  styling.
 - **Component context rule**: When a component needs context data, it consumes context itself inside `_components/`.
   Page does not wrap children in a single content component — each component is self-contained.
 - **Component architecture**: One component per file. Use `useMemo` for computed/derived data. No conditional rendering
