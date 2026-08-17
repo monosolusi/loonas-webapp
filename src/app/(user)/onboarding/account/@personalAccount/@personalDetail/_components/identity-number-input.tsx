@@ -1,40 +1,50 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TextInput } from "@/core/presentations/components/text-inputs/text-input";
 import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
-import { IDENTITY_FIELD_LIMITS, NIK_PATTERN, PASSPORT_PATTERN } from "@/features/account/domain/constants/identity-field-limits";
-import { identityNumberLabel } from "@/app/(user)/onboarding/account/_utils/personal-account-completeness";
+import { IDENTITY_FIELD_LIMITS } from "@/features/account/domain/constants/identity-field-limits";
+import {
+  identityNumberLabel,
+  isWNA,
+  sanitizeIdentityNumber,
+} from "@/app/(user)/onboarding/account/_utils/personal-account-completeness";
+import {
+  identityNumberClearedCopy,
+  identityNumberErrorCopy,
+} from "@/app/(user)/onboarding/account/_utils/nationality-change";
 
 export function IdentityNumberInput() {
-  const { data, update, showFieldErrors, issueFor } = usePersonalAccountData();
+  const { data, update, identityNumberCleared, showFieldErrors, issueFor } = usePersonalAccountData();
   const [isFocused, setIsFocused] = useState(false);
   const [isTouched, setIsTouched] = useState(false);
 
-  const isWNI = data.nationality !== "WNA";
+  const isWNI = !isWNA(data.nationality);
   const value = data.identityNumber ?? "";
-  const pattern = isWNI ? NIK_PATTERN : PASSPORT_PATTERN;
-
-  useEffect(() => {
-    setIsTouched(false);
-  }, [data.nationality]);
 
   const label = identityNumberLabel(data.nationality);
   const placeholder = isWNI ? "Masukan 16 digit NIK Anda" : "Masukan nomor paspor Anda";
   const inputMode = isWNI ? "numeric" : "text";
 
+  // Visibility is DERIVED, not dismissed: it ends the instant the user types anything, so there is
+  // no separate dismiss callback to forget. `identityNumberCleared` only turns true on a genuine
+  // nationality switch (see `resolveNationalityChange`) — never on the first selection (QA F9).
+  const clearedNotice =
+    identityNumberCleared && value === "" ? identityNumberClearedCopy(data.nationality) : undefined;
+
   // The copy comes from the completeness resolver, which is also what the submit banner reads —
   // one owner, so the inline message and the banner entry cannot drift. Revelation is still
   // local: blurring this field shows its error without waiting for a submit attempt.
-  const errorCopy = issueFor("identityNumber")?.message;
-  const showError = (isTouched || !!showFieldErrors) && !pattern.test(value);
+  const showError = isTouched || !!showFieldErrors;
+  const errorCopy = identityNumberErrorCopy({
+    clearedNotice,
+    issueCopy: issueFor("identityNumber")?.message,
+    showError,
+  });
   const description = isFocused && isWNI ? `${value.length}/${IDENTITY_FIELD_LIMITS.idNumber} digit` : undefined;
 
   const handleChange = (raw: string) => {
-    const cleaned = isWNI
-      ? raw.replace(/\D/g, "").slice(0, IDENTITY_FIELD_LIMITS.idNumber)
-      : raw.replace(/[^A-Za-z0-9]/g, "").slice(0, IDENTITY_FIELD_LIMITS.idNumber);
-    update?.({ identityNumber: cleaned });
+    update?.({ identityNumber: sanitizeIdentityNumber(raw, data.nationality) });
   };
 
   return (
@@ -47,7 +57,7 @@ export function IdentityNumberInput() {
       maxLength={IDENTITY_FIELD_LIMITS.idNumber}
       required
       description={description}
-      error={showError ? errorCopy : undefined}
+      error={errorCopy}
       onChange={handleChange}
       onFocus={() => setIsFocused(true)}
       onBlur={() => {

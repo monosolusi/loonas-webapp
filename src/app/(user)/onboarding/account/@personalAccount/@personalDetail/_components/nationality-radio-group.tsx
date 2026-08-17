@@ -33,15 +33,18 @@ const NATIONALITY_OPTIONS: NationalityOption[] = [
 ];
 
 export function NationalityRadioGroup() {
-  const { data, update, fieldError } = usePersonalAccountData();
+  const { data, changeNationality, fieldError } = usePersonalAccountData();
   const errorId = useId();
 
   // WNA is disabled, so this never carries a default — the user has to choose WNI actively, which
   // makes an unchosen nationality a real (and previously unexplained) step-1 blocker.
   const errorCopy = fieldError("nationality");
 
+  // `changeNationality` owns the nationality/identityNumber invariant (see
+  // `resolveNationalityChange` — QA finding F9: a first selection must NOT clear an
+  // already-typed identity number). This component only reports the click.
   const onChange = (value: Nationality) => (checked: boolean) => {
-    if (checked && update) update({ nationality: value, identityNumber: "" });
+    if (checked) changeNationality?.(value);
   };
 
   return (

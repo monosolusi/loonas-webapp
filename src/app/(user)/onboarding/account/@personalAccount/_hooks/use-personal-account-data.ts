@@ -16,8 +16,16 @@ import {
 import { SubmitStatus } from "@/app/(user)/onboarding/_utils/submit-status";
 
 export function usePersonalAccountData() {
-  const { accountData, updatePersonalData, currentStep, setCurrentStep, markStepAttempted, showFieldErrors } =
-    useCreateAccount();
+  const {
+    accountData,
+    updatePersonalData,
+    changeNationality,
+    identityNumberCleared,
+    currentStep,
+    setCurrentStep,
+    markStepAttempted,
+    showFieldErrors,
+  } = useCreateAccount();
   const { setActive } = useOrganizationList();
   if (accountData?.type !== "personal") throw new ServerError(ErrorCodes.INVALID_PERSONAL_ACCOUNT_HOOK_CALL);
 
@@ -186,6 +194,8 @@ export function usePersonalAccountData() {
   return {
     data,
     update: updatePersonalData,
+    changeNationality,
+    identityNumberCleared,
     completeness,
     incompleteIssues,
     issueFor,
