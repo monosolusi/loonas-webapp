@@ -2,8 +2,6 @@ import Image from "next/image";
 import { useCallback, useMemo } from "react";
 import { AccountTypeEntity } from "@/features/account/domain/types/account-type";
 import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
-import { VerificationStatus } from "@/features/account/domain/enums/verification-status";
-import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 import { useOrganizationList } from "@clerk/nextjs";
 
 type AccountCardActionProps = {
@@ -46,12 +44,8 @@ export function AccountCardAction(props: AccountCardActionProps) {
   const actionState = useMemo((): ActionState => {
     if (currentAccount?.id === props.account.id) return "current";
 
-    const { latestStatus, verificationOutcome } = props.account;
-    const isApproved =
-      latestStatus === VerificationStatus.COMPLETED && verificationOutcome === VerificationOutcome.APPROVED;
-
-    return isApproved ? "approved" : "disabled";
-  }, [props.account.latestStatus, props.account.verificationOutcome, currentAccount, props.account.id]);
+    return props.account.isApproved ? "approved" : "disabled";
+  }, [props.account.isApproved, currentAccount, props.account.id]);
 
   const config = ACTION_CONFIG[actionState];
 

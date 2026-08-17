@@ -78,6 +78,10 @@ export class BusinessAccountEntity implements AbstractEntity {
     return this.company.name;
   }
 
+  public get isApproved(): boolean {
+    return this.latestStatus === VerificationStatus.COMPLETED && this.verificationOutcome === VerificationOutcome.APPROVED;
+  }
+
   public generateShortAccountId() {
     return this.id.substring(0, 6).toUpperCase();
   }

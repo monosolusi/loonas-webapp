@@ -94,6 +94,10 @@ export class PersonalAccountEntity implements AbstractEntity {
     return `${this.address}, ${this.subdistrict.label}, ${this.district.label}, ${this.city.label}, ${this.province.label}`;
   }
 
+  public get isApproved(): boolean {
+    return this.latestStatus === VerificationStatus.COMPLETED && this.verificationOutcome === VerificationOutcome.APPROVED;
+  }
+
   public generateShortAccountId() {
     return this.id.substring(0, 6).toUpperCase();
   }
