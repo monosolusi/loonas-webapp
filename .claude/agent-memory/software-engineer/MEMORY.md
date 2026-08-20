@@ -3,6 +3,8 @@
 ## Feedback
 
 - [Model classes implement AbstractModel](feedback_model_implements_abstract_model.md) — every `data/models/` class needs `implements AbstractModel`, incl. *ResultModel envelopes + nested toValue() value objects (LNS-369 M1+m1)
+- [Shared-worktree git add index race](feedback_shared_worktree_git_add_index_race.md) — `git add <files>` + `git commit` can still sweep in a concurrent agent's staged changes; diff `--cached` before every commit
+- [Verify investigate-premise before acting](feedback_verify_investigate_premise_before_acting.md) — a brief's claim about a specific file's imports can be wrong; grep before fixing/rewiring
 - [Use-case params are a class](feedback_usecase_params_class.md) — use-case input is always a named params CLASS, never a bare type alias, even when the plan writes `type Input` (LNS-369 m2)
 - [SWR conditional fetching via null key](feedback_swr_conditional_enabled.md) — add `enabled?: boolean` to hook params; pass `null` SWR key when disabled
 - [Discriminated union narrowing in components](feedback_discriminated_union_narrowing.md) — use sequential boolean flags, not compound checks, to narrow InitialState|LoadedState|ErrorState
@@ -37,6 +39,14 @@
 - [Helper owns which, not how](feedback_helper_owns_which_not_how.md) — never encode a rendering hierarchy ("last one is primary") in a shared helper; export the predicate beside the list so a surface can present it differently
 - [Repo is not prettier-clean](feedback_repo_is_not_prettier_clean.md) — prettier isn't in CI or hooks and HEAD already fails `--check` widely; new files clean, untouched lines left alone; quote app-router paths, don't glob
 - [Declaration table over paired branches](feedback_declaration_table_over_paired_branches.md) — when two functions must stay superset/subset, replace independent branch pairs with one rule table + filters so the invariant is structural, not test-enforced (stock-item-actions arch-review)
+- [Derived-index reset during render, not effect](feedback_derived_index_reset_during_render.md) — when a second effect consumes highlight/selectedIndex in the same commit, reset it via render-time setState (React's documented pattern), not useEffect, or the consumer reads a stale index (POS barcode-scan fix)
+- [Async handler throw + swallowed catch + Clerk captcha DOM pattern](feedback_async_handler_and_swallowed_catch.md) — never throw from an async onSubmit; a catch that only rethrows for one recognized shape swallows the rest; Clerk captcha needs ResizeObserver+height (not MutationObserver+injection) and an always-mounted aria-live region; gap-parent caveat: mount on a one-way status latch, not a margin toggle
+- [No timeout-race on mutating calls](feedback_no_timeout_race_on_mutating_calls.md) — racing signUp.create()/setActive() against a client deadline leaves an orphaned promise that can still succeed → duplicate-account trap; use display-only elapsed timers instead. Plus ClerkAPIResponseError vs ClerkRuntimeError structural shapes.
+- [SelectInput uncontrolled value={undefined}](feedback_select_input_uncontrolled_value.md) — undefined value on a `<select>` is uncontrolled → browser auto-selects first option, phantom value hidden by placeholder overlay; SelectInput now coerces to "" but check any new controlled-select field
+- [fieldset/legend has no Tailwind preflight reset](feedback_fieldset_legend_no_preflight_reset.md) — this project's v4 preflight doesn't touch fieldset/legend; reset manually (m-0 min-w-0 border-0 p-0) and don't nest legend as a flex-row child
+- [SWR error needs a data gate](feedback_swr_error_needs_data_gate.md) — `error` survives alongside `data` on a failed revalidation and `isValidating` is true for background refreshes; branch on an unresolved/empty/populated tri-state first (QA F10 arch review)
+- [Disabled state needs a visible reason](feedback_disabled_state_needs_visible_reason.md) — a wrapper `opacity-50` dims the copy explaining WHY (neutral-200 → 1.35:1); `bg-neutral-50` disabled fill is a no-op (#FFF); model inert-reason as a union, not bool+optional copy (QA F10 + 5-select fix)
+- [Plain hook + multi-consumer needs a provider](feedback_plain_hook_shared_state_needs_provider.md) — a non-context hook called from several sibling components gets independent `useState` per call site; wrap in `{Noun}Provider` + rename hook to `use{Noun}State()`, repoint every consumer, add `isCreating` re-entry guard on submit (onboarding submit-state fix, 2026-08-17)
 
 ## Project
 
@@ -44,3 +54,4 @@
 - [LNS-372 journal detail + reverse action](project_lns372_journal_detail_reverse.md) — shipped 2026-06-25, PR #98; warn→ack single-dialog pattern, page-level provider Rule 7 exception, dynamic ROUTE_MAP if-block
 - [LNS-378 year-end close + retained earnings](project_lns378_year_end_close.md) — R1–R6 risks mitigated; 3200 preselect, verbatim token, two journal-id keys, null not "", provider-extended not new
 - [LNS-457 failed-postings retry + escalation hint](project_lns457_failed_postings_retry.md) — shared 422-curation helper, double-nested details read, in-memory consecutive-failure counter
+- [KYC verification predicate tightening](project_lns_kyc_verification_predicate_tightening.md) — isApproved/isRejected getters require latestStatus===COMPLETED too; 4 call sites tightened intentionally, not a regression

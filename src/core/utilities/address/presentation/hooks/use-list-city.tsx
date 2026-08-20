@@ -36,12 +36,15 @@ async function ListCityFetcher([_, params]: [string, ListCityFetcherParams]) {
 }
 
 export function useListCity(params: ListCityFetcherParams) {
-  const { data, error, isLoading, mutate } = useSWR(["list-city", params], ListCityFetcher);
+  const { data, error, isLoading, isValidating, mutate } = useSWR(["list-city", params], ListCityFetcher);
 
   return {
     cities: data,
     error: error,
     loading: isLoading,
+    // True for ANY in-flight request, including a background revalidation over already-loaded data —
+    // consumers must gate it on the list being unusable, or a populated field goes inert on refocus.
+    validating: isValidating,
     refresh: mutate,
   };
 }

@@ -11,15 +11,31 @@ interface AccountVerificationWorkEntityConstructor {
 }
 
 export class AccountVerificationWorkEntity {
-  public account: AccountTypeEntity;
-  public latestStatus: VerificationStatus;
-  public verificationOutcome: VerificationOutcome;
-  public estimatedVerificationComplete: DateTime;
+  public readonly account: AccountTypeEntity;
+  public readonly latestStatus: VerificationStatus;
+  public readonly verificationOutcome: VerificationOutcome;
+  public readonly estimatedVerificationComplete: DateTime;
 
   constructor(args: AccountVerificationWorkEntityConstructor) {
     this.account = args.account;
     this.latestStatus = args.latestStatus;
     this.verificationOutcome = args.verificationOutcome;
     this.estimatedVerificationComplete = args.estimatedVerificationComplete;
+  }
+
+  public get isCompleted(): boolean {
+    return this.latestStatus === VerificationStatus.COMPLETED;
+  }
+
+  public get isAwaitingVerification(): boolean {
+    return !this.isCompleted;
+  }
+
+  public get isApproved(): boolean {
+    return this.isCompleted && this.verificationOutcome === VerificationOutcome.APPROVED;
+  }
+
+  public get isRejected(): boolean {
+    return this.isCompleted && this.verificationOutcome === VerificationOutcome.REJECTED;
   }
 }

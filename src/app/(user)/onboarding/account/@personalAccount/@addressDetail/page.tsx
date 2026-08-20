@@ -6,11 +6,11 @@ import { CityInput } from "@/app/(user)/onboarding/_components/city-input";
 import { DistrictInput } from "@/app/(user)/onboarding/_components/district-input";
 import { SubdistrictInput } from "@/app/(user)/onboarding/_components/subdistrict-input";
 import { AddressInput } from "@/app/(user)/onboarding/account/@personalAccount/@addressDetail/_components/address-input";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/personal-account-provider";
 
 export default function AddressDetailInputPage() {
   const { type, currentStep } = useCreateAccount();
-  const { data, update } = usePersonalAccountData();
+  const { data, update, fieldError } = usePersonalAccountData();
 
   if (!(type === "personal" && currentStep === "personal.address")) return null;
   else
@@ -24,19 +24,38 @@ export default function AddressDetailInputPage() {
         </div>
         <div className="mb-8 flex flex-col gap-4">
           {/* Province Input */}
-          <ProvinceInput value={data.province} onChange={(value) => update?.({ province: value })} />
+          <ProvinceInput
+            value={data.province}
+            onChange={(value) => update?.({ province: value })}
+            error={fieldError("province")}
+            required
+          />
 
           {/* City Input */}
-          <CityInput value={data.city} onChange={(value) => update?.({ city: value })} province={data.province} />
+          <CityInput
+            value={data.city}
+            onChange={(value) => update?.({ city: value })}
+            province={data.province}
+            error={fieldError("city")}
+            required
+          />
 
           {/* District Input */}
-          <DistrictInput value={data.district} onChange={(value) => update?.({ district: value })} city={data.city} />
+          <DistrictInput
+            value={data.district}
+            onChange={(value) => update?.({ district: value })}
+            city={data.city}
+            error={fieldError("district")}
+            required
+          />
 
           {/* Subdistrict Input */}
           <SubdistrictInput
             value={data.subDistrict}
             onChange={(value) => update?.({ subDistrict: value })}
             district={data.district}
+            error={fieldError("subDistrict")}
+            required
           />
 
           {/* Address Input */}

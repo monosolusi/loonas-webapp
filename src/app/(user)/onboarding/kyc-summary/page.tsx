@@ -1,46 +1,34 @@
 "use client";
 
-import { StepHeader } from "@/app/(user)/onboarding/_components/step-header";
-import { StatusBoxImpl } from "@/app/(user)/onboarding/kyc-summary/_components/status-box-impl";
-import { EmailAddressCard } from "@/app/(user)/onboarding/kyc-summary/_components/email-address-card";
-import { useOrganization } from "@clerk/nextjs";
-import { AccountTypeCard } from "./_components/account-type-card";
-import { VerificationTimelineCard } from "@/app/(user)/onboarding/kyc-summary/_components/verification-timeline-card";
-import { NextActionSection } from "@/app/(user)/onboarding/kyc-summary/_components/next-action-section";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth, useOrganization } from "@clerk/nextjs";
+import { useListAccount } from "@/features/account/presentation/hooks/use-list-account";
+import { resolveKycSummaryEntry } from "@/app/(user)/onboarding/kyc-summary/_utils/resolve-kyc-summary-entry";
+import { KycSummarySkeleton } from "@/app/(user)/onboarding/kyc-summary/_components/kyc-summary-skeleton";
+import { KycSummaryContent } from "@/app/(user)/onboarding/kyc-summary/_components/kyc-summary-content";
 
 export default function KycSummaryPage() {
-  const { isLoaded, organization } = useOrganization();
+  const router = useRouter();
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
+  const { isLoaded: orgLoaded, organization } = useOrganization();
+  // USER-scoped (Bearer token only, no active org required) — safe to call unconditionally even
+  // before any org exists. Maps a zero-account NOT_FOUND to `[]`, so `.length` is always safe.
+  const { accounts, loading: accountsLoading } = useListAccount();
 
-  if (!isLoaded || !organization) return null;
-  return (
-    <div className="flex flex-col items-center justify-center gap-10">
-      <StepHeader title="Status Verifikasi KYC" description="Terima kasih! Kami sedang memproses verifikasi Anda" />
-      <div className="flex w-full flex-col gap-8">
-        {/*  Status Box */}
-        <StatusBoxImpl account={{ id: organization.id }} />
+  const entry = resolveKycSummaryEntry({
+    authLoaded,
+    isSignedIn,
+    orgLoaded,
+    organizationId: organization?.id,
+    accountsLoading,
+    accountCount: accounts?.length ?? 0,
+  });
 
-        {/*  Account Type Card */}
-        <AccountTypeCard account={{ id: organization.id }} />
+  useEffect(() => {
+    if (entry.kind === "redirect") router.replace(entry.to);
+  }, [entry, router]);
 
-        {/*  Email Address Card */}
-        <EmailAddressCard />
-
-        {/*  Verification Process Card */}
-        <VerificationTimelineCard account={{ id: organization.id }} />
-
-        {/*  Next Action Section */}
-        <NextActionSection account={{ id: organization.id }} />
-
-        {/*  Support Card */}
-        <div className="rounded-xl border border-neutral-100 bg-neutral-200/30 p-5">
-          <div className="text-center text-sm leading-5 font-normal text-neutral-200">
-            Ada pertanyaan? Hubungi kami di&nbsp;
-            <span className="text-primary-300">
-              <a href="mailto:support@loonas.com">support@loonas.com</a>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  if (entry.kind !== "ready") return <KycSummarySkeleton />;
+  return <KycSummaryContent organizationId={entry.organizationId} />;
 }

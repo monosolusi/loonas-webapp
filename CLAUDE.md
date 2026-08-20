@@ -120,6 +120,16 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   for consistent vertical rhythm. Exception: icon-only action buttons (edit, delete) in tables use `size-8` (32px).
 - **Account resolution**: Backend resolves account from Clerk JWT `orgId` (set via `setActive({ organization })`).
   Frontend never sends account ID in headers or params — only `Authorization: Bearer {token}`
+- **Org-scoped vs user-scoped endpoints — only the latter survives "no active org"**: `GET /accounts`
+  (`useListAccount`) is **user**-scoped, resolved from the bearer token alone, and returns every account the user
+  owns with its own `latest_status` / `verification_outcome` / `membership` — it works with no organization active.
+  `GET /accounts/me` (`useGetCurrentAccount`) and `GET /accounts/verification-works`
+  (`useGetAccountVerificationWork`) are **org**-scoped: they resolve from the JWT `orgId` and fail outright when
+  none is set. So any state that must render *before* an org is chosen — a returning user Clerk did not restore an
+  org for, anything after `setActive({ organization: null })` — may only read the user-scoped list. Note
+  `/accounts` returns **404 when the user has zero accounts**, which `useListAccount` maps to `[]`; and a redirect
+  guard keyed on one specific error code (`ErrorCodes.NOT_FOUND`) silently does nothing for every other code, so
+  never let such a guard be the only thing recovering a no-org session.
 - **Session parameter order**: In repository and service method signatures, `session: SessionEntity` must always be the
   **last** parameter. Methods have **maximum 2 parameters**: `(params, session)`. All business parameters grouped into a
   single object: `list({ search, page }, session)`, `update({ id, name, status }, session)`.
@@ -151,15 +161,215 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   need null checks.
 - **Provider data locality**: Provider only hosts data shared across multiple components. If data is used by only one
   component, that component fetches it locally.
+- **A plain hook is not shared state — `use{X}Data()` called by N components is N independent `useState`s**: this
+  reads as shared state at every call site and is not, so the failure is silent and total. On `/onboarding/account`,
+  `usePersonalAccountData` was a plain hook (no `createContext`) called by 14 components:
+  `personal-account-form-wrapper` called `submit()` and wrote `submitError` / `submitStatus` / `submitAttempted` /
+  `createdAccountId` to **its own** instance, while `submit-error-banner`, `submit-incomplete-banner` and
+  `submit-button` read three *other* instances that were forever `null` / `[]` / `"idle"`. The entire F8 remediation
+  (error banner, named missing-field list, "Membuat akun..." in-flight label) was therefore dead on arrival while
+  looking correct in review — and `createdAccountId` being instance-local meant a second submit re-ran the create and
+  could open a **duplicate account**. The tell is a component wired to state that only a *different* component ever
+  writes; `grep -rln` the hook and if more than one consumer both reads and writes, it must be a provider. Two
+  corollaries: (1) the same defect was mirrored verbatim in the business twin — when a flow has personal/business
+  siblings, fix and grep both; (2) a `disabled` submit button does **not** block Enter-key submission from a text
+  input, so promoting the state is necessary but not sufficient — the handler still needs an `if (isCreating) return;`
+  re-entry guard. None of this is reachable by the vitest suite (`.tsx`, node env), so it is a review-and-smoke
+  concern, not a test one.
 - **Preserve invariants when narrowing a mutation-clear callback**: when a cart-mutation callback that cleared
   multiple error maps is narrowed to one concern (e.g. `clearStockErrorFor` → `clearPriceMismatch` after removing the
   stock-error map), the renamed callback must still fire on every `addItem` / `updateQty` / `removeItem` path that
   previously called it — otherwise the remaining concern (a stale `UNIT_PRICE_MISMATCH` marker) survives a cart edit.
   LNS-608 preserved this on all three mutation paths.
+- **An `async` event handler must never `throw`, and a catch-all must never swallow**: React does not await
+  `onSubmit`/`onClick`, so a `throw` inside one becomes an unhandled promise rejection — the user sees nothing, the
+  button silently resets, and the failure is invisible. The mirror defect is a provider-side `catch` that logs
+  instead of rethrowing: the async function then *resolves*, and the caller runs its success path (`router.push`)
+  on a failure that never happened. Both shipped together on `/onboarding/user` — registration appeared to succeed
+  while no account existed. Rules: (1) every branch of a handler's `catch` either navigates or sets error state,
+  never `throw`; (2) a `catch` that re-wraps errors must rethrow deliberate ones first (`if (err instanceof
+  ServerError) throw err;`) — otherwise a narrowing guard like `isClerkAPIResponseError` returns false for your OWN
+  thrown `ServerError` and the catch-all eats it; (3) `console.error(JSON.stringify(err))` on a native `Error` logs
+  `{}` (message/stack are non-enumerable) — log the raw object. Extract the error→outcome decision into a pure
+  `_utils/classify-submit-error.ts` so vitest can reach it; the `.tsx` handler itself cannot be tested.
+- **A third-party widget injected into a DOM slot needs the slot mounted, visible, and ordered before the submit
+  control**: Clerk mounts its Turnstile challenge into `#clerk-captcha` at `signUp.create()` call time, not on page
+  load. That slot was rendered *after* the submit button, so the challenge appeared below the fold and the button
+  spun forever with nothing explaining why. The slot must exist before submit fires (if absent, Clerk degrades to
+  invisible-only and can hard-block a falsely-flagged user with no recourse); it must never be `display:none`
+  (Turnstile fails to measure inside a hidden node — reveal the *label*, not the container); and it belongs between
+  the last field and the button, per Clerk's own examples. Clerk exposes **no** app-observable captcha state — no
+  `captcha_unsolved` code, no callback — so do not build UI around detecting an unsolved challenge. Watch the slot's
+  *size* with a `ResizeObserver` instead, and reveal only on non-zero height: the widget is injected on every submit
+  including the invisible path, so an unguarded observer shows a "solve the captcha" hint and scroll-jumps every
+  successful signup.
+- **Never race a real mutating call against a client-side deadline — bound the *display*, not the promise**:
+  `Promise.race([signUp.create(), timeout])` rejects the UI promise but does **not** cancel the request. It keeps
+  running and can still succeed server-side, so the user is told "gagal", retries, and the retry collides with
+  `form_identifier_exists` on an account that silently already exists — manufacturing the very duplicate-account
+  trap the timeout was added to prevent. This applies to any call whose server-side effect is not safely
+  re-triggerable (account creation, payment capture, stock adjustment). Instead: `await` the real promise and let
+  its real settlement be the **only** thing that ends the loading state, and run a separate `setInterval` purely
+  to track elapsed time, feeding a pure `resolveWaitPhase(elapsedMs)` that escalates the *copy*
+  (`_utils/submit-wait-phase.ts` → `_components/create-user-status-notice.tsx`, 8s caption → 20s advisory). Past the
+  stall threshold the copy must stay honestly uncertain ("mungkin sudah berhasil dibuat di latar belakang") and
+  steer to **reload-and-check**, never resubmit. The carve-out: a deadline IS safe once the mutation has already
+  returned and the *next* step is what's hanging — `withTimeout()` (`core/utilities/`) bounds `setActive()` only,
+  because by then the account is known-created, so "akun sudah dibuat, sesi gagal diaktifkan — muat ulang lalu
+  masuk" is correct whether Clerk truly failed or merely never answered. Test the boundary by asking: *if I reject
+  now and I'm wrong, is my copy still true?* Note the two `onboarding/account` hooks still race a 60s
+  `AbortController` against account creation — same defect class, pre-existing, deliberately left untouched here.
+- **A submit's success is a terminal UI state, and the auth library owns the post-auth navigation**: three
+  separate mistakes shipped together on `/onboarding/user` and each alone reproduces "the user cannot tell whether
+  it worked". (1) `disabled = !isClean || !isReady || isSignedIn` on the submit button: the instant `setActive()`
+  resolves, `isSignedIn` flips true while the in-flight flag flips false **on the same tick**, so the button renders
+  dead grey — no spinner, no error — whether or not navigation actually happened. Model the lifecycle as a
+  `SubmitStatus` union where `"succeeded"` is TERMINAL and never falls back to `"idle"`, and resolve the button
+  through a pure `_utils/create-user-button-state.ts` carrying the invariant *no input yields `disabled && !loading`
+  while succeeded*. (2) `Button` renders `label` only when **not** loading, so `loading` without `loadingLabel` is a
+  bare spinner with zero text — every `loading: true` branch must carry a `loadingLabel`. (3) A bare
+  `await setActive({ session })` followed by a separate `router.push()` is the one shape Clerk's docs never use and
+  it gets dropped; pass `setActive({ session, redirectUrl })` as `SignInProvider` already does, and keep a
+  ref-guarded `status === "succeeded"` effect as the fallback. When two navigation paths exist (post-signup vs a
+  pre-existing session), give each its own destination and make each consume the other's ref guard, or they race.
+- **Clerk throws two unrelated error classes and `isClerkAPIResponseError` only catches one**: a client-side
+  failure before any request — notably `{ code: "captcha_unavailable" }` when Turnstile itself cannot load — is a
+  `ClerkRuntimeError`, for which that guard returns **false**, so a catch-all silently collapses it to a generic
+  message. Duck-type both structurally rather than importing `@clerk/*`, so the classifier stays reachable by the
+  node-env vitest suite (house precedent: `sign-in.tsx`'s `classifyClerkError`): `ClerkAPIResponseError` has
+  `status: number` + `errors: Array<{ code }>` + optional `retryAfter` (seconds, surface it in rate-limit copy);
+  `ClerkRuntimeError` has only `code: string`. Check `status === 429` **before** pattern-matching `errors[0].code` —
+  the HTTP status is authoritative. Never render a raw `SignUpResource.status` (`"missing_requirements"`) as user
+  copy; map it, and keep the raw value in `details` for logging.
+- **A `disabled` submit button must never be the only thing standing between the user and the block**:
+  a boolean gate over a whole multi-step form can only ever render as grey, so whichever of its N conditions
+  failed, the user sees the same dead end — and on a wizard whose off-step pages `return null`, the offending
+  field is not even on screen. QA F8 was `disabled={!isClean}` over a 13-condition `useMemo` spanning all three
+  `/onboarding/account` steps. The fix shape: resolve completeness to a **step-ordered `FieldIssue[]`**
+  (`field`, `step`, `label`, `message`) plus `isComplete` and `firstIncompleteStep`
+  (`account/_utils/{personal,business}-account-completeness.ts`), leave the button **clickable**, and let the
+  submit handler answer — reveal errors on every step carrying one, navigate to `firstIncompleteStep`, and list
+  the missing fields *with their step name* in a banner. Same family as the "affordance stays, dialog explains
+  the block" rule. Enforce it structurally with a pure button-state resolver whose regression test asserts **no
+  input yields `disabled && !loading`** (`_utils/create-account-button-state.ts`, mirroring
+  `user/_utils/create-user-button-state.ts`); the only disabled states left are in-flight ones, which always
+  carry a `loadingLabel`. Corollary: a "Next" button with no per-step validation is what lets an empty step-1
+  field become an unexplained step-3 blocker — validate the current step and block by *revealing that step's
+  inline errors*, never by disabling Next.
+- **An escape hatch must never be gated on the state that creates the need for it**: `/onboarding/kyc-summary`'s
+  only exit was `UseOtherAccountAction`, which `return null`s when `status.approvedAccount.count === 0` — precisely
+  the state of a user whose single account is still awaiting KYC. The `(user)/onboarding` layout renders no header,
+  so the app's only "Keluar" (`(authenticated)/_components/header-sign-out-menu.tsx`) was off-screen, and `/sign-in`
+  bounces an already-signed-in visitor back to `/home`, which redirects to kyc-summary again. The loop was closed:
+  the only documented escape was clearing cookies. The gate itself was *correct* — an account **switcher** has
+  nothing to offer when there is nothing to switch to — the defect is that it was the ONLY exit. Rule: any route a
+  redirect can strand a user on carries an exit whose sole precondition is that a session exists
+  (`onboarding/_components/sign-out-action.tsx`: never reads verification/account state, never `return null`s for a
+  signed-in user, renders a pending state rather than vanishing while `!isLoaded`). Same family as the
+  disabled-button rule — a control that renders nothing is strictly worse than one that renders grey. Corollary,
+  and the reason this shipped: when a component whose whole job is escape can render `null`, the sibling that wraps
+  it inherits that emptiness silently — `GoToSignIn` wrapped it in a flex div and its own `signOut` branch was
+  wired *only* to the signed-out case, which `account/layout.tsx` redirects away before it can ever render.
+- **A whole-page `return null` is a blank screen, not a loading state**: `kyc-summary/page.tsx` opened with
+  `if (!isLoaded || !organization) return null;` on a route with **no auth guard at all**, so a signed-out visitor
+  or anyone without an active Clerk org got a permanently blank page inside the marketing shell — no message, no
+  redirect, nothing to click. Resolve route entry through a pure `_utils/` resolver returning a discriminated
+  `loading | redirect | ready`, with a regression test asserting **no input renders nothing and redirects nowhere**
+  (`kyc-summary/_utils/resolve-kyc-summary-entry.ts`, mirroring `_utils/create-account-button-state.ts`). Two
+  supporting facts that decide such a resolver: **client-side redirects use `router.replace`, never `push`** — a
+  push stacks a history entry, so Back walks the user straight back into the state that triggered it; and a
+  **blocking redirect needs a path exemption for the surface that resolves the block** — the `SelectedAccountProvider`
+  KYC redirect fired from anywhere in `(authenticated)`, so `/accounts`, the one surface that can reactivate a
+  pending Clerk org, was unreachable by the exact user who needed it (`resolve-account-redirect.ts` exempts
+  `/accounts` and `/onboarding*`).
+- **Session readiness is not form validity — never `&&` them into one gate**: `isClean` ended in `&& isLoaded`
+  from Clerk's `useOrganizationList()`. Per Clerk's docs that flag **never becomes true for a signed-out user**
+  (the docs' own loading guard doubles as an auth guard) and reverts to false while auth state updates — and
+  `src/middleware.ts` is a bare `clerkMiddleware()` with **no route protection**, so `/onboarding/account` is
+  reachable with no live session. The result was a permanently dead button on a form that was genuinely
+  complete. Removing it loses nothing: the use case resolves the Clerk session *before* any network write, so a
+  signed-out submit fails with `NO_VALID_SESSION` and copy the user can act on, and the existing
+  `createdAccountId` cache keeps the retry safe. A readiness flag belongs in a loading state or an error
+  message, never in a validity predicate.
+- **Reveal field errors per step, not with one global `submitAttempted` latch**: a single latch set by "Next" on
+  step 1 lights up step 2's untouched fields the moment the user arrives — errors for data they have not been
+  asked for yet. Track `attemptedSteps: Step[]` in the provider and derive
+  `showFieldErrors = attemptedSteps.includes(currentStep)`; since every field renders only on its own step, that
+  is exactly the right revelation scope. A field may still add its own `isTouched` on top for blur-time feedback,
+  but it must take its *copy* from the shared resolver (`issueFor(field)?.message`) rather than restating it.
+- **An uncontrolled shared input inside a step that unmounts will lie about its value**: `FileUploadInput` keeps
+  its own `internalFile` when no `value` prop is passed, and `/onboarding/account`'s step pages `return null`
+  when off-step. `KtpFileUploadInput` omitted `value`, so stepping away and back re-rendered the empty
+  "Klik untuk upload file" state while the provider still held the `File` — an empty-looking dropzone, an enabled
+  button, and the stale file submitted. The business flow passed `value` and was fine. Whenever a shared input
+  supports both modes, the page that owns the buffer must pass `value`. Related: that component's size check
+  `return`s **before** `onChange`, so an over-cap pick silently keeps the previous file — keeping it is correct
+  (a fat-finger should not destroy a valid selection), but only once `value` makes the retained file visible.
+- **When adding a validation `error` surface, check every input primitive the form actually uses**: when this was first
+  audited only `TextInput` had `error` — `SelectInput`, `TextAreaInput`, `EmailInput` and `FileUploadInput` did not,
+  and the five `(user)/onboarding` address/occupation selects had no way to show one at all. Those gaps are now
+  closed (`SelectInput` carries `error`, `description`, and a `useId()`-based `aria-describedby` association; all five
+  selects are wired), so read that list as a record of what was found, not of the code today — re-check the primitive
+  you are about to touch. The rule itself stands for the next one: mirror `TextInput`'s contract (red border, `text-xs
+  leading-4 font-normal text-red-500` message, `aria-invalid`, error takes precedence over `description`) and
+  **destructure the new `error` out of the props-spread** (`cleanedInputProps`) or it lands on the DOM node as an
+  unknown attribute. Where a primitive already owns a local error (`EmailInput`'s format check, `FileUploadInput`'s
+  size check), the local one describes what the user just did and outranks the caller's standing copy:
+  `localError ?? props.error`.
+- **A component consuming a fetch hook must read `error`, not only `loading`**: all five `(user)/onboarding`
+  address/occupation selects destructured `{ data, loading }` and dropped `error`. On a failed fetch `loading` flips
+  false while the option list stays `[]`, so the control renders **enabled, empty and silent** — strictly worse than a
+  disabled one, because it looks fully functional. A user whose province list failed could not finish the KYC address
+  step and nothing said why; on the child selects it was also indistinguishable from "parent not chosen yet". The tell
+  is a destructure taking `loading` but not `error` from a hook that returns both. Corollary for the retry affordance:
+  a **bound** SWR `mutate()` triggers a refetch and defaults to `throwOnError: true`, so wiring a button straight to it
+  yields an unhandled rejection from an `onClick` when the retry also fails — swallow it deliberately
+  (`void refresh().catch(() => {})`), which is safe precisely because SWR leaves `error` set, so the field keeps its
+  copy and the button stays on screen. Same mechanism as the `revalidateSWRKey()` rule above.
+- **When one message slot serves several conditions, order by which fact is true *right now*, in one pure module**:
+  `SelectInput` renders `description` only when `error` is falsy, so exactly one message can ever surface while four
+  conditions compete for it. `onboarding/_utils/resolve-select-field-state.ts` ranks them: parent-unchosen → loading
+  → fetch-error → caller's standing required-error. Two rungs are non-obvious.
+  **Loading outranks a fetch error**, because SWR keeps the previous `error` populated while revalidating (`isLoading`
+  is `isValidating && data === undefined`), so a retry otherwise leaves stale red copy beside a live retry button —
+  it reads as "still broken" and invites a double-tap. **The caller's standing required-error ranks last**, because
+  "Pilih kota/kabupaten" before a province is chosen, or after the list failed, instructs an impossible action and the
+  user blames themselves; suppressing it is safe only because submit is gated by the step-ordered completeness
+  resolver and its banner, not by the field's red text. Same shape as `localError ?? props.error` above. Make the bad
+  states unrepresentable rather than merely tested — model unselectability as `{ selectable: false; reason: string }`
+  and a parent dependency as `{ hasParent: true; parentChosen: boolean; parentHintCopy: string }`, so copy-less
+  inertness is a type error. The regression test asserts the field is never `disabled` without an `error` or
+  `description`; keep that implication **one-directional**, because the fetch-error state deliberately carries copy
+  while staying *enabled* (disabling it would drop it out of tab order) — tightening it to an iff forbids the correct
+  behaviour.
+- **A disabled state that carries copy must recede by colour, never by `opacity`**: a wrapper-level `opacity-50`
+  composites every descendant against the page, so the sentence explaining the disabled state fades with it. On this
+  app's white surfaces `text-neutral-300` (`#323636`, 11.9:1) collapses to ~2.8:1 and even `text-neutral-500` reaches
+  only ~3.6:1 — no token survives, so there is no "pick a darker grey" escape. Both instances shipped the same shape:
+  the WNA citizenship card was `opacity-50` and nothing else (QA F10), and `SelectInput` faded its whole wrapper
+  including the error/description line — exactly when that line is doing the work of explaining why the field is
+  inert. Second half of the rule, and why `opacity` was load-bearing at all: **`bg-neutral-50` is not a disabled
+  fill** — `neutral-50` is `#FFFFFF`, identical to the surface, so `SelectInput`'s `disabled ? "bg-neutral-50"` was a
+  no-op and the fade was doing 100% of the signalling. Use `bg-neutral-100/25` (≈`#F5F6F6`), keep the fill a
+  *supporting* cue only, and let visible text carry the state (`StatusChip variant="neutral" compact`) — never colour
+  alone. Same family as the disabled-submit-button and vanishing-escape-hatch rules above, one layer down in the
+  styling.
 - **Component context rule**: When a component needs context data, it consumes context itself inside `_components/`.
   Page does not wrap children in a single content component — each component is self-contained.
 - **Component architecture**: One component per file. Use `useMemo` for computed/derived data. No conditional rendering
   of multiple states in return — split into separate components instead (e.g., loading, empty, list components).
+- **A stray `;` after a JSX element is a text node, not a statement terminator**: inside a JSX body, `<Foo />;`
+  renders a literal semicolon into the DOM. Nothing in the toolchain catches it — `tsc` sees valid JSX, Prettier
+  reformats around it, and `eslint-plugin-react`'s recommended set has no rule for bare-punctuation children
+  (`react/jsx-no-literals` would flag every line of Indonesian UI copy, so it stays off). The defect is least
+  visible in review and most visible in UAT when the sibling component can return `null`: `GoToSignIn` wrapped
+  `<UseOtherAccountAction />;` in a flex div, and `UseOtherAccountAction` returns `null` both while user status
+  loads and when `approvedAccount.count === 0` — so the div shipped holding nothing but a floating `;` at the
+  bottom-left of the "Pilih Jenis Akun" step. When touching JSX, grep the shape:
+  `grep -rnE '^[[:space:]]+(<[A-Za-z][^=]*/>|</[A-Za-z][A-Za-z0-9.]*>)[[:space:]]*;[[:space:]]*$' --include="*.tsx" src`
+  — a `return <X />;` on its own line is correct JS, a punctuation-terminated JSX *child* never is. Same reading
+  applies to a dead class token (`fo` in the step-indicator pill): a typo'd utility is invisible to Tailwind and to
+  lint, so verify unknown class names against the `@theme` block in `globals.css` rather than assuming they resolve.
 - **Displayed mode and saved mode must be the same expression**: never mask a form value for display while the
   save path reads the raw one. `hasVariants={form.type !== ProductType.SERVICE && form.hasVariants}` passed a
   masked value to the card while `syncVariants` / `handleSubmit` read the unmasked `form.hasVariants`, so the
@@ -178,6 +388,55 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   don't touch is the one that rots. Keep the sentinel key module-private, as `NEW_SINGLE_VARIANT_KEY` in
   `[id]/_utils/sync-variants.ts` does; if two modules need it, that is the signal to move the derivation, not
   to export the constant.
+- **A multi-part form buffer must never back-fill the parts the user has not chosen**: when one logical value is
+  entered through several controls (day/month/year, and any similar composite), each control edits ONLY its own
+  part, and a *single* pure resolver turns the parts into the committed domain value. The onboarding birth-date
+  field did the opposite — `updateDate()` filled the untouched components with defaults (`day ?? 1`, `month ?? 1`,
+  `year ?? currentYear`), so picking only a year committed 1 Januari of the current year and *passed the `isClean`
+  submit gate*: a KYC birth date the user never entered. Model the buffer as independently-optional parts
+  (`DateOfBirthParts`) and return a discriminated resolution (`empty | incomplete | invalid | underage | valid`)
+  from one `_utils/` module (`onboarding/account/_utils/date-of-birth.ts`), so "partially chosen" is representable
+  and fabricating a missing component is structurally impossible. Same family as LNS-570/572: the gate and the
+  payload must read the SAME resolved value, never re-derive. Corollary: when an edit orphans another part (day 31
+  → Februari), **clear it and say so** — silently clamping to `endOf("month")` is the same fabricate-a-value defect
+  wearing a different hat, and a clear with no message is only marginally better. Clearing feedback must NOT be
+  gated behind a touched/blur flag: selecting an option usually leaves focus on the control, so a blur-gated
+  message never appears in the common path.
+- **A dependent-field reset must distinguish a FIRST selection from a genuine switch**: when choosing option A
+  invalidates field B, the reset condition is "B's governing value *changed* from one chosen value to another" — not
+  "A was clicked". `nationality-radio-group.tsx` cleared `identityNumber` on every checked change, so a user who
+  typed their NIK *before* picking "WNI" (the first, not-yet-made selection) had it silently wiped and was then
+  shown "NIK harus terdiri dari 16 digit" against the field the app itself had just emptied — QA F9. On the
+  `undefined → "WNI"` transition nothing has become invalid, so there is nothing to reset. Resolve the transition in
+  one pure `_utils/` module returning both the buffer patch and whether anything was actually discarded
+  (`nationality-change.ts::resolveNationalityChange`), and put the *only* writer of the coupled pair in the buffer
+  owner (`CreateAccountProvider.changeNationality`) — a shallow-merge `update()` at a call site is how the invariant
+  ends up re-implemented and drifting (LNS-570). Three refinements the F9 fix encodes: (1) preserve even a
+  *partially typed*, currently-invalid value — only the user may discard their own input; (2) announce the clear
+  only when something was actually lost, and remember that a "was cleared" flag is a **latch, not a derived
+  value** — guarding the notice on `cleared && value === ""` reads as self-dismissing but is one-way, so refilling
+  the field and then emptying it again resurrects a notice about a change made several edits ago; pair the guard
+  with an explicit dismiss on the field's own edit path; (3) do not "helpfully" reset a field's `isTouched` on
+  the governing change — after the fix that erases an error the user had already earned, which is the same defect
+  wearing a different hat. Do not delete the switch branch just because the second option is currently
+  `disabled` in the UI: `PASSPORT_PATTERN` (`/^[A-Za-z0-9]{1,16}$/`) **accepts a 16-digit NIK**, so enabling WNA
+  later without the clear would submit a NIK as a passport number and pass validation. Known unfixed sibling of
+  this class: `@addressDetail/page.tsx` writes `update?.({ province })` alone, so changing province leaves
+  `city`/`district`/`subDistrict` from the old one — and since the resolver only checks `!data.city`, a stale
+  entity is truthy and submits a city that is not in the submitted province.
+- **Never pass `undefined` as a controlled input's `value`**: React downgrades the element to UNCONTROLLED, and for
+  `<select>` the HTML select-reset algorithm then auto-selects the first non-disabled `<option>` — silently
+  committing a phantom value while a placeholder overlay makes the field look empty. `SelectInput`'s three
+  birth-date selects showed exactly this (day `1` / `Januari` / current year, the year list being descending), and
+  re-tapping the already-highlighted option fires no `change` event, so state stayed empty with no feedback.
+  `SelectInput` now coerces `value ?? ""` after the props spread (mirroring `TextInput`), so the component owns its
+  controlled contract — but an uninitialised provider/form-buffer field is the recurring source, so check the
+  threading at the call site too. Note Tailwind v4's preflight resets `button`/`input`/`select`/`textarea` but has
+  **no `fieldset`/`legend` rule at all** — a native pair needs `m-0 min-w-0 border-0 p-0` / `p-0` added by hand, and
+  `<legend>` does not lay out reliably as a flex child. For a NEW group of controls sitting inline with ordinary
+  div/span-labelled fields, prefer `role="group"` + `aria-labelledby`; reserve real `fieldset`/`legend` for fixing
+  markup that is already broken (as `nationality-radio-group.tsx` was, with its `<legend>` an invalid sibling
+  *before* the `<fieldset>`).
 - **Interface Segregation (repositories)**: When a feature has distinct sub-resources (e.g., master + entries), split
   into separate repository/source interfaces, implementations, and files. Each concern gets its own file:
   `fixed-cost.ts` (master) + `fixed-cost-entry.ts` (entries).
@@ -263,7 +522,14 @@ once per logical attempt, reuse on retry, rotate only when the helper says so.
 deployed schemas over BE PR or ticket prose. Never pre-add a field to a Model (`data/models/`) or
 Entity (`domain/entities/`) for a BE contract that hasn't shipped to dev-api — that invents a
 contract the backend hasn't committed to (the LNS-637 FE guard deliberately omitted a discriminator
-field that LNS-631 had not added).
+field that LNS-631 had not added). **Read the declared `format`, not just the type** — a spec
+`{"type":"string","format":"date"}` means a plain `YYYY-MM-DD`, so serialise it with Luxon's
+`toISODate()`, never `toISO()`: the latter emits an offset datetime
+(`2000-05-14T00:00:00.000+07:00`) that can shift the calendar day if the BE normalises through UTC.
+`POST /accounts/personal`'s `date_of_birth` shipped this way — a silent off-by-one on a KYC birth
+date. The spec is also where you confirm a rule is *not* the backend's: that endpoint declares no
+min/max and no age-related error code, so `MINIMUM_ACCOUNT_HOLDER_AGE_YEARS` is documented in-code
+as an FE-owned floor rather than a mirrored BE constraint.
 
 **Partial-update PUTs: `undefined` omits, `null` clears — never conflate them.** `HttpRequest`
 serialises with `JSON.stringify`, which **silently drops `undefined`-valued keys**. On a partial-update
@@ -396,6 +662,16 @@ SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockI
   hover (WCAG 1.4.1). The `h-11` interactive-height rule does not apply to inline links — WCAG 2.5.5 exempts links
   within a run of text. Generally: a color used at many call sites is not thereby AA-compliant — compute the ratio
   against `globals.css` before citing any color as established.
+- **Validation copy renders in Tailwind's default `text-red-500`, which fails AA — app-wide debt, do not fix it
+  locally**: `red-500` is `oklch(63.7% 0.237 25.331)` ≈ `#fb2c36`, **3.81:1** on white, under the 4.5:1 body-text
+  floor. It is the validation color in ~22 component files (`TextInput`, `SelectInput`, `nationality-radio-group.tsx`
+  and the form fields that follow them), so darkening it in one component makes that field inconsistent with every
+  other for no user gain. What makes it worth recording rather than shrugging at: the project already ships a
+  compliant ramp for exactly this use — `error-500` (`#B42318`) is **6.57:1** and `error-400` (`#D92D20`) is
+  **4.83:1**, already used at ~57 call sites — so the app reaches for a Tailwind default where its own token is both
+  available and passing. Same class as the `primary-300` and `text-warning-400` debt above, and as the app-wide
+  secondary/placeholder token `neutral-200` (`#BDBDBD`, **1.88:1**): each needs one deliberate sweep with its own
+  ticket, never a drive-by. All ratios here are measured against `globals.css`, not estimated.
 - **Nullable API fields where `null` = unclassified/unknown render distinctly — never as `0` or `Rp 0`**: when a row
   field is nullable and `null` means the system has NOT classified/measured it (not that it found zero), render `null`
   as an em-dash (`—`, `text-neutral-200`) or "Belum diklasifikasi" — NEVER `0`. Same for nullable money:

@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useMemo } from "react";
+import clsx from "clsx";
 
 type TextAreaInputBaseProps = {
   description?: string;
+  error?: string | null;
   onChange?: (value: string) => void;
 } & Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "onChange">;
 
@@ -31,9 +33,13 @@ export function TextAreaInput(props: TextAreaInputProps) {
   };
 
   const cleanedInputProps = useMemo(() => {
-    const { label, onChange, description, noLabel, ...cleanedProps } = props;
+    // `error` is destructured out with the other non-DOM props so it never spreads onto the
+    // native <textarea> as an unknown attribute.
+    const { label, onChange, description, error, noLabel, ...cleanedProps } = props;
     return cleanedProps;
   }, [props]);
+
+  const hasError = !!props.error;
 
   return (
     <div className="flex flex-col gap-2 transition-all">
@@ -43,14 +49,25 @@ export function TextAreaInput(props: TextAreaInputProps) {
           {props.required && <span className="text-red-500"> *</span>}
         </span>
       )}
-      <div className="display focus-within:ring-primary-300/20 focus-within:border-primary-300 flex flex-row items-start gap-3 rounded-lg border border-solid border-neutral-100 p-3 transition-all focus-within:ring-2">
+      <div
+        className={clsx(
+          "display flex flex-row items-start gap-3 rounded-lg border border-solid p-3 transition-all focus-within:ring-2",
+          hasError
+            ? "border-red-500 focus-within:border-red-500 focus-within:ring-red-500/20"
+            : "focus-within:ring-primary-300/20 focus-within:border-primary-300 border-neutral-100",
+        )}
+      >
         <textarea
           {...cleanedInputProps}
           onChange={onChange}
+          aria-invalid={hasError || undefined}
           className="min-h-24 flex-1 resize-none text-base outline-none placeholder:text-neutral-200"
         />
       </div>
-      {props.description && <span className="text-xs leading-4 font-normal text-neutral-200">{props.description}</span>}
+      {hasError && <span className="text-xs leading-4 font-normal text-red-500">{props.error}</span>}
+      {!hasError && props.description && (
+        <span className="text-xs leading-4 font-normal text-neutral-200">{props.description}</span>
+      )}
     </div>
   );
 }

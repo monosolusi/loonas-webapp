@@ -1,57 +1,17 @@
 "use client";
 
 import React, { useCallback } from "react";
-import { DateTime } from "luxon";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
-import { ProvinceEntity } from "@/core/utilities/address/domain/entities/province";
-import { CityEntity } from "@/core/utilities/address/domain/entities/city";
-import { DistrictEntity } from "@/core/utilities/address/domain/entities/district";
-import { SubdistrictEntity } from "@/core/utilities/address/domain/entities/subdistrict";
-import { OccupationEntity } from "@/core/utilities/occupation/domain/entities/occupation";
-
-type AccountType = "personal" | "business";
-
-type PersonalStep = "personal.personal" | "personal.address" | "personal.documents";
-type BusinessStep = "business.personal" | "business.address" | "business.documents";
-type Step = PersonalStep | BusinessStep;
-
-type BusinessAccountData = {
-  companyName?: string;
-  companyEmail?: string;
-  companyPhone?: string;
-  companyProvince?: ProvinceEntity;
-  companyCity?: CityEntity;
-  companyDistrict?: DistrictEntity;
-  companySubdistrict?: SubdistrictEntity;
-  companyAddress?: string;
-  deedOfEstablishment?: File | null;
-  mostRecentDeededOfEstablishment?: File | null;
-  businessRegistrationNumber?: File | null;
-  directorNationalIdentityCard?: File | null;
-  bankStatement?: File | null;
-};
-
-type PersonalAccountData = {
-  nationality?: string;
-  identityFile?: File | null;
-  identityNumber?: string;
-  fullName?: string;
-  occupation?: OccupationEntity;
-  placeOfBirth?: string;
-  dateOfBirth?: DateTime;
-  province?: ProvinceEntity;
-  city?: CityEntity;
-  district?: DistrictEntity;
-  subDistrict?: SubdistrictEntity;
-  address?: string;
-};
-
-type AccountData = { type: "personal"; data: PersonalAccountData } | { type: "business"; data: BusinessAccountData };
-
-export const ACCOUNT_STEPS: Record<AccountType, Step[]> = {
-  personal: ["personal.personal", "personal.address", "personal.documents"],
-  business: ["business.personal", "business.address", "business.documents"],
-} as const;
+import {
+  ACCOUNT_STEPS,
+  AccountData,
+  AccountType,
+  BusinessAccountData,
+  PersonalAccountData,
+  Step,
+} from "@/app/(user)/onboarding/account/_utils/account-form-data";
+import { Nationality } from "@/app/(user)/onboarding/account/_utils/personal-account-completeness";
+import { resolveNationalityChange } from "@/app/(user)/onboarding/account/_utils/nationality-change";
 
 type CreateAccountContextProps = {
   type?: AccountType;
@@ -63,8 +23,22 @@ type CreateAccountContextProps = {
   accountData?: AccountData;
   updatePersonalData?: (data: Partial<PersonalAccountData>) => void;
   updateBusinessData?: (data: Partial<BusinessAccountData>) => void;
-  submitAttempted?: boolean;
-  markSubmitAttempted?: () => void;
+  /**
+   * The ONLY writer of the nationality/identityNumber pair — see `resolveNationalityChange` for
+   * why a first selection preserves the identity number (QA finding F9) while a genuine switch
+   * clears it. Kept off `updatePersonalData` so that invariant lives with the buffer owner
+   * instead of being re-derived at a UI call site.
+   */
+  changeNationality?: (next: Nationality) => void;
+  /** Set by `changeNationality` when a genuine switch just cleared a filled identity number. */
+  identityNumberCleared?: boolean;
+  /** Ends the cleared notice once the user edits the field it refers to. */
+  dismissIdentityNumberCleared?: () => void;
+  /** Steps the user has already tried to leave or submit from. */
+  attemptedSteps?: Step[];
+  markStepAttempted?: (step: Step) => void;
+  /** Whether the CURRENT step's fields may render their validation errors yet. */
+  showFieldErrors?: boolean;
 };
 
 type CreateAccountProviderProps = {
@@ -78,9 +52,18 @@ export function CreateAccountProvider(props: CreateAccountProviderProps) {
   const [currentStep, setCurrentStep] = React.useState<Step>();
   const [personalData, setPersonalData] = React.useState<PersonalAccountData>({});
   const [businessData, setBusinessData] = React.useState<BusinessAccountData>({});
-  const [submitAttempted, setSubmitAttempted] = React.useState(false);
 
-  const markSubmitAttempted = useCallback(() => setSubmitAttempted(true), []);
+  // Error revelation is tracked PER STEP, not as one global "submit was attempted" latch. With a
+  // single latch, pressing "Selanjutnya" on step 1 would light up step 2's untouched fields the
+  // moment the user arrived there — errors for data they had not been asked for yet. Every field
+  // renders only on its own step, so "this step has been attempted" is exactly the right scope.
+  const [attemptedSteps, setAttemptedSteps] = React.useState<Step[]>([]);
+
+  const markStepAttempted = useCallback((step: Step) => {
+    setAttemptedSteps((prev) => (prev.includes(step) ? prev : [...prev, step]));
+  }, []);
+
+  const showFieldErrors = !!currentStep && attemptedSteps.includes(currentStep);
 
   const nextStep = () => {
     // Type and currentStep are guaranteed to be filled after type selection
@@ -106,6 +89,29 @@ export function CreateAccountProvider(props: CreateAccountProviderProps) {
     setPersonalData((prev) => ({ ...prev, ...data }));
   };
 
+  // Set only by `changeNationality`. This is a LATCH, not a derived value, so it needs an explicit
+  // end: `identity-number-input.tsx` also guards on `value === ""`, but that guard alone is
+  // one-way — after the user refills the field and then deletes it back to empty, the latch would
+  // still be true and the notice would falsely reappear claiming a citizenship change that
+  // happened several edits ago. The field's own edit path dismisses it instead.
+  const [identityNumberCleared, setIdentityNumberCleared] = React.useState(false);
+
+  const dismissIdentityNumberCleared = () => setIdentityNumberCleared(false);
+
+  // Deliberately a PLAIN function, not `useCallback`. `resolveNationalityChange` answers two
+  // questions at once — the patch to apply, and whether a filled identity number was destroyed —
+  // and the second answer has to drive a SEPARATE setter. That rules out computing it inside a
+  // functional `setPersonalData` updater, since a side effect in an updater body fires twice under
+  // StrictMode's double-invoke. So it reads `personalData` from the closure instead, which is safe
+  // for a click handler but means it must NOT be memoized without `personalData` in its deps or it
+  // would resolve against a stale buffer. `markStepAttempted` above gets away with `useCallback`
+  // only because it uses a functional updater and touches nothing else.
+  const changeNationality = (next: Nationality) => {
+    const { patch, didClearIdentityNumber } = resolveNationalityChange(personalData, next);
+    setPersonalData((prev) => ({ ...prev, ...patch }));
+    setIdentityNumberCleared(didClearIdentityNumber);
+  };
+
   const updateBusinessData = (data: Partial<BusinessAccountData>) => {
     setBusinessData((prev) => ({ ...prev, ...data }));
   };
@@ -125,11 +131,15 @@ export function CreateAccountProvider(props: CreateAccountProviderProps) {
         accountData,
         updatePersonalData,
         updateBusinessData,
+        changeNationality,
+        identityNumberCleared,
+        dismissIdentityNumberCleared,
         setCurrentStep,
         nextStep,
         prevStep,
-        submitAttempted,
-        markSubmitAttempted,
+        attemptedSteps,
+        markStepAttempted,
+        showFieldErrors,
       }}
     >
       {props.children}

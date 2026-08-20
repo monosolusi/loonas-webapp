@@ -8,6 +8,7 @@ import { UserEntity } from "@/features/user/domain/entities/user";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import useSWR from "swr";
 import { HttpRequest } from "@/core/helpers/http-request";
+import { USER_SWR_KEYS } from "@/features/user/presentation/constants/swr-keys";
 
 async function GetMeFetcher(_: string): Promise<UserEntity> {
   const sessionRepository = new SessionRepositoryImpl(new LocalStorageSessionService());
@@ -21,7 +22,7 @@ async function GetMeFetcher(_: string): Promise<UserEntity> {
 }
 
 export function useGetMe() {
-  const { data, isLoading, error } = useSWR("get-me", GetMeFetcher, {
+  const { data, isLoading, error } = useSWR(USER_SWR_KEYS.GET_ME, GetMeFetcher, {
     revalidateOnMount: true,
     revalidateOnFocus: true,
     revalidateOnReconnect: true,

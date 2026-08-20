@@ -2,7 +2,6 @@
 
 import { TimelineItem } from "@/app/(user)/onboarding/kyc-summary/_components/timeline-item";
 import { useGetAccountVerificationWork } from "@/features/account/presentation/hooks/use-get-account-verification-work";
-import { VerificationOutcome } from "@/features/account/domain/enums/verification-outcome";
 
 type ApprovedTimelineItemProps = {
   account: { id: string };
@@ -11,7 +10,7 @@ type ApprovedTimelineItemProps = {
 export function ApprovedTimelineItem(props: ApprovedTimelineItemProps) {
   const { verificationWork } = useGetAccountVerificationWork({ enabled: props.account.id });
 
-  if (verificationWork?.verificationOutcome !== VerificationOutcome.APPROVED) return null;
+  if (!verificationWork?.isApproved) return null;
   return (
     <TimelineItem
       backgroundColor="bg-success-300"

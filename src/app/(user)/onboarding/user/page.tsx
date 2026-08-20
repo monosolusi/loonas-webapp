@@ -8,10 +8,19 @@ import { CreateUserButton } from "@/app/(user)/onboarding/user/_components/creat
 import { CreateUserProvider } from "@/app/(user)/onboarding/user/_providers/create-user";
 import { CreateUserInputs } from "@/app/(user)/onboarding/user/_components/create-user-inputs";
 import { CreateUserForm } from "@/app/(user)/onboarding/user/_components/create-user-form";
+import { CreateUserCaptcha } from "@/app/(user)/onboarding/user/_components/create-user-captcha";
+import { CreateUserStatusNotice } from "@/app/(user)/onboarding/user/_components/create-user-status-notice";
+import { Spinner } from "@/core/presentations/components/spinner";
 
 export default function UserStepPage() {
   return (
-    <CreateUserProvider>
+    <CreateUserProvider
+      redirecting={
+        <div className="flex flex-col items-center justify-center py-20">
+          <Spinner className="text-primary-300 size-8" />
+        </div>
+      }
+    >
       <div className="flex flex-col items-center justify-center gap-10">
         <StepIndicatorWithTime currentStep={1} totalSteps={4} expectedTime="~1 menit" />
         <StepHeader title="Buat Akun Baru" description="Mari mulai dengan informasi dasar Anda" />
@@ -30,7 +39,9 @@ export default function UserStepPage() {
           </div>
           <CreateUserForm>
             <CreateUserInputs />
+            <CreateUserCaptcha />
             <CreateUserButton />
+            <CreateUserStatusNotice />
           </CreateUserForm>
           <span className="text-center text-xs leading-5 font-normal text-neutral-200">
             Dengan melanjutkan, Anda menyetujui &nbsp;

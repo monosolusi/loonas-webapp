@@ -6,12 +6,12 @@ import { FullNameInput } from "@/app/(user)/onboarding/account/@personalAccount/
 import { IdentityNumberInput } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/identity-number-input";
 import { PlaceOfBirthInput } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/place-of-birth-input";
 import { DateOfBirthInput } from "@/app/(user)/onboarding/account/@personalAccount/@personalDetail/_components/date-of-birth-input";
-import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_hooks/use-personal-account-data";
+import { usePersonalAccountData } from "@/app/(user)/onboarding/account/@personalAccount/_providers/personal-account-provider";
 import { OccupationInput } from "@/app/(user)/onboarding/_components/occupation-input";
 
 export default function PersonalDetailInputPage() {
   const { currentStep, type } = useCreateAccount();
-  const { data, update } = usePersonalAccountData();
+  const { data, update, fieldError } = usePersonalAccountData();
 
   if (!(type === "personal" && currentStep === "personal.personal")) return null;
   return (
@@ -33,7 +33,11 @@ export default function PersonalDetailInputPage() {
         <IdentityNumberInput />
 
         {/* Occupation Input */}
-        <OccupationInput value={data.occupation} onChange={(value) => update?.({ occupation: value })} />
+        <OccupationInput
+          value={data.occupation}
+          onChange={(value) => update?.({ occupation: value })}
+          error={fieldError("occupation")}
+        />
 
         {/*  Place of Birth Input */}
         <PlaceOfBirthInput />

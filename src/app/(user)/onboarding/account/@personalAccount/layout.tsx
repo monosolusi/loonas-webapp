@@ -4,12 +4,14 @@ import { StepIndicatorWithTime } from "@/app/(user)/onboarding/_components/step-
 import { StepHeader } from "@/app/(user)/onboarding/_components/step-header";
 import React from "react";
 import { PreviousButton } from "@/app/(user)/onboarding/account/_components/previous-button";
-import { NextButton } from "@/app/(user)/onboarding/account/_components/next-button";
+import { PersonalNextButton } from "@/app/(user)/onboarding/account/@personalAccount/_components/personal-next-button";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { StepIndicatorImpl } from "@/app/(user)/onboarding/account/_components/step-indicator.impl";
 import { SubmitButton } from "@/app/(user)/onboarding/account/@personalAccount/_components/submit-button";
 import { PersonalAccountFormWrapper } from "@/app/(user)/onboarding/account/@personalAccount/_components/personal-account-form-wrapper";
 import { PersonalSubmitErrorBanner } from "@/app/(user)/onboarding/account/@personalAccount/_components/submit-error-banner";
+import { PersonalSubmitIncompleteBanner } from "@/app/(user)/onboarding/account/@personalAccount/_components/submit-incomplete-banner";
+import { PersonalAccountProvider } from "@/app/(user)/onboarding/account/@personalAccount/_providers/personal-account-provider";
 
 type PersonalAccountCreationLayoutProps = {
   personalDetail: React.ReactNode;
@@ -22,32 +24,35 @@ export default function PersonalAccountCreationLayout(props: PersonalAccountCrea
 
   if (type !== "personal") return null; // Do not render this page if the user has not selected a personal account.
   return (
-    <PersonalAccountFormWrapper>
-      <div className="flex flex-col items-center justify-center gap-10">
-        <StepIndicatorWithTime currentStep={3} totalSteps={4} expectedTime="~3 menit" />
-        <StepHeader title="Informasi Personal" description="Lengkapi data diri untuk verifikasi identitas Anda." />
-        <div className="flex w-full flex-col items-stretch">
-          <StepIndicatorImpl />
-          <div>
-            {props.personalDetail}
-            {props.addressDetail}
-            {props.documentUpload}
-          </div>
-          <PersonalSubmitErrorBanner />
-          <div className="flex flex-row gap-3 border-t border-neutral-100 pt-4">
-            <div className="flex-1">
-              <PreviousButton />
+    <PersonalAccountProvider>
+      <PersonalAccountFormWrapper>
+        <div className="flex flex-col items-center justify-center gap-10">
+          <StepIndicatorWithTime currentStep={3} totalSteps={4} expectedTime="~3 menit" />
+          <StepHeader title="Informasi Personal" description="Lengkapi data diri untuk verifikasi identitas Anda." />
+          <div className="flex w-full flex-col items-stretch">
+            <StepIndicatorImpl />
+            <div>
+              {props.personalDetail}
+              {props.addressDetail}
+              {props.documentUpload}
             </div>
-            <div className="flex-1">
-              <NextButton />
-              <SubmitButton />
+            <PersonalSubmitErrorBanner />
+            <PersonalSubmitIncompleteBanner />
+            <div className="flex flex-row gap-3 border-t border-neutral-100 pt-4">
+              <div className="flex-1">
+                <PreviousButton />
+              </div>
+              <div className="flex-1">
+                <PersonalNextButton />
+                <SubmitButton />
+              </div>
             </div>
+            <p className="mt-2 text-center text-xs text-neutral-200">
+              Unggah dokumen mungkin membutuhkan beberapa saat pada jaringan lambat.
+            </p>
           </div>
-          <p className="mt-2 text-center text-xs text-neutral-200">
-            Unggah dokumen mungkin membutuhkan beberapa saat pada jaringan lambat.
-          </p>
         </div>
-      </div>
-    </PersonalAccountFormWrapper>
+      </PersonalAccountFormWrapper>
+    </PersonalAccountProvider>
   );
 }
