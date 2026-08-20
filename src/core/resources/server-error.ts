@@ -1,12 +1,6 @@
 type ErrorStructureType = { code: string; httpCode: number; message: string };
 
 export class ErrorCodes {
-  public static readonly USER_SIGNED_IN = {
-    code: "USER_SIGNED_IN",
-    httpCode: 400,
-    message: "User already signed in",
-  };
-
   public static readonly EMPTY_RESPONSE = {
     code: "EMPTY_RESPONSE",
     httpCode: 400,

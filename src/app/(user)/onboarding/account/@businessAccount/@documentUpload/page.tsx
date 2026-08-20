@@ -3,11 +3,11 @@
 import React from "react";
 import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
 import { FileUploadInput } from "@/core/presentations/components/file-upload-input";
-import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_hooks/use-business-account-data";
+import { useBusinessAccountData } from "@/app/(user)/onboarding/account/@businessAccount/_providers/business-account-provider";
 
 export default function DocumentUploadPage() {
   const { type, currentStep } = useCreateAccount();
-  const { data, update } = useBusinessAccountData();
+  const { data, update, fieldError } = useBusinessAccountData();
 
   if (!(type === "business" && currentStep === "business.documents")) return null;
   return (
@@ -30,6 +30,7 @@ export default function DocumentUploadPage() {
           maxSize={5 * 1024 * 1024}
           value={data.deedOfEstablishment}
           onChange={(value) => update?.({ deedOfEstablishment: value })}
+          error={fieldError("deedOfEstablishment")}
           required
         />
 
@@ -47,6 +48,7 @@ export default function DocumentUploadPage() {
           maxSize={5 * 1024 * 1024}
           value={data.businessRegistrationNumber}
           onChange={(value) => update?.({ businessRegistrationNumber: value })}
+          error={fieldError("businessRegistrationNumber")}
           required
         />
 
@@ -56,6 +58,7 @@ export default function DocumentUploadPage() {
           maxSize={5 * 1024 * 1024}
           value={data.directorNationalIdentityCard}
           onChange={(value) => update?.({ directorNationalIdentityCard: value })}
+          error={fieldError("directorNationalIdentityCard")}
           required
         />
 
@@ -66,6 +69,7 @@ export default function DocumentUploadPage() {
           maxSize={5 * 1024 * 1024}
           value={data.bankStatement}
           onChange={(value) => update?.({ bankStatement: value })}
+          error={fieldError("bankStatement")}
           required
         />
       </div>

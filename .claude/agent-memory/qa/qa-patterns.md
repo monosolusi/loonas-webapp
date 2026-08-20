@@ -302,6 +302,11 @@ metadata:
 - Build output: `/finance/journals` = 7.06 kB, `/finance/journals/new` = 11.3 kB. 46 pages total. All three gates exit 0 after delta fix.
 - **Resolution (delta pass 2026-06-24)**: PERIOD_CLOSED (httpCode 409) and DATE_IN_CLOSED_PERIOD (httpCode 422) added to ErrorCodes registry after NORMAL_BALANCE_HINT. mapServerError defensive fallback: `const code = err.code === "UNKNOWN" ? (err.details?.code ?? err.code) : err.code` — handles both registered-code path and any future unregistered fallback. Toast copy "Jurnal berhasil disimpan." → "Jurnal berhasil diposting." at both provider call sites. All ACs PASS after fix round.
 
+## Provider-Encapsulation Verification Technique (2026-08-17, onboarding nationality-reset branch)
+
+- When a hook is renamed and moved behind a page-level provider (e.g. `use-personal-account-data.ts` → `usePersonalAccountState`, consumed only by `personal-account-provider.tsx`), don't just grep for the OLD import path being gone — also grep for the NEW hook name (`grep -rln "usePersonalAccountState" --include="*.tsx" --include="*.ts" src`) and confirm it resolves to exactly the hook file + its own provider file, nothing else. That proves the 20+ downstream consumers were actually repointed to the provider's context hook rather than merely surviving a rename that left them broken or bypassing the provider.
+- `.env` symlink to the parent repo's `.env` (per [[project_worktree_missing_env]]) continues to resolve `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` correctly for `npm run build` in this worktree as of this run — `/onboarding/account` prerendered successfully at 4.29 kB. Build is a real gate here, not environment-blocked.
+
 ## LNS-381 PPh Final UMKM Self-Setor (2026-06-25)
 
 - **Build failure (pre-existing):** `npm run build` fails on this machine with `Cannot find module '../lightningcss.darwin-x64.node'` — a missing native binary in `node_modules/lightningcss/`. Confirmed pre-existing via `git stash -u` baseline run (same failure). NOT introduced by LNS-381. Report as environment-level; tsc + lint are the reliable gates here.

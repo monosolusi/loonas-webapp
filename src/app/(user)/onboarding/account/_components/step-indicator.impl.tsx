@@ -1,6 +1,7 @@
 "use client";
 
-import { ACCOUNT_STEPS, useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { useCreateAccount } from "@/app/(user)/onboarding/account/_providers/create-account";
+import { ACCOUNT_STEPS } from "@/app/(user)/onboarding/account/_utils/account-form-data";
 import { StepIndicator } from "@/app/(user)/onboarding/account/_components/step-indicator";
 
 export function StepIndicatorImpl() {

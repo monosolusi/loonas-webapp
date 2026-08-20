@@ -7,9 +7,20 @@ import { SessionRepositoryImpl } from "@/features/authentication/data/repositori
 import { ClerkSessionService } from "@/features/authentication/data/sources/clerk-session.service";
 import { useClerk } from "@clerk/nextjs";
 import useSWR from "swr";
-import { GetUserStatusFetcherParams } from "@/features/user/presentation/hooks/use-get-user-status.types";
+import {
+  GetUserStatusFetcherParams,
+  UseGetUserStatusReturnType,
+} from "@/features/user/presentation/hooks/use-get-user-status.types";
 import { UserStatusEntity } from "@/features/user/domain/entities/user-status.entity";
 import { GetUserStatusUseCase } from "@/features/user/domain/usecases/get-user-status.usecase";
+import { USER_SWR_KEYS } from "@/features/user/presentation/constants/swr-keys";
+
+const INITIAL_STATE: UseGetUserStatusReturnType = {
+  status: null,
+  loading: true,
+  error: null,
+  refresh: null,
+};
 
 async function GetUserStatusFetcher([_, params]: [string, GetUserStatusFetcherParams]): Promise<UserStatusEntity> {
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
@@ -22,13 +33,22 @@ async function GetUserStatusFetcher([_, params]: [string, GetUserStatusFetcherPa
   return status.data;
 }
 
-export function useGetUserStatus() {
+export function useGetUserStatus(): UseGetUserStatusReturnType {
   const clerk = useClerk();
-  const { data, isLoading, error } = useSWR(["get-user-status", { clerk }], GetUserStatusFetcher);
+  const { data, isLoading, error, mutate } = useSWR(
+    [USER_SWR_KEYS.GET_USER_STATUS, { clerk }],
+    GetUserStatusFetcher,
+  );
 
-  return {
-    status: data,
-    loading: isLoading,
-    error: error,
-  };
+  if (isLoading) return INITIAL_STATE;
+  if (error) {
+    return {
+      status: null,
+      loading: false,
+      error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
+      refresh: null,
+    };
+  }
+  if (!data) return INITIAL_STATE;
+  return { status: data, loading: false, error: null, refresh: mutate };
 }
