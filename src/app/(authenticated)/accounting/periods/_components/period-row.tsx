@@ -4,8 +4,9 @@ import { useMemo } from "react";
 import { StatusChip } from "@/core/presentations/components/status-chip";
 import { ActionMenu, ActionMenuOption } from "@/core/presentations/components/action-menu";
 import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
-import { usePeriods, MANAGERIAL_COSTING_FEATURE } from "@/app/(authenticated)/accounting/periods/_providers/periods-provider";
+import { usePeriods } from "@/app/(authenticated)/accounting/periods/_providers/periods-provider";
 import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
+import { MANAGERIAL_COSTING_FEATURE } from "@/features/accounting/presentations/constants/feature-flags";
 
 type PeriodRowProps = {
   period: AccountingPeriodEntity;
