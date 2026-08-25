@@ -583,15 +583,44 @@ Two rules follow, and both are load-bearing:
 `flatFields` and merges them onto `ServerError.details`. So a **flat** body
 (`{ code, message, accounts: [...] }`) is read as `err.details.accounts`
 (`PRICE_TIER_SCHEDULE_INVALID`, `UNIT_PRICE_MISMATCH`, `OVERHEAD_ACCOUNT_NOT_SELECTABLE`), while a body
-that genuinely nests (`{ code, message, details: { failed_count } }`) is read as
-`err.details.details.failed_count` (`close-period-error.ts`, `coa-account-delete-dialog.tsx`). Nothing
-type-checks the difference — guessing wrong yields `undefined`, so the specific message silently
-degrades to the generic fallback, which is exactly the failure the specific copy existed to prevent.
-Confirm the shape against the BE response body rather than the BE docstring: on LNS-676 the API's own
-`server-error.ts` comment said `details.accounts[]`, but `details` there is only the *constructor
-parameter* name and `ServerError.details` is a flat merge, so it ships top-level. Whichever shape it
-is, a malformed or missing payload must fall back rather than crash — cover that arm in the
-resolver's test.
+that genuinely nests (`{ code, message, details: { … } }`) is read as `err.details.details.…`. Nesting
+happens only when the BE passes a literal `details` key *into* the `ServerError` constructor, which in
+practice means Joi `VALIDATION_FAILED` — **flat is the default, nested is the exception.** Nothing
+type-checks the difference — guessing wrong yields `undefined`, not an error, so the specific message
+silently degrades to the generic fallback, which is exactly the failure the specific copy existed to
+prevent.
+
+**The decisive check is the BE throw site plus the serializer — not any comment.** Read the
+`throw new ServerError(CODE, {…})` call: if that object has no `details` key, the body is flat, because
+`ServerError`'s constructor is a flat `Object.assign` and `error-handler.ts` sends `err.details` as the
+whole body. A BE docstring, a sibling FE file's comment, and *the comment already sitting in the file you
+are editing* are all worthless as evidence here — LNS-676's BE comment said `details.accounts[]` when it
+shipped top-level, and LNS-692 found `close-period-error.ts` reading `err.details.details.failed_count`
+behind a confident comment explaining why it was nested. It never was: that comment described the Joi
+shape, the count never rendered once in the month it shipped, and nothing detected it. So do not cite
+`close-period-error.ts` as a nested example — it was the bug. A hedging
+`err.details?.details?.x ?? err.details?.x` read (`coa-account-delete-dialog.tsx`) is the same smell
+wearing a shrug: it means nobody confirmed the shape.
+
+Because the failure is silent, **assert the exact path in a test** — a resolver test that feeds a
+realistic flat body and asserts the specific copy renders is the only thing that catches a reverted path.
+Whichever shape it is, a malformed or missing payload must fall back rather than crash — cover that arm
+too. Related: a `default`/catch-all branch must not assert a *specific* cause. `close-period-error.ts`
+mapped every unrecognised 422 to `PERIOD_NOT_DRAINED`'s message, so a code it had never been told about
+was confidently mislabelled; give each handled code an explicit branch and let the fallback stay
+genuinely generic.
+
+**One BE schema reused across an error body and a success body needs one parser, not two.** When the
+same component (LNS-692's `BlockingPosting`) arrives both inside a 422 and inside a 200, the layering rule
+splits it: the error body is parsed in a `presentations/` resolver, which may not import `data/models/`,
+while the 200 is parsed by a Model. That is two hand-rolled parsers for one wire shape, and they drift
+silently — LNS-692's disagreed on a malformed `coa_account` (`null` vs `""`), so the same payload was
+correctly unattributed on the 422 path but on the retry path rendered a blank `" — "` label *and* enabled
+a remedy button that could not work. Neither suite covered the divergence. Fix by converging both
+producers on one `domain/` type with the shared predicate in `domain/helpers/` (pure, no `data/` or
+`presentations/` imports), have the Model delegate to it — returning `null` rather than a
+default-filled instance when the input is unusable — and add a test asserting the two paths agree on the
+same malformed input. Do not settle for "both parsers look right": assert parity.
 
 **Dead error-code removal — branch and constant, not just the branch.** When a BE error code becomes
 unreachable (confirmed absent from `dev-api.loonas.id/openapi.json`), remove the FE runtime handler **and**
