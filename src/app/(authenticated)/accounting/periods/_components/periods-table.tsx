@@ -7,8 +7,9 @@ import { TablePagination } from "@/core/presentations/components/table/table-pag
 import { PeriodRow } from "@/app/(authenticated)/accounting/periods/_components/period-row";
 import { PeriodAdvisory } from "@/app/(authenticated)/accounting/periods/_components/period-advisory";
 import { AllocateFixedCostDialog } from "@/app/(authenticated)/accounting/periods/_components/allocate-fixed-cost-dialog";
-import { usePeriods, MANAGERIAL_COSTING_FEATURE } from "@/app/(authenticated)/accounting/periods/_providers/periods-provider";
+import { usePeriods } from "@/app/(authenticated)/accounting/periods/_providers/periods-provider";
 import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
+import { MANAGERIAL_COSTING_FEATURE } from "@/features/accounting/presentations/constants/feature-flags";
 
 const TABLE_COLUMNS = [
   { label: "Periode" },

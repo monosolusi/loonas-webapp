@@ -1,6 +1,7 @@
 import { SessionEntity } from "@/features/authentication/domain/entities/session";
 import { AccountingPeriodModel } from "@/features/accounting/data/models/accounting-period";
 import { YearEndSummaryModel } from "@/features/accounting/data/models/year-end-summary";
+import { RetryFailedPostingsResultModel } from "@/features/accounting/data/models/retry-failed-postings-result";
 import { PaginationMeta } from "@/core/resources/paginated";
 import { CloseWarning } from "@/features/accounting/domain/entities/close-warning";
 
@@ -61,6 +62,13 @@ export type ReopenYearServiceResult = {
   periods: AccountingPeriodModel[];
 };
 
+// Source owns its own params locally (LNS-402) — this is a fresh type, not borrowed from the repository.
+export type RetryFailedPostingsServiceParams = {
+  id: string;
+};
+
+export type RetryFailedPostingsServiceResult = RetryFailedPostingsResultModel;
+
 export interface AccountingPeriodService {
   list(params: ListPeriodsServiceParams, session: SessionEntity): Promise<ListPeriodsServiceResult>;
   close(params: ClosePeriodServiceParams, session: SessionEntity): Promise<ClosePeriodServiceResult>;
@@ -68,4 +76,5 @@ export interface AccountingPeriodService {
   getYearSummary(params: GetYearSummaryServiceParams, session: SessionEntity): Promise<GetYearSummaryServiceResult>;
   closeYear(params: CloseYearServiceParams, session: SessionEntity): Promise<CloseYearServiceResult>;
   reopenYear(params: ReopenYearServiceParams, session: SessionEntity): Promise<ReopenYearServiceResult>;
+  retryFailedPostings(params: RetryFailedPostingsServiceParams, session: SessionEntity): Promise<RetryFailedPostingsServiceResult>;
 }

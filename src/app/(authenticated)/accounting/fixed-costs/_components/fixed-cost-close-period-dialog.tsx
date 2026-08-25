@@ -6,7 +6,9 @@ import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { useFixedCostEntries } from "@/app/(authenticated)/accounting/fixed-costs/_providers/fixed-cost-entries-provider";
-import { ClosePeriodEscalationHint } from "@/features/accounting/presentations/components/close-period-escalation-hint";
+import { ClosePeriodBlockNotice } from "@/features/accounting/presentations/components/close-period-block-notice";
+import { MANAGERIAL_COSTING_FEATURE } from "@/features/accounting/presentations/constants/feature-flags";
+import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
 
 export function FixedCostClosePeriodDialog() {
   const {
@@ -17,7 +19,13 @@ export function FixedCostClosePeriodDialog() {
     closePeriodFailureCount,
     isClosing,
     handleClosePeriod,
+    isRetryingFailedPostings,
+    retryFailedPostingsOutcome,
+    retryFailedPostingsErrorMessage,
+    handleRetryFailedPostings,
   } = useFixedCostEntries();
+  const { account } = useGetCurrentAccount();
+  const canRetryFailedPostings = account?.hasFeature(MANAGERIAL_COSTING_FEATURE) ?? false;
 
   const [reason, setReason] = useState("");
 
@@ -70,8 +78,15 @@ export function FixedCostClosePeriodDialog() {
         <div role="status" aria-live="polite" aria-atomic="false">
           {closePeriodError && (
             <div key={closePeriodFailureCount} className="rounded-lg border border-warning-400 bg-warning-50 px-4 py-3">
-              <p className="text-sm text-warning-500">{closePeriodError}</p>
-              {closePeriodFailureCount >= 2 && <ClosePeriodEscalationHint />}
+              <ClosePeriodBlockNotice
+                block={closePeriodError}
+                failureCount={closePeriodFailureCount}
+                canRetry={canRetryFailedPostings}
+                isRetrying={isRetryingFailedPostings}
+                retryErrorMessage={retryFailedPostingsErrorMessage}
+                retryOutcome={retryFailedPostingsOutcome}
+                onRetry={handleRetryFailedPostings}
+              />
             </div>
           )}
         </div>

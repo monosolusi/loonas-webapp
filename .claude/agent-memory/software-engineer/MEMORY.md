@@ -3,6 +3,7 @@
 ## Feedback
 
 - [Model classes implement AbstractModel](feedback_model_implements_abstract_model.md) — every `data/models/` class needs `implements AbstractModel`, incl. *ResultModel envelopes + nested toValue() value objects (LNS-369 M1+m1)
+- [Shared blocking-posting type pattern](feedback_shared_blocking_posting_type_pattern.md) — a type parsed both in a presentations-layer error resolver AND a data-layer Model converges on one domain/entities type, with dedup/classification logic in domain/helpers/ so neither producer duplicates business rules (LNS-692)
 - [Shared-worktree git add index race](feedback_shared_worktree_git_add_index_race.md) — `git add <files>` + `git commit` can still sweep in a concurrent agent's staged changes; diff `--cached` before every commit
 - [Verify investigate-premise before acting](feedback_verify_investigate_premise_before_acting.md) — a brief's claim about a specific file's imports can be wrong; grep before fixing/rewiring
 - [Use-case params are a class](feedback_usecase_params_class.md) — use-case input is always a named params CLASS, never a bare type alias, even when the plan writes `type Input` (LNS-369 m2)

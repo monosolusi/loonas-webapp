@@ -4,6 +4,7 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
 import { ClosePeriodResult } from "@/features/accounting/domain/entities/close-warning";
 import { YearEndSummaryEntity } from "@/features/accounting/domain/entities/year-end-summary";
+import { RetryFailedPostingsResult } from "@/features/accounting/domain/entities/retry-failed-postings-result";
 
 export type ListPeriodsParams = {
   page?: number;
@@ -59,6 +60,10 @@ export type ReopenYearResult = {
   periods: AccountingPeriodEntity[];
 };
 
+export type RetryFailedPostingsParams = {
+  id: string;
+};
+
 export interface AccountingPeriodRepository {
   list(params: ListPeriodsParams, session: SessionEntity): Promise<DataState<ListPeriodsResult>>;
   close(params: ClosePeriodParams, session: SessionEntity): Promise<DataState<ClosePeriodResult>>;
@@ -66,4 +71,5 @@ export interface AccountingPeriodRepository {
   getYearSummary(params: GetYearSummaryParams, session: SessionEntity): Promise<DataState<YearEndSummaryEntity>>;
   closeYear(params: CloseYearParams, session: SessionEntity): Promise<DataState<CloseYearResult>>;
   reopenYear(params: ReopenYearParams, session: SessionEntity): Promise<DataState<ReopenYearResult>>;
+  retryFailedPostings(params: RetryFailedPostingsParams, session: SessionEntity): Promise<DataState<RetryFailedPostingsResult>>;
 }

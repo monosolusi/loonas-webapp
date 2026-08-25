@@ -4,8 +4,9 @@ import { createContext, useContext, useState, useCallback } from "react";
 import { DateTime } from "luxon";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import {
-  resolveClosePeriodErrorMessage,
+  resolveClosePeriodBlock,
   isPeriodHasFailedPostingsError,
+  ClosePeriodBlock,
 } from "@/features/accounting/presentations/helpers/close-period-error";
 import { revalidateSWRKey } from "@/core/helpers/revalidate-swr-key";
 import { useToast } from "@/core/presentations/hooks/use-toast";
@@ -14,6 +15,7 @@ import { DEFAULT_PAGE_SIZE } from "@/core/utilities/pagination";
 import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
 import { YearEndSummaryEntity } from "@/features/accounting/domain/entities/year-end-summary";
 import { CloseWarning } from "@/features/accounting/domain/entities/close-warning";
+import { RetryFailedPostingsResult } from "@/features/accounting/domain/entities/retry-failed-postings-result";
 import { useListPeriods } from "@/features/accounting/presentations/hooks/use-list-periods";
 import { useClosePeriod } from "@/features/accounting/presentations/hooks/use-close-period";
 import { useReopenPeriod } from "@/features/accounting/presentations/hooks/use-reopen-period";
@@ -21,10 +23,8 @@ import { useGetYearSummary } from "@/features/accounting/presentations/hooks/use
 import { useCloseYear } from "@/features/accounting/presentations/hooks/use-close-year";
 import { useReopenYear } from "@/features/accounting/presentations/hooks/use-reopen-year";
 import { useAllocateManagerialCost } from "@/features/accounting/presentations/hooks/use-allocate-managerial-cost";
+import { useRetryFailedPostings } from "@/features/accounting/presentations/hooks/use-retry-failed-postings";
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
-
-// Feature-gate literal for managerial costing — centralised here for a one-line change if the string is corrected.
-export const MANAGERIAL_COSTING_FEATURE = "managerial_costing" as const;
 
 type PeriodStatusFilter = "open" | "closed" | undefined;
 
@@ -41,10 +41,15 @@ type PeriodsContextValue = {
   closingPeriod: AccountingPeriodEntity | null;
   openCloseDialog: (period: AccountingPeriodEntity) => void;
   dismissCloseDialog: () => void;
-  closePeriodError: string | null;
+  closePeriodError: ClosePeriodBlock | null;
   closePeriodFailureCount: number;
   isClosing: boolean;
   handleClosePeriod: (reason: string) => Promise<boolean>;
+  // Failed-postings remedy (retry) — scoped to the close-period dialog above
+  isRetryingFailedPostings: boolean;
+  retryFailedPostingsOutcome: RetryFailedPostingsResult | null;
+  retryFailedPostingsErrorMessage: string | null;
+  handleRetryFailedPostings: () => Promise<void>;
   // Reopen period dialog
   reopeningPeriod: AccountingPeriodEntity | null;
   openReopenDialog: (period: AccountingPeriodEntity) => void;
@@ -107,11 +112,17 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
 
   const { trigger: triggerClose, isMutating: isClosing } = useClosePeriod();
   const { trigger: triggerReopen, isMutating: isReopening } = useReopenPeriod();
+  const { trigger: triggerRetryFailedPostings, isMutating: isRetryingFailedPostings } = useRetryFailedPostings();
 
   // Close period dialog state
   const [closingPeriod, setClosingPeriod] = useState<AccountingPeriodEntity | null>(null);
-  const [closePeriodError, setClosePeriodError] = useState<string | null>(null);
+  const [closePeriodError, setClosePeriodError] = useState<ClosePeriodBlock | null>(null);
   const [closePeriodFailureCount, setClosePeriodFailureCount] = useState(0);
+
+  // Failed-postings remedy state — reset whenever the close dialog opens/dismisses
+  const [retryFailedPostingsOutcome, setRetryFailedPostingsOutcome] = useState<RetryFailedPostingsResult | null>(null);
+  const [retryFailedPostingsErrorMessage, setRetryFailedPostingsErrorMessage] = useState<string | null>(null);
+  const [hasRetriedFailedPostings, setHasRetriedFailedPostings] = useState(false);
 
   // Advisory state
   const [pendingAdvisories, setPendingAdvisories] = useState<Record<string, CloseWarning[]>>({});
@@ -146,6 +157,9 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
   const openCloseDialog = useCallback((period: AccountingPeriodEntity) => {
     setClosePeriodError(null);
     setClosePeriodFailureCount(0);
+    setRetryFailedPostingsOutcome(null);
+    setRetryFailedPostingsErrorMessage(null);
+    setHasRetriedFailedPostings(false);
     setClosingPeriod(period);
   }, []);
 
@@ -153,6 +167,9 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
     setClosingPeriod(null);
     setClosePeriodError(null);
     setClosePeriodFailureCount(0);
+    setRetryFailedPostingsOutcome(null);
+    setRetryFailedPostingsErrorMessage(null);
+    setHasRetriedFailedPostings(false);
   }, []);
 
   const openReopenDialog = useCallback((period: AccountingPeriodEntity) => {
@@ -211,13 +228,20 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
       const idempotencyKey = crypto.randomUUID();
       try {
         const res = await triggerClose({ id: closingPeriod.id, idempotencyKey, reason: reason || undefined });
-        await revalidateSWRKey(ACCOUNTING_SWR_KEYS.LIST_ACCOUNTING_PERIODS);
+        // Commit the success state synchronously — this cannot fail — before attempting the
+        // (separately guarded) revalidation, so a transient refetch blip can never be reported as a
+        // failed close on an already-committed mutation.
         if (res.warnings.length > 0) {
           setPendingAdvisories((prev) => ({ ...prev, [closingPeriod.id]: res.warnings }));
         }
         setClosingPeriod(null);
         setClosePeriodFailureCount(0);
         showToast("Periode berhasil ditutup.", "success");
+        try {
+          await revalidateSWRKey(ACCOUNTING_SWR_KEYS.LIST_ACCOUNTING_PERIODS);
+        } catch {
+          // The close already succeeded — a failed refetch here is not a close failure.
+        }
         return true;
       } catch (err) {
         const isFailedPostings = isPeriodHasFailedPostingsError(err);
@@ -234,7 +258,19 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
             showToast(ErrorCodes.PERIOD_ALREADY_CLOSED.message, "error");
           } else if (err.httpCode === 422) {
             // AC-5: inline warning inside the dialog — set error message, do NOT close dialog
-            setClosePeriodError(resolveClosePeriodErrorMessage(err));
+            const block = resolveClosePeriodBlock(err);
+            // A posting that fails again during a retry stays eligible for automatic background
+            // retries rather than being set aside — so PERIOD_NOT_DRAINED right after a successful
+            // retry means "still draining", not "the remedy failed".
+            setClosePeriodError(
+              block.kind === "not-drained" && hasRetriedFailedPostings
+                ? {
+                    ...block,
+                    message:
+                      "Periode belum bisa dikunci. Transaksi yang baru diproses ulang masih diproses di latar belakang. Coba tutup periode lagi dalam beberapa saat.",
+                  }
+                : block,
+            );
           } else {
             showToast("Terjadi kesalahan. Silakan coba lagi.", "error");
           }
@@ -244,8 +280,27 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
         return false;
       }
     },
-    [closingPeriod, triggerClose, showToast],
+    [closingPeriod, triggerClose, showToast, hasRetriedFailedPostings],
   );
+
+  const handleRetryFailedPostings = useCallback(async (): Promise<void> => {
+    if (!closingPeriod) return;
+    setRetryFailedPostingsErrorMessage(null);
+    try {
+      const result = await triggerRetryFailedPostings({ periodId: closingPeriod.id });
+      setRetryFailedPostingsOutcome(result);
+      setHasRetriedFailedPostings(true);
+      if (result.pendingAfterRetry === 0 && result.attempted > 0) {
+        showToast("Transaksi berhasil diproses ulang.", "success");
+      }
+    } catch (err) {
+      if (err instanceof ServerError && err.httpCode === 403) {
+        setRetryFailedPostingsErrorMessage("Anda tidak memiliki akses untuk memproses ulang transaksi ini.");
+      } else {
+        showToast("Gagal memproses ulang transaksi. Silakan coba lagi.", "error");
+      }
+    }
+  }, [closingPeriod, triggerRetryFailedPostings, showToast]);
 
   const handleReopenPeriod = useCallback(
     async (reason: string): Promise<boolean> => {
@@ -410,6 +465,10 @@ export function PeriodsProvider({ children }: PeriodsProviderProps) {
         closePeriodFailureCount,
         isClosing,
         handleClosePeriod,
+        isRetryingFailedPostings,
+        retryFailedPostingsOutcome,
+        retryFailedPostingsErrorMessage,
+        handleRetryFailedPostings,
         reopeningPeriod,
         openReopenDialog,
         dismissReopenDialog,

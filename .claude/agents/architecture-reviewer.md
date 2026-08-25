@@ -131,6 +131,8 @@ Before delivering your report, confirm:
 - [ ] The report is framed as a handoff to the engineering lead — actionable and decision-ready.
 - [ ] Every finding is tagged change-introduced vs pre-existing, and the Recommended Disposition reflects only change-introduced findings.
 - [ ] You did not exceed your lane by asking the engineering lead questions outside the architectural review surface.
+- [ ] No finding rests on an argument from absence. Absence of an item in a docs list is not evidence the thing does not exist — an error-code list that omits `FEATURE_NOT_AVAILABLE` does not mean the route is ungated. Before flagging something as missing, read the declaring source (the route's own gate, the schema, the throw site); if you cannot, state the finding as a question, not a Blocker. A reviewer demanding removal of a correct `MANAGERIAL_COSTING` gate on this reasoning would have broken an acceptance criterion.
+- [ ] Every finding names a concrete defect or risk it removes. A finding that only adds abstraction — an interface with one implementation, speculative generality, a pattern for its own sake — is not a finding. Where simplicity and architectural purity conflict, the simpler design wins unless you state why purity is worth the cost here.
 
 ## Edge Cases & Escalation
 
