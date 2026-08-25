@@ -45,3 +45,4 @@
 - [HPP profitability contract](project_hpp_profitability_contract.md) — LNS-347 FE consumes LNS-42 (Done) HPP contract: 4 idempotent GETs, margin 0/1000/0.01, two needs-data signals (200 flag vs 422 incomplete-recipe), Indonesian response keys; no aggregate endpoint (per-variant fan-out)
 - [Linear filing in this repo](reference_linear_filing_in_this_repo.md) — /linear-* creation skills absent in loonas-webapp-2; file via save_issue with reconciled team+labels; canonical label names (Tech Debt not tech-debt) + In Progress stateId
 - [Accounting params independence](project_accounting_params_independence.md) — LNS-404: 3 param families; +LNS-414 result-side symmetry (11 use cases own *UseCaseResult, 6 report hooks off repo *Data); re-grep, ticket counts wrong
+- [LNS-691 revalidate defect class](project_lns691_revalidate_class.md) — class home for revalidateSWRKey false-failure + blanking; fold instances in, LNS-640 hook shape is the fix
