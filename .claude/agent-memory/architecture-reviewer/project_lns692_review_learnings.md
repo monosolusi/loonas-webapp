@@ -14,13 +14,17 @@ One confirmed finding, and one raised-then-REJECTED:
    wrong/unrelated `MANAGERIAL_COSTING_FEATURE` copy-pasted from a sibling, inferring "no BE gate"
    from the endpoint's documented error list omitting `FEATURE_NOT_AVAILABLE`. That inference was
    invalid and the finding was wrong: the ticket specifies the gate verbatim ("Feature gate:
-   `MANAGERIAL_COSTING` — the same gate as the overhead-account selection endpoints"), independent
+   `MANAGERIAL_COSTING`"), independent
    BE verification confirmed `AccountFeature.MANAGERIAL_COSTING` on the route, and an acceptance
    criterion *requires* that an account without it is not offered the action. Acting on it would
-   have broken that AC. **Lesson: absence of an error code in a docs list is not evidence a gate
-   does not exist — read the route's declared gate before calling one spurious, and where a ticket
-   states a gate explicitly, that is the contract.** A general "feature-flag copy-paste" note built
-   on this was written and then deleted as unfounded.
+   have broken that AC. General, reusable lesson (verification order before flagging a gate as
+   spurious) is in [[feedback_feature_flag_gate_copy_paste]] — that note was corrected, not
+   deleted, after this incident.
+   Caveat on the citation: the ticket's fuller phrasing, "the same gate as the overhead-account
+   selection endpoints", is itself WRONG — overhead selection is gated `OVERHEAD_ACCOUNT_MANAGE`
+   (`overhead-account.router.ts:77,87`), a deliberately wider grant. The route's own
+   `RequireFeature(AccountFeature.MANAGERIAL_COSTING)` (`accounting-period.router.ts:156`) is the
+   authority, not the ticket's description of it. That mismatch is filed as LNS-702.
 2. **Minor (real, fixed in `e2b491f4`)**: `presentations/helpers/close-period-error.ts`'s hand-rolled `parseCoaAccountRef`
    (returns `null` on any malformed field) vs `data/models/blocking-posting.ts`'s
    `CoaAccountRefModel.fromJson` (defaults missing fields to `""`, never returns null for a
