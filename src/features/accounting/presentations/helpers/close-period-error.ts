@@ -1,6 +1,10 @@
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { BlockingPosting, CoaAccountRef } from "@/features/accounting/domain/entities/blocking-posting";
-import { deriveBlockingOverheadAccounts, hasUnattributedBlockingPosting } from "@/features/accounting/domain/helpers/blocking-posting";
+import {
+  deriveBlockingOverheadAccounts,
+  hasUnattributedBlockingPosting,
+  parseCoaAccountRef,
+} from "@/features/accounting/domain/helpers/blocking-posting";
 
 export type ClosePeriodBlock =
   | {
@@ -13,13 +17,6 @@ export type ClosePeriodBlock =
     }
   | { kind: "pph-final"; message: string }
   | { kind: "generic"; message: string };
-
-function parseCoaAccountRef(value: unknown): CoaAccountRef | null {
-  if (!value || typeof value !== "object") return null;
-  const v = value as Record<string, unknown>;
-  if (typeof v["id"] !== "string" || typeof v["code"] !== "string" || typeof v["name"] !== "string") return null;
-  return { id: v["id"], code: v["code"], name: v["name"] };
-}
 
 function parseBlockingPosting(value: unknown): BlockingPosting | null {
   if (!value || typeof value !== "object") return null;

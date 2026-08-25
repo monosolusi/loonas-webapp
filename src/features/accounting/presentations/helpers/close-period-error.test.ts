@@ -56,7 +56,7 @@ describe("resolveClosePeriodBlock — PERIOD_HAS_FAILED_POSTINGS (flat body)", (
     expect(block.hasUnattributed).toBe(false);
   });
 
-  it("renders an account-less attribution without a blank account, and does not flag it unattributed", () => {
+  it("renders an account-less attribution without a blank account, and DOES flag it unattributed — an unresolved account offers no self-service remedy", () => {
     const err = failedPostingsError({
       failed_count: 1,
       blocking_postings: [
@@ -67,6 +67,7 @@ describe("resolveClosePeriodBlock — PERIOD_HAS_FAILED_POSTINGS (flat body)", (
     if (block.kind !== "failed-postings") throw new Error("expected failed-postings");
     expect(block.overheadAccounts).toEqual([]);
     expect(block.postings?.[0].coaAccount).toBeNull();
+    expect(block.hasUnattributed).toBe(true);
   });
 
   it("flags hasUnattributed and offers no accounts for a null or unrecognised error_code", () => {
@@ -100,6 +101,27 @@ describe("resolveClosePeriodBlock — PERIOD_HAS_FAILED_POSTINGS (flat body)", (
     const block = resolveClosePeriodBlock(failedPostingsError({ failed_count: 2, blocking_postings: "not-an-array" }));
     if (block.kind !== "failed-postings") throw new Error("expected failed-postings");
     expect(block.postings).toBeNull();
+  });
+
+  it("treats a malformed coa_account the same as a null one — never a blank-labelled account, never enables the remedy", () => {
+    // Parity regression: `data/models/blocking-posting.test.ts` asserts the identical shape on the
+    // retry-outcome (data-model) path. Both now delegate to the same `parseCoaAccountRef` helper.
+    const err = failedPostingsError({
+      failed_count: 1,
+      blocking_postings: [
+        {
+          source_table: "pos_sales",
+          outbox_id: "ob-1",
+          error_code: "OVERHEAD_ACCOUNT_AUTO_POSTING_REFUSED",
+          coa_account: { id: "acc-1", code: "5100" }, // missing name
+        },
+      ],
+    });
+    const block = resolveClosePeriodBlock(err);
+    if (block.kind !== "failed-postings") throw new Error("expected failed-postings");
+    expect(block.postings?.[0].coaAccount).toBeNull();
+    expect(block.overheadAccounts).toEqual([]);
+    expect(block.hasUnattributed).toBe(true);
   });
 });
 

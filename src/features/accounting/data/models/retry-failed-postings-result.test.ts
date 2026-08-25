@@ -55,4 +55,25 @@ describe("RetryFailedPostingsResultModel", () => {
     const model = RetryFailedPostingsResultModel.fromJson({});
     expect(model.toEntity()).toEqual({ periodId: "", attempted: 0, cleared: 0, pendingAfterRetry: 0, stillFailing: [] });
   });
+
+  it("renders a still_failing entry without an account when its coa_account is malformed", () => {
+    // Regression: a partially-malformed coa_account (e.g. missing `name`) must never produce a
+    // usable account here — otherwise the UI would render a blank " — " label and incorrectly
+    // enable the retry-again remedy for an entry the server never actually resolved.
+    const model = RetryFailedPostingsResultModel.fromJson({
+      period_id: "p-1",
+      attempted: 1,
+      cleared: 0,
+      pending_after_retry: 1,
+      still_failing: [
+        {
+          source_table: "pos_sales",
+          outbox_id: "ob-2",
+          error_code: "OVERHEAD_ACCOUNT_AUTO_POSTING_REFUSED",
+          coa_account: { id: "acc-1", code: "5100" }, // missing name
+        },
+      ],
+    });
+    expect(model.toEntity().stillFailing[0].coaAccount).toBeNull();
+  });
 });

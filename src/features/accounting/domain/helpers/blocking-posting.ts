@@ -4,6 +4,26 @@ import { BlockingPosting, CoaAccountRef } from "@/features/accounting/domain/ent
 const OVERHEAD_COLLISION_CODE = ErrorCodes.OVERHEAD_ACCOUNT_AUTO_POSTING_REFUSED.code;
 
 /**
+ * Validates a raw `coa_account` JSON value into a well-formed `CoaAccountRef`, or `null` when
+ * `id`/`code`/`name` is missing or not a string.
+ *
+ * This is the SINGLE source of truth for "is this coa_account usable" — shared by both producers of
+ * `BlockingPosting` so a malformed value is treated identically on both paths: the close-422
+ * diagnosis (`presentations/helpers/close-period-error.ts`, which cannot import `data/models`) and
+ * the retry-outcome model (`data/models/blocking-posting.ts::CoaAccountRefModel.fromJson`). Before
+ * this was unified, the two paths disagreed — the model defaulted missing fields to `""` instead of
+ * rejecting them, so a malformed `coa_account` in a retry outcome rendered a blank `" — "` label and
+ * incorrectly enabled the retry remedy, while the identical shape on the diagnosis path was
+ * correctly treated as unattributed.
+ */
+export function parseCoaAccountRef(value: unknown): CoaAccountRef | null {
+  if (!value || typeof value !== "object") return null;
+  const v = value as Record<string, unknown>;
+  if (typeof v["id"] !== "string" || typeof v["code"] !== "string" || typeof v["name"] !== "string") return null;
+  return { id: v["id"], code: v["code"], name: v["name"] };
+}
+
+/**
  * True when `posting` names a specific, still-resolvable overhead account the merchant can act on
  * by deselecting it — the only case that can offer a deselect-then-retry remedy.
  */

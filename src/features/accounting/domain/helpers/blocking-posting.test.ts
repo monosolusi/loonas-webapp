@@ -4,6 +4,7 @@ import {
   deriveBlockingOverheadAccounts,
   hasUnattributedBlockingPosting,
   isNamedOverheadAccountPosting,
+  parseCoaAccountRef,
 } from "@/features/accounting/domain/helpers/blocking-posting";
 
 const OVERHEAD_COLLISION_CODE = "OVERHEAD_ACCOUNT_AUTO_POSTING_REFUSED";
@@ -11,6 +12,36 @@ const OVERHEAD_COLLISION_CODE = "OVERHEAD_ACCOUNT_AUTO_POSTING_REFUSED";
 function posting(overrides: Partial<BlockingPosting>): BlockingPosting {
   return { sourceTable: "pos_sales", outboxId: "ob-1", errorCode: null, coaAccount: null, ...overrides };
 }
+
+describe("parseCoaAccountRef", () => {
+  // This is the SINGLE source of truth both `data/models/blocking-posting.ts::CoaAccountRefModel`
+  // (the retry-outcome path) and `presentations/helpers/close-period-error.ts` (the close-422
+  // diagnosis path) delegate to — see their own test suites for the end-to-end parity coverage this
+  // function's correctness guarantees.
+  it("parses a well-formed account ref", () => {
+    expect(parseCoaAccountRef({ id: "acc-1", code: "5100", name: "Beban Sewa" })).toEqual({
+      id: "acc-1",
+      code: "5100",
+      name: "Beban Sewa",
+    });
+  });
+
+  it("is null when a field is missing", () => {
+    expect(parseCoaAccountRef({})).toBeNull();
+    expect(parseCoaAccountRef({ id: "acc-1", code: "5100" })).toBeNull();
+  });
+
+  it("is null when a field is present but not a string", () => {
+    expect(parseCoaAccountRef({ id: 123, code: "5100", name: "Beban Sewa" })).toBeNull();
+  });
+
+  it("is null for null, undefined, and non-object values, without crashing", () => {
+    expect(parseCoaAccountRef(null)).toBeNull();
+    expect(parseCoaAccountRef(undefined)).toBeNull();
+    expect(parseCoaAccountRef("acc-1")).toBeNull();
+    expect(parseCoaAccountRef(42)).toBeNull();
+  });
+});
 
 describe("isNamedOverheadAccountPosting", () => {
   it("is true only for the overhead-collision code with a resolved account", () => {

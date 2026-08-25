@@ -1,5 +1,6 @@
 import { AbstractModel } from "@/core/resources/model";
 import { BlockingPosting, CoaAccountRef } from "@/features/accounting/domain/entities/blocking-posting";
+import { parseCoaAccountRef } from "@/features/accounting/domain/helpers/blocking-posting";
 
 export class CoaAccountRefModel implements AbstractModel {
   constructor(
@@ -8,8 +9,15 @@ export class CoaAccountRefModel implements AbstractModel {
     public readonly name: string,
   ) {}
 
-  public static fromJson(data: Record<string, any>): CoaAccountRefModel {
-    return new CoaAccountRefModel(data["id"] ?? "", data["code"] ?? "", data["name"] ?? "");
+  /**
+   * `null` when `data` does not yield a usable `{id, code, name}` — validated through the SAME
+   * `parseCoaAccountRef` helper the close-422 diagnosis resolver uses, so a malformed value is
+   * excluded on both paths rather than silently defaulting to blank fields here.
+   */
+  public static fromJson(data: unknown): CoaAccountRefModel | null {
+    const ref = parseCoaAccountRef(data);
+    if (!ref) return null;
+    return new CoaAccountRefModel(ref.id, ref.code, ref.name);
   }
 
   public toValue(): CoaAccountRef {
@@ -30,7 +38,7 @@ export class BlockingPostingModel implements AbstractModel {
       data["source_table"] ?? "",
       data["outbox_id"] ?? "",
       typeof data["error_code"] === "string" ? data["error_code"] : null,
-      data["coa_account"] != null ? CoaAccountRefModel.fromJson(data["coa_account"]) : null,
+      CoaAccountRefModel.fromJson(data["coa_account"]),
     );
   }
 
