@@ -55,3 +55,4 @@
 - [LNS-378 year-end close + retained earnings](project_lns378_year_end_close.md) — R1–R6 risks mitigated; 3200 preselect, verbatim token, two journal-id keys, null not "", provider-extended not new
 - [LNS-457 failed-postings retry + escalation hint](project_lns457_failed_postings_retry.md) — shared 422-curation helper, double-nested details read, in-memory consecutive-failure counter
 - [KYC verification predicate tightening](project_lns_kyc_verification_predicate_tightening.md) — isApproved/isRejected getters require latestStatus===COMPLETED too; 4 call sites tightened intentionally, not a regression
+- [LNS-676 overhead accounts](project_lns676_overhead_accounts.md) — trivial-passthrough usecase (no Result wrapper), provider gates on loading-only not error (in-card error needs children to render), rejection banner not toast
