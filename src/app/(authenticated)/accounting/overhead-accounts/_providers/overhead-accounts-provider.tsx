@@ -91,13 +91,28 @@ export function OverheadAccountsProvider({ loading: loadingIndicator, children }
       setRejection(null);
       try {
         await trigger({ accountIds: accounts.map((a) => a.id) });
-        await revalidateSWRKey(ACCOUNTING_SWR_KEYS.LIST_OVERHEAD_ACCOUNTS);
-        setBufferOverride(null); // re-derive buffer from the freshly revalidated savedAccounts
-        showToast("Akun overhead berhasil disimpan.", "success");
       } catch (err) {
-        // Never throw from an async handler — the rejection banner is the surface for this,
-        // deliberately not doubled up with a toast.
+        // The mutation itself failed to commit (e.g. 422 OVERHEAD_ACCOUNT_NOT_SELECTABLE) —
+        // this is the only branch allowed to report a save rejection. Never throw from an
+        // async handler — the rejection banner is the surface for this, deliberately not
+        // doubled up with a toast.
         setRejection(resolveOverheadRejection(err));
+        return;
+      }
+
+      // trigger() resolved: the PUT already committed server-side, so the save is already a
+      // success. Commit that outcome synchronously (cannot fail) BEFORE attempting anything
+      // that can — a revalidate hiccup past this point must never be reported as a save
+      // failure. CLAUDE.md recovery-path shape: state first, revalidation isolated.
+      setBufferOverride(null);
+      showToast("Akun overhead berhasil disimpan.", "success");
+
+      try {
+        await revalidateSWRKey(ACCOUNTING_SWR_KEYS.LIST_OVERHEAD_ACCOUNTS);
+      } catch {
+        // Swallowed deliberately: the save already succeeded and was already reported as
+        // such above. A revalidate failure here must never re-route through
+        // resolveOverheadRejection and turn a successful save into a reported failure.
       }
     },
     [trigger, showToast],
