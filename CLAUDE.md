@@ -140,7 +140,15 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   `throwOnError: true`. If the refetch fails (e.g. recovering from a 404 — the entity is still gone), the `await`
   throws and everything after it is skipped. In an error-recovery path, show the toast and set state **first**
   (synchronous, cannot fail), then attempt the revalidation inside its own `try {} catch {}`. On the success path
-  it is fine unguarded, since the surrounding `catch` already handles it.
+  it is safe unguarded **only when the surrounding `catch` is a generic error surface**. When that `catch`
+  attributes failures to a *specific* operation, an unguarded success-path `await` converts a transient refetch
+  failure into a false report about the mutation. LNS-676: `performSave` awaited it after a PUT had already
+  committed, inside a `try` whose `catch` fed `resolveOverheadRejection` — so a refetch blip reported a **saved**
+  selection as a rejected one, and because the same error also flipped the list hook's `error`, the card swapped to
+  its fetch-error view and took the user's saved data off screen. The shape that holds in both cases: let the
+  mutation's own `await` be the only thing its `catch` can attribute, commit the success state synchronously the
+  moment it resolves, then revalidate inside its own `try {} catch {}`. Isolate it whenever the catch is
+  operation-specific, on either path.
 - **UseCase params independence**: Use case param types are defined in the use case file itself. Use cases MUST NOT
   import param types from repositories or sources. The use case defines its own params, then maps to repo params
   internally.
@@ -522,7 +530,24 @@ once per logical attempt, reuse on retry, rotate only when the helper says so.
 deployed schemas over BE PR or ticket prose. Never pre-add a field to a Model (`data/models/`) or
 Entity (`domain/entities/`) for a BE contract that hasn't shipped to dev-api — that invents a
 contract the backend hasn't committed to (the LNS-637 FE guard deliberately omitted a discriminator
-field that LNS-631 had not added). **Read the declared `format`, not just the type** — a spec
+field that LNS-631 had not added).
+
+**The one exception: an epic running on a `release/*` branch on BOTH repos.** dev-api deploys from
+trunk, so when `loonas-api` integrates an epic on a release branch its routes are **deliberately**
+absent from `dev-api.loonas.id/openapi.json` until that branch ships. Applying the rule above
+literally then concludes the feature does not exist — on LNS-676 a research pass did exactly that and
+mis-mapped a new `GET/PUT /accounting/overhead-accounts` pair onto the pre-existing, unrelated
+fixed-cost `coa_account` field, which would have built the wrong screen entirely. **The tell:** the
+ticket's blockers are Done with merged PRs, yet the routes are missing from dev-api. Before concluding
+anything, check where the BE PR actually landed — `gh pr view <n> --repo monosolusi/loonas-api --json
+baseRefName`. If it merged to a `release/*` branch, the authority is the merged feature OpenAPI on
+that branch, read directly:
+`gh api repos/monosolusi/loonas-api/contents/src/features/<f>/presentation/docs/openapi.yaml?ref=release/<name>
+--jq '.content' | base64 -d`. That is a committed contract, not PR prose, so it is safe to model
+against — the rule's target is speculation about unmerged work, not merged-but-undeployed work.
+A ticket whose FE lands on a matching `release/*` branch is the same epic and the same situation.
+
+**Read the declared `format`, not just the type** — a spec
 `{"type":"string","format":"date"}` means a plain `YYYY-MM-DD`, so serialise it with Luxon's
 `toISODate()`, never `toISO()`: the latter emits an offset datetime
 (`2000-05-14T00:00:00.000+07:00`) that can shift the calendar day if the BE normalises through UTC.
@@ -552,6 +577,21 @@ Two rules follow, and both are load-bearing:
   that captures `params.body` and assert on the stringified result — see
   `features/invoice/data/sources/create-pos-sale-body.test.ts` and
   `features/product/data/sources/product.test.ts`.
+
+**Error payloads come in two shapes and both are in the wild — read `err.details` accordingly.**
+`http-request.ts` collects every top-level response key other than `code`/`message`/`details` into
+`flatFields` and merges them onto `ServerError.details`. So a **flat** body
+(`{ code, message, accounts: [...] }`) is read as `err.details.accounts`
+(`PRICE_TIER_SCHEDULE_INVALID`, `UNIT_PRICE_MISMATCH`, `OVERHEAD_ACCOUNT_NOT_SELECTABLE`), while a body
+that genuinely nests (`{ code, message, details: { failed_count } }`) is read as
+`err.details.details.failed_count` (`close-period-error.ts`, `coa-account-delete-dialog.tsx`). Nothing
+type-checks the difference — guessing wrong yields `undefined`, so the specific message silently
+degrades to the generic fallback, which is exactly the failure the specific copy existed to prevent.
+Confirm the shape against the BE response body rather than the BE docstring: on LNS-676 the API's own
+`server-error.ts` comment said `details.accounts[]`, but `details` there is only the *constructor
+parameter* name and `ServerError.details` is a flat merge, so it ships top-level. Whichever shape it
+is, a malformed or missing payload must fall back rather than crash — cover that arm in the
+resolver's test.
 
 **Dead error-code removal — branch and constant, not just the branch.** When a BE error code becomes
 unreachable (confirmed absent from `dev-api.loonas.id/openapi.json`), remove the FE runtime handler **and**

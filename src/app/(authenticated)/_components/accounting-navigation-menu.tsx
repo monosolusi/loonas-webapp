@@ -62,10 +62,11 @@ const ACCOUNTING_NAV_GROUPS: AccountingNavGroup[] = [
     label: "Bagan Akun",
     iconPath: "/assets/images/list-tree-icon-neutral-300-w16-h16.svg",
     selectedIconPath: "/assets/images/list-tree-icon-primary-300-w16-h16.svg",
-    matchPrefixes: ["/accounting/accounts", "/accounting/mappings"],
+    matchPrefixes: ["/accounting/accounts", "/accounting/mappings", "/accounting/overhead-accounts"],
     items: [
       { href: "/accounting/accounts", label: "Daftar Akun" },
       { href: "/accounting/mappings", label: "Pemetaan Akun" },
+      { href: "/accounting/overhead-accounts", label: "Akun Overhead" },
     ],
   },
   {

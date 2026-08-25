@@ -18,7 +18,7 @@ metadata:
    - PR body or `/work-on-issue` summary contains language like "deferred", "BE doesn't expose X", "blocked by BE", "follow-up ticket needed".
 
 2. **What to do** (in this order, before moving parent to "In Review"):
-   - Use `/linear-create-issue` (or `/linear-techdebt` if it's a contract-tightening, not a missing field). Decide priority yourself per [[feedback-use-linear-skills]].
+   - File directly via `mcp__plugin_linear_linear__save_issue` — the `/linear-*` skills do NOT exist here, see [[linear-filing-in-this-repo]]. Decide priority yourself.
    - **Mandatory labels:** `Frontend` + `fe-requested-be`. Do NOT apply `Backend` — PM cannot scope BE work.
    - **Title pattern:** `Expose {field/endpoint} on {surface} (FE-requested)` — make the BE-team scan-able from the issue list.
    - **Link with `relatedTo`** to the parent FE issue. Cross-link any greppable code marker (e.g., `LNS-199-followup`) in the body so a BE engineer or future FE can grep both directions.
