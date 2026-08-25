@@ -559,6 +559,12 @@ export class ErrorCodes {
     message: "Dasar harga pokok belum tersedia untuk item ini. Penyesuaian tidak dapat dicatat.",
   };
 
+  public static readonly OVERHEAD_ACCOUNT_NOT_SELECTABLE: ErrorStructureType = {
+    code: "OVERHEAD_ACCOUNT_NOT_SELECTABLE",
+    httpCode: 422,
+    message: "Beberapa akun tidak dapat dipilih sebagai akun overhead.",
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }
