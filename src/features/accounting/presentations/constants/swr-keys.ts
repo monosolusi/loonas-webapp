@@ -43,4 +43,5 @@ export const ACCOUNTING_MUTATION_KEYS = {
   ALLOCATE_MANAGERIAL_COST: "allocate-managerial-cost",
   SETTLE_FINAL_INCOME_TAX: "settle-final-income-tax",
   REPLACE_OVERHEAD_ACCOUNTS: "replace-overhead-accounts",
+  RETRY_FAILED_POSTINGS: "retry-failed-postings",
 } as const;

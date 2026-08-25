@@ -4,6 +4,7 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { AccountingPeriodEntity } from "@/features/accounting/domain/entities/accounting-period";
 import { YearEndSummaryEntity } from "@/features/accounting/domain/entities/year-end-summary";
 import { ClosePeriodResult } from "@/features/accounting/domain/entities/close-warning";
+import { RetryFailedPostingsResult } from "@/features/accounting/domain/entities/retry-failed-postings-result";
 import {
   AccountingPeriodRepository,
   ClosePeriodParams,
@@ -15,6 +16,7 @@ import {
   ReopenPeriodParams,
   ReopenYearParams,
   ReopenYearResult,
+  RetryFailedPostingsParams,
 } from "@/features/accounting/domain/repositories/accounting-period";
 import { AccountingPeriodService } from "@/features/accounting/domain/sources/accounting-period";
 
@@ -75,6 +77,19 @@ export class AccountingPeriodRepositoryImpl implements AccountingPeriodRepositor
     try {
       const r = await this.service.reopenYear(params, session);
       return new DataSuccess({ reversalJournalId: r.reversalJournalId, periods: r.periods.map((p) => p.toEntity()) });
+    } catch (err) {
+      if (err instanceof ServerError) return new DataFailed(err);
+      else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));
+    }
+  }
+
+  public async retryFailedPostings(
+    params: RetryFailedPostingsParams,
+    session: SessionEntity,
+  ): Promise<DataState<RetryFailedPostingsResult>> {
+    try {
+      const model = await this.service.retryFailedPostings(params, session);
+      return new DataSuccess(model.toEntity());
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

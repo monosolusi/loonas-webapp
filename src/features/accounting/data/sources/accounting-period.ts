@@ -3,6 +3,7 @@ import { SessionEntity } from "@/features/authentication/domain/entities/session
 import { AccountingPeriodModel } from "@/features/accounting/data/models/accounting-period";
 import { YearEndSummaryModel } from "@/features/accounting/data/models/year-end-summary";
 import { CloseWarningModel } from "@/features/accounting/data/models/close-warning";
+import { RetryFailedPostingsResultModel } from "@/features/accounting/data/models/retry-failed-postings-result";
 import {
   AccountingPeriodService,
   ClosePeriodServiceParams,
@@ -16,6 +17,8 @@ import {
   ReopenPeriodServiceParams,
   ReopenYearServiceParams,
   ReopenYearServiceResult,
+  RetryFailedPostingsServiceParams,
+  RetryFailedPostingsServiceResult,
 } from "@/features/accounting/domain/sources/accounting-period";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 
@@ -136,6 +139,23 @@ export class AccountingPeriodServiceImpl implements AccountingPeriodService {
         reversalJournalId: data.reversal_journal_id,
         periods: (data.periods ?? []).map(AccountingPeriodModel.fromJson),
       };
+    } catch (err) {
+      if (err instanceof ServerError) throw err;
+      else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });
+    }
+  }
+
+  public async retryFailedPostings(
+    params: RetryFailedPostingsServiceParams,
+    session: SessionEntity,
+  ): Promise<RetryFailedPostingsServiceResult> {
+    try {
+      // Deliberately NO Idempotency-Key header — unlike close/reopen, the BE omits it on purpose:
+      // the operation is convergent (a synchronous drain), and a 24h idempotency cache would mask a
+      // fix made between calls (e.g. deselecting the offending overhead account, then retrying).
+      const result = await this.http.request({ path: `/accounting/periods/${params.id}/retry-failed-postings`, method: "POST", session });
+
+      return RetryFailedPostingsResultModel.fromJson(result);
     } catch (err) {
       if (err instanceof ServerError) throw err;
       else throw new ServerError(ErrorCodes.UNKNOWN, { error: err });

@@ -565,6 +565,12 @@ export class ErrorCodes {
     message: "Beberapa akun tidak dapat dipilih sebagai akun overhead.",
   };
 
+  public static readonly OVERHEAD_ACCOUNT_AUTO_POSTING_REFUSED: ErrorStructureType = {
+    code: "OVERHEAD_ACCOUNT_AUTO_POSTING_REFUSED",
+    httpCode: 422,
+    message: "Posting otomatis ditolak karena akun overhead yang dipilih.",
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }
