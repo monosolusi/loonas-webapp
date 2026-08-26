@@ -6,6 +6,8 @@ import { NavigationItem } from "@/app/(authenticated)/_components/navigation-ite
 import { NavigationGroup } from "@/app/(authenticated)/_components/navigation-group";
 import { NavigationChildItem } from "@/app/(authenticated)/_components/navigation-child-item";
 import { AccountingBackButton } from "@/app/(authenticated)/_components/accounting-back-button";
+import { useGetCurrentAccount } from "@/features/account/presentation/hooks/use-get-current-account";
+import { CASH_ENTRY_FEATURE } from "@/app/(authenticated)/accounting/_components/cash-entry-feature-gate";
 
 type AccountingNavGroup = {
   id: string;
@@ -14,6 +16,8 @@ type AccountingNavGroup = {
   selectedIconPath: string;
   matchPrefixes: string[];
   items: { href: string; label: string }[];
+  /** Optional account feature required to render this group. Omitted = always shown. */
+  feature?: string;
 };
 
 /**
@@ -40,6 +44,7 @@ const ACCOUNTING_NAV_GROUPS: AccountingNavGroup[] = [
     iconPath: "/assets/images/banknote-icon-neutral-300-w16-h16.svg",
     selectedIconPath: "/assets/images/banknote-icon-primary-300-w16-h16.svg",
     matchPrefixes: ["/accounting/cash-entries", "/accounting/cash-categories", "/accounting/cash-entry-settings"],
+    feature: CASH_ENTRY_FEATURE,
     items: [
       { href: "/accounting/cash-entries", label: "Kas Masuk & Kas Keluar" },
       { href: "/accounting/cash-categories", label: "Kategori" },
@@ -105,10 +110,16 @@ const ACCOUNTING_NAV_GROUPS: AccountingNavGroup[] = [
  */
 export function AccountingNavigationMenu() {
   const pathname = usePathname();
+  const { account } = useGetCurrentAccount();
+
+  const visibleNavGroups = useMemo(
+    () => ACCOUNTING_NAV_GROUPS.filter((group) => !group.feature || account?.hasFeature(group.feature)),
+    [account],
+  );
 
   const activeGroupId = useMemo(
-    () => ACCOUNTING_NAV_GROUPS.find((group) => group.matchPrefixes.some((p) => pathname.startsWith(p)))?.id ?? null,
-    [pathname],
+    () => visibleNavGroups.find((group) => group.matchPrefixes.some((p) => pathname.startsWith(p)))?.id ?? null,
+    [pathname, visibleNavGroups],
   );
 
   const [openGroup, setOpenGroup] = useState<string | null>(activeGroupId);
@@ -137,7 +148,7 @@ export function AccountingNavigationMenu() {
           selectedIconPath="/assets/images/dashboard-icon-primary-300-w16-h16.svg"
         />
 
-        {ACCOUNTING_NAV_GROUPS.map((group) => (
+        {visibleNavGroups.map((group) => (
           <NavigationGroup
             key={group.id}
             id={group.id}
