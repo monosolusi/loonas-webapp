@@ -29,6 +29,10 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/accounting/journals/new": { title: "Jurnal Baru" },
   "/accounting/periods": { title: "Periode Akuntansi" },
   "/accounting/opening-balance": { title: "Saldo Awal" },
+  "/accounting/cash-entries": { title: "Kas Masuk & Kas Keluar" },
+  "/accounting/cash-entries/new": { title: "Catat Kas" },
+  "/accounting/cash-categories": { title: "Kategori Kas" },
+  "/accounting/cash-entry-settings": { title: "Pengaturan Kas" },
   "/accounting/pph-final": { title: "PPh Final UMKM" },
   "/accounting/profitability": { title: "Profitabilitas Varian" },
   "/accounting/accounts": { title: "Bagan Akun" },
@@ -67,6 +71,11 @@ export function HeaderTitle() {
     // /accounting/journals/:id
     if (segments[0] === "accounting" && segments[1] === "journals" && segments[2] && segments[2] !== "new") {
       return { title: "Detail Jurnal" };
+    }
+
+    // /accounting/cash-entries/:id
+    if (segments[0] === "accounting" && segments[1] === "cash-entries" && segments[2] && segments[2] !== "new") {
+      return { title: "Detail Kas" };
     }
 
     // /accounting/profitability/:productId/:variantId
