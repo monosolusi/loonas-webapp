@@ -476,7 +476,12 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   asset, check no sibling already claims it** — "Produk" and "Inventaris" both shipped on `box-icon-*`, leaving two
   adjacent groups indistinguishable. Also check the new silhouette against the Heroicons in `mobile-tab-bar.tsx`: the
   "Lainnya" sheet renders the full `NavigationMenu` above that bar, so both icon sets are on screen at once (a warehouse
-  shape for Inventaris was rejected for colliding with `HomeIcon`).
+  shape for Inventaris was rejected for colliding with `HomeIcon`). Two follow-ons apply when authoring the pair, not
+  just pointing at it: (1) legacy assets like `coins-icon-*` and `box-icon-*` ship `stroke-width="1.33"` — set new SVGs
+  to the `1.33333` value above, not to the skeleton you copied, or an AC will flag the mismatch (LNS-735 AC3 failed on
+  exactly this). (2) a shape may exist as a partial color-state pair (one file) already in use by a non-nav component
+  — grep usage before reusing or completing it (`wallet-icon-primary-300` is primary-only and claimed by
+  `accounting/page.tsx` and invoices, so it is not free to complete as a nav pair).
 - **List-page header/toolbar standard**: every list/index page uses one layout. Heuristic: **action top-right,
   filters bottom-left, search bottom-right.**
   - **Row 1 — header**: `ListPageHeader` (`core/presentations/components/list-page-header.tsx`) for top-level pages,
