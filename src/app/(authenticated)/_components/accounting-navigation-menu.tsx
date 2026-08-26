@@ -35,6 +35,18 @@ const ACCOUNTING_NAV_GROUPS: AccountingNavGroup[] = [
     ],
   },
   {
+    id: "acc-cash",
+    label: "Kas",
+    iconPath: "/assets/images/banknote-icon-neutral-300-w16-h16.svg",
+    selectedIconPath: "/assets/images/banknote-icon-primary-300-w16-h16.svg",
+    matchPrefixes: ["/accounting/cash-entries", "/accounting/cash-categories", "/accounting/cash-entry-settings"],
+    items: [
+      { href: "/accounting/cash-entries", label: "Kas Masuk & Kas Keluar" },
+      { href: "/accounting/cash-categories", label: "Kategori" },
+      { href: "/accounting/cash-entry-settings", label: "Pengaturan" },
+    ],
+  },
+  {
     id: "acc-costs-profitability",
     label: "Biaya & Profitabilitas",
     iconPath: "/assets/images/coins-icon-neutral-300-w16-h16.svg",
