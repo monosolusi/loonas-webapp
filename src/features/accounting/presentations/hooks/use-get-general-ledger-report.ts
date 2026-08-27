@@ -44,6 +44,8 @@ export function useGetGeneralLedgerReport(
     { keepPreviousData: true },
   );
 
+  const swrError = error instanceof ServerError ? error : error ? new ServerError(ErrorCodes.UNKNOWN) : null;
+
   const initialState: UseGetGeneralLedgerReportReturnType = {
     data: null,
     loading: true,
@@ -53,12 +55,12 @@ export function useGetGeneralLedgerReport(
   };
 
   if (isLoading && !data) return initialState;
-  if (error && !data) {
+  if (swrError && !data) {
     return {
       data: null,
       loading: false,
       isLoadingPage: false,
-      error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
+      error: swrError,
       refresh: mutate,
     };
   }
@@ -68,7 +70,7 @@ export function useGetGeneralLedgerReport(
     data,
     loading: false,
     isLoadingPage: isValidating,
-    error: null,
+    error: swrError,
     refresh: mutate,
   };
 }
