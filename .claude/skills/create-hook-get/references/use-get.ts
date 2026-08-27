@@ -1,5 +1,8 @@
 // Canonical example: SWR-backed get-by-id hook.
 // Source: src/features/production/presentations/hooks/use-get-production-record.ts
+// NOTE: predates the non-null `refresh` convention — its cited source has no retry
+// consumer. New hooks MUST follow SKILL.md rule 7: build `initialState` per render
+// carrying `mutate`, and return `refresh: mutate` from every branch. See CLAUDE.md (LNS-757).
 
 "use client";
 

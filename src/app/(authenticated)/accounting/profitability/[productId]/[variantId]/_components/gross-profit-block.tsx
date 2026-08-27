@@ -23,7 +23,7 @@ export function GrossProfitBlock() {
         productId={productId}
       />
     );
-  if (state.error) return <GrossProfitBlockError onRetry={() => { if (refresh) refresh(); }} />;
+  if (state.error) return <GrossProfitBlockError onRetry={() => { void refresh().catch(() => {}); }} />;
 
   const { data } = state;
   if (data.needsData) {

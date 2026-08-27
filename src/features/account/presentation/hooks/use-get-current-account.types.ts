@@ -11,7 +11,7 @@ type InitialState = {
   account: null;
   loading: true;
   error: null;
-  refresh: null;
+  refresh: KeyedMutator<AccountTypeEntity>;
 };
 
 type LoadedState = {
@@ -25,7 +25,7 @@ type ErrorState = {
   account: null;
   loading: false;
   error: ServerError;
-  refresh: null;
+  refresh: KeyedMutator<AccountTypeEntity>;
 };
 
 export type UseGetCurrentAccountReturnValue = InitialState | LoadedState | ErrorState;

@@ -17,7 +17,7 @@ type InitialState = {
   readonly loading: true;
   readonly error: null;
   readonly isIncompleteRecipe: false;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<VariantGrossProfitEntity>;
 };
 
 type LoadedState = {
@@ -33,7 +33,7 @@ type IncompleteRecipeState = {
   readonly loading: false;
   readonly error: null;
   readonly isIncompleteRecipe: true;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<VariantGrossProfitEntity>;
 };
 
 type ErrorState = {
@@ -41,7 +41,7 @@ type ErrorState = {
   readonly loading: false;
   readonly error: ServerError;
   readonly isIncompleteRecipe: false;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<VariantGrossProfitEntity>;
 };
 
 export type UseGetVariantGrossProfitReturnType = InitialState | LoadedState | IncompleteRecipeState | ErrorState;

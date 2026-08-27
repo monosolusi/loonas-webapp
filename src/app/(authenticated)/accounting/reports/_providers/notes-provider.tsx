@@ -49,7 +49,7 @@ export function NotesProvider({ children }: NotesProviderProps) {
   const report = hookResult.data ?? null;
 
   const onRetry = () => {
-    hookResult.refresh?.();
+    void hookResult.refresh().catch(() => {});
   };
 
   return (

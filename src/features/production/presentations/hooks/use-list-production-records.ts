@@ -20,14 +20,6 @@ import {
   UseListProductionRecordsReturnType,
 } from "@/features/production/presentations/hooks/use-list-production-records.types";
 
-const INITIAL_STATE: UseListProductionRecordsReturnType = {
-  records: null,
-  meta: null,
-  loading: true,
-  error: null,
-  refresh: null,
-};
-
 async function ListProductionRecordFetcher([_, params]: [string, ListProductionRecordFetcherParams]) {
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const productionRecordRepository = new ProductionRecordRepositoryImpl(new ProductionRecordServiceImpl(new HttpRequest()));
@@ -54,7 +46,15 @@ export function useListProductionRecords(params: UseListProductionRecordsParams 
     ListProductionRecordFetcher,
   );
 
-  if (isLoading) return INITIAL_STATE;
+  const initialState: UseListProductionRecordsReturnType = {
+    records: null,
+    meta: null,
+    loading: true,
+    error: null,
+    refresh: mutate,
+  };
+
+  if (isLoading) return initialState;
   if (error) {
     return {
       records: null,
@@ -65,7 +65,7 @@ export function useListProductionRecords(params: UseListProductionRecordsParams 
     };
   }
 
-  if (!data) return INITIAL_STATE;
+  if (!data) return initialState;
 
   return {
     records: data.data,

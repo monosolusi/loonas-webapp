@@ -23,13 +23,6 @@ import {
   UseListProductionRecordsReturnType,
 } from "@/features/production/presentations/hooks/use-list-production-records.types";
 
-const INITIAL_STATE: UseListProductionRecordsReturnType = {
-  records: null,
-  meta: null,
-  loading: true,
-  error: null,
-};
-
 async function ListProductionRecordFetcher([_, params]: [string, ListProductionRecordFetcherParams]) {
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const productionRecordRepository = new ProductionRecordRepositoryImpl(
@@ -55,27 +48,39 @@ export function useListProductionRecords(
   params: UseListProductionRecordsParams = {},
 ): UseListProductionRecordsReturnType {
   const clerk = useClerk();
-  const { data, isLoading, error } = useSWR(
+  const { data, isLoading, error, mutate } = useSWR(
     [PRODUCTION_SWR_KEYS.LIST_PRODUCTION_RECORDS, { ...params, clerk }],
     ListProductionRecordFetcher,
   );
 
-  if (isLoading) return INITIAL_STATE;
+  // Built per render, not as a module constant: it must carry this render's `mutate`.
+  // The explicit annotation is load-bearing — without it TS infers `loading: boolean`.
+  const initialState: UseListProductionRecordsReturnType = {
+    records: null,
+    meta: null,
+    loading: true,
+    error: null,
+    refresh: mutate,
+  };
+
+  if (isLoading) return initialState;
   if (error) {
     return {
       records: null,
       meta: null,
       loading: false,
       error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
+      refresh: mutate,
     };
   }
 
-  if (!data) return INITIAL_STATE;
+  if (!data) return initialState;
 
   return {
     records: data.data,
     meta: data.meta,
     loading: false,
     error: null,
+    refresh: mutate,
   };
 }

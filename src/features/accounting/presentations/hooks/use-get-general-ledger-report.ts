@@ -17,14 +17,6 @@ import {
   UseGetGeneralLedgerReportReturnType,
 } from "@/features/accounting/presentations/hooks/use-get-general-ledger-report.types";
 
-const INITIAL_STATE: UseGetGeneralLedgerReportReturnType = {
-  data: null,
-  loading: true,
-  isLoadingPage: false,
-  error: null,
-  refresh: null,
-};
-
 async function GetGeneralLedgerReportFetcher([_, params]: [string, GetGeneralLedgerReportFetcherParams]) {
   const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const repo = new ReportRepositoryImpl(new ReportServiceImpl(new HttpRequest()));
@@ -52,17 +44,25 @@ export function useGetGeneralLedgerReport(
     { keepPreviousData: true },
   );
 
-  if (isLoading && !data) return INITIAL_STATE;
+  const initialState: UseGetGeneralLedgerReportReturnType = {
+    data: null,
+    loading: true,
+    isLoadingPage: false,
+    error: null,
+    refresh: mutate,
+  };
+
+  if (isLoading && !data) return initialState;
   if (error && !data) {
     return {
       data: null,
       loading: false,
       isLoadingPage: false,
       error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
-      refresh: null,
+      refresh: mutate,
     };
   }
-  if (!data) return INITIAL_STATE;
+  if (!data) return initialState;
 
   return {
     data,

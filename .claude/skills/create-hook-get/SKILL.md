@@ -37,8 +37,9 @@ Naming convention:
    ```
 4. Fetcher signature: `async function Get{Noun}Fetcher([_, params]: [string, { clerk; id }])`.
 5. Return type is a discriminated union: `InitialState | LoadedState | ErrorState` with a single field (e.g. `record`, not an array).
-6. In the hook: treat `!id` the same as loading — return `INITIAL_STATE`.
-7. Add `GET_{NOUN}` entry to the feature's `swr-keys.ts` constant file.
+6. In the hook: treat `!id` the same as loading — return `initialState`.
+7. **`refresh` is non-null on EVERY member**, typed `KeyedMutator<T>` and carrying the bound `mutate` — never `refresh: null`, never `() => void`. A retry closure is written outside the narrowing branch, so TS sees the whole union there; a nullable `refresh` makes the retry button dead in the one state it serves. Build the initial state **per render** (it must carry this render's `mutate`), not as a module-level constant, and keep the explicit type annotation. See CLAUDE.md (LNS-757).
+8. Add `GET_{NOUN}` entry to the feature's `swr-keys.ts` constant file.
 
 ## Template
 
@@ -68,12 +69,6 @@ type FetcherParams = {
   id: string;
 };
 
-const INITIAL_STATE: UseGet{Noun}ReturnType = {
-  {noun}: null,
-  loading: true,
-  error: null,
-};
-
 async function Get{Noun}Fetcher([_, params]: [string, FetcherParams]) {
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const repository = new {Noun}RepositoryImpl(new {Noun}ServiceImpl(new HttpRequest()));
@@ -86,34 +81,47 @@ async function Get{Noun}Fetcher([_, params]: [string, FetcherParams]) {
 
 export function useGet{Noun}(id: string | null): UseGet{Noun}ReturnType {
   const clerk = useClerk();
-  const { data, isLoading, error } = useSWR(
+  const { data, isLoading, error, mutate } = useSWR(
     id ? [{FEATURE}_SWR_KEYS.GET_{NOUN}, { clerk, id }] : null,
     Get{Noun}Fetcher,
   );
 
-  if (isLoading || !id) return INITIAL_STATE;
+  // Per render, not a module constant: it must carry this render's `mutate`.
+  // The explicit annotation is load-bearing — without it TS infers `loading: boolean`.
+  const initialState: UseGet{Noun}ReturnType = {
+    {noun}: null,
+    loading: true,
+    error: null,
+    refresh: mutate,
+  };
+
+  if (isLoading || !id) return initialState;
   if (error) {
     return {
       {noun}: null,
       loading: false,
       error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
+      refresh: mutate,
     };
   }
-  if (!data) return INITIAL_STATE;
+  if (!data) return initialState;
 
-  return { {noun}: data, loading: false, error: null };
+  return { {noun}: data, loading: false, error: null, refresh: mutate };
 }
 ```
 
 `use-get-{noun}.types.ts`:
 
 ```ts
+import { KeyedMutator } from "swr";
 import { ServerError } from "@/core/resources/server-error";
 import { {Noun}Entity } from "@/features/{feature}/domain/entities/{noun}";
 
-type InitialState = { {noun}: null; loading: true; error: null };
-type LoadedState = { {noun}: {Noun}Entity; loading: false; error: null };
-type ErrorState = { {noun}: null; loading: false; error: ServerError };
+type Refresh = KeyedMutator<{Noun}Entity>;
+
+type InitialState = { {noun}: null; loading: true; error: null; refresh: Refresh };
+type LoadedState = { {noun}: {Noun}Entity; loading: false; error: null; refresh: Refresh };
+type ErrorState = { {noun}: null; loading: false; error: ServerError; refresh: Refresh };
 
 export type UseGet{Noun}ReturnType = InitialState | LoadedState | ErrorState;
 ```

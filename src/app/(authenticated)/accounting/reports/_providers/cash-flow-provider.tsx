@@ -80,7 +80,7 @@ export function CashFlowProvider({ children }: CashFlowProviderProps) {
   }, []);
 
   const onRetry = useCallback(() => {
-    hookResult.refresh?.();
+    void hookResult.refresh().catch(() => {});
   }, [hookResult]);
 
   return (

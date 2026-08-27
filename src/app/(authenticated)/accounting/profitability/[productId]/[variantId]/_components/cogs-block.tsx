@@ -21,6 +21,6 @@ export function CogsBlock() {
         productId={productId}
       />
     );
-  if (state.error) return <CogsBlockError onRetry={() => { if (refresh) refresh(); }} />;
+  if (state.error) return <CogsBlockError onRetry={() => { void refresh().catch(() => {}); }} />;
   return <CogsBlockBody cogs={state.data} />;
 }

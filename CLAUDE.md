@@ -129,7 +129,11 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   org for, anything after `setActive({ organization: null })` — may only read the user-scoped list. Note
   `/accounts` returns **404 when the user has zero accounts**, which `useListAccount` maps to `[]`; and a redirect
   guard keyed on one specific error code (`ErrorCodes.NOT_FOUND`) silently does nothing for every other code, so
-  never let such a guard be the only thing recovering a no-org session.
+  never let such a guard be the only thing recovering a no-org session. Its mirror: never normalise a hook's error
+  **unconditionally**. `error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN)` preserves a
+  thrown `NOT_FOUND` so that guard still fires; a bare `new ServerError(UNKNOWN)` silently kills the redirect it
+  drives. Watch for this when replacing an `Object.assign({}, INITIAL_STATE, { error })` error return with an
+  explicit literal — the spread forwarded the raw error, the literal must re-derive it (LNS-757, `useGetCurrentAccount`).
 - **Session parameter order**: In repository and service method signatures, `session: SessionEntity` must always be the
   **last** parameter. Methods have **maximum 2 parameters**: `(params, session)`. All business parameters grouped into a
   single object: `list({ search, page }, session)`, `update({ id, name, status }, session)`.
@@ -325,7 +329,18 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   a **bound** SWR `mutate()` triggers a refetch and defaults to `throwOnError: true`, so wiring a button straight to it
   yields an unhandled rejection from an `onClick` when the retry also fails — swallow it deliberately
   (`void refresh().catch(() => {})`), which is safe precisely because SWR leaves `error` set, so the field keeps its
-  copy and the button stays on screen. Same mechanism as the `revalidateSWRKey()` rule above.
+  copy and the button stays on screen. Same mechanism as the `revalidateSWRKey()` rule above. **The swallow has a
+  structural precondition: `refresh` must be non-null on EVERY union member — typed `KeyedMutator<T>`, carrying the
+  bound `mutate` — not just on the error one.** Retry closures sit *outside* the narrowing branch (a provider's
+  `onRetry`) or alias the field *before* it (`const refresh = state.refresh`), so TS sees the whole union; leave
+  `refresh: null` anywhere and the `?.` stays undroppable and the button is dead in the one state it serves.
+  `refresh: () => void` is equally wrong — it erases the promise, so `.catch()` cannot compile, and the wrapper
+  `() => mutate()` also breaks any `useCallback` memoised on it. LNS-757 found all three conventions coexisting.
+  When auditing this class, enumerate from the **hook** side: the defect lives in the hook's error branch and varies
+  between otherwise identical providers, so a grep keyed on one consumer spelling (`refresh?.()`) cannot be complete.
+  And do not expect `tsc` to hand you the dead guards afterwards — TS2774 does not fire for `if (someNonNullableFn)`,
+  and `no-unnecessary-condition` is off (`tseslint.configs.recommended`, not `recommendedTypeChecked`), so a grep
+  sweep is the only reliable check.
 - **When one message slot serves several conditions, order by which fact is true *right now*, in one pure module**:
   `SelectInput` renders `description` only when `error` is falsy, so exactly one message can ever surface while four
   conditions compete for it. `onboarding/_utils/resolve-select-field-state.ts` ranks them: parent-unchosen → loading

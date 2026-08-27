@@ -54,7 +54,7 @@ export function CostStructureBlock() {
       {state.loading ? (
         <CostStructureBlockLoading />
       ) : state.error ? (
-        <CostStructureBlockError onRetry={() => { if (refresh) refresh(); }} />
+        <CostStructureBlockError onRetry={() => { void refresh().catch(() => {}); }} />
       ) : (
         <CostStructureBlockBody productionCost={state.data} />
       )}

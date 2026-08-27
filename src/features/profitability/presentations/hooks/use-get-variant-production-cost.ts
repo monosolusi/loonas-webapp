@@ -18,14 +18,6 @@ import {
   UseGetVariantProductionCostReturnType,
 } from "@/features/profitability/presentations/hooks/use-get-variant-production-cost.types";
 
-const INITIAL_STATE: UseGetVariantProductionCostReturnType = {
-  data: null,
-  loading: true,
-  error: null,
-  isIncompleteRecipe: false,
-  refresh: null,
-};
-
 async function GetVariantProductionCostFetcher(
   [_, params]: [string, UseGetVariantProductionCostParams],
   clerk: ReturnType<typeof useClerk>,
@@ -61,17 +53,25 @@ export function useGetVariantProductionCost(
     },
   );
 
-  if (isLoading) return INITIAL_STATE;
+  const initialState: UseGetVariantProductionCostReturnType = {
+    data: null,
+    loading: true,
+    error: null,
+    isIncompleteRecipe: false,
+    refresh: mutate,
+  };
+
+  if (isLoading) return initialState;
 
   if (error) {
     const serverError = error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN);
     if (serverError.httpCode === 422) {
-      return { data: null, loading: false, error: null, isIncompleteRecipe: true, refresh: null };
+      return { data: null, loading: false, error: null, isIncompleteRecipe: true, refresh: mutate };
     }
-    return { data: null, loading: false, error: serverError, isIncompleteRecipe: false, refresh: null };
+    return { data: null, loading: false, error: serverError, isIncompleteRecipe: false, refresh: mutate };
   }
 
-  if (!data) return INITIAL_STATE;
+  if (!data) return initialState;
 
   return {
     data,

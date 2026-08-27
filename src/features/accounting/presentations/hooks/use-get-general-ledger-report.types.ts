@@ -21,7 +21,7 @@ type InitialState = {
   readonly loading: true;
   readonly isLoadingPage: false;
   readonly error: null;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<GetGeneralLedgerReportUseCaseResult>;
 };
 
 type LoadedState = {
@@ -37,7 +37,7 @@ type ErrorState = {
   readonly loading: false;
   readonly isLoadingPage: false;
   readonly error: ServerError;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<GetGeneralLedgerReportUseCaseResult>;
 };
 
 export type UseGetGeneralLedgerReportReturnType = InitialState | LoadedState | ErrorState;

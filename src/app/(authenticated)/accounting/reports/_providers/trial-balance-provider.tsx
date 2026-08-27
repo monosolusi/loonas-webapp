@@ -77,7 +77,7 @@ export function TrialBalanceProvider({ children }: TrialBalanceProviderProps) {
   const report = hookResult.data ?? null;
 
   const onRetry = useCallback(() => {
-    hookResult.refresh?.();
+    void hookResult.refresh().catch(() => {});
   }, [hookResult]);
 
   return (
