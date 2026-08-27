@@ -1,6 +1,6 @@
 import { Settings } from "luxon";
 import { describe, expect, it } from "vitest";
-import { formatEntryDate, formatTimestamp } from "@/app/(authenticated)/accounting/cash-entries/[id]/_utils/format-cash-entry-date";
+import { formatEntryDate, formatTimestamp } from "@/app/(authenticated)/accounting/cash-entries/_utils/format-cash-entry-date";
 
 // formatTimestamp does not `.setZone()` (mirrors journal-detail-info-card.tsx), so it renders
 // in Luxon's default zone — the CI/dev machine's system zone otherwise, which makes an exact

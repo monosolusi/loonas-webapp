@@ -4,7 +4,7 @@ import Link from "next/link";
 import { SectionCard } from "@/core/presentations/components/section-card";
 import { StatusChip } from "@/core/presentations/components/status-chip";
 import { useCashEntryDetail } from "@/app/(authenticated)/accounting/cash-entries/[id]/_providers/cash-entry-detail-provider";
-import { resolveCashEntryCrossReference } from "@/app/(authenticated)/accounting/cash-entries/[id]/_utils/resolve-cash-entry-cross-reference";
+import { resolveCashEntryCrossReference } from "@/app/(authenticated)/accounting/cash-entries/_utils/resolve-cash-entry-cross-reference";
 
 export function CashEntryCancellationStatusCard() {
   const { entry } = useCashEntryDetail();

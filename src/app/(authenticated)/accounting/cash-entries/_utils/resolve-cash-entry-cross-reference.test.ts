@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveCashEntryCrossReference } from "@/app/(authenticated)/accounting/cash-entries/[id]/_utils/resolve-cash-entry-cross-reference";
+import { resolveCashEntryCrossReference } from "@/app/(authenticated)/accounting/cash-entries/_utils/resolve-cash-entry-cross-reference";
 import { CashEntryEntity } from "@/features/accounting/domain/entities/cash-entry";
 import { CashEntryDirection } from "@/features/accounting/domain/enums/cash-entry-direction";
 import { CashEntryStatus } from "@/features/accounting/domain/enums/cash-entry-status";

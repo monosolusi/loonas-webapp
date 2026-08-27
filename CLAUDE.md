@@ -14,6 +14,10 @@ npm run test         # Vitest (node environment, pure units only)
 
 Verify changes with `npm run typecheck`, `npm run lint` and `npm run test`.
 
+A fresh worktree has no `node_modules` and no `.env.local`: run `npm ci` first, and give `npm run build` a
+correctly *shaped* throwaway `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` — Clerk validates the base64
+`*.clerk.accounts.dev$` payload, not merely its presence — or static prerendering fails.
+
 Tests are **pure units only** — parsers, domain calculations, payload construction. There is
 no DOM, Clerk or network harness, so anything needing a rendered tree or a live session is
 verified by manual smoke instead. Suites are `src/**/*.test.ts` next to the code they cover.
@@ -331,7 +335,18 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   a **bound** SWR `mutate()` triggers a refetch and defaults to `throwOnError: true`, so wiring a button straight to it
   yields an unhandled rejection from an `onClick` when the retry also fails — swallow it deliberately
   (`void refresh().catch(() => {})`), which is safe precisely because SWR leaves `error` set, so the field keeps its
-  copy and the button stays on screen. Same mechanism as the `revalidateSWRKey()` rule above.
+  copy and the button stays on screen. Same mechanism as the `revalidateSWRKey()` rule above. Two things must hold
+  for that swallow to keep working. **Type `refresh` as the promise it actually returns** — `KeyedMutator<T>`, the
+  shape the loaded state already uses — never `() => void`: an expression-bodied `() => mutate()` does hand back
+  SWR's promise, so a `.catch()` on it is merely incidental, and a later edit conforming the implementation to its
+  own `void` signature silently removes the only thing catching the second failure, with neither `tsc` nor lint
+  objecting. And **render the refetch-error strip above the state switch, never inside the success branch**: under
+  `keepPreviousData` a failed refetch over a retained *empty* page derives to `"empty"`, so a strip living in the
+  table component never mounts and the user is told "no data" about a request that failed — the empty-list twin of
+  the stale-rows case the strip exists to prevent. `cost-valuation-gaps-provider.tsx` is cited as the template for
+  optional-range list shells and gets **both** of these wrong (unguarded `onRetry`; a `shellState` letting `"empty"`
+  outrank a non-null `pageError`) — mirror its structure, not those two lines. `accounting/cash-entries/` is the
+  corrected shape.
 - **When one message slot serves several conditions, order by which fact is true *right now*, in one pure module**:
   `SelectInput` renders `description` only when `error` is falsy, so exactly one message can ever surface while four
   conditions compete for it. `onboarding/_utils/resolve-select-field-state.ts` ranks them: parent-unchosen → loading
