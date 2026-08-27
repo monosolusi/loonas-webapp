@@ -38,8 +38,9 @@ Be aware: existing code mixes singular and plural in filenames. Match the featur
 3. **SWR key** is a `[KEY_CONSTANT, fetcherParams]` tuple. Params must include `clerk` from `useClerk()` so the fetcher can build a session. Never hardcode the string key — use `FEATURE_SWR_KEYS.LIST_XXX` constants.
 4. **Fetcher is a standalone function** outside the hook. It assembles the dependency chain (`SessionRepository` + feature repository + service) and invokes the use case. On `DataFailed`, throw the error. On missing `data`, throw `INVALID_INSTANCE`.
 5. **Return type is a discriminated union**: `InitialState | LoadedState | ErrorState`. Never include both real data and `loading: true` — use the union to guarantee exclusivity.
-6. The hook params object is optional (`params: UseListXxxParams = {}`). Pass only fields needed by the use case.
-7. **SWR key constant** must be added to `{feature}/presentations/constants/swr-keys.ts`. Mutations in the same feature call `revalidateSWRKey(PRODUCTION_SWR_KEYS.LIST_PRODUCTION_RECORDS)` to refresh this hook.
+6. **`refresh` is non-null on EVERY member**, typed `KeyedMutator<T>` and carrying the bound `mutate` — never `refresh: null`, never `() => void`. A retry closure is written outside the narrowing branch, so TS sees the whole union there; a nullable `refresh` makes the retry button dead in the one state it serves. Build the initial state **per render** (it must carry this render's `mutate`), not as a module-level constant, and keep the explicit type annotation. See CLAUDE.md (LNS-757).
+7. The hook params object is optional (`params: UseListXxxParams = {}`). Pass only fields needed by the use case.
+8. **SWR key constant** must be added to `{feature}/presentations/constants/swr-keys.ts`. Mutations in the same feature call `revalidateSWRKey(PRODUCTION_SWR_KEYS.LIST_PRODUCTION_RECORDS)` to refresh this hook.
 
 ## Template
 
@@ -68,13 +69,6 @@ import {
   UseList{Nouns}ReturnType,
 } from "@/features/{feature}/presentations/hooks/use-list-{nouns}.types";
 
-const INITIAL_STATE: UseList{Nouns}ReturnType = {
-  {nouns}: null,
-  meta: null,
-  loading: true,
-  error: null,
-};
-
 async function List{Noun}Fetcher([_, params]: [string, List{Noun}FetcherParams]) {
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const repository = new {Noun}RepositoryImpl(new {Noun}ServiceImpl(new HttpRequest()));
@@ -91,32 +85,44 @@ async function List{Noun}Fetcher([_, params]: [string, List{Noun}FetcherParams])
 
 export function useList{Nouns}(params: UseList{Nouns}Params = {}): UseList{Nouns}ReturnType {
   const clerk = useClerk();
-  const { data, isLoading, error } = useSWR(
+  const { data, isLoading, error, mutate } = useSWR(
     [{FEATURE}_SWR_KEYS.LIST_{NOUNS}, { ...params, clerk }],
     List{Noun}Fetcher,
   );
 
-  if (isLoading) return INITIAL_STATE;
+  // Per render, not a module constant: it must carry this render's `mutate`.
+  // The explicit annotation is load-bearing — without it TS infers `loading: boolean`.
+  const initialState: UseList{Nouns}ReturnType = {
+    {nouns}: null,
+    meta: null,
+    loading: true,
+    error: null,
+    refresh: mutate,
+  };
+
+  if (isLoading) return initialState;
   if (error) {
     return {
       {nouns}: null,
       meta: null,
       loading: false,
       error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
+      refresh: mutate,
     };
   }
-  if (!data) return INITIAL_STATE;
+  if (!data) return initialState;
 
-  return { {nouns}: data.data, meta: data.meta, loading: false, error: null };
+  return { {nouns}: data.data, meta: data.meta, loading: false, error: null, refresh: mutate };
 }
 ```
 
 `use-list-{nouns}.types.ts`:
 
 ```ts
+import { KeyedMutator } from "swr";
 import { useClerk } from "@clerk/nextjs";
 import { ServerError } from "@/core/resources/server-error";
-import { PaginationMeta } from "@/core/resources/paginated";
+import { PaginatedData, PaginationMeta } from "@/core/resources/paginated";
 import { {Noun}Entity } from "@/features/{feature}/domain/entities/{noun}";
 
 export type UseList{Nouns}Params = {
@@ -130,9 +136,11 @@ export type List{Noun}FetcherParams = UseList{Nouns}Params & {
   clerk: ReturnType<typeof useClerk>;
 };
 
-type InitialState = { {nouns}: null; meta: null; loading: true; error: null };
-type LoadedState = { {nouns}: {Noun}Entity[]; meta: PaginationMeta; loading: false; error: null };
-type ErrorState = { {nouns}: null; meta: null; loading: false; error: ServerError };
+type Refresh = KeyedMutator<PaginatedData<{Noun}Entity>>;
+
+type InitialState = { {nouns}: null; meta: null; loading: true; error: null; refresh: Refresh };
+type LoadedState = { {nouns}: {Noun}Entity[]; meta: PaginationMeta; loading: false; error: null; refresh: Refresh };
+type ErrorState = { {nouns}: null; meta: null; loading: false; error: ServerError; refresh: Refresh };
 
 export type UseList{Nouns}ReturnType = InitialState | LoadedState | ErrorState;
 ```
