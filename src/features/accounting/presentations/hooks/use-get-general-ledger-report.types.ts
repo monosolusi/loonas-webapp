@@ -28,7 +28,7 @@ type LoadedState = {
   readonly data: GetGeneralLedgerReportUseCaseResult;
   readonly loading: false;
   readonly isLoadingPage: boolean;
-  readonly error: null;
+  readonly error: ServerError | null;
   readonly refresh: KeyedMutator<GetGeneralLedgerReportUseCaseResult>;
 };
 

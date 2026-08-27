@@ -113,9 +113,7 @@ export function BukuBesarProvider({ children }: BukuBesarProviderProps) {
   const initialError = !hasData && hookError ? hookError : null;
   const pageError = hasData && hookError ? hookError : null;
 
-  const isLoadingPage = hookResult.loading === false && hookResult.error === null
-    ? hookResult.isLoadingPage
-    : false;
+  const isLoadingPage = hookResult.isLoadingPage;
 
   const onRetry = useCallback(() => {
     void hookResult.refresh().catch(() => {});

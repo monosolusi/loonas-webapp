@@ -340,7 +340,18 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   between otherwise identical providers, so a grep keyed on one consumer spelling (`refresh?.()`) cannot be complete.
   And do not expect `tsc` to hand you the dead guards afterwards — TS2774 does not fire for `if (someNonNullableFn)`,
   and `no-unnecessary-condition` is off (`tseslint.configs.recommended`, not `recommendedTypeChecked`), so a grep
-  sweep is the only reliable check.
+  sweep is the only reliable check. Its mirror one layer up: a hook that keeps stale data across a failed refetch
+  (`keepPreviousData`) must report the live error on its **data-present** branch too — typing that branch's `error`
+  as the literal `null` makes a page-level `hasData && error` retry provably dead code, so a failed *pagination*
+  leaves stale rows with no banner and no way back. Normalise once into a single `swrError` const returned from both
+  the error and data-present branches, never a per-branch fallback. Then never spell a loading guard `error === null`:
+  SWR holds the previous error through an in-flight retry until it *settles* (the same fact the message-slot rule
+  below leans on), so such a guard reports "not loading" during exactly the retry window it exists to cover — read the
+  union member's own `boolean` field instead of deriving one. Only stale-data hooks have this two-tier error UI at
+  all; for a single-shot fetch `error` and `!data` are always coincident, so the identical hardcoded `null` in a
+  sibling hook is latent, not a bug — do not "fix" it without a page-level retry to make reachable.
+  `use-list-cost-valuation-gaps.{ts,types.ts}` plus its provider is the canonical paginated-report exemplar for all
+  of this; read those three together before hand-rolling a fourth convention.
 - **When one message slot serves several conditions, order by which fact is true *right now*, in one pure module**:
   `SelectInput` renders `description` only when `error` is falsy, so exactly one message can ever surface while four
   conditions compete for it. `onboarding/_utils/resolve-select-field-state.ts` ranks them: parent-unchosen → loading
