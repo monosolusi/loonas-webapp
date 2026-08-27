@@ -22,6 +22,8 @@ export const ACCOUNTING_SWR_KEYS = {
   GET_MANAGERIAL_COST: "get-managerial-cost",
   LIST_LEDGER_ENTRIES: "list-ledger-entries",
   GET_ACCOUNT_BALANCE: "get-account-balance",
+  LIST_CASH_ENTRIES: "list-cash-entries",
+  GET_CASH_ENTRY: "get-cash-entry",
 } as const;
 
 export const ACCOUNTING_MUTATION_KEYS = {
@@ -41,4 +43,6 @@ export const ACCOUNTING_MUTATION_KEYS = {
   UPDATE_ACCOUNT_SETTING: "update-account-setting",
   ALLOCATE_MANAGERIAL_COST: "allocate-managerial-cost",
   SETTLE_FINAL_INCOME_TAX: "settle-final-income-tax",
+  CREATE_CASH_ENTRY: "create-cash-entry",
+  CANCEL_CASH_ENTRY: "cancel-cash-entry",
 } as const;

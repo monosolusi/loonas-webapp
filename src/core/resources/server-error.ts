@@ -559,6 +559,12 @@ export class ErrorCodes {
     message: "Dasar harga pokok belum tersedia untuk item ini. Penyesuaian tidak dapat dicatat.",
   };
 
+  public static readonly CASH_ENTRY_ALREADY_CANCELLED: ErrorStructureType = {
+    code: "CASH_ENTRY_ALREADY_CANCELLED",
+    httpCode: 409,
+    message: "Entri kas ini sudah dibatalkan atau merupakan entri pembatalan, dan tidak dapat dibatalkan lagi.",
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }
