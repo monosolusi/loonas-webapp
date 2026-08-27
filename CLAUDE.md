@@ -116,6 +116,12 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   `refresh`. Do **not** copy the full-page error pattern (`receipt-error.tsx`) for an in-card error — that one is
   page-scoped and carries a navigation action. Omit the retry button when the error is terminal (a `NOT_FOUND` will
   never succeed on retry). `SectionCard` already applies `p-6` to its body, so the inner block only needs `py-4`.
+  Corollary — **a status card's branch selector is the status flag, never the payload it links to**: ANDing the two
+  (`isReversal && reversedJournalId`) means a true status whose id is missing renders *nothing*, which reads as "this
+  record has no such status" rather than "the link target is unknown". Select the branch on the flag alone and let a
+  missing id yield the chip **without** a link — see
+  `cash-entries/[id]/_utils/resolve-cash-entry-cross-reference.ts`, whose test pins it;
+  `journal-reversal-status-card.tsx` still ANDs and is the one to fix, not follow.
 - **Interactive element height**: All interactive elements (buttons, inputs, selects, custom controls) use `h-11` (44px)
   for consistent vertical rhythm. Exception: icon-only action buttons (edit, delete) in tables use `size-8` (32px).
 - **Account resolution**: Backend resolves account from Clerk JWT `orgId` (set via `setActive({ organization })`).
@@ -519,17 +525,22 @@ header`. Never minted in the service/source layer (the LNS-117 anti-pattern) —
 given. The header rides `HttpRequest.request`'s **second** argument (`FetchConfig.headers`); the first
 (`FetchParams`) has no `headers` field at all, so a key threaded into the body params never reaches the wire.
 **Reuse the key across retries** until a definitive 4xx, then rotate — gate rotation with
-`shouldRotateIdempotencyKey(httpStatus, code)` (`features/invoice/presentations/helpers/idempotency-rotation.ts`,
-as `pos-provider` does). A fresh key per attempt is unsafe: a lost 5xx/network response may have already been
-processed server-side, and a new key lets the server record a second adjustment (duplicate stock decrement). Mint
-once per logical attempt, reuse on retry, rotate only when the helper says so.
+`shouldRotateIdempotencyKey(httpStatus, code)` (`core/helpers/idempotency-rotation.ts`, as `pos-provider` does;
+it lives in `core/` precisely so no feature reaches into another feature's copy). A fresh key per attempt is
+unsafe: a lost 5xx/network response may have already been processed server-side, and a new key lets the server
+record a second adjustment (duplicate stock decrement). Mint once per logical attempt, reuse on retry, rotate only
+when the helper says so — and **never rotate in a bare `catch`**, which sweeps 5xx and network failures in with the
+4xx. `journals/[id]/_providers/journal-detail-provider.tsx` rotates on every terminal error and is the one to fix,
+not follow; copying it into a *cancellation* flow is worse than the original, because a rotated key on a retried
+cancel records a second reversing entry.
 
 That `httpStatus` argument is the **transport** status — `details["status"]`, which `HttpRequest` sets for exactly
 this purpose — and **never `ServerError.httpCode`**, which is copied from the static `ErrorCodes` registry entry
 rather than from the response. The two diverge on any code the registry does not carry: it falls back to
 `ErrorCodes.UNKNOWN`, whose `httpCode` is **500**, so a genuine 4xx reads as a 5xx and the key is wrongly *kept* —
 pinning every retry to a cached failure. `pos-provider` passes `details["status"]` and is the shape to copy;
-`stock-adjustment-dialog.tsx` passes `serverError.httpCode` and is the one to fix, not follow. The same distinction
+`stock-adjustment-dialog.tsx` and `journal-detail-provider.tsx` (`err.httpCode === 422`) both branch on the static
+label and are the ones to fix, not follow. The same distinction
 applies anywhere you branch on a response status: `httpCode` is a static label, `details.status` is what happened.
 
 **The BE contract is the live `dev-api openapi`, not a PR or ticket.** Fetch
