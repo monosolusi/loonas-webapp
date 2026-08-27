@@ -4,7 +4,7 @@ import { DetailPageHeader } from "@/core/presentations/components/detail-page-he
 import { ActionMenu } from "@/core/presentations/components/action-menu";
 import { StatusChip } from "@/core/presentations/components/status-chip";
 import { useCashEntryDetail } from "@/app/(authenticated)/accounting/cash-entries/[id]/_providers/cash-entry-detail-provider";
-import { resolveCashEntryStatusChip } from "@/app/(authenticated)/accounting/cash-entries/[id]/_utils/resolve-cash-entry-status-chip";
+import { resolveCashEntryStatusChip } from "@/app/(authenticated)/accounting/cash-entries/_utils/resolve-cash-entry-status-chip";
 
 export function CashEntryDetailHeader() {
   const { entry, openCancelDialog } = useCashEntryDetail();

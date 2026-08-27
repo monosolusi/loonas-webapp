@@ -5,7 +5,7 @@ import { SectionCard } from "@/core/presentations/components/section-card";
 import { NumberDisplay } from "@/core/presentations/components/number-display";
 import { useCashEntryDetail } from "@/app/(authenticated)/accounting/cash-entries/[id]/_providers/cash-entry-detail-provider";
 import { CashEntryDetailInfoRow } from "@/app/(authenticated)/accounting/cash-entries/[id]/_components/cash-entry-detail-info-row";
-import { formatEntryDate, formatTimestamp } from "@/app/(authenticated)/accounting/cash-entries/[id]/_utils/format-cash-entry-date";
+import { formatEntryDate, formatTimestamp } from "@/app/(authenticated)/accounting/cash-entries/_utils/format-cash-entry-date";
 
 export function CashEntryDetailInfoCard() {
   const { entry } = useCashEntryDetail();

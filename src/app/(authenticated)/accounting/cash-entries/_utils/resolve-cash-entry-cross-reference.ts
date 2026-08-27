@@ -1,4 +1,4 @@
-import { CashEntryStatusChip } from "@/app/(authenticated)/accounting/cash-entries/[id]/_utils/resolve-cash-entry-status-chip";
+import { CashEntryStatusChip } from "@/app/(authenticated)/accounting/cash-entries/_utils/resolve-cash-entry-status-chip";
 import { CashEntryEntity } from "@/features/accounting/domain/entities/cash-entry";
 import { CashEntryStatus } from "@/features/accounting/domain/enums/cash-entry-status";
 

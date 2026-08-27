@@ -23,7 +23,9 @@ const INITIAL_STATE: UseListCashEntriesReturnType = {
   entries: null,
   meta: null,
   loading: true,
+  isLoadingPage: false,
   error: null,
+  refresh: null,
 };
 
 async function ListCashEntryFetcher([_, fp]: [string, ListCashEntriesFetcherParams]) {
@@ -38,21 +40,33 @@ async function ListCashEntryFetcher([_, fp]: [string, ListCashEntriesFetcherPara
 
 export function useListCashEntries(params: ListCashEntriesUseCaseParams = {}): UseListCashEntriesReturnType {
   const clerk = useClerk();
-  const { data, isLoading, error } = useSWR(
+  const { data, isLoading, isValidating, error, mutate } = useSWR(
     [ACCOUNTING_SWR_KEYS.LIST_CASH_ENTRIES, { clerk, params }],
     ListCashEntryFetcher,
+    { keepPreviousData: true },
   );
 
-  if (isLoading) return INITIAL_STATE;
-  if (error) {
+  const swrError = error instanceof ServerError ? error : error ? new ServerError(ErrorCodes.UNKNOWN) : null;
+
+  if (isLoading && !data) return INITIAL_STATE;
+  if (swrError && !data) {
     return {
       entries: null,
       meta: null,
       loading: false,
-      error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
+      isLoadingPage: false,
+      error: swrError,
+      refresh: () => mutate(),
     };
   }
   if (!data) return INITIAL_STATE;
 
-  return { entries: data.entries, meta: data.meta, loading: false, error: null };
+  return {
+    entries: data.entries,
+    meta: data.meta,
+    loading: false,
+    isLoadingPage: isValidating,
+    error: swrError,
+    refresh: mutate,
+  };
 }

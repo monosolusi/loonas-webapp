@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveCashEntryStatusChip } from "@/app/(authenticated)/accounting/cash-entries/[id]/_utils/resolve-cash-entry-status-chip";
+import { resolveCashEntryStatusChip } from "@/app/(authenticated)/accounting/cash-entries/_utils/resolve-cash-entry-status-chip";
 import { CashEntryStatus } from "@/features/accounting/domain/enums/cash-entry-status";
 
 describe("resolveCashEntryStatusChip", () => {
