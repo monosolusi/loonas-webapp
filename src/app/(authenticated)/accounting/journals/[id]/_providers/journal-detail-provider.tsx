@@ -179,7 +179,8 @@ export function JournalDetailProvider({ id, loading, children }: JournalDetailPr
   }, [acknowledgedCodes, pendingWarnings, doTrigger, mapServerError, showToast]);
 
   if (journalState.loading) return <>{loading}</>;
-  if (journalState.error) return <JournalDetailError onRetry={() => journalState.refresh?.()} />;
+  if (journalState.error)
+    return <JournalDetailError onRetry={() => { void journalState.refresh().catch(() => {}); }} />;
 
   return (
     <JournalDetailContext.Provider

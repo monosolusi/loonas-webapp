@@ -22,7 +22,13 @@ export function ProductDetailProductionCard() {
 
   if (!isManufacturedBatch || !product) return null;
   if (result.loading) return null;
-  if (result.error) return <ProductDetailProductionError error={result.error} onRetry={() => result.refresh()} />;
+  if (result.error)
+    return (
+      <ProductDetailProductionError
+        error={result.error}
+        onRetry={() => { void result.refresh().catch(() => {}); }}
+      />
+    );
   if (result.records.length === 0) return null;
 
   return (

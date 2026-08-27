@@ -12,7 +12,7 @@ type InitialState = {
   readonly data: null;
   readonly loading: true;
   readonly error: null;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<JournalEntity>;
 };
 
 type LoadedState = {

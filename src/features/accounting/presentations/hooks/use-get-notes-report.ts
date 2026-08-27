@@ -17,13 +17,6 @@ import {
   UseGetNotesReportReturnType,
 } from "@/features/accounting/presentations/hooks/use-get-notes-report.types";
 
-const INITIAL_STATE: UseGetNotesReportReturnType = {
-  data: null,
-  loading: true,
-  error: null,
-  refresh: null,
-};
-
 async function GetNotesReportFetcher([_, params]: [string, GetNotesReportFetcherParams]) {
   const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const repo = new ReportRepositoryImpl(new ReportServiceImpl(new HttpRequest()));
@@ -41,16 +34,23 @@ export function useGetNotesReport(params: UseGetNotesReportParams): UseGetNotesR
     GetNotesReportFetcher,
   );
 
-  if (isLoading) return INITIAL_STATE;
+  const initialState: UseGetNotesReportReturnType = {
+    data: null,
+    loading: true,
+    error: null,
+    refresh: mutate,
+  };
+
+  if (isLoading) return initialState;
   if (error) {
     return {
       data: null,
       loading: false,
       error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
-      refresh: null,
+      refresh: mutate,
     };
   }
-  if (!data) return INITIAL_STATE;
+  if (!data) return initialState;
 
   return {
     data,

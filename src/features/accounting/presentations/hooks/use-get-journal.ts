@@ -13,13 +13,6 @@ import { GetJournalUseCase, GetJournalUseCaseParams } from "@/features/accountin
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
 import { GetJournalFetcherParams, UseGetJournalReturnType } from "@/features/accounting/presentations/hooks/use-get-journal.types";
 
-const INITIAL_STATE: UseGetJournalReturnType = {
-  data: null,
-  loading: true,
-  error: null,
-  refresh: null,
-};
-
 async function GetJournalFetcher([_, params]: [string, GetJournalFetcherParams]) {
   const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const repo = new JournalRepositoryImpl(new JournalServiceImpl(new HttpRequest()));
@@ -37,7 +30,14 @@ export function useGetJournal(id: string): UseGetJournalReturnType {
     GetJournalFetcher,
   );
 
-  if (isLoading) return INITIAL_STATE;
+  const initialState: UseGetJournalReturnType = {
+    data: null,
+    loading: true,
+    error: null,
+    refresh: mutate,
+  };
+
+  if (isLoading) return initialState;
   if (error) {
     return {
       data: null,
@@ -46,7 +46,7 @@ export function useGetJournal(id: string): UseGetJournalReturnType {
       refresh: mutate,
     };
   }
-  if (!data) return INITIAL_STATE;
+  if (!data) return initialState;
 
   return {
     data,

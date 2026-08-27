@@ -16,7 +16,7 @@ type InitialState = {
   readonly data: null;
   readonly loading: true;
   readonly error: null;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<GetBalanceSheetReportUseCaseResult>;
 };
 
 type LoadedState = {
@@ -30,7 +30,7 @@ type ErrorState = {
   readonly data: null;
   readonly loading: false;
   readonly error: ServerError;
-  readonly refresh: () => void;
+  readonly refresh: KeyedMutator<GetBalanceSheetReportUseCaseResult>;
 };
 
 export type UseGetBalanceSheetReportReturnType = InitialState | LoadedState | ErrorState;

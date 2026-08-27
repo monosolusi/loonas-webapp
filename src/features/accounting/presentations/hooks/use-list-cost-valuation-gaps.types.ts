@@ -20,7 +20,7 @@ type InitialState = {
   readonly loading: true;
   readonly isLoadingPage: false;
   readonly error: null;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<ListCostValuationGapsUseCaseResult>;
 };
 
 type LoadedState = {
@@ -36,7 +36,7 @@ type ErrorState = {
   readonly loading: false;
   readonly isLoadingPage: false;
   readonly error: ServerError;
-  readonly refresh: () => void;
+  readonly refresh: KeyedMutator<ListCostValuationGapsUseCaseResult>;
 };
 
 export type UseListCostValuationGapsReturnType = InitialState | LoadedState | ErrorState;

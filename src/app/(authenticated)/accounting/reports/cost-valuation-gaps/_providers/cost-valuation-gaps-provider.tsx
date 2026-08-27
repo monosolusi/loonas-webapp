@@ -103,7 +103,7 @@ export function CostValuationGapsProvider({ children }: CostValuationGapsProvide
   const isLoadingPage = hookResult.isLoadingPage;
 
   const onRetry = useCallback(() => {
-    hookResult.refresh?.();
+    void hookResult.refresh().catch(() => {});
   }, [hookResult.refresh]);
 
   return (

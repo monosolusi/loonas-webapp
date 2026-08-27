@@ -15,7 +15,7 @@ type InitialState = {
   readonly data: null;
   readonly loading: true;
   readonly error: null;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<GetNotesReportUseCaseResult>;
 };
 
 type LoadedState = {
@@ -29,7 +29,7 @@ type ErrorState = {
   readonly data: null;
   readonly loading: false;
   readonly error: ServerError;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<GetNotesReportUseCaseResult>;
 };
 
 export type UseGetNotesReportReturnType = InitialState | LoadedState | ErrorState;

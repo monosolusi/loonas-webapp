@@ -59,9 +59,7 @@ export function BalanceSheetProvider({ children }: BalanceSheetProviderProps) {
   const report = hookResult.data ?? null;
 
   const onRetry = () => {
-    if (hookResult.refresh) {
-      hookResult.refresh();
-    }
+    void hookResult.refresh().catch(() => {});
   };
 
   return (

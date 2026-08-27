@@ -118,7 +118,7 @@ export function BukuBesarProvider({ children }: BukuBesarProviderProps) {
     : false;
 
   const onRetry = useCallback(() => {
-    hookResult.refresh?.();
+    void hookResult.refresh().catch(() => {});
   }, [hookResult]);
 
   return (

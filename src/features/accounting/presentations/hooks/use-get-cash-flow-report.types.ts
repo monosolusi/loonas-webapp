@@ -17,7 +17,7 @@ type InitialState = {
   readonly data: null;
   readonly loading: true;
   readonly error: null;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<GetCashFlowReportUseCaseResult>;
 };
 
 type LoadedState = {
@@ -31,7 +31,7 @@ type ErrorState = {
   readonly data: null;
   readonly loading: false;
   readonly error: ServerError;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<GetCashFlowReportUseCaseResult>;
 };
 
 export type UseGetCashFlowReportReturnType = InitialState | LoadedState | ErrorState;

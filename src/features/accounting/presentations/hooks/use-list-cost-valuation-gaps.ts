@@ -17,14 +17,6 @@ import {
   UseListCostValuationGapsReturnType,
 } from "@/features/accounting/presentations/hooks/use-list-cost-valuation-gaps.types";
 
-const INITIAL_STATE: UseListCostValuationGapsReturnType = {
-  data: null,
-  loading: true,
-  isLoadingPage: false,
-  error: null,
-  refresh: null,
-};
-
 async function ListCostValuationGapsFetcher([_, params]: [string, ListCostValuationGapsFetcherParams]) {
   const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const repo = new ReportRepositoryImpl(new ReportServiceImpl(new HttpRequest()));
@@ -53,17 +45,25 @@ export function useListCostValuationGaps(
 
   const swrError = error instanceof ServerError ? error : error ? new ServerError(ErrorCodes.UNKNOWN) : null;
 
-  if (isLoading && !data) return INITIAL_STATE;
+  const initialState: UseListCostValuationGapsReturnType = {
+    data: null,
+    loading: true,
+    isLoadingPage: false,
+    error: null,
+    refresh: mutate,
+  };
+
+  if (isLoading && !data) return initialState;
   if (swrError && !data) {
     return {
       data: null,
       loading: false,
       isLoadingPage: false,
       error: swrError,
-      refresh: () => mutate(),
+      refresh: mutate,
     };
   }
-  if (!data) return INITIAL_STATE;
+  if (!data) return initialState;
 
   return {
     data,

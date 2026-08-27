@@ -90,7 +90,7 @@ export function IncomeStatementProvider({ children }: IncomeStatementProviderPro
   }, []);
 
   const onRetry = useCallback(() => {
-    hookResult.refresh?.();
+    void hookResult.refresh().catch(() => {});
   }, [hookResult]);
 
   return (

@@ -19,7 +19,7 @@ type InitialState = {
   readonly data: null;
   readonly loading: true;
   readonly error: null;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<GetIncomeStatementReportUseCaseResult>;
 };
 
 type LoadedState = {
@@ -33,7 +33,7 @@ type ErrorState = {
   readonly data: null;
   readonly loading: false;
   readonly error: ServerError;
-  readonly refresh: null;
+  readonly refresh: KeyedMutator<GetIncomeStatementReportUseCaseResult>;
 };
 
 export type UseGetIncomeStatementReportReturnType = InitialState | LoadedState | ErrorState;

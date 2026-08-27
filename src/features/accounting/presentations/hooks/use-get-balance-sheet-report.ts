@@ -17,13 +17,6 @@ import {
   UseGetBalanceSheetReportReturnType,
 } from "@/features/accounting/presentations/hooks/use-get-balance-sheet-report.types";
 
-const INITIAL_STATE: UseGetBalanceSheetReportReturnType = {
-  data: null,
-  loading: true,
-  error: null,
-  refresh: null,
-};
-
 async function GetBalanceSheetReportFetcher([_, params]: [string, GetBalanceSheetReportFetcherParams]) {
   const sessionRepo = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const repo = new ReportRepositoryImpl(new ReportServiceImpl(new HttpRequest()));
@@ -41,16 +34,23 @@ export function useGetBalanceSheetReport(params: UseGetBalanceSheetReportParams)
     GetBalanceSheetReportFetcher,
   );
 
-  if (isLoading) return INITIAL_STATE;
+  const initialState: UseGetBalanceSheetReportReturnType = {
+    data: null,
+    loading: true,
+    error: null,
+    refresh: mutate,
+  };
+
+  if (isLoading) return initialState;
   if (error) {
     return {
       data: null,
       loading: false,
       error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
-      refresh: () => mutate(),
+      refresh: mutate,
     };
   }
-  if (!data) return INITIAL_STATE;
+  if (!data) return initialState;
 
   return {
     data,

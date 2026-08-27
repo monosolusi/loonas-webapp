@@ -22,7 +22,7 @@ type InitialState = {
   meta: null;
   loading: true;
   error: null;
-  refresh: null;
+  refresh: KeyedMutator<PaginatedData<ProductionRecordEntity>>;
 };
 
 type LoadedState = {
