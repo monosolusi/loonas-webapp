@@ -516,18 +516,31 @@ Custom `HttpRequest` class injects Clerk session headers:
 **Idempotency key minted at the orchestration layer**: the `Idempotency-Key` is generated in the dialog/handler that
 owns form state (`crypto.randomUUID()`), then threaded `trigger → use case → repo → source → Idempotency-Key
 header`. Never minted in the service/source layer (the LNS-117 anti-pattern) — the service only forwards what it's
-given. **Reuse the key across retries** until a definitive 4xx, then rotate — gate rotation with
+given. The header rides `HttpRequest.request`'s **second** argument (`FetchConfig.headers`); the first
+(`FetchParams`) has no `headers` field at all, so a key threaded into the body params never reaches the wire.
+**Reuse the key across retries** until a definitive 4xx, then rotate — gate rotation with
 `shouldRotateIdempotencyKey(httpStatus, code)` (`features/invoice/presentations/helpers/idempotency-rotation.ts`,
 as `pos-provider` does). A fresh key per attempt is unsafe: a lost 5xx/network response may have already been
 processed server-side, and a new key lets the server record a second adjustment (duplicate stock decrement). Mint
 once per logical attempt, reuse on retry, rotate only when the helper says so.
 
+That `httpStatus` argument is the **transport** status — `details["status"]`, which `HttpRequest` sets for exactly
+this purpose — and **never `ServerError.httpCode`**, which is copied from the static `ErrorCodes` registry entry
+rather than from the response. The two diverge on any code the registry does not carry: it falls back to
+`ErrorCodes.UNKNOWN`, whose `httpCode` is **500**, so a genuine 4xx reads as a 5xx and the key is wrongly *kept* —
+pinning every retry to a cached failure. `pos-provider` passes `details["status"]` and is the shape to copy;
+`stock-adjustment-dialog.tsx` passes `serverError.httpCode` and is the one to fix, not follow. The same distinction
+applies anywhere you branch on a response status: `httpCode` is a static label, `details.status` is what happened.
+
 **The BE contract is the live `dev-api openapi`, not a PR or ticket.** Fetch
 `dev-api.loonas.id/openapi.json` to confirm a field/endpoint is live before modeling it; trust the
-deployed schemas over BE PR or ticket prose. Never pre-add a field to a Model (`data/models/`) or
-Entity (`domain/entities/`) for a BE contract that hasn't shipped to dev-api — that invents a
-contract the backend hasn't committed to (the LNS-637 FE guard deliberately omitted a discriminator
-field that LNS-631 had not added). **Read the declared `format`, not just the type** — a spec
+deployed schemas over BE PR or ticket prose — a ticket's own AC is prose, and can be wrong about the
+contract it cites (LNS-736 carried a `422` and a `search` param the spec did not have; both were
+corrected against the spec and the correction recorded on the ticket). Never pre-add a field to a
+Model (`data/models/`) or Entity (`domain/entities/`) for a BE contract that hasn't shipped to
+dev-api — that invents a contract the backend hasn't committed to (the LNS-637 FE guard
+deliberately omitted a discriminator field that LNS-631 had not added). **Read the declared
+`format`, not just the type** — a spec
 `{"type":"string","format":"date"}` means a plain `YYYY-MM-DD`, so serialise it with Luxon's
 `toISODate()`, never `toISO()`: the latter emits an offset datetime
 (`2000-05-14T00:00:00.000+07:00`) that can shift the calendar day if the BE normalises through UTC.
@@ -535,6 +548,15 @@ field that LNS-631 had not added). **Read the declared `format`, not just the ty
 date. The spec is also where you confirm a rule is *not* the backend's: that endpoint declares no
 min/max and no age-related error code, so `MINIMUM_ACCOUNT_HOLDER_AGE_YEARS` is documented in-code
 as an FE-owned floor rather than a mirrored BE constraint.
+
+**A documented path is not a mounted route — verify the route, not just the schema.** A deploy can publish the
+OpenAPI bundle without the routes it describes: LNS-736 found all six cash-entry paths in the live
+`openapi.json` while every one still returned Express's `Cannot <METHOD> <path>` 404 handler. Probe with the
+endpoint's real method and read the response **body**, not the status alone — a 404 handler and a genuine auth
+gate are told apart by the body, and a malformed probe can return a plausible `400` that reads as "exists, auth
+gated". This is the normal case when the FE and BE halves of one release run in parallel, and it does not block
+FE work: build against the published spec, but say plainly in the PR and on the ticket that the routes are not
+mounted, scope verification to unit tests, and never report an end-to-end check that could not have run.
 
 **Partial-update PUTs: `undefined` omits, `null` clears — never conflate them.** `HttpRequest`
 serialises with `JSON.stringify`, which **silently drops `undefined`-valued keys**. On a partial-update
@@ -556,7 +578,10 @@ Two rules follow, and both are load-bearing:
   `JSON.stringify(body)` reveals whether it survives the wire. Mock `HttpRequest.request` with a `vi.fn()`
   that captures `params.body` and assert on the stringified result — see
   `features/invoice/data/sources/create-pos-sale-body.test.ts` and
-  `features/product/data/sources/product.test.ts`.
+  `features/product/data/sources/product.test.ts`. **Where the endpoint also has a header contract
+  (`Idempotency-Key`), capture the second argument too.** Both precedent helpers take only the first, so a test
+  copied from them cannot see the header and passes just as happily on a request that never sent one — widen the
+  mock to `(params, config)` and assert on `config.headers` (`features/accounting/data/sources/cash-entry.test.ts`).
 
 **Dead error-code removal — branch and constant, not just the branch.** When a BE error code becomes
 unreachable (confirmed absent from `dev-api.loonas.id/openapi.json`), remove the FE runtime handler **and**
