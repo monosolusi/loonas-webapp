@@ -14,13 +14,6 @@ import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { GetCurrentAccountUseCase } from "@/features/account/domain/usecases/get-current-account.usecase";
 import { ACCOUNT_SWR_KEYS } from "@/features/account/presentation/constants/swr-keys";
 
-const INITIAL_STATE: UseGetCurrentAccountReturnValue = {
-  account: null,
-  loading: true,
-  error: null,
-  refresh: null,
-};
-
 async function GetCurrentAccountFetcher([_, params]: [string, GetAccountFetcherParams]) {
   const sessionRepository = new SessionRepositoryImpl(new ClerkSessionService({ clerk: params.clerk }));
   const accountRepository = new AccountRepositoryImpl(new AccountServiceImpl(new HttpRequest()));
@@ -35,8 +28,22 @@ export function useGetCurrentAccount(): UseGetCurrentAccountReturnValue {
   const clerk = useClerk();
   const { data, isLoading, error, mutate } = useSWR([ACCOUNT_SWR_KEYS.GET_CURRENT_ACCOUNT, { clerk }], GetCurrentAccountFetcher);
 
-  if (isLoading) return INITIAL_STATE;
-  if (error) return Object.assign({}, INITIAL_STATE, { error, loading: false });
+  const initialState: UseGetCurrentAccountReturnValue = {
+    account: null,
+    loading: true,
+    error: null,
+    refresh: mutate,
+  };
+
+  if (isLoading) return initialState;
+  if (error) {
+    return {
+      account: null,
+      loading: false,
+      error: error instanceof ServerError ? error : new ServerError(ErrorCodes.UNKNOWN),
+      refresh: mutate,
+    };
+  }
   return {
     account: data!,
     loading: isLoading,
