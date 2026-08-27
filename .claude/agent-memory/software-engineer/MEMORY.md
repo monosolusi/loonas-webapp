@@ -47,6 +47,7 @@
 - [SWR error needs a data gate](feedback_swr_error_needs_data_gate.md) — `error` survives alongside `data` on a failed revalidation and `isValidating` is true for background refreshes; branch on an unresolved/empty/populated tri-state first (QA F10 arch review)
 - [Disabled state needs a visible reason](feedback_disabled_state_needs_visible_reason.md) — a wrapper `opacity-50` dims the copy explaining WHY (neutral-200 → 1.35:1); `bg-neutral-50` disabled fill is a no-op (#FFF); model inert-reason as a union, not bool+optional copy (QA F10 + 5-select fix)
 - [Plain hook + multi-consumer needs a provider](feedback_plain_hook_shared_state_needs_provider.md) — a non-context hook called from several sibling components gets independent `useState` per call site; wrap in `{Noun}Provider` + rename hook to `use{Noun}State()`, repoint every consumer, add `isCreating` re-entry guard on submit (onboarding submit-state fix, 2026-08-17)
+- [TS2774 doesn't fire on non-null fn guard](feedback_ts2774_does_not_fire_on_nonnull_fn_guard.md) — `if (refresh) refresh()` stays silent under this tsconfig even after `refresh` is narrowed non-null; `no-unnecessary-condition` is also off — only grep finds these dead guards (LNS-757)
 
 ## Project
 
