@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ErrorCodes } from "@/core/resources/server-error";
-import { shouldRotateIdempotencyKey } from "@/features/invoice/presentations/helpers/idempotency-rotation";
+import { shouldRotateIdempotencyKey } from "@/core/helpers/idempotency-rotation";
 
 describe("shouldRotateIdempotencyKey", () => {
   it("rotates after a 422 rejection", () => {

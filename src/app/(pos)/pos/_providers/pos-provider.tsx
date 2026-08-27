@@ -14,7 +14,7 @@ import { PaymentMethodEntity } from "@/features/pos/domain/entities/payment-meth
 import { useListPaymentMethods } from "@/features/pos/presentations/hooks/use-list-payment-methods";
 import { useCreatePosSale } from "@/features/invoice/presentations/hooks/use-create-pos-sale";
 import { parseUnitPriceMismatch } from "@/features/invoice/presentations/helpers/unit-price-mismatch";
-import { shouldRotateIdempotencyKey } from "@/features/invoice/presentations/helpers/idempotency-rotation";
+import { shouldRotateIdempotencyKey } from "@/core/helpers/idempotency-rotation";
 import { POS_SWR_KEYS } from "@/features/pos/presentations/constants/swr-keys";
 import { getPaymentMethodHandler } from "@/app/(pos)/pos/_payment-methods/registry";
 import { MOCK_PAYMENT_METHODS, USE_MOCK_PAYMENT_METHODS } from "@/app/(pos)/pos/_dev/mock-payment-methods";

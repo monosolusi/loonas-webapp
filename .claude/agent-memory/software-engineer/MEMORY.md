@@ -58,3 +58,4 @@
 - [KYC verification predicate tightening](project_lns_kyc_verification_predicate_tightening.md) — isApproved/isRejected getters require latestStatus===COMPLETED too; 4 call sites tightened intentionally, not a regression
 - [Worktree needs npm ci + .env](project_worktree_needs_npm_ci_and_env.md) — a fresh `.worktrees/` checkout has no `node_modules`/`.env`; both needed before typecheck/lint/build will run, neither gets committed
 - [LNS-736 cash-entry FE stack](project_lns736_cash_entry_fe_stack.md) — domain+data+hooks only, mirrors journal stack, CASH_ENTRY_ALREADY_CANCELLED registered at 409 (corrected from ticket's 422), commit 686c68a2
+- [LNS-741 cash-entry detail + cancel](project_lns741_cash_entry_detail_cancel.md) — stale "only importer" plan claim (grep found 2nd), no-setZone Luxon test needs Settings.defaultZone pin

@@ -15,7 +15,7 @@ import { INVENTORY_SWR_KEYS } from "@/features/inventory/presentations/constants
 import { useAdjustStockItem } from "@/features/inventory/presentations/hooks/use-adjust-stock-item";
 import { StockAdjustmentBlockedDialog } from "@/features/inventory/presentations/components/stock-adjustment-blocked-dialog";
 import { StockAdjustmentFormDialog } from "@/features/inventory/presentations/components/stock-adjustment-form-dialog";
-import { shouldRotateIdempotencyKey } from "@/features/invoice/presentations/helpers/idempotency-rotation";
+import { shouldRotateIdempotencyKey } from "@/core/helpers/idempotency-rotation";
 
 type Channel = "counted" | "removed" | "";
 
