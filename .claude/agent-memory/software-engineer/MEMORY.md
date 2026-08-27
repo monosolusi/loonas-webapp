@@ -47,6 +47,7 @@
 - [SWR error needs a data gate](feedback_swr_error_needs_data_gate.md) — `error` survives alongside `data` on a failed revalidation and `isValidating` is true for background refreshes; branch on an unresolved/empty/populated tri-state first (QA F10 arch review)
 - [Disabled state needs a visible reason](feedback_disabled_state_needs_visible_reason.md) — a wrapper `opacity-50` dims the copy explaining WHY (neutral-200 → 1.35:1); `bg-neutral-50` disabled fill is a no-op (#FFF); model inert-reason as a union, not bool+optional copy (QA F10 + 5-select fix)
 - [Plain hook + multi-consumer needs a provider](feedback_plain_hook_shared_state_needs_provider.md) — a non-context hook called from several sibling components gets independent `useState` per call site; wrap in `{Noun}Provider` + rename hook to `use{Noun}State()`, repoint every consumer, add `isCreating` re-entry guard on submit (onboarding submit-state fix, 2026-08-17)
+- [Journal list-hook Rule 10 drift](feedback_journal_list_hook_rule10_drift.md) — `use-list-journals.types.ts` imports `ListJournalsParams` from `domain/repositories`, not the usecase's own params; don't copy this one file when mirroring the journal template for a new list hook (LNS-736)
 
 ## Project
 
@@ -55,3 +56,5 @@
 - [LNS-378 year-end close + retained earnings](project_lns378_year_end_close.md) — R1–R6 risks mitigated; 3200 preselect, verbatim token, two journal-id keys, null not "", provider-extended not new
 - [LNS-457 failed-postings retry + escalation hint](project_lns457_failed_postings_retry.md) — shared 422-curation helper, double-nested details read, in-memory consecutive-failure counter
 - [KYC verification predicate tightening](project_lns_kyc_verification_predicate_tightening.md) — isApproved/isRejected getters require latestStatus===COMPLETED too; 4 call sites tightened intentionally, not a regression
+- [Worktree needs npm ci + .env](project_worktree_needs_npm_ci_and_env.md) — a fresh `.worktrees/` checkout has no `node_modules`/`.env`; both needed before typecheck/lint/build will run, neither gets committed
+- [LNS-736 cash-entry FE stack](project_lns736_cash_entry_fe_stack.md) — domain+data+hooks only, mirrors journal stack, CASH_ENTRY_ALREADY_CANCELLED registered at 409 (corrected from ticket's 422), commit 686c68a2
