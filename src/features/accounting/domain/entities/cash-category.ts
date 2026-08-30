@@ -1,22 +1,12 @@
 import { AbstractEntity } from "@/core/resources/entity";
+import { CashCategoryAccountEntity } from "@/features/accounting/domain/entities/cash-category-account";
 import { CashEntryDirection } from "@/features/accounting/domain/enums/cash-entry-direction";
-
-/**
- * The CoA account a category posts to. The live spec declares only these three fields on the
- * inline `account` object — no `type` — so eligibility is resolved through the category's own
- * `direction` (`cash-category-eligibility.ts`), never re-derived here.
- */
-export type CashCategoryAccount = {
-  id: string;
-  code: string;
-  name: string;
-};
 
 type CashCategoryEntityConstructor = {
   id: string;
   direction: CashEntryDirection;
   name: string;
-  account: CashCategoryAccount;
+  account: CashCategoryAccountEntity;
   isCurated: boolean;
   createdAt: string;
   updatedAt: string;
@@ -26,7 +16,8 @@ export class CashCategoryEntity implements AbstractEntity {
   public readonly id: string;
   public readonly direction: CashEntryDirection;
   public readonly name: string;
-  public readonly account: CashCategoryAccount;
+  /** The CoA account this category posts to — see `CashCategoryAccountEntity` for its wire shape. */
+  public readonly account: CashCategoryAccountEntity;
   public readonly isCurated: boolean;
   public readonly createdAt: string;
   public readonly updatedAt: string;

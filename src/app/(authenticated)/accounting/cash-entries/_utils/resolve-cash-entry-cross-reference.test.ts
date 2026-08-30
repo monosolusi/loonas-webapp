@@ -1,16 +1,23 @@
 import { describe, expect, it } from "vitest";
 import { resolveCashEntryCrossReference } from "@/app/(authenticated)/accounting/cash-entries/_utils/resolve-cash-entry-cross-reference";
 import { CashEntryEntity } from "@/features/accounting/domain/entities/cash-entry";
+import { CashCategoryAccountEntity } from "@/features/accounting/domain/entities/cash-category-account";
 import { CashCategoryEntity } from "@/features/accounting/domain/entities/cash-category";
 import { CashEntryDirection } from "@/features/accounting/domain/enums/cash-entry-direction";
 import { CashEntryStatus } from "@/features/accounting/domain/enums/cash-entry-status";
 
+/**
+ * `CashEntryEntity.category` is a full `CashCategoryEntity`, so a bare object literal no longer
+ * typechecks and these fixtures need a complete one. Nothing here reads the category at all —
+ * only `status`/`cancelsId`/`cancelledById` drive the cross-reference — so every category field
+ * is a fixed dummy value, mirroring the `buildEntry()` style below.
+ */
 function buildCategory(overrides: Partial<ConstructorParameters<typeof CashCategoryEntity>[0]> = {}) {
   return new CashCategoryEntity({
     id: "cat-1",
     name: "Penjualan",
     direction: CashEntryDirection.In,
-    account: { id: "acc-1", code: "4-1000", name: "Penjualan" },
+    account: new CashCategoryAccountEntity({ id: "acc-1", code: "4-1000", name: "Penjualan" }),
     isCurated: true,
     createdAt: "2026-08-27T09:15:00.000+07:00",
     updatedAt: "2026-08-27T09:15:00.000+07:00",

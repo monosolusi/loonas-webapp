@@ -1,5 +1,5 @@
 import { AbstractModel } from "@/core/resources/model";
-import { CashCategoryAccount } from "@/features/accounting/domain/entities/cash-category";
+import { CashCategoryAccountEntity } from "@/features/accounting/domain/entities/cash-category-account";
 
 /**
  * The spec's inline `account` object carries only `id`/`code`/`name` — no `type` — so this is
@@ -17,7 +17,7 @@ export class CashCategoryAccountModel implements AbstractModel {
     return new CashCategoryAccountModel(data["id"] ?? "", data["code"] ?? "", data["name"] ?? "");
   }
 
-  public toEntity(): CashCategoryAccount {
-    return { id: this.id, code: this.code, name: this.name };
+  public toEntity(): CashCategoryAccountEntity {
+    return new CashCategoryAccountEntity({ id: this.id, code: this.code, name: this.name });
   }
 }

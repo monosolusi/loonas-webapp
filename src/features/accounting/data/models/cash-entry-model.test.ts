@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CashEntryModel } from "@/features/accounting/data/models/cash-entry-model";
+import { CashCategoryAccountEntity } from "@/features/accounting/domain/entities/cash-category-account";
 import { CashCategoryEntity } from "@/features/accounting/domain/entities/cash-category";
 
 function baseJson(overrides: Record<string, any> = {}) {
@@ -49,7 +50,10 @@ describe("CashEntryModel.fromJson / toEntity", () => {
     expect(entity.category.id).toBe("cat-9");
     expect(entity.category.name).toBe("Modal");
     expect(entity.category.direction).toBe("out");
-    expect(entity.category.account).toEqual({ id: "", code: "", name: "" });
+    expect(entity.category.account).toBeInstanceOf(CashCategoryAccountEntity);
+    expect(entity.category.account.id).toBe("");
+    expect(entity.category.account.code).toBe("");
+    expect(entity.category.account.name).toBe("");
     expect(entity.category.isCurated).toBe(false);
   });
 
