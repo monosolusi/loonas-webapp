@@ -24,6 +24,8 @@ export const ACCOUNTING_SWR_KEYS = {
   GET_ACCOUNT_BALANCE: "get-account-balance",
   LIST_CASH_ENTRIES: "list-cash-entries",
   GET_CASH_ENTRY: "get-cash-entry",
+  LIST_CASH_CATEGORIES: "list-cash-categories",
+  GET_CASH_ENTRY_SETTINGS: "get-cash-entry-settings",
 } as const;
 
 export const ACCOUNTING_MUTATION_KEYS = {
@@ -45,4 +47,8 @@ export const ACCOUNTING_MUTATION_KEYS = {
   SETTLE_FINAL_INCOME_TAX: "settle-final-income-tax",
   CREATE_CASH_ENTRY: "create-cash-entry",
   CANCEL_CASH_ENTRY: "cancel-cash-entry",
+  CREATE_CASH_CATEGORY: "create-cash-category",
+  UPDATE_CASH_CATEGORY: "update-cash-category",
+  DELETE_CASH_CATEGORY: "delete-cash-category",
+  UPDATE_CASH_ENTRY_SETTINGS: "update-cash-entry-settings",
 } as const;
