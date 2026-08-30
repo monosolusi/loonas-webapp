@@ -150,7 +150,10 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   `throwOnError: true`. If the refetch fails (e.g. recovering from a 404 — the entity is still gone), the `await`
   throws and everything after it is skipped. In an error-recovery path, show the toast and set state **first**
   (synchronous, cannot fail), then attempt the revalidation inside its own `try {} catch {}`. On the success path
-  it is fine unguarded, since the surrounding `catch` already handles it.
+  it is fine unguarded, since the surrounding `catch` already handles it — but that allowance is for plain async
+  handlers, not for a `useSWRMutationClerk` fetcher: there the fetcher's rejection becomes the mutation's `trigger`
+  error, so **never `await` it inside a fetcher at all** — fire-and-forget
+  `void revalidateSWRKey(...).catch(() => {})`, or a successful write gets reported as failed.
 - **UseCase params independence**: Use case param types are defined in the use case file itself. Use cases MUST NOT
   import param types from repositories or sources. The use case defines its own params, then maps to repo params
   internally.
@@ -565,7 +568,13 @@ contract it cites (LNS-736 carried a `422` and a `search` param the spec did not
 corrected against the spec and the correction recorded on the ticket). Never pre-add a field to a
 Model (`data/models/`) or Entity (`domain/entities/`) for a BE contract that hasn't shipped to
 dev-api — that invents a contract the backend hasn't committed to (the LNS-637 FE guard
-deliberately omitted a discriminator field that LNS-631 had not added). **Read the declared
+deliberately omitted a discriminator field that LNS-631 had not added). The ticket's **file list**
+deserves the same skepticism: check each `new` path against the current tree before creating — a path
+that already exists is an edit, often a load-bearing one whose doc comment says extend-not-duplicate
+(LNS-738's list marked `cash-category-model.ts` "new" while `CashEntryEntity.category` depended on it).
+**Read error codes per operation, not per resource** — a code declared on POST is not implied on PATCH;
+document and handle exactly what each operation declares (LNS-738: `CASH_CATEGORY_DIRECTION_MISMATCH`
+is create-only — the update path rejects 409). **Read the declared
 `format`, not just the type** — a spec
 `{"type":"string","format":"date"}` means a plain `YYYY-MM-DD`, so serialise it with Luxon's
 `toISODate()`, never `toISO()`: the latter emits an offset datetime

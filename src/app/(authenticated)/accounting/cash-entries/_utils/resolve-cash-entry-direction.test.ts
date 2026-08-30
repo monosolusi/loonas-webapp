@@ -1,15 +1,36 @@
 import { describe, expect, it } from "vitest";
 import { resolveCashEntryDirection } from "@/app/(authenticated)/accounting/cash-entries/_utils/resolve-cash-entry-direction";
 import { CashEntryEntity } from "@/features/accounting/domain/entities/cash-entry";
+import { CashCategoryAccountEntity } from "@/features/accounting/domain/entities/cash-category-account";
+import { CashCategoryEntity } from "@/features/accounting/domain/entities/cash-category";
 import { CashEntryDirection } from "@/features/accounting/domain/enums/cash-entry-direction";
 import { CashEntryStatus } from "@/features/accounting/domain/enums/cash-entry-status";
+
+/**
+ * `CashEntryEntity.category` is a full `CashCategoryEntity`, so a bare object literal no longer
+ * typechecks and these fixtures need a complete one. Only `direction` is under test here
+ * (`resolveCashEntryDirection` must follow the entry, never the category); every other field is
+ * a fixed dummy value, mirroring the `buildEntry()` style below.
+ */
+function buildCategory(overrides: Partial<ConstructorParameters<typeof CashCategoryEntity>[0]> = {}) {
+  return new CashCategoryEntity({
+    id: "cat-1",
+    name: "Penjualan",
+    direction: CashEntryDirection.In,
+    account: new CashCategoryAccountEntity({ id: "acc-1", code: "4-1000", name: "Penjualan" }),
+    isCurated: true,
+    createdAt: "2026-08-27T09:15:00.000+07:00",
+    updatedAt: "2026-08-27T09:15:00.000+07:00",
+    ...overrides,
+  });
+}
 
 function buildEntry(overrides: Partial<ConstructorParameters<typeof CashEntryEntity>[0]> = {}): CashEntryEntity {
   return new CashEntryEntity({
     id: "entry-1",
     direction: CashEntryDirection.In,
     amount: 100000,
-    category: { id: "cat-1", name: "Penjualan", direction: CashEntryDirection.In },
+    category: buildCategory(),
     referenceNumber: "KM-0001",
     status: CashEntryStatus.Active,
     note: null,
@@ -44,7 +65,7 @@ describe("resolveCashEntryDirection", () => {
     const cancellationOfAnOutEntry = buildEntry({
       direction: CashEntryDirection.Out,
       status: CashEntryStatus.Cancellation,
-      category: { id: "cat-1", name: "Penjualan", direction: CashEntryDirection.In },
+      category: buildCategory({ direction: CashEntryDirection.In }),
     });
 
     expect(resolveCashEntryDirection(cancellationOfAnOutEntry)).toEqual({ label: "Kas Keluar" });

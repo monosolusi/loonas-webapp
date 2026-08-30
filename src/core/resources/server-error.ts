@@ -565,6 +565,31 @@ export class ErrorCodes {
     message: "Entri kas ini sudah dibatalkan atau merupakan entri pembatalan, dan tidak dapat dibatalkan lagi.",
   };
 
+  public static readonly CASH_CATEGORY_DIRECTION_MISMATCH: ErrorStructureType = {
+    code: "CASH_CATEGORY_DIRECTION_MISMATCH",
+    httpCode: 422,
+    message:
+      "Tipe akun tidak sesuai dengan arah kategori ini. Kas masuk memakai akun pendapatan, kas keluar memakai akun beban atau aset.",
+  };
+
+  public static readonly CASH_CATEGORY_ACCOUNT_TYPE_MISMATCH: ErrorStructureType = {
+    code: "CASH_CATEGORY_ACCOUNT_TYPE_MISMATCH",
+    httpCode: 422,
+    message: "Tipe akun tidak sesuai dengan arah yang dikonfigurasi. Pilih akun yang sesuai.",
+  };
+
+  public static readonly CASH_CATEGORY_REFERENCED: ErrorStructureType = {
+    code: "CASH_CATEGORY_REFERENCED",
+    httpCode: 409,
+    message: "Kategori kas ini dipakai oleh satu atau lebih entri kas, jadi tidak dapat diubah atau dihapus.",
+  };
+
+  public static readonly CASH_CATEGORY_NOT_FOUND: ErrorStructureType = {
+    code: "CASH_CATEGORY_NOT_FOUND",
+    httpCode: 404,
+    message: "Kategori kas tidak ditemukan.",
+  };
+
   public static find(code: string): ErrorStructureType | undefined {
     return Object.values(ErrorCodes).find((error) => error.code === code);
   }
