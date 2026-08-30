@@ -60,3 +60,4 @@
 - [LNS-736 cash-entry FE stack](project_lns736_cash_entry_fe_stack.md) — domain+data+hooks only, mirrors journal stack, CASH_ENTRY_ALREADY_CANCELLED registered at 409 (corrected from ticket's 422), commit 686c68a2
 - [LNS-741 cash-entry detail + cancel](project_lns741_cash_entry_detail_cancel.md) — stale "only importer" plan claim (grep found 2nd), no-setZone Luxon test needs Settings.defaultZone pin
 - [LNS-738 cash-category + settings stack](project_lns738_cash_category_stack.md) — mutation hooks now own revalidateSWRKey (fire-and-forget), category list is direction-only (no page/limit in spec), account object is {id,code,name} no type
+- [Data model conventions](feedback_data_model_conventions.md) — one model per file; conversion is always `toEntity()`, never `toValue()`; grep consumers when removing one (PR 246)
