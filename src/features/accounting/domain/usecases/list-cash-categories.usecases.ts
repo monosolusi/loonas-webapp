@@ -29,7 +29,8 @@ export class ListCashCategoriesUseCase implements UseCase<
   public async execute(params: ListCashCategoriesUseCaseParams): Promise<DataState<ListCashCategoriesUseCaseResult>> {
     try {
       const session = await this.resolveSession();
-      return new DataSuccess(await this.fetchCategories(params, session));
+      const categories = await this.fetchCategories(params, session);
+      return new DataSuccess(categories);
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

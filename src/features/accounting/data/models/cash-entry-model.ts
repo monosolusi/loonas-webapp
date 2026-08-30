@@ -55,7 +55,7 @@ export class CashEntryModel implements AbstractModel {
       id: this.id,
       direction: this.direction,
       amount: this.amount,
-      category: this.category.toValue(),
+      category: this.category.toEntity(),
       referenceNumber: this.referenceNumber,
       status: this.status,
       note: this.note,

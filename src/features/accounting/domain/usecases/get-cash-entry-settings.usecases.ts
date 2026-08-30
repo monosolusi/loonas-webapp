@@ -15,7 +15,8 @@ export class GetCashEntrySettingsUseCase implements UseCase<DataState<CashEntryS
   public async execute(): Promise<DataState<CashEntrySettingsEntity>> {
     try {
       const session = await this.resolveSession();
-      return new DataSuccess(await this.fetchSettings(session));
+      const settings = await this.fetchSettings(session);
+      return new DataSuccess(settings);
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

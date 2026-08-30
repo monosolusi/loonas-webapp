@@ -31,7 +31,8 @@ export class UpdateCashEntrySettingsUseCase implements UseCase<
   public async execute(params: UpdateCashEntrySettingsUseCaseParams): Promise<DataState<CashEntrySettingsEntity>> {
     try {
       const session = await this.resolveSession();
-      return new DataSuccess(await this.updateSettings(params, session));
+      const settings = await this.updateSettings(params, session);
+      return new DataSuccess(settings);
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

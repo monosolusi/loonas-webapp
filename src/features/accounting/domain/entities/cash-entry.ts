@@ -1,24 +1,13 @@
 import { AbstractEntity } from "@/core/resources/entity";
+import { CashCategoryEntity } from "@/features/accounting/domain/entities/cash-category";
 import { CashEntryDirection } from "@/features/accounting/domain/enums/cash-entry-direction";
 import { CashEntryStatus } from "@/features/accounting/domain/enums/cash-entry-status";
-
-/**
- * The cash category an entry is classified under. The spec documents `direction` as
- * matching the entry's own `direction`, but that is false for every `status: "cancellation"`
- * row (LNS-762, open). Carry this field because it is wire data — never derive an entry's
- * money-in/money-out reading from it. See `CashEntryEntity.isMoneyIn`.
- */
-export type CashEntryCategory = {
-  id: string;
-  name: string;
-  direction: CashEntryDirection;
-};
 
 type CashEntryEntityConstructor = {
   id: string;
   direction: CashEntryDirection;
   amount: number;
-  category: CashEntryCategory;
+  category: CashCategoryEntity;
   referenceNumber: string;
   status: CashEntryStatus;
   note: string | null;
@@ -35,7 +24,13 @@ export class CashEntryEntity implements AbstractEntity {
   public readonly id: string;
   public readonly direction: CashEntryDirection;
   public readonly amount: number;
-  public readonly category: CashEntryCategory;
+  /**
+   * The cash category this entry is classified under. The spec documents its `direction` as
+   * matching the entry's own `direction`, but that is false for every `status: "cancellation"`
+   * row (LNS-762, open) — it is wire data, never a basis for deriving an entry's
+   * money-in/money-out reading. See `CashEntryEntity.isMoneyIn`.
+   */
+  public readonly category: CashCategoryEntity;
   public readonly referenceNumber: string;
   public readonly status: CashEntryStatus;
   public readonly note: string | null;
@@ -81,7 +76,7 @@ export class CashEntryEntity implements AbstractEntity {
 
   /**
    * Derived from `this.direction` only. `category.direction` is unreliable for cancellation
-   * rows (see `CashEntryCategory` doc comment) and must never be consulted here.
+   * rows (see `category`'s doc comment) and must never be consulted here.
    */
   public get isMoneyIn(): boolean {
     return this.direction === CashEntryDirection.In;

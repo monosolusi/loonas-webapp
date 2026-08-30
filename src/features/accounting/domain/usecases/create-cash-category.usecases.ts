@@ -27,7 +27,8 @@ export class CreateCashCategoryUseCase implements UseCase<
   public async execute(params: CreateCashCategoryUseCaseParams): Promise<DataState<CashCategoryEntity>> {
     try {
       const session = await this.resolveSession();
-      return new DataSuccess(await this.createCategory(params, session));
+      const category = await this.createCategory(params, session);
+      return new DataSuccess(category);
     } catch (err) {
       if (err instanceof ServerError) return new DataFailed(err);
       else return new DataFailed(new ServerError(ErrorCodes.UNKNOWN, { error: err }));

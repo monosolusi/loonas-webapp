@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CashEntryModel } from "@/features/accounting/data/models/cash-entry-model";
+import { CashCategoryEntity } from "@/features/accounting/domain/entities/cash-category";
 
 function baseJson(overrides: Record<string, any> = {}) {
   return {
@@ -39,11 +40,17 @@ describe("CashEntryModel.fromJson / toEntity", () => {
     expect(entity.entryDate).toBe("2026-08-27");
   });
 
-  it("parses the nested category via CashCategoryModel", () => {
+  it("parses the nested category into a full CashCategoryEntity", () => {
     const entity = CashEntryModel.fromJson(
       baseJson({ category: { id: "cat-9", name: "Modal", direction: "out" } }),
     ).toEntity();
-    expect(entity.category).toEqual({ id: "cat-9", name: "Modal", direction: "out" });
+    // The wire carries only `id`/`name`/`direction`; the model's remaining fields default.
+    expect(entity.category).toBeInstanceOf(CashCategoryEntity);
+    expect(entity.category.id).toBe("cat-9");
+    expect(entity.category.name).toBe("Modal");
+    expect(entity.category.direction).toBe("out");
+    expect(entity.category.account).toEqual({ id: "", code: "", name: "" });
+    expect(entity.category.isCurated).toBe(false);
   });
 
   it("keeps nullable fields as null", () => {
