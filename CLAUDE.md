@@ -351,7 +351,10 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   all; for a single-shot fetch `error` and `!data` are always coincident, so the identical hardcoded `null` in a
   sibling hook is latent, not a bug — do not "fix" it without a page-level retry to make reachable.
   `use-list-cost-valuation-gaps.{ts,types.ts}` plus its provider is the canonical paginated-report exemplar for all
-  of this; read those three together before hand-rolling a fourth convention.
+  of this; read those three together before hand-rolling a fourth convention. A retry wired to a dependent-state
+  setter (`setPage(1)`) is a no-op when that state is already current — React bails on the `Object.is`-equal update,
+  SWR is never asked to revalidate, and the button is inert on the exact first-load failure it exists for; retry must
+  call the fetcher's `mutate` (`refresh`), not reset state that merely *governs* the fetch key (LNS-760).
 - **When one message slot serves several conditions, order by which fact is true *right now*, in one pure module**:
   `SelectInput` renders `description` only when `error` is falsy, so exactly one message can ever surface while four
   conditions compete for it. `onboarding/_utils/resolve-select-field-state.ts` ranks them: parent-unchosen → loading
