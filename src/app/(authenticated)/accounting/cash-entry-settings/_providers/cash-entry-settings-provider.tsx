@@ -9,34 +9,25 @@ import { useGetCashEntrySettings } from "@/features/accounting/presentations/hoo
 import { useListAllLedgerAccounts } from "@/features/accounting/presentations/hooks/use-list-all-ledger-accounts";
 import { useUpdateCashEntrySettings } from "@/features/accounting/presentations/hooks/use-update-cash-entry-settings";
 import { ACCOUNTING_SWR_KEYS } from "@/features/accounting/presentations/constants/swr-keys";
-import {
-  classifySaveError,
-  SaveErrorPlacement,
-} from "@/app/(authenticated)/accounting/cash-entry-settings/_utils/classify-save-error";
-import { classifyFetchError } from "@/app/(authenticated)/accounting/cash-entry-settings/_utils/classify-fetch-error";
+import { classifySaveError } from "@/app/(authenticated)/accounting/cash-entry-settings/_utils/classify-save-error";
+import { PlacedSaveError } from "@/app/(authenticated)/accounting/cash-entry-settings/_utils/resolve-settings-feedback";
+import { classifyFetchError } from "@/core/helpers/classify-fetch-error";
 import {
   CashEntrySettingsFormState,
   CashEntrySettingsSelection,
   resolveSavedSelection,
-  resolveSelectedAccount,
   resolveSettingsFormState,
   SavedCashEntrySettings,
 } from "@/app/(authenticated)/accounting/cash-entry-settings/_utils/resolve-settings-form-state";
 import { CashEntrySettingsError } from "@/app/(authenticated)/accounting/cash-entry-settings/_components/cash-entry-settings-error";
 
-type CashEntrySettingsSaveError = {
-  placement: Exclude<SaveErrorPlacement, "toast">;
-  message: string;
-};
-
 type CashEntrySettingsContextValue = {
-  incomeAccount: LedgerAccountEntity | null;
-  expenseAccount: LedgerAccountEntity | null;
-  /** Non-null when the saved default's id is absent from the ledger-account list — the field then renders "akun tidak ditemukan" instead of a lying empty combobox. */
-  incomeMissingSavedId: string | null;
-  expenseMissingSavedId: string | null;
+  /** The resolved selection per picker — the tagged union the field renders from. */
+  income: CashEntrySettingsSelection;
+  expense: CashEntrySettingsSelection;
+  accounts: ReadonlyArray<LedgerAccountEntity> | null;
   formState: CashEntrySettingsFormState;
-  saveError: CashEntrySettingsSaveError | null;
+  saveError: PlacedSaveError | null;
   isSaving: boolean;
   selectIncome: (account: LedgerAccountEntity | null) => void;
   selectExpense: (account: LedgerAccountEntity | null) => void;
@@ -67,7 +58,7 @@ export function CashEntrySettingsProvider({ loading, children }: CashEntrySettin
   // resurrect) an edit the user already made.
   const [incomeOverride, setIncomeOverride] = useState<CashEntrySettingsSelection | null>(null);
   const [expenseOverride, setExpenseOverride] = useState<CashEntrySettingsSelection | null>(null);
-  const [saveError, setSaveError] = useState<CashEntrySettingsSaveError | null>(null);
+  const [saveError, setSaveError] = useState<PlacedSaveError | null>(null);
 
   const isSaving = isMutating;
 
@@ -89,12 +80,6 @@ export function CashEntrySettingsProvider({ loading, children }: CashEntrySettin
     () => expenseOverride ?? resolveSavedSelection(saved.defaultExpenseAccountId, accounts),
     [expenseOverride, saved, accounts],
   );
-
-  const incomeAccount = useMemo(() => resolveSelectedAccount(income, accounts), [income, accounts]);
-  const expenseAccount = useMemo(() => resolveSelectedAccount(expense, accounts), [expense, accounts]);
-
-  const incomeMissingSavedId = income.kind === "missing" ? income.savedId : null;
-  const expenseMissingSavedId = expense.kind === "missing" ? expense.savedId : null;
 
   const formState = useMemo(() => resolveSettingsFormState(saved, income, expense), [saved, income, expense]);
 
@@ -149,10 +134,9 @@ export function CashEntrySettingsProvider({ loading, children }: CashEntrySettin
   return (
     <CashEntrySettingsContext.Provider
       value={{
-        incomeAccount,
-        expenseAccount,
-        incomeMissingSavedId,
-        expenseMissingSavedId,
+        income,
+        expense,
+        accounts,
         formState,
         saveError,
         isSaving,

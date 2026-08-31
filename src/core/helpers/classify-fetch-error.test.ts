@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { classifyFetchError } from "@/app/(authenticated)/accounting/cash-entry-settings/_utils/classify-fetch-error";
 import { ErrorCodes, ServerError } from "@/core/resources/server-error";
+import { classifyFetchError } from "@/core/helpers/classify-fetch-error";
 
 describe("classifyFetchError", () => {
   it.each([ErrorCodes.FORBIDDEN, ErrorCodes.FEATURE_NOT_AVAILABLE])(
@@ -15,7 +15,7 @@ describe("classifyFetchError", () => {
     expect(classifyFetchError(err)).toEqual({ code: ErrorCodes.FORBIDDEN.code, retryable: false });
   });
 
-  it.each([ErrorCodes.UNKNOWN, ErrorCodes.INVALID_INSTANCE, ErrorCodes.CASH_CATEGORY_ACCOUNT_TYPE_MISMATCH])(
+  it.each([ErrorCodes.UNKNOWN, ErrorCodes.INVALID_INSTANCE, ErrorCodes.VALIDATION_FAILED])(
     "keeps every other failure retryable ($code)",
     (errorCode) => {
       expect(classifyFetchError(new ServerError(errorCode)).retryable).toBe(true);

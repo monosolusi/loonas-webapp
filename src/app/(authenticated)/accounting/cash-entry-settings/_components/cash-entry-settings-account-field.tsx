@@ -1,55 +1,47 @@
 "use client";
 
+import { useMemo } from "react";
 import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledger-account";
 import { LedgerAccountCombobox } from "@/features/accounting/presentations/components/ledger-account-combobox";
-import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
+import { CashEntrySettingsSelection } from "@/app/(authenticated)/accounting/cash-entry-settings/_utils/resolve-settings-form-state";
+import { resolveAccountFieldState } from "@/app/(authenticated)/accounting/cash-entry-settings/_utils/resolve-account-field-state";
+import { CashEntrySettingsMissingAccountNotice } from "@/app/(authenticated)/accounting/cash-entry-settings/_components/cash-entry-settings-missing-account-notice";
+import { CashEntrySettingsFieldError } from "@/app/(authenticated)/accounting/cash-entry-settings/_components/cash-entry-settings-field-error";
+import { CashEntrySettingsClearAccountButton } from "@/app/(authenticated)/accounting/cash-entry-settings/_components/cash-entry-settings-clear-account-button";
 
 type CashEntrySettingsAccountFieldProps = {
   label: string;
   placeholder: string;
-  account: LedgerAccountEntity | null;
-  /** Non-null when the saved default's id is absent from the ledger-account list. */
-  missingSavedId: string | null;
+  /** The provider's resolved selection — the field never re-derives what it means. */
+  selection: CashEntrySettingsSelection;
+  accounts: ReadonlyArray<LedgerAccountEntity> | null;
   errorMessage: string | null;
   filter: (account: LedgerAccountEntity) => boolean;
   onSelect: (account: LedgerAccountEntity | null) => void;
 };
 
+/**
+ * Composition only: every display decision comes from `resolveAccountFieldState`, and each
+ * state's presentation is its own component that renders nothing when it does not apply.
+ */
 export function CashEntrySettingsAccountField(props: CashEntrySettingsAccountFieldProps) {
-  // A stale saved id is clearable even though no account is displayed — clearing it is the
-  // remedy that unblocks the save.
-  const canClear = props.account !== null || props.missingSavedId !== null;
+  const state = useMemo(
+    () => resolveAccountFieldState(props.selection, props.accounts),
+    [props.selection, props.accounts],
+  );
 
   return (
     <div className="flex flex-col gap-y-2">
       <LedgerAccountCombobox
         label={props.label}
         placeholder={props.placeholder}
-        value={props.account}
+        value={state.account}
         onChange={props.onSelect}
         filter={props.filter}
       />
-
-      {props.missingSavedId && (
-        <p role="alert" className="text-xs leading-4 font-normal text-red-500">
-          Akun default yang tersimpan tidak ditemukan di daftar akun.
-        </p>
-      )}
-      {props.errorMessage && (
-        <p role="alert" className="text-xs leading-4 font-normal text-red-500">
-          {props.errorMessage}
-        </p>
-      )}
-
-      {canClear && (
-        <SecondaryButton
-          outlined
-          type="button"
-          label="Kosongkan"
-          onClick={() => props.onSelect(null)}
-          className="w-auto self-start px-4"
-        />
-      )}
+      <CashEntrySettingsMissingAccountNotice savedId={state.missingSavedId} />
+      <CashEntrySettingsFieldError message={props.errorMessage} />
+      <CashEntrySettingsClearAccountButton canClear={state.canClear} onClear={() => props.onSelect(null)} />
     </div>
   );
 }
