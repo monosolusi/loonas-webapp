@@ -1,6 +1,6 @@
 "use client";
 
-import useSWR from "swr";
+import useSWR, { KeyedMutator } from "swr";
 import { useClerk } from "@clerk/nextjs";
 import { HttpRequest } from "@/core/helpers/http-request";
 import { DataFailed } from "@/core/resources/data-state";
@@ -41,11 +41,12 @@ type UseListProductsReturnType = {
   meta: { page: number; limit: number; total: number; totalPages: number } | null;
   loading: boolean;
   error: ServerError | null;
+  refresh: KeyedMutator<Awaited<ReturnType<typeof ListProductsFetcher>>>;
 };
 
 export function useListProducts(params: UseListProductsParams = {}): UseListProductsReturnType {
   const clerk = useClerk();
-  const { data, isLoading, error } = useSWR(
+  const { data, isLoading, error, mutate } = useSWR(
     [PRODUCT_SWR_KEYS.LIST_PRODUCTS, params],
     (key) => ListProductsFetcher(key, clerk),
     { revalidateOnFocus: false, revalidateOnReconnect: false },
@@ -56,5 +57,6 @@ export function useListProducts(params: UseListProductsParams = {}): UseListProd
     meta: data?.meta ?? null,
     loading: isLoading,
     error: error instanceof ServerError ? error : null,
+    refresh: mutate,
   };
 }

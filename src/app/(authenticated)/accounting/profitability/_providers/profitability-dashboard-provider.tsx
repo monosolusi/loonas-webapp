@@ -52,7 +52,7 @@ export function ProfitabilityDashboardProvider({ children }: ProfitabilityDashbo
   const [search, setSearch] = useState("");
   const [grossProfitStates, setGrossProfitStates] = useState<Record<string, VariantGrossProfitState>>({});
 
-  const { products, meta, loading, error } = useListProducts({ page, limit: DEFAULT_PAGE_SIZE, search: search || undefined });
+  const { products, meta, loading, error, refresh } = useListProducts({ page, limit: DEFAULT_PAGE_SIZE, search: search || undefined });
 
   const totalVariants = useMemo(() => {
     return products.reduce((sum, product) => sum + product.variants.length, 0);
@@ -121,7 +121,7 @@ export function ProfitabilityDashboardProvider({ children }: ProfitabilityDashbo
   }, [loading, grossProfitStates, expectedKeys, totalVariants]);
 
   function handleRetry() {
-    setPage(1);
+    void refresh().catch(() => {});
   }
 
   function handleSetSearch(value: string) {
