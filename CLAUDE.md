@@ -614,7 +614,12 @@ endpoint an absent key means "leave unchanged", so `sku: value || undefined` in 
 clear a field — it preserves the old one, reports success, and the stale value returns on the next
 refetch. That was LNS-573. To clear a nullable field, send an explicit `null`; widen the param type to
 `string | null` rather than reaching for `undefined`. Note most Loonas write endpoints reject `""` with a
-400, so an empty form input must be converted, not forwarded.
+400, so an empty form input must be converted, not forwarded. Corollary (LNS-743): an editor buffer for a
+nullable **saved** value needs three distinguishable states — never-set, cleared-by-user, and
+saved-but-no-longer-valid (its referenced record is gone from the list). A bare nullable id conflates all
+three, and only the first two map onto omit vs explicit `null`; model the selection as a tagged type and
+resolve it once in the pure body builder to `absent | null | blocked`, so body semantics and UI state
+derive from one source instead of re-deriving each other.
 
 Two rules follow, and both are load-bearing:
 
