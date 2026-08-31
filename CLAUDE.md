@@ -356,7 +356,11 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   the stale-rows case the strip exists to prevent. `cost-valuation-gaps-provider.tsx` is cited as the template for
   optional-range list shells and gets **both** of these wrong (unguarded `onRetry`; a `shellState` letting `"empty"`
   outrank a non-null `pageError`) — mirror its structure, not those two lines. `accounting/cash-entries/` is the
-  corrected shape.
+  corrected shape. Corollary — **error copy may only promise recovery that actually exists**: SWR auto-retry is on
+  app-wide (`swr-provider.tsx` sets `shouldRetryOnError` with backoff; `revalidateOnFocus` defaults true), so a
+  fetch-error state with no retry button can be an honest wait-state — but then the copy must say so ("daftar akan
+  dimuat ulang otomatis…"), never instruct a manual action that cannot work: "tutup lalu coba lagi" over a hook that
+  stays mounted is a no-op, since closing and reopening never re-runs the fetch (LNS-740 arch review).
 - **When one message slot serves several conditions, order by which fact is true *right now*, in one pure module**:
   `SelectInput` renders `description` only when `error` is falsy, so exactly one message can ever surface while four
   conditions compete for it. `onboarding/_utils/resolve-select-field-state.ts` ranks them: parent-unchosen → loading
@@ -579,6 +583,10 @@ deliberately omitted a discriminator field that LNS-631 had not added). The tick
 deserves the same skepticism: check each `new` path against the current tree before creating — a path
 that already exists is an edit, often a load-bearing one whose doc comment says extend-not-duplicate
 (LNS-738's list marked `cash-category-model.ts` "new" while `CashEntryEntity.category` depended on it).
+The same skepticism covers the paths a ticket cites as templates or helpers, not just `new` ones — a cited
+path can be wrong by root or never have existed (LNS-740's Notes cited
+`features/invoice/presentations/helpers/idempotency-rotation.ts`, which does not exist — the helper is
+`core/helpers/idempotency-rotation.ts`), so grep a cited path before following it.
 **Read error codes per operation, not per resource** — a code declared on POST is not implied on PATCH;
 document and handle exactly what each operation declares (LNS-738: `CASH_CATEGORY_DIRECTION_MISMATCH`
 is create-only — the update path rejects 409). **Read the declared
