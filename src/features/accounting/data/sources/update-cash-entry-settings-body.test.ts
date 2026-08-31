@@ -8,16 +8,24 @@ import { CashEntrySettingsServiceImpl } from "@/features/accounting/data/sources
  * explicit `null` means "clear the default". That distinction is only observable on the
  * SERIALIZED payload: `JSON.stringify` silently drops undefined-valued keys, so a test that
  * checked the pre-serialization object would pass even if a clear had regressed into a
- * no-op (LNS-573).
+ * no-op (LNS-573). Mirrors the `(params, config)` capture idiom of
+ * `create-cash-category-body.test.ts`: the settings PATCH declares no `Idempotency-Key`, so
+ * the config capture guards against one sneaking back in via the header contract.
  */
 function captureRequest(responseData: Record<string, any>) {
-  const captured: { body?: Record<string, any> } = {};
+  const captured: {
+    body?: Record<string, any>;
+    config?: { headers?: Record<string, string> };
+  } = {};
 
   const http = {
-    request: vi.fn(async (params: { body?: Record<string, any> }) => {
-      captured.body = params.body;
-      return responseData;
-    }),
+    request: vi.fn(
+      async (params: { body?: Record<string, any> }, config?: { headers?: Record<string, string> }) => {
+        captured.body = params.body;
+        captured.config = config;
+        return responseData;
+      },
+    ),
   } as unknown as HttpRequest;
 
   return { http, captured };
@@ -68,6 +76,15 @@ describe("CashEntrySettingsServiceImpl.update — request payload", () => {
     await service.update({}, session);
 
     expect(JSON.stringify(captured.body)).toBe("{}");
+  });
+
+  it("sends no Idempotency-Key — the endpoint does not declare one", async () => {
+    const { http, captured } = captureRequest({ data: SETTINGS_JSON });
+    const service = new CashEntrySettingsServiceImpl(http);
+
+    await service.update({ defaultIncomeAccountId: "acc-1" }, session);
+
+    expect(captured.config?.headers?.["Idempotency-Key"]).toBeUndefined();
   });
 });
 
