@@ -174,6 +174,13 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   need null checks.
 - **Provider data locality**: Provider only hosts data shared across multiple components. If data is used by only one
   component, that component fetches it locally.
+- **Latch dialog display values through the close fade — and never latch the error**: a provider nulls its
+  `editingCategory`-style holder when a dialog closes, but `LoonasDialog`'s panel stays mounted through its 200ms
+  leave transition, so the body re-renders from the nulled holder mid-fade — a direction falls back to its default
+  enum (a WRONG value, not a blank) and a name blanks to "menghapus kategori ?". Wrap the display values in
+  `useLatchedValue` (`core/presentations/hooks/use-latched-value.ts`) so the last non-null value survives the fade.
+  The corollary is load-bearing: errors stay **unlatched** — the open handler nulls the error in the same batch as
+  the entity, so a latched error resurrects the *previous* record's error strip on the next open. (LNS-742)
 - **A plain hook is not shared state — `use{X}Data()` called by N components is N independent `useState`s**: this
   reads as shared state at every call site and is not, so the failure is silent and total. On `/onboarding/account`,
   `usePersonalAccountData` was a plain hook (no `createContext`) called by 14 components:
@@ -747,9 +754,11 @@ SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockI
   other for no user gain. What makes it worth recording rather than shrugging at: the project already ships a
   compliant ramp for exactly this use — `error-500` (`#B42318`) is **6.57:1** and `error-400` (`#D92D20`) is
   **4.83:1**, already used at ~57 call sites — so the app reaches for a Tailwind default where its own token is both
-  available and passing. Same class as the `primary-300` and `text-warning-400` debt above, and as the app-wide
-  secondary/placeholder token `neutral-200` (`#BDBDBD`, **1.88:1**): each needs one deliberate sweep with its own
-  ticket, never a drive-by. All ratios here are measured against `globals.css`, not estimated.
+  available and passing. Same class as the `primary-300` and `text-warning-400` debt above, the app-wide
+  secondary/placeholder token `neutral-200` (`#BDBDBD`, **1.88:1**) as used by `SearchCombobox`'s disabled-option
+  text under an `opacity-50` wrapper, and core `ConfirmationDialog`'s warning-slot copy `text-error-300`
+  (`#F04438`, **3.76:1**): each needs one deliberate sweep with its own ticket, never a drive-by. All ratios here
+  are measured against `globals.css`, not estimated.
 - **Nullable API fields where `null` = unclassified/unknown render distinctly — never as `0` or `Rp 0`**: when a row
   field is nullable and `null` means the system has NOT classified/measured it (not that it found zero), render `null`
   as an em-dash (`—`, `text-neutral-200`) or "Belum diklasifikasi" — NEVER `0`. Same for nullable money:
