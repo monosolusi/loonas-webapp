@@ -12,7 +12,9 @@ npm run typecheck    # Type-check (tsc --noEmit) — use to verify after edits
 npm run test         # Vitest (node environment, pure units only)
 ```
 
-Verify changes with `npm run typecheck`, `npm run lint` and `npm run test`.
+Verify changes with `npm run typecheck`, `npm run lint`, `npm run test` and `npx prettier --check` on the
+touched paths — formatting is enforced by Prettier alone (`prettier-plugin-tailwindcss`); `tsc` and ESLint
+both pass files Prettier rejects.
 
 Tests are **pure units only** — parsers, domain calculations, payload construction. There is
 no DOM, Clerk or network harness, so anything needing a rendered tree or a live session is
@@ -548,7 +550,11 @@ once per logical attempt, reuse on retry, rotate only when the helper says so.
 
 **The BE contract is the live `dev-api openapi`, not a PR or ticket.** Fetch
 `dev-api.loonas.id/openapi.json` to confirm a field/endpoint is live before modeling it; trust the
-deployed schemas over BE PR or ticket prose. Never pre-add a field to a Model (`data/models/`) or
+deployed schemas over BE PR or ticket prose. An epic on a `release/*` branch is deliberately absent from
+dev-api until it ships — read the merged OpenAPI at that ref (`openapi.json?ref=release/<name>`), and when
+dev-api itself answers 502 that is an outage, not absence: fall back to the merged spec in the BE repo at
+the ref (`git -C ../loonas-api show origin/release/<name>:<path-to-openapi.yaml>`), never the BE repo's
+shared working tree. Never pre-add a field to a Model (`data/models/`) or
 Entity (`domain/entities/`) for a BE contract that hasn't shipped to dev-api — that invents a
 contract the backend hasn't committed to (the LNS-637 FE guard deliberately omitted a discriminator
 field that LNS-631 had not added). **Read the declared `format`, not just the type** — a spec
@@ -666,7 +672,10 @@ custom `ListXxxServiceResult` types (returning Models, not Entities).
 
 ### Fetcher Naming
 
-SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockItemsFetcher`).
+SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockItemsFetcher`). Legacy
+plurals exist (`ListInvoicesFetcher`, `ListProductsFetcher`, `ListCostValuationGapsFetcher`) — debt, not
+convention: new fetchers take the singular even when copying a slice whose donor fetcher is one of the
+plurals.
 
 ### Code Style
 
