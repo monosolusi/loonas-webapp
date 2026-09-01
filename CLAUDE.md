@@ -90,7 +90,11 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   getter plus a parallel helper is a drift surface even when both reference the same constant today, because
   a future change to one will not reach the other. LNS-608 arch-review caught `VariantForSaleEntity.isOutOfStock`
   sitting unused while `outOfStockBadgeProps(status)` re-derived `stockStatus === OUT_OF_STOCK`; the fix routed
-  `OutOfStockBadge` through `isOutOfStock: boolean` and deleted the helper.
+  `OutOfStockBadge` through `isOutOfStock: boolean` and deleted the helper. This extends to UI **copy** that names a
+  domain constraint: derive the string from the helper that already drives the behaviour instead of retyping the
+  values — `/accounting/cash-entry-settings` builds its per-field "Hanya akun bertipe Pendapatan." hint from
+  `eligibleAccountTypesFor()`, the same function that builds the field's `filter`, so the hint and the option list it
+  describes cannot disagree (LNS-780).
 - **Model nested references**: When a model has nested objects from API, use actual Model classes (e.g.,
   `RawMaterialModel`, `VariantModel`) with their `fromJson()`, not plain objects. `toEntity()` maps to domain types.
 - **DataState pattern**: Use cases return `DataSuccess<T>` or `DataFailed` instead of throwing
@@ -599,6 +603,22 @@ date. The spec is also where you confirm a rule is *not* the backend's: that end
 min/max and no age-related error code, so `MINIMUM_ACCOUNT_HOLDER_AGE_YEARS` is documented in-code
 as an FE-owned floor rather than a mirrored BE constraint.
 
+**A copy string asserting WHEN a feature applies is a contract claim — verify it against the request
+schema's `required` list and the FE's own submit gate, not against spec prose.** Spec prose
+contradicts itself across levels: `CashEntrySettingsResponse` and its `GET` path both said the
+cash-entry defaults apply "when a category is not supplied, or for curated categories that fall back to
+defaults", while `default_income_account_id` and `CashEntryResponse` said the offset comes from the
+entry's own category — and `category_id` is in `CashEntryCreateRequest.required` with the create
+provider hard-blocking submit without one, so the no-category case is **unreachable**. Quoting one spec
+sentence is not verification. When the levels disagree and neither is confirmable, state the fields'
+**purpose** and claim no mechanism, then pin the omission with a **negative test assertion**
+(`expect(description).not.toContain("tanpa kategori")`) so the unverifiable claim cannot be re-added
+silently, and raise the contradiction on the ticket for the BE rather than guessing (LNS-780).
+Corollary: a doc-comment may cite its source, but must never assert that a claim was *already
+verified* or that a branch is *reachable* ("sentences 1 and 2 are pre-existing", "both clauses are
+reachable") — the next reviewer takes it on trust and skips exactly the new claims. Both shipped in
+adjacent comments in one PR.
+
 **A documented path is not a mounted route — verify the route, not just the schema.** A deploy can publish the
 OpenAPI bundle without the routes it describes: LNS-736 found all six cash-entry paths in the live
 `openapi.json` while every one still returned Express's `Cannot <METHOD> <path>` 404 handler. Probe with the
@@ -735,7 +755,10 @@ SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockI
   entity/type.
 - **Neutral palette diverges from Tailwind defaults**: `neutral-50` is `#FFFFFF` (pure white), not off-white. For
   visible-on-white chips/badges/borders, use `neutral-100` (`#D9DADA`) or darker. Check `src/app/globals.css` `@theme`
-  for the canonical palette.
+  for the canonical palette. At the other end, `text-xs leading-4 text-neutral-300` is the de-facto field-hint /
+  caption token (`coa-account-form-dialog.tsx`, `cash-category-edit-form-dialog.tsx`, `table-header.tsx`,
+  `mobile-list-card.tsx`); `neutral-400` (`#1B1B1B`) is the darkest foreground weight, so reaching for it on a
+  supporting hint renders that hint at full body weight and flattens the hierarchy it exists to sit below.
 - **Inline text links use `text-primary-400`, not `text-primary-300`**: `primary-300` (`#007BFF`, Lunas Blue) is
   **3.98:1** on white — below the 4.5:1 WCAG AA floor PRODUCT.md sets for body text. `primary-400` (`#005ABB`) is
   **6.61:1** and is DESIGN.md's documented token for blue text needing contrast on white; `hover:text-primary-500`
