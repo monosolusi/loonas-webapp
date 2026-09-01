@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { DetailPageHeader } from "@/core/presentations/components/detail-page-header";
 import { TabFilter } from "@/core/presentations/components/tab-filter";
 import { TableSearch } from "@/core/presentations/components/table/table-search";
 import { TableToolbar } from "@/core/presentations/components/table/table-toolbar";
+import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { CashEntryDirection } from "@/features/accounting/domain/enums/cash-entry-direction";
 import { useCashCategoriesProvider } from "@/app/(authenticated)/accounting/cash-categories/_providers/cash-categories-provider";
 import { CashCategoriesLoading } from "@/app/(authenticated)/accounting/cash-categories/_components/cash-categories-loading";
@@ -30,15 +32,38 @@ export function CashCategoriesListImpl() {
     onRetry,
     openEdit,
     openDelete,
+    openCreate,
   } = useCashCategoriesProvider();
 
   const selectedTabIndex = DIRECTION_VALUES.indexOf(direction);
   const hasFilter = search.trim() !== "" || direction !== undefined;
   const subtitle = shellState === "error" ? undefined : meta ? `${meta.total} kategori` : "Memuat...";
 
+  // `Button` bakes `w-full` into its base class, and Tailwind v4 emits `.w-full` AFTER `.w-auto`
+  // and `.w-fit` (verified against this project's compiled output: .w-auto 4562, .w-fit 4641,
+  // .w-full 4680) — same specificity, later rule wins, and class-attribute order is irrelevant.
+  // So a plain `w-auto`/`w-fit` does NOT override it. The header instance works only because
+  // `sm:w-auto` is emitted later still (4773); the empty-state instance, which needs
+  // content-width at every viewport, must use the v4 important modifier `w-auto!`
+  // (`width: auto !important`, the escape hatch `dialog-footer.tsx` documents) — otherwise it
+  // spans the whole centered empty column instead of sitting as a compact CTA.
+  const createCategoryButton = (className: string) => (
+    <PrimaryButton
+      label="Tambah Kategori"
+      leftIcon={<Image src="/assets/images/plus-icon-white-w16-h16.svg" alt="" width={16} height={16} />}
+      onClick={openCreate}
+      className={className}
+    />
+  );
+
   return (
     <div className="flex flex-col gap-y-6">
-      <DetailPageHeader backHref="/accounting" title="Kategori Kas" subtitle={subtitle} />
+      <DetailPageHeader
+        backHref="/accounting"
+        title="Kategori Kas"
+        subtitle={subtitle}
+        action={createCategoryButton("w-full sm:w-auto")}
+      />
 
       <TableToolbar>
         <div className="flex flex-row flex-wrap items-center gap-3">
@@ -66,7 +91,9 @@ export function CashCategoriesListImpl() {
 
       {shellState === "loading" && <CashCategoriesLoading />}
       {shellState === "error" && <CashCategoriesError onRetry={onRetry} />}
-      {shellState === "empty" && <CashCategoriesEmpty hasFilter={hasFilter} />}
+      {shellState === "empty" && (
+        <CashCategoriesEmpty hasFilter={hasFilter} action={createCategoryButton("w-auto! px-4")} />
+      )}
       {shellState === "success" && (
         <CashCategoriesTable
           categories={filteredCategories}
