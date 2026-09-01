@@ -405,6 +405,15 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   — a `return <X />;` on its own line is correct JS, a punctuation-terminated JSX *child* never is. Same reading
   applies to a dead class token (`fo` in the step-indicator pill): a typo'd utility is invisible to Tailwind and to
   lint, so verify unknown class names against the `@theme` block in `globals.css` rather than assuming they resolve.
+  A *valid* utility can be just as inert, and this is the harder half: Tailwind v4 emits every utility at the same
+  specificity, so an override wins only by being emitted **later** — the order you wrote the classes in is
+  irrelevant. `Button` bakes `flex h-11 w-full … p-3.5` into its base class and appends `props.className` after it,
+  yet `.w-auto` and `.w-fit` are both emitted *before* `.w-full`, so `className="w-auto"` on a `Button` does nothing
+  while `sm:w-auto` works only because responsive variants emit later. Use the `!` modifier (`w-auto!`) and confirm
+  against the COMPILED CSS (grep `.next/static/css/*.css` after a build), never by reasoning about class order — an
+  override that "obviously" wins is exactly the one that silently does not. The ~7 call sites already passing a bare
+  `w-auto` to `Button` (`cash-entry-detail-error.tsx`, `journal-detail-error.tsx`, …) are known debt, not a pattern
+  to copy.
 - **Displayed mode and saved mode must be the same expression**: never mask a form value for display while the
   save path reads the raw one. `hasVariants={form.type !== ProductType.SERVICE && form.hasVariants}` passed a
   masked value to the card while `syncVariants` / `handleSubmit` read the unmasked `form.hasVariants`, so the
@@ -459,14 +468,21 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   this class: `@addressDetail/page.tsx` writes `update?.({ province })` alone, so changing province leaves
   `city`/`district`/`subDistrict` from the old one — and since the resolver only checks `!data.city`, a stale
   entity is truthy and submits a city that is not in the submitted province.
-- **Never pass `undefined` as a controlled input's `value`**: React downgrades the element to UNCONTROLLED, and for
+- **Never pass `undefined` as a controlled input's `value`, and never encode "nothing chosen" as an out-of-range
+  index**: React downgrades the element to UNCONTROLLED, and for
   `<select>` the HTML select-reset algorithm then auto-selects the first non-disabled `<option>` — silently
   committing a phantom value while a placeholder overlay makes the field look empty. `SelectInput`'s three
   birth-date selects showed exactly this (day `1` / `Januari` / current year, the year list being descending), and
   re-tapping the already-highlighted option fires no `change` event, so state stayed empty with no feedback.
   `SelectInput` now coerces `value ?? ""` after the props spread (mirroring `TextInput`), so the component owns its
   controlled contract — but an uninitialised provider/form-buffer field is the recurring source, so check the
-  threading at the call site too. Note Tailwind v4's preflight resets `button`/`input`/`select`/`textarea` but has
+  threading at the call site too. The same phantom-selection failure reaches Headless UI, where the sentinel is an
+  index rather than `undefined`: `TabGroup` treats any non-`null` `selectedIndex` as controlled and its reducer
+  resolves a NEGATIVE index to the first enabled tab, while `Tab` derives `selected` from that reducer state and not
+  from the prop — so `selectedIndex={-1}` paints tab 0 as chosen while your state is still `null`, and the user reads
+  a default they never picked. "Nothing picked yet" is simply not representable in that control: render the
+  unselected state as plain toggle buttons keyed off `value === option` — carrying `aria-pressed`, since you lose the
+  `aria-selected` that `Tab` emitted for free — or add an explicit placeholder tab. Note Tailwind v4's preflight resets `button`/`input`/`select`/`textarea` but has
   **no `fieldset`/`legend` rule at all** — a native pair needs `m-0 min-w-0 border-0 p-0` / `p-0` added by hand, and
   `<legend>` does not lay out reliably as a flex child. For a NEW group of controls sitting inline with ordinary
   div/span-labelled fields, prefer `role="group"` + `aria-labelledby`; reserve real `fieldset`/`legend` for fixing
