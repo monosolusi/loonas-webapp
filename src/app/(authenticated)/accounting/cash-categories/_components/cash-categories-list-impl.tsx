@@ -39,14 +39,15 @@ export function CashCategoriesListImpl() {
   const hasFilter = search.trim() !== "" || direction !== undefined;
   const subtitle = shellState === "error" ? undefined : meta ? `${meta.total} kategori` : "Memuat...";
 
-  // `Button` bakes `w-full` into its base class, and Tailwind v4 emits `.w-full` AFTER `.w-auto`
-  // and `.w-fit` (verified against this project's compiled output: .w-auto 4562, .w-fit 4641,
-  // .w-full 4680) — same specificity, later rule wins, and class-attribute order is irrelevant.
-  // So a plain `w-auto`/`w-fit` does NOT override it. The header instance works only because
-  // `sm:w-auto` is emitted later still (4773); the empty-state instance, which needs
+  // `Button` bakes `w-full` into its base class, and Tailwind v4 emits every utility at the same
+  // specificity, so an override only wins by being emitted LATER in the stylesheet. `.w-auto` and
+  // `.w-fit` are both emitted BEFORE `.w-full` (class-attribute order is irrelevant), so a plain
+  // `w-auto`/`w-fit` does NOT override it. The header instance works only because `sm:w-auto` is a
+  // responsive variant, emitted after the base layer; the empty-state instance, which needs
   // content-width at every viewport, must use the v4 important modifier `w-auto!`
   // (`width: auto !important`, the escape hatch `dialog-footer.tsx` documents) — otherwise it
-  // spans the whole centered empty column instead of sitting as a compact CTA.
+  // spans the whole centered empty column instead of sitting as a compact CTA. See LNS-786 for the
+  // ~24 pre-existing call sites with this same bare-`w-auto` bug.
   const createCategoryButton = (className: string) => (
     <PrimaryButton
       label="Tambah Kategori"
