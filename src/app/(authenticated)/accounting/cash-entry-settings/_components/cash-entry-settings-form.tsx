@@ -14,6 +14,10 @@ import {
   resolveSettingsFeedback,
 } from "@/app/(authenticated)/accounting/cash-entry-settings/_utils/resolve-settings-feedback";
 import { resolveSaveButtonState } from "@/app/(authenticated)/accounting/cash-entry-settings/_utils/resolve-save-button-state";
+import {
+  CASH_ENTRY_SETTINGS_COPY,
+  resolveEligibleAccountTypesHint,
+} from "@/app/(authenticated)/accounting/cash-entry-settings/_utils/cash-entry-settings-copy";
 
 // Advisory pre-filter only — the server still rejects an incompatible pair with 422
 // CASH_CATEGORY_ACCOUNT_TYPE_MISMATCH, which is what the inline strips below render.
@@ -43,11 +47,10 @@ export function CashEntrySettingsForm() {
     <div className="flex flex-col gap-y-6">
       <DetailPageHeader title="Pengaturan Kas" backHref="/accounting/cash-entries" />
 
-      <SectionCard title="Akun Default">
+      <SectionCard title={CASH_ENTRY_SETTINGS_COPY.defaultAccountCard.title}>
         <div className="flex flex-col gap-y-6">
           <p className="text-sm leading-5 text-neutral-400">
-            Atur akun bawaan untuk pencatatan kas masuk dan kas keluar. Perubahan hanya berlaku untuk transaksi
-            berikutnya — transaksi yang sudah tercatat tetap memakai akun lama.
+            {CASH_ENTRY_SETTINGS_COPY.defaultAccountCard.description}
           </p>
 
           <CashEntrySettingsAccountField
@@ -58,6 +61,7 @@ export function CashEntrySettingsForm() {
             errorMessage={incomeError}
             filter={(account) => ELIGIBLE_INCOME_TYPES.includes(account.type)}
             onSelect={selectIncome}
+            hint={resolveEligibleAccountTypesHint(CashEntryDirection.In)}
           />
 
           <CashEntrySettingsAccountField
@@ -68,6 +72,7 @@ export function CashEntrySettingsForm() {
             errorMessage={expenseError}
             filter={(account) => ELIGIBLE_EXPENSE_TYPES.includes(account.type)}
             onSelect={selectExpense}
+            hint={resolveEligibleAccountTypesHint(CashEntryDirection.Out)}
           />
 
           <CashEntrySettingsFeedback feedback={feedback} />

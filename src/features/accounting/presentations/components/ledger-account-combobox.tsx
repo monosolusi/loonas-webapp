@@ -6,6 +6,7 @@ import {
   SearchComboboxOption,
 } from "@/core/presentations/components/search-combobox";
 import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledger-account";
+import { toLedgerAccountOptionParts } from "@/features/accounting/domain/helpers/ledger-account-option";
 import { useListAllLedgerAccounts } from "@/features/accounting/presentations/hooks/use-list-all-ledger-accounts";
 
 type LedgerAccountOption = SearchComboboxOption & { entity: LedgerAccountEntity };
@@ -30,12 +31,7 @@ export function LedgerAccountCombobox(props: LedgerAccountComboboxProps) {
     return (accounts ?? [])
       .filter((a) => !excluded.has(a.id))
       .filter((a) => (props.filter ? props.filter(a) : true))
-      .map((a) => ({
-        id: a.id,
-        label: `${a.code} — ${a.name}`,
-        description: a.type,
-        entity: a,
-      }));
+      .map((a) => ({ ...toLedgerAccountOptionParts(a), entity: a }));
   }, [accounts, props.excludeIds, props.filter]);
 
   const selected = useMemo<LedgerAccountOption | null>(() => {
@@ -44,12 +40,7 @@ export function LedgerAccountCombobox(props: LedgerAccountComboboxProps) {
     if (found) return found;
     // Fallback: build from entity directly so the input shows the current value
     // even before the list of accounts has finished loading.
-    return {
-      id: props.value.id,
-      label: `${props.value.code} — ${props.value.name}`,
-      description: props.value.type,
-      entity: props.value,
-    };
+    return { ...toLedgerAccountOptionParts(props.value), entity: props.value };
   }, [options, props.value]);
 
   const handleChange = (option: LedgerAccountOption | null) => {
