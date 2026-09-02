@@ -1,5 +1,6 @@
 # Architecture Reviewer Memory
 
+- [Structural entity-subset param: cast vs discriminated union](feedback_structural_input_cast_vs_discriminated_union.md) — a widened `boolean` getter blocks assignability to a literal-discriminated union, so that "fix" breaks the call site; entity-typed param is the lighter option (LNS-756)
 - [Co-located sub-component anti-pattern](feedback_colocated_subcomponent_antipattern.md) — Engineers put private JSX-returning helpers inside parent files; flag as one-component-per-file violation
 - [Retained file name flag](feedback_retained_name_flag.md) — When sub-components keep old parent-widget name prefix after refactor, flag as minor naming drift for EL consideration
 - [Empty params class anti-pattern](feedback_empty_params_class_pattern.md) — Empty `class XxxUseCaseParams {}` is a should-fix; use `UseCase<ReturnValue>` with void default instead
