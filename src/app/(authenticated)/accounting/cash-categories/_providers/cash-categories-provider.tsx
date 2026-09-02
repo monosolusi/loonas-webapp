@@ -11,7 +11,9 @@ import { CashEntryDirection } from "@/features/accounting/domain/enums/cash-entr
 import { useListCashCategories } from "@/features/accounting/presentations/hooks/use-list-cash-category";
 import { useUpdateCashCategory } from "@/features/accounting/presentations/hooks/use-update-cash-category";
 import { useDeleteCashCategory } from "@/features/accounting/presentations/hooks/use-delete-cash-category";
+import { useCreateCashCategory } from "@/features/accounting/presentations/hooks/use-create-cash-category";
 import { filterCashCategories } from "@/app/(authenticated)/accounting/cash-categories/_utils/filter-cash-categories";
+import { classifyCreateCategoryError } from "@/app/(authenticated)/accounting/cash-entries/new/_utils/classify-create-error";
 
 type CashCategoriesContextValue = {
   direction: CashEntryDirection | undefined;
@@ -40,6 +42,18 @@ type CashCategoriesContextValue = {
   deleteError: ServerError | null;
   submitEdit: (args: { name: string; accountId: string | null }) => void;
   submitDelete: () => void;
+  createOpen: boolean;
+  openCreate: () => void;
+  closeCreate: () => void;
+  isCreating: boolean;
+  /**
+   * Already classified into display copy (unlike `editError`/`deleteError`, which stay raw
+   * `ServerError`s) — creation needs the inline/toast split `classifyCreateCategoryError` owns,
+   * the same split the entry-flow create dialog applies, so it is applied once here rather than
+   * re-derived at the call site.
+   */
+  createError: string | null;
+  submitCreate: (args: { name: string; accountId: string; direction: CashEntryDirection }) => void;
 };
 
 const CashCategoriesContext = createContext<CashCategoriesContextValue | null>(null);
@@ -57,8 +71,10 @@ type CashCategoriesProviderProps = {
 /**
  * Mirrors `cash-entries-filters.ts::parseDirectionParam`: any value other than the two live
  * enum members resolves to `undefined` ("Semua") and never throws on a malformed URL. Kept
- * local rather than imported from the sibling page's `_utils` — a page-level util module is
- * not shared surface.
+ * local rather than imported from the sibling page's `_utils` — this parser is trivial enough
+ * to duplicate, unlike `classifyCreateCategoryError` below, whose reuse across the entry-flow
+ * and list-page create dialogs is ticket-sanctioned (both dialogs must classify a create error
+ * identically, so sharing the module is correct there).
  */
 function parseDirectionParam(raw: string | null): CashEntryDirection | undefined {
   if (raw === CashEntryDirection.In) return CashEntryDirection.In;
@@ -77,12 +93,15 @@ export function CashCategoriesProvider({ children }: CashCategoriesProviderProps
   const { showToast } = useToast();
   const { trigger: updateCategory, isMutating: isUpdating } = useUpdateCashCategory();
   const { trigger: deleteCategory, isMutating: isDeleting } = useDeleteCashCategory();
+  const { trigger: createCategory, isMutating: isCreating } = useCreateCashCategory();
 
   const [search, setSearch] = useState("");
   const [editingCategory, setEditingCategory] = useState<CashCategoryEntity | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<CashCategoryEntity | null>(null);
   const [editError, setEditError] = useState<ServerError | null>(null);
   const [deleteError, setDeleteError] = useState<ServerError | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   // `direction` derives straight from the URL param — pure and cheap, and no local mirror means
   // back/forward navigation can never lag a commit behind the address bar.
@@ -182,6 +201,44 @@ export function CashCategoriesProvider({ children }: CashCategoriesProviderProps
     }
   }, [deletingCategory, isDeleting, deleteCategory, showToast]);
 
+  const openCreate = useCallback(() => {
+    setCreateError(null);
+    setCreateOpen(true);
+  }, []);
+
+  // `LoonasDialog`'s `allowDismiss={!loading}` (wired in the Display) plus the Cancel button's
+  // own `disabled={loading}` already block dismissal while a create is in flight, mirroring
+  // closeEdit/closeDelete — this stays an unconditional close.
+  const closeCreate = useCallback(() => {
+    setCreateOpen(false);
+    setCreateError(null);
+  }, []);
+
+  const submitCreate = useCallback(
+    async ({ name, accountId, direction }: { name: string; accountId: string; direction: CashEntryDirection }) => {
+      // Re-entry guard — a disabled submit button does not block Enter-key resubmission.
+      if (isCreating || !name.trim() || !accountId) return;
+      setCreateError(null);
+      try {
+        await createCategory({ name: name.trim(), accountId, direction });
+        showToast("Kategori kas berhasil ditambahkan.", "success");
+        setCreateOpen(false);
+      } catch (err) {
+        if (!(err instanceof ServerError)) {
+          showToast("Gagal menambahkan kategori kas. Silakan coba lagi.", "error");
+          return;
+        }
+        const classified = classifyCreateCategoryError(err);
+        if (classified.placement === "inline") {
+          setCreateError(classified.message);
+        } else {
+          showToast(classified.message, "error");
+        }
+      }
+    },
+    [isCreating, createCategory, showToast],
+  );
+
   return (
     <CashCategoriesContext.Provider
       value={{
@@ -207,6 +264,12 @@ export function CashCategoriesProvider({ children }: CashCategoriesProviderProps
         deleteError,
         submitEdit,
         submitDelete,
+        createOpen,
+        openCreate,
+        closeCreate,
+        isCreating,
+        createError,
+        submitCreate,
       }}
     >
       {children}
