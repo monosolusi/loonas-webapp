@@ -33,12 +33,18 @@ export function NavigationMenu() {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-y-1 overflow-y-auto scrollbar-hide">
+    <div className="scrollbar-hide flex min-h-0 flex-1 flex-col gap-y-1 overflow-y-auto">
       <NavigationItem
         href="/home"
         label="Dashboard"
         iconPath="/assets/images/dashboard-icon-neutral-300-w16-h16.svg"
         selectedIconPath="/assets/images/dashboard-icon-primary-300-w16-h16.svg"
+      />
+      <NavigationItem
+        href="/balance"
+        label="Saldo"
+        iconPath="/assets/images/money-bag-icon-neutral-300-w16-h16.svg"
+        selectedIconPath="/assets/images/money-bag-icon-primary-300-w16-h16.svg"
       />
       <PurchasingNavGroup id="purchasing" openGroup={openGroup} onOpenChange={handleOpenChange} />
       <SalesNavGroup id="sales" openGroup={openGroup} onOpenChange={handleOpenChange} />
