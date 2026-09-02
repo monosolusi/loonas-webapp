@@ -76,7 +76,8 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
 ### Key Patterns
 
 - **Presentation layer naming**: Older features use `presentation/` (singular), newer ones use `presentations/` (
-  plural). Match the existing directory name when adding to a feature.
+  plural) — `features/bank/` is singular while `features/accounting/` and `features/product/` are plural, so an
+  import path copied between them silently breaks. Match the existing directory name when adding to a feature.
 - **Entity immutability**: All entity properties must be `public readonly`. Models are also `public readonly`.
 - **Derived-invariant getters**: when a getter expresses the complement or a refinement of an existing one,
   derive it FROM that getter instead of restating its predicate. `ProductEntity.defaultVariant` is
@@ -353,7 +354,22 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   **destructure the new `error` out of the props-spread** (`cleanedInputProps`) or it lands on the DOM node as an
   unknown attribute. Where a primitive already owns a local error (`EmailInput`'s format check, `FileUploadInput`'s
   size check), the local one describes what the user just did and outranks the caller's standing copy:
-  `localError ?? props.error`.
+  `localError ?? props.error`. **When the primitive cannot grow the prop, the wrapper owns the surface**:
+  `SearchCombobox` has no `error`, no `description`, and no passthrough to its inner `ComboboxInput`, so a call
+  site cannot reach that node — render a sibling `<span className="text-xs leading-4 font-normal text-red-500"
+  role="alert">` inside a `flex flex-col gap-y-2` wrapper (the repo carries three divergent shapes for this; that
+  is the one to copy), and accept that `aria-invalid` / `aria-describedby` cannot be restored from outside. Two of
+  its other props lie: `required` is **inert** under `noLabel` (it only draws the label's asterisk and is never
+  forwarded), so your own label must carry the `*`; and `keywords` is the ONLY extra field its filter matches
+  (`description` / `caption` are display-only), making it the right home for a value that must be **searchable but
+  never shown** — e.g. an account code behind a name-only label (LNS-782).
+- **An object-valued picker must never hold a value absent from its `options`**: `SearchCombobox` takes
+  `value: T | null` identity-matched out of `options`, so a selection the fetched list does not contain renders as
+  a **blank field**, not as an error. That is reachable whenever a create flow selects optimistically — the cash
+  entry flow does `setCategory(created)` with no `revalidateSWRKey`, unlike the `products/` combobox+create
+  precedents that revalidate first — so the option builder must fold the current selection back in when absent.
+  Keep that fold-back in the same pure `_utils/` module that builds the options, and pin it with a test over an
+  **empty** fetched list — the exact path a first-category create takes (LNS-782).
 - **A component consuming a fetch hook must read `error`, not only `loading`**: all five `(user)/onboarding`
   address/occupation selects destructured `{ data, loading }` and dropped `error`. On a failed fetch `loading` flips
   false while the option list stays `[]`, so the control renders **enabled, empty and silent** — strictly worse than a
@@ -394,7 +410,12 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   inertness is a type error. The regression test asserts the field is never `disabled` without an `error` or
   `description`; keep that implication **one-directional**, because the fetch-error state deliberately carries copy
   while staying *enabled* (disabling it would drop it out of tab order) — tightening it to an iff forbids the correct
-  behaviour.
+  behaviour. Corollary for a control whose copy lives in two places at once: `SearchCombobox`'s `emptyMessage`
+  renders only *inside* the open dropdown, which anchors `bottom start` — directly over a sibling hint below the
+  field. So swapping a `SelectInput` for it silently drops the `description` slot, and a single static
+  `emptyMessage` will occlude the correct copy with a wrong one ("nothing matched" over a catalogue that is simply
+  empty). Branch it on `options.length === 0` (empty catalogue) vs a non-empty list (query matched nothing); the
+  two are mutually exclusive by construction, since the component only renders it when `filtered.length === 0`.
 - **A disabled state that carries copy must recede by colour, never by `opacity`**: a wrapper-level `opacity-50`
   composites every descendant against the page, so the sentence explaining the disabled state fades with it. On this
   app's white surfaces `text-neutral-300` (`#323636`, 11.9:1) collapses to ~2.8:1 and even `text-neutral-500` reaches
@@ -434,6 +455,15 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   — a `return <X />;` on its own line is correct JS, a punctuation-terminated JSX *child* never is. Same reading
   applies to a dead class token (`fo` in the step-indicator pill): a typo'd utility is invisible to Tailwind and to
   lint, so verify unknown class names against the `@theme` block in `globals.css` rather than assuming they resolve.
+  A *valid* utility can be just as inert, and this is the harder half: Tailwind v4 emits every utility at the same
+  specificity, so an override wins only by being emitted **later** — the order you wrote the classes in is
+  irrelevant. `Button` bakes `flex h-11 w-full … p-3.5` into its base class and appends `props.className` after it,
+  yet `.w-auto` and `.w-fit` are both emitted *before* `.w-full`, so `className="w-auto"` on a `Button` does nothing
+  while `sm:w-auto` works only because responsive variants emit later. Use the `!` modifier (`w-auto!`) and confirm
+  against the COMPILED CSS (grep `.next/static/css/*.css` after a build), never by reasoning about class order — an
+  override that "obviously" wins is exactly the one that silently does not. The ~7 call sites already passing a bare
+  `w-auto` to `Button` (`cash-entry-detail-error.tsx`, `journal-detail-error.tsx`, …) are known debt, not a pattern
+  to copy.
 - **Displayed mode and saved mode must be the same expression**: never mask a form value for display while the
   save path reads the raw one. `hasVariants={form.type !== ProductType.SERVICE && form.hasVariants}` passed a
   masked value to the card while `syncVariants` / `handleSubmit` read the unmasked `form.hasVariants`, so the
@@ -488,14 +518,21 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   this class: `@addressDetail/page.tsx` writes `update?.({ province })` alone, so changing province leaves
   `city`/`district`/`subDistrict` from the old one — and since the resolver only checks `!data.city`, a stale
   entity is truthy and submits a city that is not in the submitted province.
-- **Never pass `undefined` as a controlled input's `value`**: React downgrades the element to UNCONTROLLED, and for
+- **Never pass `undefined` as a controlled input's `value`, and never encode "nothing chosen" as an out-of-range
+  index**: React downgrades the element to UNCONTROLLED, and for
   `<select>` the HTML select-reset algorithm then auto-selects the first non-disabled `<option>` — silently
   committing a phantom value while a placeholder overlay makes the field look empty. `SelectInput`'s three
   birth-date selects showed exactly this (day `1` / `Januari` / current year, the year list being descending), and
   re-tapping the already-highlighted option fires no `change` event, so state stayed empty with no feedback.
   `SelectInput` now coerces `value ?? ""` after the props spread (mirroring `TextInput`), so the component owns its
   controlled contract — but an uninitialised provider/form-buffer field is the recurring source, so check the
-  threading at the call site too. Note Tailwind v4's preflight resets `button`/`input`/`select`/`textarea` but has
+  threading at the call site too. The same phantom-selection failure reaches Headless UI, where the sentinel is an
+  index rather than `undefined`: `TabGroup` treats any non-`null` `selectedIndex` as controlled and its reducer
+  resolves a NEGATIVE index to the first enabled tab, while `Tab` derives `selected` from that reducer state and not
+  from the prop — so `selectedIndex={-1}` paints tab 0 as chosen while your state is still `null`, and the user reads
+  a default they never picked. "Nothing picked yet" is simply not representable in that control: render the
+  unselected state as plain toggle buttons keyed off `value === option` — carrying `aria-pressed`, since you lose the
+  `aria-selected` that `Tab` emitted for free — or add an explicit placeholder tab. Note Tailwind v4's preflight resets `button`/`input`/`select`/`textarea` but has
   **no `fieldset`/`legend` rule at all** — a native pair needs `m-0 min-w-0 border-0 p-0` / `p-0` added by hand, and
   `<legend>` does not lay out reliably as a flex child. For a NEW group of controls sitting inline with ordinary
   div/span-labelled fields, prefer `role="group"` + `aria-labelledby`; reserve real `fieldset`/`legend` for fixing
@@ -615,7 +652,10 @@ that already exists is an edit, often a load-bearing one whose doc comment says 
 The same skepticism covers the paths a ticket cites as templates or helpers, not just `new` ones — a cited
 path can be wrong by root or never have existed (LNS-740's Notes cited
 `features/invoice/presentations/helpers/idempotency-rotation.ts`, which does not exist — the helper is
-`core/helpers/idempotency-rotation.ts`), so grep a cited path before following it.
+`core/helpers/idempotency-rotation.ts`), **or exist and yet not demonstrate the behaviour it is cited for** —
+LNS-782 named `products/_components/category-select.tsx` as the precedent for a wrapper-provided validation error,
+but that call site has no error handling at all, its field being optional. So do not merely grep a cited path:
+open it and confirm it actually shows the thing.
 **Read error codes per operation, not per resource** — a code declared on POST is not implied on PATCH;
 document and handle exactly what each operation declares (LNS-738: `CASH_CATEGORY_DIRECTION_MISMATCH`
 is create-only — the update path rejects 409). **Read the declared

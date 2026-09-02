@@ -6,6 +6,7 @@ import { CashCategoriesProvider } from "@/app/(authenticated)/accounting/cash-ca
 import { CashCategoriesListImpl } from "@/app/(authenticated)/accounting/cash-categories/_components/cash-categories-list-impl";
 import { CashCategoryEditDialog } from "@/app/(authenticated)/accounting/cash-categories/_components/cash-category-edit-dialog";
 import { CashCategoryDeleteDialog } from "@/app/(authenticated)/accounting/cash-categories/_components/cash-category-delete-dialog";
+import { CashCategoryCreateDialog } from "@/app/(authenticated)/accounting/cash-categories/_components/cash-category-create-dialog";
 
 export default function CashCategoriesPage() {
   return (
@@ -15,6 +16,7 @@ export default function CashCategoriesPage() {
           <CashCategoriesListImpl />
           <CashCategoryEditDialog />
           <CashCategoryDeleteDialog />
+          <CashCategoryCreateDialog />
         </CashCategoriesProvider>
       </CashEntryFeatureGate>
     </Suspense>

@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo } from "react";
-import { PlusIcon } from "@heroicons/react/20/solid";
-import { SelectInput, SelectOption } from "@/core/presentations/components/select-input";
-import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
+import { SearchCombobox } from "@/core/presentations/components/search-combobox";
 import { useListCashCategories } from "@/features/accounting/presentations/hooks/use-list-cash-category";
 import { useCashEntryCreate } from "@/app/(authenticated)/accounting/cash-entries/new/_providers/cash-entry-create-provider";
 import { filterCategoriesByDirection } from "@/app/(authenticated)/accounting/cash-entries/new/_utils/filter-categories-by-direction";
+import {
+  buildCashCategoryOptions,
+  CashCategoryOption,
+} from "@/app/(authenticated)/accounting/cash-entries/new/_utils/build-cash-category-options";
 import { CategoriesFetchError } from "@/app/(authenticated)/accounting/cash-entries/new/_components/categories-fetch-error";
 import { CashCategoryCreateDialog } from "@/app/(authenticated)/accounting/cash-entries/new/_components/cash-category-create-dialog";
 
@@ -16,25 +18,20 @@ export function CashEntryCategoryPicker() {
   const { direction, category, fieldErrors, selectCategory, openCreateCategoryDialog } = useCashEntryCreate();
   const categoriesState = useListCashCategories();
 
-  // The just-created category is auto-selected before the fire-and-forget list refetch lands,
-  // so the current selection is folded back into its own option list — a select must never
-  // hold a value its options cannot render.
-  const selectableCategories = useMemo(() => {
+  const options = useMemo<CashCategoryOption[]>(() => {
     const filtered = filterCategoriesByDirection(categoriesState.categories ?? [], direction);
-    if (category && category.direction === direction && !filtered.some((c) => c.id === category.id)) {
-      return [...filtered, category];
-    }
-    return filtered;
+    // The just-created category is auto-selected before the fire-and-forget list refetch lands,
+    // so the current selection is folded back into its own option list — a combobox must never
+    // hold a value its options cannot render.
+    const selected = category && category.direction === direction ? category : null;
+    return buildCashCategoryOptions(filtered, selected);
   }, [categoriesState.categories, direction, category]);
 
-  const options = useMemo<SelectOption[]>(
-    () => selectableCategories.map((categoryOption) => ({ label: categoryOption.name, value: categoryOption.id })),
-    [selectableCategories],
-  );
+  const selectedOption = options.find((option) => option.id === category?.id) ?? null;
 
-  // `null` categories = the list has never loaded, so the select has nothing to stand in for
+  // `null` categories = the list has never loaded, so the combobox has nothing to stand in for
   // it and the skeleton / error strip takes over. A retained list under a FAILED REFETCH keeps
-  // the select mounted and gets the strip ABOVE it instead.
+  // the combobox mounted and gets the strip ABOVE it instead.
   const hasLoaded = categoriesState.categories !== null;
   // A bound `mutate()` refetches with throwOnError, so the retry's second failure is swallowed
   // deliberately — SWR keeps `error` set and this strip stays on screen.
@@ -53,27 +50,28 @@ export function CashEntryCategoryPicker() {
         <>
           {categoriesState.error && <CategoriesFetchError onRetry={retry} />}
 
-          <SelectInput
+          <SearchCombobox<CashCategoryOption>
             noLabel
             options={options}
-            value={category?.id}
-            onChange={(value) => {
-              const selected = selectableCategories.find((c) => c.id === value) ?? null;
-              selectCategory(selected);
-            }}
-            placeholder="Pilih kategori kas"
-            error={fieldErrors.category ?? null}
-            description={options.length === 0 ? EMPTY_FOR_DIRECTION_DESCRIPTION : undefined}
+            value={selectedOption}
+            onChange={(option) => selectCategory(option ? option.entity : null)}
+            placeholder="Cari kategori..."
+            required
+            emptyMessage={options.length === 0 ? EMPTY_FOR_DIRECTION_DESCRIPTION : "Tidak ada kategori yang cocok"}
+            onCreateNew={openCreateCategoryDialog}
+            createNewLabel="+ Tambah Kategori"
           />
-
-          <SecondaryButton
-            outlined
-            type="button"
-            label="Tambah Kategori"
-            leftIcon={<PlusIcon className="size-4" />}
-            onClick={openCreateCategoryDialog}
-            className="w-fit px-4"
-          />
+          {/* Error outranks the hint — the combobox surfaces neither on its own, so exactly one
+              of these siblings renders (mirrors TextInput's error-over-description contract). */}
+          {fieldErrors.category ? (
+            <span className="text-xs leading-4 font-normal text-red-500" role="alert">
+              {fieldErrors.category}
+            </span>
+          ) : (
+            options.length === 0 && (
+              <span className="text-xs leading-4 font-normal text-neutral-200">{EMPTY_FOR_DIRECTION_DESCRIPTION}</span>
+            )
+          )}
 
           <CashCategoryCreateDialog />
         </>
