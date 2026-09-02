@@ -1,6 +1,7 @@
 "use client";
 
 import { SectionCard } from "@/core/presentations/components/section-card";
+import { CASH_ENTRY_SETTINGS_COPY } from "@/app/(authenticated)/accounting/cash-entry-settings/_utils/cash-entry-settings-copy";
 
 export function CashEntrySettingsSkeleton() {
   return (
@@ -12,7 +13,7 @@ export function CashEntrySettingsSkeleton() {
       </div>
 
       {/* Settings card skeleton */}
-      <SectionCard title="Akun Default">
+      <SectionCard title={CASH_ENTRY_SETTINGS_COPY.defaultAccountCard.title}>
         <div className="flex flex-col gap-y-6">
           {[1, 2].map((i) => (
             <div key={i} className="flex flex-col gap-y-2">

@@ -18,6 +18,8 @@ type CashEntrySettingsAccountFieldProps = {
   errorMessage: string | null;
   filter: (account: LedgerAccountEntity) => boolean;
   onSelect: (account: LedgerAccountEntity | null) => void;
+  /** The account-type constraint this field's picker is pre-filtered to — renders above the error slot. */
+  hint?: string;
 };
 
 /**
@@ -40,6 +42,7 @@ export function CashEntrySettingsAccountField(props: CashEntrySettingsAccountFie
         filter={props.filter}
       />
       <CashEntrySettingsMissingAccountNotice savedId={state.missingSavedId} />
+      {props.hint && <p className="text-xs leading-4 text-neutral-300">{props.hint}</p>}
       <CashEntrySettingsFieldError message={props.errorMessage} />
       <CashEntrySettingsClearAccountButton canClear={state.canClear} onClear={() => props.onSelect(null)} />
     </div>

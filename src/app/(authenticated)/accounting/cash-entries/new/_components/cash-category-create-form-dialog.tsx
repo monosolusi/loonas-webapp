@@ -9,8 +9,8 @@ import { DialogFooter } from "@/core/presentations/components/dialog-footer";
 import { PrimaryButton } from "@/core/presentations/components/buttons/primary-button";
 import { SecondaryButton } from "@/core/presentations/components/buttons/secondary-button";
 import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledger-account";
-import { ACCOUNT_TYPE_LABELS } from "@/features/accounting/domain/enums/account-type";
 import { CashEntryDirection } from "@/features/accounting/domain/enums/cash-entry-direction";
+import { toLedgerAccountOptionParts } from "@/features/accounting/domain/helpers/ledger-account-option";
 
 type LedgerAccountOption = SearchComboboxOption & { entity: LedgerAccountEntity };
 
@@ -91,13 +91,7 @@ export function CashCategoryCreateFormDialog({
   const directionLabelId = useId();
 
   const accountOptions = useMemo<LedgerAccountOption[]>(
-    () =>
-      accounts.map((a) => ({
-        id: a.id,
-        label: `${a.code} — ${a.name}`,
-        description: ACCOUNT_TYPE_LABELS[a.type],
-        entity: a,
-      })),
+    () => accounts.map((a) => ({ ...toLedgerAccountOptionParts(a), entity: a })),
     [accounts],
   );
 
