@@ -17,7 +17,7 @@ export function CashEntryDetailHeader() {
       backHref="/accounting/cash-entries"
       action={
         <div className="flex flex-row items-center gap-x-3">
-          <StatusChip label={chip.label} variant={chip.variant} compact />
+          {chip.kind === "chip" && <StatusChip label={chip.chip.label} variant={chip.chip.variant} compact />}
           {/* AC-6.1/6.2: no edit, no delete — only Batalkan, and only while the entry is active. */}
           {entry.isCurrentlyActive && (
             <ActionMenu options={[{ label: "Batalkan", variant: "danger", onClick: openCancelDialog }]} />

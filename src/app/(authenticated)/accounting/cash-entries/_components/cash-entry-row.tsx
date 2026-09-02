@@ -22,6 +22,10 @@ export function CashEntryRow({ entry }: CashEntryRowProps) {
   const crossReference = resolveCashEntryCrossReference(entry);
   const dateLabel = formatEntryDate(entry.entryDate);
   const detailHref = `/accounting/cash-entries/${entry.id}`;
+  const statusChipNode =
+    statusChip.kind === "chip" ? (
+      <StatusChip label={statusChip.chip.label} variant={statusChip.chip.variant} compact />
+    ) : undefined;
 
   return (
     <>
@@ -36,11 +40,11 @@ export function CashEntryRow({ entry }: CashEntryRowProps) {
           <NumberDisplay value={entry.amount} prefix="Rp" />
         </span>
         <div className="flex flex-col items-start gap-y-1">
-          <StatusChip label={statusChip.label} variant={statusChip.variant} compact />
+          {statusChipNode}
           {crossReference.kind !== "none" && crossReference.targetId && (
             <Link
               href={`/accounting/cash-entries/${crossReference.targetId}`}
-              className="text-xs font-medium text-primary-400 underline"
+              className="text-primary-400 text-xs font-medium underline"
             >
               {crossReference.linkLabel}
             </Link>
@@ -59,7 +63,7 @@ export function CashEntryRow({ entry }: CashEntryRowProps) {
           subtitle={`${direction.label} · ${entry.category.name}`}
           meta={dateLabel}
           trailingTop={<NumberDisplay value={entry.amount} prefix="Rp" />}
-          trailingBottom={<StatusChip label={statusChip.label} variant={statusChip.variant} compact />}
+          trailingBottom={statusChipNode}
         />
       </div>
     </>
