@@ -88,7 +88,14 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   getter plus a parallel helper is a drift surface even when both reference the same constant today, because
   a future change to one will not reach the other. LNS-608 arch-review caught `VariantForSaleEntity.isOutOfStock`
   sitting unused while `outOfStockBadgeProps(status)` re-derived `stockStatus === OUT_OF_STOCK`; the fix routed
-  `OutOfStockBadge` through `isOutOfStock: boolean` and deleted the helper.
+  `OutOfStockBadge` through `isOutOfStock: boolean` and deleted the helper. Second corollary, for the case the
+  above does not reach: when a call site legitimately needs the underlying FIELD as well as the predicate — a
+  formatter that must know *whether* a movement is a correction and also read the raw `correctsMovementId` to
+  truncate it — pass the entity (or a structural input carrying both), branch on the GETTER, and let the helper
+  own only the formatting. Never re-spell the predicate just to reach the field. Where the getter is defined as
+  that field's own null-check the post-guard narrowing cast is sound, and a discriminated input union is NOT the
+  better answer: a `boolean` getter is not assignable to a literal-typed discriminant, so the union would force
+  the caller back onto the raw field and reintroduce exactly the drift being removed (LNS-756).
 - **Model nested references**: When a model has nested objects from API, use actual Model classes (e.g.,
   `RawMaterialModel`, `VariantModel`) with their `fromJson()`, not plain objects. `toEntity()` maps to domain types.
 - **DataState pattern**: Use cases return `DataSuccess<T>` or `DataFailed` instead of throwing
@@ -661,9 +668,20 @@ Directories use kebab-case. Components use kebab-case filenames.
 | `Dropzone`      | `core/presentations/components/dropzone.tsx`       | Drag & drop file upload area                          |
 | `MiniToggle`    | `core/presentations/components/mini-toggle.tsx`    | Small toggle switch display                           |
 | `StatusChip`    | `core/presentations/components/status-chip.tsx`    | Status badges (success/warning/error/primary/neutral) |
+| `TableContainer` | `core/presentations/components/table/table-container.tsx` | Absorbs loading/error/empty into ONE centred message and renders nothing else — so a list needs no separate empty/error component and no list-level retry |
+| `TableHeader`   | `core/presentations/components/table/table-header.tsx` | Column labels; the grid template comes from `className`. Export that template from the ROW component and import it here — a duplicated string drifts silently and misaligns columns |
+| `MobileListCard` | `core/presentations/components/table/mobile-list-card.tsx` | `lg:hidden` stacked-card row; render it and the `hidden lg:grid` desktop row from ONE component |
 | `TablePagination` | `core/presentations/components/table/table-pagination.tsx` | Pagination controls; pairs with `TableContainer` + `TableHeader` |
 | `TableToolbar`  | `core/presentations/components/table/table-toolbar.tsx` | List-page toolbar row: filters left, search right (see List-page header/toolbar standard) |
 | `TableSearch`   | `core/presentations/components/table/table-search.tsx` | Standard list search input (`sm:w-[280px]`, right-pinned); use instead of inline `TextInput` search |
+
+**`TableContainer` and `TableHeader` each name TWO different live components** — the `components/table/` pair
+above, and an older `<table>`/`<thead>` pair sitting flat in `components/` (`table-container.tsx`,
+`table-header.tsx`) that `invoices/_components/invoice-item-table.tsx` still uses. They are not
+interchangeable: different prop shapes (`columns: {label, align}[]` vs `items: TableHeaderItem[]`), different
+DOM (grid `div`s vs table semantics), and the flat pair is written in three separately-deprecated idioms
+(`text-gray-*`, template-literal classNames, a local `classNames()` helper). A wrong import fails at `tsc`
+rather than silently, so the cost is discovery, not breakage — but always take the `table/` path in new code.
 
 ### Pagination
 
@@ -717,7 +735,19 @@ plurals.
   values to `NumberDisplay` (no null handling) — gate first: `value != null ? <BalanceDisplay value={value}/> : <span className="text-neutral-200">—</span>`. A per-row quantity in a row-specific `unit` (pieces vs grams) is meaningful
   WITHIN that row only — never total/subtotal/aggregate it across rows (a count like `meta.total` is fine). Extract
   these render-decisions to a pure `_utils/*.ts` with a colocated `.test.ts` (mirror
-  `accounting/reports/cost-valuation-gaps/_utils/classify-row.ts`). (LNS-640)
+  `accounting/reports/cost-valuation-gaps/_utils/classify-row.ts`). (LNS-640) The same rule for a server-owned
+  ENUM, where the trap is in the typing rather than the copy: a label map declared as a TOTAL
+  `Record<SomeEnum, string>` makes `LABELS[t] ?? t` structurally DEAD — the fallback can never be taken and a
+  test "covering" it is vacuous — while the risk it guards, a BE-added member rendering `undefined`, is real.
+  Widen to `Record<string, string>` at the lookup before indexing, so the fallback is both reachable and
+  genuinely testable (LNS-756).
+- **A displayed date takes `.setLocale("id")`, and a test asserting one must pin the zone**: Luxon otherwise
+  inherits the runner's locale and renders English month abbreviations to an Indonesian merchant — `setLocale("id")`
+  is the house convention at ~51 call sites across ~39 files (`features/accounting/domain/entities/journal.ts` is
+  the reference; `inventory/presentations/components/stock-movement-row.tsx` omits it and gets away with it only
+  because a `.tsx` is unreachable by the suite). Separately, `DateTime.fromISO` resolves to the RUNNER's zone, so
+  an assertion on a `dd MMM yyyy` string passes on a UTC CI box and fails at UTC+12/+13: set `Settings.defaultZone`
+  in `beforeEach` and restore it in `afterEach`, leaving only the locale under test (LNS-756).
 
 ### Git
 
