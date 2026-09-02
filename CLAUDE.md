@@ -108,6 +108,14 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   type: if the function's primary input is a form/edit-buffer type owned by `_components/`, moving it
   into `domain/` would force a domain-side mirror of a presentation type. Extract only the genuinely
   domain-owned fact (usually onto the entity) and leave the rest where its collaborators live.
+- **A `_utils/` resolver's exhaustiveness comes from the ABSENCE of a `default` branch**: the enum resolvers
+  (`resolve-cash-entry-status-chip.ts`, `resolve-cash-entry-cross-reference.ts`, `resolve-settings-form-state.ts`)
+  switch over an enum with a non-nullable declared return type and **no** `default`, so a new enum member leaves a
+  path returning implicit `undefined` — a `tsc` error under `strict`. Adding a `default`, including one with a
+  `never` assertion, reads as a safety improvement and silently destroys that guarantee: every future member then
+  compiles into the fallback. Do not add one. To express "this case deliberately produces nothing", return a
+  `{ kind: "none" }` member of a discriminated result union rather than `null` — it keeps the sibling resolvers'
+  vocabulary and forces call sites to branch explicitly instead of null-checking.
 - **Impl components**: `*-impl.tsx` files are smart components that fetch data and pass to presentational siblings
 - **Type guards**: `domain/guards/` contains `instanceof` checks for discriminating entity types
 - **SectionCard**: Standard card component (`rounded-lg`, `border-neutral-200`, icon header) for detail pages
@@ -126,6 +134,12 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   missing id yield the chip **without** a link — see
   `cash-entries/[id]/_utils/resolve-cash-entry-cross-reference.ts`, whose test pins it;
   `journal-reversal-status-card.tsx` still ANDs and is the one to fix, not follow.
+  Second corollary — **never badge the ordinary case**: a chip for the healthy/default state is the negation of an
+  exception promoted to a permanent per-row marker, and `StatusChip` is a bare span with no tooltip or description,
+  so it reads as a state the user is expected to understand and cannot. Absence means normal — the journals list
+  carries no status marker at all, and cash entries render a chip only for `cancelled` / `cancellation`, with the
+  cross-reference card carrying the detail (LNS-781 removed the green "Aktif" chip that every row of a healthy
+  ledger was showing). Keep the column when it still carries the cross-reference link, and let it be blank.
 - **Interactive element height**: All interactive elements (buttons, inputs, selects, custom controls) use `h-11` (44px)
   for consistent vertical rhythm. Exception: icon-only action buttons (edit, delete) in tables use `size-8` (32px).
 - **Account resolution**: Backend resolves account from Clerk JWT `orgId` (set via `setActive({ organization })`).
@@ -393,6 +407,17 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   Page does not wrap children in a single content component — each component is self-contained.
 - **Component architecture**: One component per file. Use `useMemo` for computed/derived data. No conditional rendering
   of multiple states in return — split into separate components instead (e.g., loading, empty, list components).
+- **A conditionally-rendered cell or slot in a shared list row fails silently — keep the placeholder, and pass
+  explicit `undefined`**: two variants, neither reachable by `tsc`, lint, or the vitest suite (`.tsx`, node env).
+  (1) Desktop rows are CSS grids with a fixed track template and **auto-placed** children (`cash-entry-row.tsx`'s
+  `grid-cols-[1fr_0.8fr_1fr_0.9fr_1fr_1.1fr_56px]`), so a cell that renders conditionally must keep an
+  always-rendered wrapper `<div>` and make only its *contents* conditional — drop the div and every later column,
+  the action slot included, slides one track left, visible only in a screenshot. A legitimately empty cell holding
+  its column is the correct outcome. (2) `MobileListCard`
+  (`core/presentations/components/table/mobile-list-card.tsx`) gates `subtitle`, `meta`, `trailingTop` and
+  `trailingBottom` on `!== undefined`, so a conditional slot must be a ternary yielding an explicit `undefined` —
+  `cond && <X/>` yields `false`, which passes that check and opens an empty styled slot (for `trailingBottom`, the
+  entire trailing column).
 - **A stray `;` after a JSX element is a text node, not a statement terminator**: inside a JSX body, `<Foo />;`
   renders a literal semicolon into the DOM. Nothing in the toolchain catches it — `tsc` sees valid JSX, Prettier
   reformats around it, and `eslint-plugin-react`'s recommended set has no rule for bare-punctuation children
