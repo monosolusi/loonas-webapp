@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { AccountType } from "@/features/accounting/domain/enums/account-type";
 import { LedgerAccountEntity } from "@/features/accounting/domain/entities/ledger-account";
+import { ErrorCodes, ServerError } from "@/core/resources/server-error";
 import { resolveAccountEditField } from "@/app/(authenticated)/accounting/cash-categories/_utils/resolve-account-edit-field";
 
 function buildAccount(id: string): LedgerAccountEntity {
@@ -44,5 +45,17 @@ describe("resolveAccountEditField", () => {
     const result = resolveAccountEditField("acc-1", []);
     expect(result.state.kind).toBe("missing");
     expect(result.canSubmit).toBe(false);
+  });
+
+  it("is error — never loading — when the account list fetch failed", () => {
+    const error = new ServerError(ErrorCodes.UNKNOWN);
+    const result = resolveAccountEditField("acc-1", null, error);
+    expect(result).toEqual({ state: { kind: "error", error }, canSubmit: false });
+  });
+
+  it("error outranks a known id resolving against a loaded list", () => {
+    const error = new ServerError(ErrorCodes.UNKNOWN);
+    const result = resolveAccountEditField("acc-1", [buildAccount("acc-1")], error);
+    expect(result).toEqual({ state: { kind: "error", error }, canSubmit: false });
   });
 });

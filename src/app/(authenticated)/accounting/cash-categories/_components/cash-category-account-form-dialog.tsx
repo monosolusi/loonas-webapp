@@ -20,10 +20,16 @@ type CashCategoryAccountFormDialogProps = {
   direction: CashEntryDirection;
   /** Fixed for a general category — displayed read-only, never sent on the PATCH. */
   name: string;
-  /** The currently-resolved account, or null while loading / while the saved account is missing. */
+  /** The currently-resolved account, or null while loading / while the saved account is missing.
+   *  Display-only — latched across the dialog's close fade, so it must never drive `disabled`. */
   account: LedgerAccountEntity | null;
   /** Non-null only in the loaded-and-absent state — never shown while the CoA list is loading. */
   missingSavedAccountId: string | null;
+  /** Non-null when the CoA fetch itself failed — the picker is disabled and this notice is shown
+   *  in its place; mutually exclusive with `missingSavedAccountId` (that state requires a loaded list). */
+  accountListErrorMessage: string | null;
+  /** The resolver's LIVE `canSubmit` — never derived from the (possibly latched) `account` above. */
+  canSubmit: boolean;
   loading: boolean;
   /** CASH_CATEGORY_ACCOUNT_TYPE_MISMATCH / VALIDATION_FAILED — rendered beside the account field. */
   accountError: string | null;
@@ -40,6 +46,8 @@ export function CashCategoryAccountFormDialog({
   name,
   account,
   missingSavedAccountId,
+  accountListErrorMessage,
+  canSubmit,
   loading,
   accountError,
   formError,
@@ -80,11 +88,19 @@ export function CashCategoryAccountFormDialog({
             label="Akun"
             value={account}
             onChange={onAccountChange}
+            disabled={!!accountListErrorMessage}
             filter={(candidate) => eligibleAccountTypesFor(direction).includes(candidate.type)}
           />
           <p className="text-xs leading-4 text-neutral-300">{eligibleHint}</p>
+          {accountListErrorMessage && (
+            <p role="alert" className="text-xs leading-4 font-normal text-red-500">
+              {accountListErrorMessage}
+            </p>
+          )}
           {missingSavedAccountId && (
-            <p className="text-xs leading-4 text-neutral-500">{CASH_CATEGORY_ACCOUNT_COPY.missingSavedAccountNotice}</p>
+            <p role="alert" className="text-xs leading-4 font-normal text-red-500">
+              {CASH_CATEGORY_ACCOUNT_COPY.missingSavedAccountNotice}
+            </p>
           )}
           {accountError && (
             <span role="alert" className="text-xs leading-4 font-normal text-red-500">
@@ -97,7 +113,7 @@ export function CashCategoryAccountFormDialog({
           <SecondaryButton outlined label="Batal" onClick={onClose} />
           <PrimaryButton
             label="Simpan"
-            disabled={!account}
+            disabled={!canSubmit}
             loading={loading}
             loadingLabel="Menyimpan..."
             onClick={onSubmit}

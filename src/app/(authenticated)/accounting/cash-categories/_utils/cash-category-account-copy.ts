@@ -17,6 +17,10 @@ export const CASH_CATEGORY_ACCOUNT_COPY = {
   nameImmutableHint: "Nama kategori bawaan tidak dapat diubah.",
   missingSavedAccountNotice:
     "Akun yang tersimpan tidak ditemukan di daftar akun. Pilih akun baru untuk memperbaikinya.",
+  /** No manual retry affordance is wired here — SWR retries failed fetches automatically
+   *  app-wide (`swr-provider.tsx`'s `shouldRetryOnError`), so the copy says so instead of
+   *  instructing an action (e.g. "coba lagi") that has nothing to do. */
+  accountListErrorNotice: "Gagal memuat daftar akun. Daftar akan dimuat ulang secara otomatis.",
 } as const;
 
 /**
