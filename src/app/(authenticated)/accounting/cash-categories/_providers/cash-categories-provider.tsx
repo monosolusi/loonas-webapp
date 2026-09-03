@@ -14,6 +14,7 @@ import { useDeleteCashCategory } from "@/features/accounting/presentations/hooks
 import { useCreateCashCategory } from "@/features/accounting/presentations/hooks/use-create-cash-category";
 import { filterCashCategories } from "@/app/(authenticated)/accounting/cash-categories/_utils/filter-cash-categories";
 import { classifyCreateCategoryError } from "@/app/(authenticated)/accounting/cash-entries/new/_utils/classify-create-error";
+import { ClassifiedCategoryAccountError, classifyCategoryAccountError } from "@/app/(authenticated)/accounting/cash-categories/_utils/classify-category-account-error";
 
 type CashCategoriesContextValue = {
   direction: CashEntryDirection | undefined;
@@ -34,14 +35,25 @@ type CashCategoriesContextValue = {
   deletingCategory: CashCategoryEntity | null;
   openDelete: (category: CashCategoryEntity) => void;
   closeDelete: () => void;
+  /** The general category whose "Ubah Akun" dialog is open — mutually exclusive with `editingCategory`. */
+  accountCategory: CashCategoryEntity | null;
+  openAccountEdit: (category: CashCategoryEntity) => void;
+  closeAccountEdit: () => void;
   isUpdating: boolean;
   isDeleting: boolean;
   /** Server copy for a failed update — rendered inside the edit dialog, which stays open. */
   editError: ServerError | null;
   /** Server copy for a failed delete — rendered in the delete dialog's warning slot. */
   deleteError: ServerError | null;
+  /**
+   * Already classified into placement + copy (unlike `editError`/`deleteError`, which stay raw
+   * `ServerError`s) — the impl only maps `placement` to a slot, mirroring `createError`'s split.
+   * Never populated for a `"toast"` placement: that case is shown via `showToast` at submit time.
+   */
+  accountEditError: ClassifiedCategoryAccountError | null;
   submitEdit: (args: { name: string; accountId: string | null }) => void;
   submitDelete: () => void;
+  submitAccountEdit: (args: { accountId: string }) => void;
   createOpen: boolean;
   openCreate: () => void;
   closeCreate: () => void;
@@ -98,8 +110,10 @@ export function CashCategoriesProvider({ children }: CashCategoriesProviderProps
   const [search, setSearch] = useState("");
   const [editingCategory, setEditingCategory] = useState<CashCategoryEntity | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<CashCategoryEntity | null>(null);
+  const [accountCategory, setAccountCategory] = useState<CashCategoryEntity | null>(null);
   const [editError, setEditError] = useState<ServerError | null>(null);
   const [deleteError, setDeleteError] = useState<ServerError | null>(null);
+  const [accountEditError, setAccountEditError] = useState<ClassifiedCategoryAccountError | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
@@ -168,6 +182,16 @@ export function CashCategoriesProvider({ children }: CashCategoriesProviderProps
     setDeleteError(null);
   }, []);
 
+  const openAccountEdit = useCallback((category: CashCategoryEntity) => {
+    setAccountEditError(null);
+    setAccountCategory(category);
+  }, []);
+
+  const closeAccountEdit = useCallback(() => {
+    setAccountCategory(null);
+    setAccountEditError(null);
+  }, []);
+
   // Both submit handlers catch everything and turn it into dialog state — an async handler that
   // throws becomes an unhandled rejection the user never sees.
   const submitEdit = useCallback(
@@ -200,6 +224,28 @@ export function CashCategoriesProvider({ children }: CashCategoriesProviderProps
       setDeleteError(asServerError(err));
     }
   }, [deletingCategory, isDeleting, deleteCategory, showToast]);
+
+  // Never sends a `name` key — the account-only dialog's sole write path, and what makes
+  // `CASH_CATEGORY_CURATED` unreachable in practice (that 409 only fires on a name change).
+  const submitAccountEdit = useCallback(
+    async ({ accountId }: { accountId: string }) => {
+      if (!accountCategory || isUpdating) return;
+      setAccountEditError(null);
+      try {
+        await updateCategory({ id: accountCategory.id, accountId });
+        showToast("Akun kategori kas berhasil diubah", "success");
+        setAccountCategory(null);
+      } catch (err) {
+        const classified = classifyCategoryAccountError(asServerError(err));
+        if (classified.placement === "toast") {
+          showToast(classified.message, "error");
+        } else {
+          setAccountEditError(classified);
+        }
+      }
+    },
+    [accountCategory, isUpdating, updateCategory, showToast],
+  );
 
   const openCreate = useCallback(() => {
     setCreateError(null);
@@ -258,12 +304,17 @@ export function CashCategoriesProvider({ children }: CashCategoriesProviderProps
         deletingCategory,
         openDelete,
         closeDelete,
+        accountCategory,
+        openAccountEdit,
+        closeAccountEdit,
         isUpdating,
         isDeleting,
         editError,
         deleteError,
+        accountEditError,
         submitEdit,
         submitDelete,
+        submitAccountEdit,
         createOpen,
         openCreate,
         closeCreate,

@@ -1,4 +1,4 @@
-export type CategoryRowActionKind = "edit" | "delete";
+export type CategoryRowActionKind = "edit" | "delete" | "edit-account";
 
 export type CategoryRowAction = {
   readonly kind: CategoryRowActionKind;
@@ -11,17 +11,31 @@ export type CategoryRowActions =
   | { readonly hasMenu: true; readonly options: readonly CategoryRowAction[] };
 
 /**
- * Per-row action state from `isCurated` alone — the list resource carries no `is_referenced`, so
- * referenced-ness is not client-knowable and stays reactive (the 409 surfaces inside the dialog).
+ * Per-row action state from `{isCurated, isGeneral}`. LNS-788 replaced the deleted standalone
+ * "Pengaturan Kas" settings page's account-remap capability with a row-level affordance on the two
+ * "general" curated categories (misc income / misc expense) — the ONLY curated rows a
+ * merchant can act on at all, and only to remap the account, never the name or direction: a single
+ * `"edit-account"` option, no delete (deleting a general category would remove the one place a
+ * merchant can redirect their misc income/expense, which the product does not offer).
  *
- * A curated (BE-seeded) category gets NO action menu at all: the server rejects every write to it
- * with 409 `CASH_CATEGORY_CURATED`, and `ActionMenu` has no disabled state, so absence of the menu
- * is the disabled state. Note the deliberate tension this encodes: the server would permit
- * remapping an unreferenced curated category's account, but the product rule is "curated rows are
- * not editable from this screen", so the affordance is withheld rather than the request blocked.
+ * Every OTHER curated row still gets NO action menu — `isGeneral` already implies `isCurated` (see
+ * `isGeneralCashCategory`), so it is checked first and never re-asserted inside its branch. An
+ * ordinary curated category's only editable-looking field is its name, which the server rejects
+ * outright with 409 `CASH_CATEGORY_CURATED`; `ActionMenu` has no disabled state, so withholding the
+ * menu IS the disabled state, same reasoning as before LNS-788.
+ *
+ * The list resource still carries no `is_referenced`, so referenced-ness stays reactive — a general
+ * row's account-remap can still 409 `CASH_CATEGORY_REFERENCED` inside the dialog.
  */
-export function resolveCategoryActions(isCurated: boolean): CategoryRowActions {
-  if (isCurated) return { hasMenu: false };
+export function resolveCategoryActions(row: { isCurated: boolean; isGeneral: boolean }): CategoryRowActions {
+  if (row.isGeneral) {
+    return {
+      hasMenu: true,
+      options: [{ kind: "edit-account", label: "Ubah Akun", variant: "default" }],
+    };
+  }
+
+  if (row.isCurated) return { hasMenu: false };
 
   return {
     hasMenu: true,

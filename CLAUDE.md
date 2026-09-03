@@ -93,9 +93,10 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   sitting unused while `outOfStockBadgeProps(status)` re-derived `stockStatus === OUT_OF_STOCK`; the fix routed
   `OutOfStockBadge` through `isOutOfStock: boolean` and deleted the helper. This extends to UI **copy** that names a
   domain constraint: derive the string from the helper that already drives the behaviour instead of retyping the
-  values — `/accounting/cash-entry-settings` builds its per-field "Hanya akun bertipe Pendapatan." hint from
-  `eligibleAccountTypesFor()`, the same function that builds the field's `filter`, so the hint and the option list it
-  describes cannot disagree (LNS-780).
+  values — `/accounting/cash-categories`'s "Ubah Akun" dialog builds its per-field "Hanya akun bertipe Pendapatan."
+  hint from `eligibleAccountTypesFor()`, the same function that builds the field's `filter`, so the hint and the
+  option list it describes cannot disagree (originally LNS-780 on the now-deleted `/accounting/cash-entry-settings`
+  page; the hint moved, not retyped, when LNS-788 replaced that page with this dialog).
 - **Model nested references**: When a model has nested objects from API, use actual Model classes (e.g.,
   `RawMaterialModel`, `VariantModel`) with their `fromJson()`, not plain objects. `toEntity()` maps to domain types.
 - **DataState pattern**: Use cases return `DataSuccess<T>` or `DataFailed` instead of throwing

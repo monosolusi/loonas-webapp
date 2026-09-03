@@ -14,6 +14,7 @@ type CashCategoriesTableProps = {
   isLoadingPage: boolean;
   onEdit: (category: CashCategoryEntity) => void;
   onDelete: (category: CashCategoryEntity) => void;
+  onEditAccount: (category: CashCategoryEntity) => void;
 };
 
 export function CashCategoriesTable({
@@ -22,6 +23,7 @@ export function CashCategoriesTable({
   isLoadingPage,
   onEdit,
   onDelete,
+  onEditAccount,
 }: CashCategoriesTableProps) {
   return (
     <div className="flex flex-col gap-y-4" aria-busy={isLoadingPage}>
@@ -38,7 +40,13 @@ export function CashCategoriesTable({
           hideOnMobile
         />
         {categories.map((category) => (
-          <CashCategoryRow key={category.id} category={category} onEdit={onEdit} onDelete={onDelete} />
+          <CashCategoryRow
+            key={category.id}
+            category={category}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onEditAccount={onEditAccount}
+          />
         ))}
         {/* The list endpoint takes `direction` only — no page/limit — so `meta` is
             synthesised with totalPages 1 and this control never mounts. Kept for the

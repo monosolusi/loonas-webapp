@@ -32,7 +32,6 @@ const ROUTE_MAP: Record<string, RouteConfig> = {
   "/accounting/cash-entries": { title: "Kas Masuk & Kas Keluar" },
   "/accounting/cash-entries/new": { title: "Catat Kas" },
   "/accounting/cash-categories": { title: "Kategori Kas" },
-  "/accounting/cash-entry-settings": { title: "Pengaturan Kas" },
   "/accounting/pph-final": { title: "PPh Final UMKM" },
   "/accounting/profitability": { title: "Profitabilitas Varian" },
   "/accounting/accounts": { title: "Bagan Akun" },

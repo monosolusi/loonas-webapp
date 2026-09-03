@@ -32,6 +32,7 @@ export function CashCategoriesListImpl() {
     onRetry,
     openEdit,
     openDelete,
+    openAccountEdit,
     openCreate,
   } = useCashCategoriesProvider();
 
@@ -102,6 +103,7 @@ export function CashCategoriesListImpl() {
           isLoadingPage={isLoadingPage}
           onEdit={openEdit}
           onDelete={openDelete}
+          onEditAccount={openAccountEdit}
         />
       )}
     </div>

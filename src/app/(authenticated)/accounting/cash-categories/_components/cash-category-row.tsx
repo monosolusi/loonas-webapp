@@ -7,6 +7,7 @@ import { MobileListCard } from "@/core/presentations/components/table/mobile-lis
 import { CashCategoryEntity } from "@/features/accounting/domain/entities/cash-category";
 import { resolveAccountLabel } from "@/app/(authenticated)/accounting/cash-categories/_utils/account-label";
 import { resolveCategoryActions } from "@/app/(authenticated)/accounting/cash-categories/_utils/resolve-category-actions";
+import { isGeneralCashCategory } from "@/app/(authenticated)/accounting/cash-categories/_utils/general-cash-categories";
 import { directionLabel } from "@/app/(authenticated)/accounting/cash-categories/_utils/direction-label";
 
 // Shared with the `TableHeader` in `cash-categories-list-impl.tsx` — the header and the desktop
@@ -17,17 +18,23 @@ type CashCategoryRowProps = {
   category: CashCategoryEntity;
   onEdit: (category: CashCategoryEntity) => void;
   onDelete: (category: CashCategoryEntity) => void;
+  onEditAccount: (category: CashCategoryEntity) => void;
 };
 
-export function CashCategoryRow({ category, onEdit, onDelete }: CashCategoryRowProps) {
-  const actions = resolveCategoryActions(category.isCurated);
+export function CashCategoryRow({ category, onEdit, onDelete, onEditAccount }: CashCategoryRowProps) {
+  const isGeneral = isGeneralCashCategory(category);
+  const actions = resolveCategoryActions({ isCurated: category.isCurated, isGeneral });
   const accountLabel = resolveAccountLabel(category.account);
 
   const menuOptions: ActionMenuOption[] = actions.hasMenu
     ? actions.options.map((option) => ({
         label: option.label,
         variant: option.variant,
-        onClick: () => (option.kind === "edit" ? onEdit(category) : onDelete(category)),
+        onClick: () => {
+          if (option.kind === "edit-account") return onEditAccount(category);
+          if (option.kind === "edit") return onEdit(category);
+          return onDelete(category);
+        },
       }))
     : [];
 
