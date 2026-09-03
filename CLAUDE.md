@@ -115,7 +115,7 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   into `domain/` would force a domain-side mirror of a presentation type. Extract only the genuinely
   domain-owned fact (usually onto the entity) and leave the rest where its collaborators live.
 - **A `_utils/` resolver's exhaustiveness comes from the ABSENCE of a `default` branch**: the enum resolvers
-  (`resolve-cash-entry-status-chip.ts`, `resolve-cash-entry-cross-reference.ts`, `resolve-settings-form-state.ts`)
+  (`cash-entries/_utils/resolve-cash-entry-status-chip.ts`, `cash-entries/_utils/resolve-cash-entry-cross-reference.ts`)
   switch over an enum with a non-nullable declared return type and **no** `default`, so a new enum member leaves a
   path returning implicit `undefined` — a `tsc` error under `strict`. Adding a `default`, including one with a
   `never` assertion, reads as a safety improvement and silently destroys that guarantee: every future member then
@@ -194,13 +194,23 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   need null checks.
 - **Provider data locality**: Provider only hosts data shared across multiple components. If data is used by only one
   component, that component fetches it locally.
-- **Latch dialog display values through the close fade — and never latch the error**: a provider nulls its
-  `editingCategory`-style holder when a dialog closes, but `LoonasDialog`'s panel stays mounted through its 200ms
-  leave transition, so the body re-renders from the nulled holder mid-fade — a direction falls back to its default
-  enum (a WRONG value, not a blank) and a name blanks to "menghapus kategori ?". Wrap the display values in
-  `useLatchedValue` (`core/presentations/hooks/use-latched-value.ts`) so the last non-null value survives the fade.
-  The corollary is load-bearing: errors stay **unlatched** — the open handler nulls the error in the same batch as
-  the entity, so a latched error resurrects the *previous* record's error strip on the next open. (LNS-742)
+- **Latch the dialog's HOLDER through the close fade, never the values derived from it — and never latch the
+  error**: a provider nulls its `editingCategory`-style holder when a dialog closes, but `LoonasDialog`'s panel
+  stays mounted through its 200ms leave transition, so the body re-renders from the nulled holder mid-fade — a
+  direction falls back to its default enum (a WRONG value, not a blank) and a name blanks to "menghapus kategori ?"
+  (LNS-742). Wrap the HOLDER in `useLatchedValue` (`core/presentations/hooks/use-latched-value.ts`) and derive
+  every displayed field from that one latched entity: the fields then cannot disagree mid-fade, a resolver keeps
+  running against the closing record, and the per-field latches disappear rather than gaining a guard. Latching the
+  derived fields individually is the defect, because `useLatchedValue` is `value ?? latched` — it returns the stale
+  value on **every** render where the live value is null, not only during the fade. The tell is whether the value
+  can be null *while the dialog is open*: a field fed by a separate fetch (an account resolved by id out of a
+  still-loading CoA list, or absent from it) legitimately is, so latching it paints the PREVIOUS record's value
+  underneath the current record's "tidak ditemukan" notice. `cash-category-account-dialog.tsx` is the corrected
+  shape; `cash-category-edit-dialog.tsx:38-39` still latches `direction` and `account` separately and is the one to
+  fix, not follow (LNS-788). Two corollaries: a latched value must never feed a **writer** — gate `disabled`/submit
+  on the live value, or the button re-enables in a state the writer rejects (LNS-570's displayed-vs-saved rule, one
+  layer down) — and errors stay **unlatched**, since the open handler nulls the error in the same batch as the
+  entity, so a latched error resurrects the *previous* record's error strip on the next open.
 - **A plain hook is not shared state — `use{X}Data()` called by N components is N independent `useState`s**: this
   reads as shared state at every call site and is not, so the failure is silent and total. On `/onboarding/account`,
   `usePersonalAccountData` was a plain hook (no `createContext`) called by 14 components:
@@ -729,7 +739,10 @@ unreachable (confirmed absent from `dev-api.loonas.id/openapi.json`), remove the
 the now-unreferenced shared `ErrorCodes` constant, not just the handler. LNS-608: `POST /pos/sales` can no
 longer return `INSUFFICIENT_STOCK`, so the `pos-provider` handler, `handleStockErrorDetails`,
 `StockErrorEntry`, **and** `ErrorCodes.INSUFFICIENT_STOCK` in `core/resources/server-error.ts` were all
-removed — leaving the dead constant is exactly the "removed rather than left as dead code" intent.
+removed — leaving the dead constant is exactly the "removed rather than left as dead code" intent. **Verify
+deletion completeness with a plain recursive `grep`, never `git grep`** — `git grep` searches only tracked files,
+so references left in the brand-new, not-yet-`git add`ed files of the same PR do not appear and the check passes
+while the reference ships (LNS-788).
 
 The `""` → `null` conversion belongs in the **app layer that owns the form buffer** (e.g.
 `products/[id]/_utils/sync-variants.ts`), not the service: `""` is a presentation fact about an emptied
@@ -812,7 +825,8 @@ SWR fetcher functions use singular noun: `ListStockItemFetcher` (not `ListStockI
 
 ### Code Style
 
-- Prettier: 2-space indent, 120 char width
+- Prettier: 2-space indent, 120 char width. It also formats Markdown, so never run `prettier --write` on
+  `CLAUDE.md` to tidy one line — it rewrites the whole file (every `*emphasis*` → `_emphasis_`). Hand-edit it.
 - `@typescript-eslint/no-explicit-any` is disabled
 - Domain layer must not import from presentation layers. Domain source interfaces (`domain/sources/`) may import data
   models since they define the service contract that data layer implements. Conversely, **presentation**
