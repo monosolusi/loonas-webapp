@@ -95,8 +95,8 @@ useGetInvoice → SWR fetcher → GetInvoiceUseCase → InvoiceRepositoryImpl �
   domain constraint: derive the string from the helper that already drives the behaviour instead of retyping the
   values — `/accounting/cash-categories`'s "Ubah Akun" dialog builds its per-field "Hanya akun bertipe Pendapatan."
   hint from `eligibleAccountTypesFor()`, the same function that builds the field's `filter`, so the hint and the
-  option list it describes cannot disagree (originally LNS-780 on the now-deleted `/accounting/cash-entry-settings`
-  page; the hint moved, not retyped, when LNS-788 replaced that page with this dialog).
+  option list it describes cannot disagree (originally LNS-780 on the former Pengaturan Kas settings screen; the
+  hint moved, not retyped, when LNS-788 replaced that screen with this dialog).
 - **Model nested references**: When a model has nested objects from API, use actual Model classes (e.g.,
   `RawMaterialModel`, `VariantModel`) with their `fromJson()`, not plain objects. `toEntity()` maps to domain types.
 - **DataState pattern**: Use cases return `DataSuccess<T>` or `DataFailed` instead of throwing
