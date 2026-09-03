@@ -34,13 +34,23 @@ describe("classifyCreateError", () => {
       "JOURNAL_ACCOUNT_INVALID",
       "Akun pada kategori kas ini tidak valid untuk pencatatan jurnal. Perbarui kategori kas terlebih dahulu.",
     ],
-    ["CASH_ACCOUNT_NOT_SEEDED", "Akun kas belum diatur. Buka Pengaturan Kas untuk mengaturnya terlebih dahulu."],
+    [
+      "CASH_ACCOUNT_NOT_SEEDED",
+      "Akun kas belum tersedia di sistem, sehingga entri kas tidak dapat dicatat. Hubungi dukungan Loonas.",
+    ],
   ])("classifies the registry-absent code %s as a form error with its own copy", (code, message) => {
     // These codes are not in the FE registry, so they arrive as UNKNOWN + details.code.
     const err = new ServerError(ErrorCodes.UNKNOWN, { code });
     const result = classifyCreateError(err);
     expect(result.code).toBe(code);
     expect(result).toMatchObject({ placement: "form", message });
+  });
+
+  it("never instructs the user to open the deleted 'Pengaturan Kas' route for CASH_ACCOUNT_NOT_SEEDED", () => {
+    const err = new ServerError(ErrorCodes.UNKNOWN, { code: "CASH_ACCOUNT_NOT_SEEDED" });
+    const result = classifyCreateError(err);
+    expect(result.message).not.toContain("Pengaturan Kas");
+    expect(result.message).not.toContain("Buka");
   });
 
   it("classifies VALIDATION_FAILED as a form error with Indonesian copy, not the English registry message", () => {

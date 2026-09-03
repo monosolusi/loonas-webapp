@@ -74,10 +74,13 @@ export function classifyCreateError(err: ServerError): ClassifiedCreateError {
   }
 
   if (code === CASH_ACCOUNT_NOT_SEEDED) {
+    // A 500-class server seeding failure the merchant cannot resolve themselves — and LNS-788
+    // deleted the "Pengaturan Kas" route this copy used to point at, so the message must not
+    // instruct a self-service action that no longer exists.
     return {
       code,
       placement: "form",
-      message: "Akun kas belum diatur. Buka Pengaturan Kas untuk mengaturnya terlebih dahulu.",
+      message: "Akun kas belum tersedia di sistem, sehingga entri kas tidak dapat dicatat. Hubungi dukungan Loonas.",
     };
   }
 
