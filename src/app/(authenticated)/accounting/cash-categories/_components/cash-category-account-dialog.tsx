@@ -33,14 +33,22 @@ export function CashCategoryAccountDialog() {
   // `openAccountEdit` nulls it in the same batch as the holder.
   const direction = useLatchedValue(accountCategory?.direction ?? null);
   const categoryName = useLatchedValue(accountCategory?.name ?? null);
+  // `account` is legitimately null WHILE OPEN too (the `missing` / `error` resolver states), unlike
+  // `direction`/`categoryName` above which can only be null while closing (they derive from
+  // `accountCategory` itself). `useLatchedValue` can't distinguish those cases — it returns the last
+  // non-null value on every render where the live value is null — so latching `account` unconditionally
+  // would paint a stale, previously-selected account underneath the "not found"/"failed to load" notice.
+  // Scope the latch to the closing window only: pass the live value (including null) while the dialog
+  // is open, and fall back to the latch only once `accountCategory` itself has gone null.
   const latchedAccount = useLatchedValue(account);
+  const displayAccount = accountCategory ? account : latchedAccount;
 
   return (
     <CashCategoryAccountFormDialog
       open={!!accountCategory}
       direction={direction ?? CashEntryDirection.In}
       name={categoryName ?? ""}
-      account={latchedAccount}
+      account={displayAccount}
       missingSavedAccountId={missingSavedAccountId}
       accountListErrorMessage={accountListErrorMessage}
       canSubmit={canSubmit}
