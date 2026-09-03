@@ -48,3 +48,4 @@
 - [SearchCombobox prop gaps](feedback_search_combobox_prop_gaps.md) — `required` is inert under `noLabel`; no error/description/aria props at all, so the a11y association can't be fixed from a call site — sibling red span is the house workaround
 - [LNS-782 review learnings](project_lns782_review_learnings.md) — optimistic fold-back is total only because the create dialog inherits the provider's direction; rebuilt-options + `find()` is NOT a stale-reference risk when both sides come from one memoized array
 - [MobileListCard trailing slot undefined](feedback_mobile_list_card_trailing_undefined.md) — conditional `trailingBottom` must be a ternary yielding `undefined`; `cond && <X/>` passes the `!== undefined` gate
+- [Latched display value drives disabled](feedback_latched_display_value_drives_disabled.md) — a `useLatchedValue` prop must never gate submit; the latch carries a previous record's value into the next open (LNS-788)
