@@ -14,7 +14,10 @@ import { useDeleteCashCategory } from "@/features/accounting/presentations/hooks
 import { useCreateCashCategory } from "@/features/accounting/presentations/hooks/use-create-cash-category";
 import { filterCashCategories } from "@/app/(authenticated)/accounting/cash-categories/_utils/filter-cash-categories";
 import { classifyCreateCategoryError } from "@/app/(authenticated)/accounting/cash-entries/new/_utils/classify-create-error";
-import { ClassifiedCategoryAccountError, classifyCategoryAccountError } from "@/app/(authenticated)/accounting/cash-categories/_utils/classify-category-account-error";
+import {
+  ClassifiedCategoryAccountError,
+  classifyCategoryAccountError,
+} from "@/app/(authenticated)/accounting/cash-categories/_utils/classify-category-account-error";
 
 type CashCategoriesContextValue = {
   direction: CashEntryDirection | undefined;

@@ -33,7 +33,7 @@ function unwrapCode(err: ServerError): string {
  * Pure `(ServerError) → outcome` for `PATCH /accounting/cash-categories/{id}` when the body is
  * `{account_id}` only — the general-row "Ubah Akun" dialog's sole write path. No body argument:
  * with exactly one field in the request, the code alone decides placement (this is why the deleted
- * `cash-entry-settings` page's `classifySaveError`, which juggled two fields, was not reusable
+ * standalone settings page's `classifySaveError`, which juggled two fields, was not reusable
  * as-is).
  */
 export function classifyCategoryAccountError(err: ServerError): ClassifiedCategoryAccountError {

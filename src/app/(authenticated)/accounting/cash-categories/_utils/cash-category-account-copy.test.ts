@@ -30,11 +30,9 @@ describe("CASH_CATEGORY_ACCOUNT_COPY", () => {
     );
   });
 
-  it("keeps sentence 1 and the final sentence byte-identical to the deleted cash-entry-settings copy", () => {
+  it("keeps sentence 1 and the final sentence byte-identical to the deleted settings page's copy", () => {
     const description = CASH_CATEGORY_ACCOUNT_COPY.description;
-    expect(description.startsWith("Setiap transaksi kas dicatat pada akun kas 1100 (Kas dan Setara Kas).")).toBe(
-      true,
-    );
+    expect(description.startsWith("Setiap transaksi kas dicatat pada akun kas 1100 (Kas dan Setara Kas).")).toBe(true);
     expect(
       description.endsWith(
         "Perubahan hanya berlaku untuk transaksi berikutnya — transaksi yang sudah tercatat tetap memakai akun lama.",
@@ -44,7 +42,7 @@ describe("CASH_CATEGORY_ACCOUNT_COPY", () => {
 
   it("states the offset field's purpose without asserting an unverifiable trigger condition", () => {
     const description = CASH_CATEGORY_ACCOUNT_COPY.description;
-    // Carried over from the deleted cash-entry-settings-copy.test.ts — the live spec contradicts
+    // Carried over from the deleted settings page's copy test — the live spec contradicts
     // itself on when these defaults actually fire, so the copy must never assert a trigger
     // condition it cannot verify. This negative assertion stops it from being re-added silently.
     expect(description).not.toContain("tanpa kategori");
